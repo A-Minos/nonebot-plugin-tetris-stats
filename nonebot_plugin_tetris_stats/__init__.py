@@ -13,6 +13,7 @@ from .TOSDataProcessing import generateMessage as TOSgenerateMessage
 
 driver = get_driver()
 
+
 @driver.on_startup
 async def startUP():
     await initDB()
@@ -26,6 +27,7 @@ tosStats = on_regex(pattern=r'^tos查|^tostats|^茶服查|^茶服stats',
 topBind = on_regex(pattern=r'^top绑定|^topbind', flags=I, permission=GROUP)
 topStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
 
+
 @ioBind.handle()
 async def bindIOUser(event: MessageEvent, matcher: Matcher):
     decodedMessage = await handleBindMessage(message=str(event.get_message()), gameType='IO')
@@ -38,6 +40,7 @@ async def bindIOUser(event: MessageEvent, matcher: Matcher):
     elif decodedMessage['Success'] is False:
         message = decodedMessage['Message']
     await matcher.send(message=message)
+
 
 @ioStats.handle()
 async def handleIOStatsQuery(event: MessageEvent, matcher: Matcher):
@@ -63,6 +66,7 @@ async def handleIOStatsQuery(event: MessageEvent, matcher: Matcher):
         message = decodedMessage['Message']
     await matcher.finish(message=message)
 
+
 @tosStats.handle()
 async def handleTOSStatsQuery(event: MessageEvent, matcher: Matcher):
     decodedMessage = await handleStatsQueryMessage(message=str(event.get_message()), gameType='TOS')
@@ -77,9 +81,11 @@ async def handleTOSStatsQuery(event: MessageEvent, matcher: Matcher):
         message = decodedMessage['Message']
     await matcher.finish(message=message)
 
+
 @topBind.handle()
 async def bindTOPUser(event: MessageEvent, matcher: Matcher):
     await matcher.send(message='TODO')
+
 
 @topStats.handle()
 async def handleTOPStatsQuery(event: MessageEvent, matcher: Matcher):

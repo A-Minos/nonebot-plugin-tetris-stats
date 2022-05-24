@@ -3,8 +3,9 @@ from nonebot.log import logger
 from asyncio import gather
 import aiohttp
 
-# 封装请求函数
-async def request(Url: str) -> dict[str, bool|dict[str, any]]:
+
+async def request(Url: str) -> dict[str, bool | dict[str, any]]:
+    # 封装请求函数
     data = {}
     try:
         async with aiohttp.ClientSession() as session:
@@ -18,8 +19,9 @@ async def request(Url: str) -> dict[str, bool|dict[str, any]]:
     finally:
         return data
 
-# 获取用户信息
-async def getUserInfo(userName: str = None, teaID: int = None) -> dict[str, bool|dict[str, any]]:
+
+async def getUserInfo(userName: str = None, teaID: int = None) -> dict[str, bool | dict[str, any]]:
+    # 获取用户信息
     if userName is not None and teaID is None:
         userDataUrl = f'https://teatube.cn:8888/getUsernameInfo?username={userName}'
         userInfo = await request(Url=userDataUrl)
@@ -30,8 +32,9 @@ async def getUserInfo(userName: str = None, teaID: int = None) -> dict[str, bool
         raise ValueError('[TETRIS STATS] TOSDataProcessing.getUserInfo: 参数错误')
     return userInfo
 
-# 获取用户数据
-async def getUserData(userName: str = None, teaID: int = None, otherParameter: str = '') -> dict[str, bool|dict[str, any]]:
+
+async def getUserData(userName: str = None, teaID: int = None, otherParameter: str = '') -> dict[str, bool | dict[str, any]]:
+    # 获取用户数据
     if userName is not None and teaID is None:
         userDataUrl = f'https://teatube.cn:8888/getProfile?id={userName}{otherParameter}'
         userData = await request(Url=userDataUrl)
@@ -42,20 +45,23 @@ async def getUserData(userName: str = None, teaID: int = None, otherParameter: s
         raise ValueError('[TETRIS STATS] TOSDataProcessing.getUserData: 参数错误')
     return userData
 
-# 获取Rank数据
-async def getRankStats(userInfo: dict) -> dict[str, bool|float]:
+
+async def getRankStats(userInfo: dict) -> dict[str, bool | float]:
+    # 获取Rank数据
     rankStats = {}
     if int(userInfo['Data']['data']['rankedGames']) == 0:
         rankStats['Played'] = False
     else:
         rankStats['Played'] = True
-        rankStats['Rating'] = round(float(userInfo['Data']['data']['ratingNow']), 2)
+        rankStats['Rating'] = round(
+            float(userInfo['Data']['data']['ratingNow']), 2)
         rankStats['RD'] = round(float(userInfo['Data']['data']['rdNow']), 2)
         rankStats['Vol'] = round(float(userInfo['Data']['data']['volNow']), 3)
     return rankStats
 
-# 获取游戏数据
-async def getGameData(userData: dict) -> dict[str, bool|int|float]:
+
+async def getGameData(userData: dict) -> dict[str, bool | int | float]:
+    # 获取游戏数据
     gameData = {}
     if userData['Data']['data'] == []:
         gameData['Played'] = False
@@ -92,13 +98,15 @@ async def getGameData(userData: dict) -> dict[str, bool|int|float]:
         # TODO: 如果有效局数不满50, 没有无dig信息的局, 且userData['Data']['data']内有50个局, 则继续往前获取信息
     return gameData
 
-# 获取PB数据
-async def getPBData(userInfo: dict) -> dict[str, bool|float|str]:
+
+async def getPBData(userInfo: dict) -> dict[str, bool | float | str]:
+    # 获取PB数据
     PBData = {}
     if int(userInfo['Data']['data']['PBSprint']) == 2147483647:
         PBData['Sprint'] = False
     else:
-        PBData['Sprint'] = round(float(userInfo['Data']['data']['PBSprint']) / 1000, 2)
+        PBData['Sprint'] = round(
+            float(userInfo['Data']['data']['PBSprint']) / 1000, 2)
     if int(userInfo['Data']['data']['PBMarathon']) == 0:
         PBData['Marathon'] = False
     else:
@@ -109,8 +117,9 @@ async def getPBData(userInfo: dict) -> dict[str, bool|float|str]:
         PBData['Challenge'] = userInfo['Data']['data']['PBChallenge']
     return PBData
 
-# 生成消息
+
 async def generateMessage(userName: str = None, teaID: int = None) -> str:
+    # 生成消息
     userInfo, userData = await gather(getUserInfo(userName=userName, teaID=teaID), getUserData(userName=userName, teaID=teaID))
     if userInfo['Status'] is False:
         return f'用户信息请求失败'
@@ -136,7 +145,7 @@ async def generateMessage(userName: str = None, teaID: int = None) -> str:
             message += f'\nADPM：{gameData["ADPM"]} ( x{gameData["ADPL"]} ) ( {gameData["VS"]}vs )'
     if PBData['Sprint'] is not False:
         message += f'\n40L: {PBData["Sprint"]}s'
-    if PBData['Marathon']is not False:
+    if PBData['Marathon'] is not False:
         message += f'\nMarathon: {PBData["Marathon"]}'
     if PBData['Challenge'] is not False:
         message += f'\nChallenge: {PBData["Challenge"]}'

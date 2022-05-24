@@ -3,8 +3,9 @@ from nonebot.log import logger
 from asyncio import gather
 import aiohttp
 
-# 封装请求函数
-async def request(Url: str) -> dict[str, bool|dict[str, any]]:
+
+async def request(Url: str) -> dict[str, bool | dict[str, any]]:
+    # 封装请求函数
     data = {}
     try:
         async with aiohttp.ClientSession() as session:
@@ -18,8 +19,9 @@ async def request(Url: str) -> dict[str, bool|dict[str, any]]:
     finally:
         return data
 
-# 获取用户数据
+
 async def getUserData(userName: str = None, userID: str = None) -> dict[str, dict[str, any]]:
+    # 获取用户数据
     if userName is not None and userID is None:
         userDataUrl = f'https://ch.tetr.io/api/users/{userName}'
         userData = await request(Url=userDataUrl)
@@ -30,28 +32,31 @@ async def getUserData(userName: str = None, userID: str = None) -> dict[str, dic
         raise ValueError('[TETRIS STATS] IODataProcessing.getUserData: 参数错误')
     return userData
 
-# 获取Solo数据
+
 async def getSoloData(userName: str = None, userID: str = None) -> dict[str, dict[str, any]]:
+    # 获取Solo数据
     if userName is not None and userID is None:
         userSoloUrl = f'https://ch.tetr.io/api/users/{userName}/records'
-        soloData = await request(Url = userSoloUrl)
+        soloData = await request(Url=userSoloUrl)
     elif userName is None and userID is not None:
         userSoloUrl = f'https://ch.tetr.io/api/users/{userID}/records'
-        soloData = await request(Url = userSoloUrl)
+        soloData = await request(Url=userSoloUrl)
     else:
         raise ValueError('[TETRIS STATS] IODataProcessing.getSoloData: 参数错误')
     return soloData
 
-# 获取用户ID
+
 async def getUserID(userData: dict = None, userName: str = None) -> str:
+    # 获取用户ID
     if userName is not None and userData is None:
         userData = await getUserData(userName=userName)
     elif userData is None and userName is None:
         raise ValueError('[TETRIS STATS] IODataProcessing.getUserID: 参数错误')
     return userData['Data']['data']['user']['_id']
 
-# 获取排位统计数据
-async def getLeagueStats(userData: dict) -> dict[str, bool|int|str|float]:
+
+async def getLeagueStats(userData: dict) -> dict[str, bool | int | str | float]:
+    # 获取排位统计数据
     league = userData['Data']['data']['user']['league']
     leagueStats = {}
     if league['gamesplayed'] == 0:
@@ -71,36 +76,48 @@ async def getLeagueStats(userData: dict) -> dict[str, bool|int|str|float]:
             leagueStats['Ranked'] = False
         leagueStats['Standing'] = league['standing']
         leagueStats['LPM'] = round((league['pps'] * 24), 2)
-        leagueStats['APL'] = round((leagueStats['APM'] / leagueStats['LPM']), 2)
+        leagueStats['APL'] = round(
+            (leagueStats['APM'] / leagueStats['LPM']), 2)
         leagueStats['ADPM'] = round((leagueStats['VS'] * 0.6), 2)
-        leagueStats['ADPL'] = round((leagueStats['ADPM'] / leagueStats['LPM']), 2)
+        leagueStats['ADPL'] = round(
+            (leagueStats['ADPM'] / leagueStats['LPM']), 2)
     return leagueStats
 
-# 获取40L统计数据
-async def getSprintStats(soloData: dict) -> dict[str, bool|int|float]:
+
+async def getSprintStats(soloData: dict) -> dict[str, bool | int | float]:
+    # 获取40L统计数据
     sprintStats = {}
     if soloData['Data']['data']['records']['40l']['record'] is None:
         sprintStats['Played'] = False
     else:
         sprintStats['Played'] = True
-        sprintStats['Rank'] = False if soloData['Data']['data']['records']['40l']['rank'] is None else soloData['Data']['data']['records']['40l']['rank']
-        sprintStats['Time'] = round(soloData['Data']['data']['records']['40l']['record']['endcontext']['finalTime'] / 1000, 2)
+        if soloData['Data']['data']['records']['40l']['rank'] is None:
+            sprintStats['Rank'] = False
+        else:
+            sprintStats['Rank'] = soloData['Data']['data']['records']['40l']['rank']
+        sprintStats['Time'] = round(
+            soloData['Data']['data']['records']['40l']['record']['endcontext']['finalTime'] / 1000, 2)
     return sprintStats
 
-# 获取Blitz统计数据
-async def getBlitzStats(soloData: dict) -> dict[str, bool|int]:
+
+async def getBlitzStats(soloData: dict) -> dict[str, bool | int]:
+    # 获取Blitz统计数据
     blitzStats = {}
     if soloData['Data']['data']['records']['blitz']['record'] is None:
         blitzStats['Played'] = False
     else:
         blitzStats['Played'] = True
-        blitzStats['Rank'] = False if soloData['Data']['data']['records']['blitz']['rank'] is None else soloData['Data']['data']['records']['blitz']['rank']
+        if soloData['Data']['data']['records']['blitz']['rank'] is None:
+            blitzStats['Rank'] = False
+        else:
+            blitzStats['Rank'] = soloData['Data']['data']['records']['blitz']['rank']
         blitzStats['Score'] = soloData['Data']['data']['records']['blitz']['record']['endcontext']['score']
     return blitzStats
 
-# 生成消息
+
 async def generateMessage(userName: str = None, userID: str = None) -> str:
-    userData, soloData = await gather(getUserData(userName = userName, userID = userID), getSoloData(userName = userName, userID = userID))
+    # 生成消息
+    userData, soloData = await gather(getUserData(userName=userName, userID=userID), getSoloData(userName=userName, userID=userID))
     if userData['Status'] is False:
         return '用户信息请求失败'
     if userData['Success'] is False:

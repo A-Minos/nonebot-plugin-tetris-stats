@@ -5,8 +5,9 @@ import os
 
 _DB_FILE = 'data/nonebot-plugin-tetris-stats/data.db'
 
-# 初始化数据库
+
 async def initDB():
+    # 初始化数据库
     if not os.path.exists(os.path.dirname(_DB_FILE)):
         os.makedirs(os.path.dirname(_DB_FILE))
     db = sqlite3.connect(_DB_FILE)
@@ -21,8 +22,9 @@ async def initDB():
     db.close()
     logger.info('数据库初始化完成')
 
-# 查询绑定信息
+
 async def queryBindInfo(QQNumber: int, gameType: str) -> dict:
+    # 查询绑定信息
     db = sqlite3.connect(_DB_FILE)
     cursor = db.cursor()
     cursor.execute(f'SELECT USER FROM {gameType}BIND WHERE QQ = {QQNumber}')
@@ -34,8 +36,9 @@ async def queryBindInfo(QQNumber: int, gameType: str) -> dict:
     else:
         return {'Hit': True, 'User': user[0]}
 
-# 写入绑定信息
+
 async def writeBindInfo(QQNumber: int, user: str, gameType: str) -> str:
+    # 写入绑定信息
     info = await queryBindInfo(QQNumber, gameType)
     db = sqlite3.connect(_DB_FILE)
     cursor = db.cursor()

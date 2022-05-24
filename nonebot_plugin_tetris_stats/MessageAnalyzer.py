@@ -1,6 +1,6 @@
 from re import match
 
-# userBind
+
 async def handleBindMessage(message: str, gameType: str) -> dict[str, bool | str]:
     _CMD_ALIASES = {'IO': ['io绑定', 'iobind'],
                     'TOP': ['top绑定', 'topbind']}
@@ -15,7 +15,7 @@ async def handleBindMessage(message: str, gameType: str) -> dict[str, bool | str
     else:
         return await checkName(message, gameType)
 
-# statsQuery
+
 async def handleStatsQueryMessage(message: str, gameType: str) -> dict[str, bool | str]:
     _CMD_ALIASES = {'IO': ['io查', 'iostats'],
                     'TOS': ['tos查', 'tostats', '茶服查', '茶服stats'],
@@ -44,6 +44,7 @@ async def handleStatsQueryMessage(message: str, gameType: str) -> dict[str, bool
         else:
             return await checkName(message, gameType)
 
+
 async def checkName(name: str, gameType: str) -> dict[str, bool | str]:
     if gameType == 'IO':
         if match(r'^[a-f0-9]{24}$', name):
@@ -60,7 +61,7 @@ async def checkName(name: str, gameType: str) -> dict[str, bool | str]:
     elif gameType == 'TOS':
         if (match(r'^(?!\.)(?!com[0-9]$)(?!con$)(?!lpt[0-9]$)(?!nul$)(?!prn$)[^\-][^\+][^\|\*\?\\\s\!:<>/$"]*[^\.\|\*\?\\\s\!:<>/$"]+$', name)
             and name.isdigit() is False
-            and 2 <= len(name) <= 18):
+                and 2 <= len(name) <= 18):
             # 虽然我也不想这么长 但是似乎确实得这么长
             return {'Success': True, 'Type': 'Name', 'Message': None, 'User': name}
         elif name.isdigit() is True:
