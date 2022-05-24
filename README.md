@@ -33,6 +33,7 @@ pip install nonebot-plugin-tetris-stats
 
 * [NoneBot2](https://v2.nonebot.dev/)
 * [OneBot](https://onebot.dev/)
+* [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/)
 
 开源
 ----
