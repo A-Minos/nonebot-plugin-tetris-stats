@@ -30,7 +30,7 @@ topStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
 
 @ioBind.handle()
 async def bindIOUser(event: MessageEvent, matcher: Matcher):
-    decodedMessage = await handleBindMessage(message=str(event.get_message()), gameType='IO')
+    decodedMessage = await handleBindMessage(message=event.raw_message, gameType='IO')
     if decodedMessage['Success'] is True:
         if decodedMessage['Type'] == 'ID':
             userIDInfo = await IOgetUserIDInfo(userID=decodedMessage['User'])
@@ -48,9 +48,11 @@ async def bindIOUser(event: MessageEvent, matcher: Matcher):
 
 @ioStats.handle()
 async def handleIOStatsQuery(event: MessageEvent, matcher: Matcher):
-    decodedMessage = await handleStatsQueryMessage(message=str(event.get_message()), gameType='IO')
+    decodedMessage = await handleStatsQueryMessage(message=event.raw_message, gameType='IO')
     if decodedMessage['Success'] is True:
         if decodedMessage['Type'] == 'AT':
+            if event.is_tome() is True:
+                await matcher.finish(message='不能查询bot的信息')
             bindInfo = await queryBindInfo(QQNumber=decodedMessage['QQNumber'], gameType='IO')
             if bindInfo['Hit'] is True:
                 message = (f'* 由于无法验证绑定信息，不能保证查询到的用户为本人\n{await IOgenerateMessage(userID=bindInfo["User"])}')
@@ -73,9 +75,11 @@ async def handleIOStatsQuery(event: MessageEvent, matcher: Matcher):
 
 @tosStats.handle()
 async def handleTOSStatsQuery(event: MessageEvent, matcher: Matcher):
-    decodedMessage = await handleStatsQueryMessage(message=str(event.get_message()), gameType='TOS')
+    decodedMessage = await handleStatsQueryMessage(message=event.raw_message, gameType='TOS')
     if decodedMessage['Success'] is True:
         if decodedMessage['Type'] == 'AT' or decodedMessage['Type'] == 'QQ':
+            if decodedMessage['QQNumber'] == event.self_id:
+                await matcher.finish(message='不能查询bot的信息')
             message = await TOSgenerateMessage(teaID=decodedMessage['QQNumber'])
         elif decodedMessage['Type'] == 'ME':
             message = await TOSgenerateMessage(teaID=event.sender.user_id)
