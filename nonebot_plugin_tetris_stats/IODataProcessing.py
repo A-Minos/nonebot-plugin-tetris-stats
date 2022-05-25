@@ -46,13 +46,27 @@ async def getSoloData(userName: str = None, userID: str = None) -> dict[str, dic
     return soloData
 
 
-async def getUserID(userData: dict = None, userName: str = None) -> str:
+async def getUserIDInfo(userData: dict = None, userName: str = None, userID: str = None) -> dict[str, bool | str]:
     # 获取用户ID
-    if userName is not None and userData is None:
+    if userData is not None and userName is None and userID is None:
+        userID = userData['Data']['data']['user']['id']
+    elif userData is None and userName is not None and userID is None:
         userData = await getUserData(userName=userName)
-    elif userData is None and userName is None:
-        raise ValueError('[TETRIS STATS] IODataProcessing.getUserID: 参数错误')
-    return userData['Data']['data']['user']['_id']
+        if userData['Status'] is False:
+            return {'Success': False, 'Message': '用户信息请求失败'}
+        if userData['Success'] is False:
+            return {'Success': False, 'Message': f'用户信息请求错误:\n{userData["Data"]["error"]}'}
+        userID = userData['Data']['data']['user']['id']
+    elif userData is None and userName is None and userID is not None:
+        userData = await getUserData(userID=userID)
+        if userData['Status'] is False:
+            return {'Success': False, 'Message': '用户信息请求失败'}
+        if userData['Success'] is False:
+            return {'Success': False, 'Message': f'用户信息请求错误:\n{userData["Data"]["error"]}'}
+        userID = userData['Data']['data']['user']['id']
+    else:
+        raise ValueError('[TETRIS STATS] IODataProcessing.getUserIDInfo: 参数错误')
+    return {'Success': True, 'userID': userID}
 
 
 async def getLeagueStats(userData: dict) -> dict[str, bool | int | str | float]:

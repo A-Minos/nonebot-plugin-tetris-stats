@@ -8,7 +8,7 @@ from .MessageAnalyzer import *
 from .SQL import *
 
 from .IODataProcessing import generateMessage as IOgenerateMessage
-from .IODataProcessing import getUserID as IOgetUserID
+from .IODataProcessing import getUserIDInfo as IOgetUserIDInfo
 from .TOSDataProcessing import generateMessage as TOSgenerateMessage
 
 driver = get_driver()
@@ -33,13 +33,17 @@ async def bindIOUser(event: MessageEvent, matcher: Matcher):
     decodedMessage = await handleBindMessage(message=str(event.get_message()), gameType='IO')
     if decodedMessage['Success'] is True:
         if decodedMessage['Type'] == 'ID':
-            user = decodedMessage['User']
+            userIDInfo = await IOgetUserIDInfo(userID=decodedMessage['User'])
+            if userIDInfo['Success'] is False:
+                await matcher.finish(message=userIDInfo['Message'])
         elif decodedMessage['Type'] == 'Name':
-            user = await IOgetUserID(userName=decodedMessage['User'])
-        message = await writeBindInfo(QQNumber=event.sender.user_id, user=user, gameType='IO')
+            userIDInfo = await IOgetUserIDInfo(userName=decodedMessage['User'])
+            if userIDInfo['Success'] is False:
+                await matcher.finish(message=userIDInfo['Message'])
+        message = await writeBindInfo(QQNumber=event.sender.user_id, user=userIDInfo['userID'], gameType='IO')
     elif decodedMessage['Success'] is False:
         message = decodedMessage['Message']
-    await matcher.send(message=message)
+    await matcher.finish(message=message)
 
 
 @ioStats.handle()
@@ -84,9 +88,9 @@ async def handleTOSStatsQuery(event: MessageEvent, matcher: Matcher):
 
 @topBind.handle()
 async def bindTOPUser(event: MessageEvent, matcher: Matcher):
-    await matcher.send(message='TODO')
+    await matcher.finish(message='TODO')
 
 
 @topStats.handle()
 async def handleTOPStatsQuery(event: MessageEvent, matcher: Matcher):
-    await matcher.send(message='TODO')
+    await matcher.finish(message='TODO')
