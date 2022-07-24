@@ -8,8 +8,7 @@ from re import I
 
 from ..Utils.Request import request
 
-from ..Utils.MessageAnalyzer import *
-from ..Utils.SQL import *
+from ..Utils.MessageAnalyzer import handleStatsQueryMessage
 
 tosStats = on_regex(pattern=r'^tos查|^tostats|^茶服查|^茶服stats',
                     flags=I, permission=GROUP)
