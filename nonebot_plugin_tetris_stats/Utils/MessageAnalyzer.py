@@ -36,9 +36,9 @@ async def handleStatsQueryMessage(message: str, gameType: str) -> tuple[str | No
     if message == '' or message.isspace():
         return (None, ('用户名为空', None))
     else:
-        if message.startswith('[cq:at,qq='):
+        if message.startswith('[CQ:at,qq='):
             try:
-                user = int(str(message).split('[cq:at,qq=')[1].split(']')[0])
+                user = int(str(message).split('[CQ:at,qq=')[1].split(']')[0])
             except ValueError:
                 return (None, ('QQ号码不合法', None))
             else:
