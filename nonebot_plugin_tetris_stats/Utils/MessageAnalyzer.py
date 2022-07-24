@@ -57,7 +57,7 @@ async def checkName(name: str, gameType: str) -> tuple[str | None, tuple]:
         if match(r'^[a-f0-9]{24}$', name):
             return ('ID', (None, name))
         elif match(r'^[a-zA-Z0-9_-]{3,16}$', name):
-            return ('Name', (None, name))
+            return ('Name', (None, name.lower()))
         else:
             return (None, ('用户名不合法', None))
     elif gameType == 'TOP':
