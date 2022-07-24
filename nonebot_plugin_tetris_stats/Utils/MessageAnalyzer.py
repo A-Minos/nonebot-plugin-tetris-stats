@@ -23,7 +23,7 @@ async def handleBindMessage(message: str, gameType: str) -> tuple[str | None, tu
 async def handleStatsQueryMessage(message: str, gameType: str) -> tuple[str | None, tuple]:
     '''返回值为tuple[gameType, tuple[message, user]]'''
     _CMD_ALIASES = {'IO': ['io查', 'iostats'],
-                    'TOS': ['tos查', 'tostats', '茶服查', '茶服stats'],
+                    'TOS': ['tos查', 'tostats', 'tosstats', '茶服查', '茶服stats'],
                     'TOP': ['top查', 'topstats']}
     _ME = ['我', '自己', '我等', '卑人', '愚', '老身', '爷', '老娘', '本姑娘', '本大爷',
            '鄙人', '寡人', '小生', '贫僧', '本人', '孤', '吾', '俺', '咱', '私', 'me']

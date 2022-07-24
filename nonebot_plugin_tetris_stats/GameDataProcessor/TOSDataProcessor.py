@@ -10,7 +10,7 @@ from ..Utils.Request import request
 
 from ..Utils.MessageAnalyzer import handleStatsQueryMessage
 
-tosStats = on_regex(pattern=r'^tos查|^tostats|^茶服查|^茶服stats',
+tosStats = on_regex(pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats',
                     flags=I, permission=GROUP)
 
 
