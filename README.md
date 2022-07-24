@@ -12,10 +12,17 @@ TETRIS Stats
 安装
 ----
 
-* 使用 pip
+* 使用 nb-cli（推荐）
+
+```
+nb plugin install nonebot-plugin-tetris-stats
+```
+
+* 使用 pip（不推荐）
 
 ```
 pip install nonebot-plugin-tetris-stats
+# 修改bot.py
 ```
 
 使用
