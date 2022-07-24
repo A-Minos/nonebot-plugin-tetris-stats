@@ -7,7 +7,7 @@ async def handleBindMessage(message: str, gameType: str) -> tuple[str | None, tu
                     'TOP': ['top绑定', 'topbind']}
     # 剔除命令前缀
     for i in _CMD_ALIASES[gameType]:
-        if message.startswith(i):
+        if match(rf'(?i){i}', message):
             message = sub(rf'(?i){i}', '', message)
             message = message.strip()
             break
@@ -29,7 +29,7 @@ async def handleStatsQueryMessage(message: str, gameType: str) -> tuple[str | No
            '鄙人', '寡人', '小生', '贫僧', '本人', '孤', '吾', '俺', '咱', '私', 'me']
     # 剔除命令前缀
     for i in _CMD_ALIASES[gameType]:
-        if message.startswith(i):
+        if match(rf'(?i){i}', message):
             message = sub(rf'(?i){i}', '', message)
             message = message.strip()
             break
