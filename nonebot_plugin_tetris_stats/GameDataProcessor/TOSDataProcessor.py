@@ -82,7 +82,7 @@ async def getGameData(userData: dict) -> dict[str, bool | int | float]:
                 continue
             # 茶：不计算没挖掘的局，即使apm和lpm也如此
             if i['dig'] is None:
-                break
+                continue
             # 加权计算
             time = i['time'] / 1000
             lpm = 24 * (i['pieces'] / time)
@@ -95,14 +95,17 @@ async def getGameData(userData: dict) -> dict[str, bool | int | float]:
             num += 1
             if num == 50:
                 break
-        gameData['NUM'] = num
-        gameData['LPM'] = round((weightedTotalLpm / weightedTotalTime), 2)
-        gameData['APM'] = round((weightedTotalApm / weightedTotalTime), 2)
-        gameData['ADPM'] = round((weightedTotalAdpm / weightedTotalTime), 2)
-        gameData['PPS'] = round((gameData['LPM'] / 24), 2)
-        gameData['APL'] = round((gameData['APM'] / gameData['LPM']), 2)
-        gameData['ADPL'] = round((gameData['ADPM'] / gameData['LPM']), 2)
-        gameData['VS'] = round((gameData['ADPM'] / 60 * 100), 2)
+        if num > 0:
+            gameData['NUM'] = num
+            gameData['LPM'] = round((weightedTotalLpm / weightedTotalTime), 2)
+            gameData['APM'] = round((weightedTotalApm / weightedTotalTime), 2)
+            gameData['ADPM'] = round((weightedTotalAdpm / weightedTotalTime), 2)
+            gameData['PPS'] = round((gameData['LPM'] / 24), 2)
+            gameData['APL'] = round((gameData['APM'] / gameData['LPM']), 2)
+            gameData['ADPL'] = round((gameData['ADPM'] / gameData['LPM']), 2)
+            gameData['VS'] = round((gameData['ADPM'] / 60 * 100), 2)
+        else:
+            gameData['Played'] = False
         # TODO: 如果有效局数不满50, 没有无dig信息的局, 且userData['data']内有50个局, 则继续往前获取信息
     return gameData
 
