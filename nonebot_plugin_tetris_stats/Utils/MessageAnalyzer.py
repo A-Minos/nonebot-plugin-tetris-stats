@@ -26,7 +26,10 @@ async def handleStatsQueryMessage(message: str, gameType: str) -> tuple[str | No
                     'TOS': ['tos查', 'tostats', 'tosstats', '茶服查', '茶服stats'],
                     'TOP': ['top查', 'topstats']}
     _ME = ['我', '自己', '我等', '卑人', '愚', '老身', '爷', '老娘', '本姑娘', '本大爷',
-           '鄙人', '寡人', '小生', '贫僧', '本人', '孤', '吾', '俺', '咱', '私', 'me']
+           '鄙人', '寡人', '小生', '贫僧', '本人', '孤', '吾', '俺', '咱', '私', 'me',
+           '洒家', '在下', '偶', '人家', '本小姐', '老夫', '老子', '朕', '本尊', '僕',
+           '拙者', '妾', '儂', '自分', '吾輩', '我輩', '某', '己等', '俺等', '此方',
+           '哥', '姐', '劳资']
     # 剔除命令前缀
     for i in _CMD_ALIASES[gameType]:
         if match(rf'(?i){i}', message):
