@@ -18,7 +18,7 @@ lxml = "^4.9.1"
 pandas = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.950"
+mypy = "^0.971"
 autopep8 = "^1.6.0"
 
 [build-system]
