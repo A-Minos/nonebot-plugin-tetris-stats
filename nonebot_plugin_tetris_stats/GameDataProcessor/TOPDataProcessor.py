@@ -75,7 +75,8 @@ async def getUserData(userName: str) -> tuple[bool, str]:
 
 
 async def checkUser(userData: str) -> bool:
-    return True if userData.find('user not found!') else False
+    '''如果用户存在返回True，如果用户不存在返回False'''
+    return False if userData.find('user not found!') != -1 else True
 
 
 async def getUserName(userData: str) -> str:
