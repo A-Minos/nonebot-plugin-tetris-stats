@@ -7,7 +7,6 @@ from asyncio import gather
 from re import I
 
 from ..Utils.Request import request
-
 from ..Utils.MessageAnalyzer import handleStatsQueryMessage
 
 tosStats = on_regex(pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats',
@@ -99,7 +98,8 @@ async def getGameData(userData: dict) -> dict[str, bool | int | float]:
             gameData['NUM'] = num
             gameData['LPM'] = round((weightedTotalLpm / weightedTotalTime), 2)
             gameData['APM'] = round((weightedTotalApm / weightedTotalTime), 2)
-            gameData['ADPM'] = round((weightedTotalAdpm / weightedTotalTime), 2)
+            gameData['ADPM'] = round(
+                (weightedTotalAdpm / weightedTotalTime), 2)
             gameData['PPS'] = round((gameData['LPM'] / 24), 2)
             gameData['APL'] = round((gameData['APM'] / gameData['LPM']), 2)
             gameData['ADPL'] = round((gameData['ADPM'] / gameData['LPM']), 2)
