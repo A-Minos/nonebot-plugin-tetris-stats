@@ -98,8 +98,6 @@ async def getGameStats(userData: str) -> dict[str, Any]:
             break
     # 如果没有24H统计数据
     if gameStats.get('24HLPM') in [None, ''] or gameStats.get('24HAPM') in [None, '']:
-        gameStats.pop('24HLPM')
-        gameStats.pop('24HAPM')
         gameStats['24HStats'] = False
     else:
         gameStats['24HPPS'] = round(float(gameStats['24HLPM']) / 24, 2)
