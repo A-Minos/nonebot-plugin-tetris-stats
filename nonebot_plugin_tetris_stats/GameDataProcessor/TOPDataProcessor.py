@@ -27,7 +27,7 @@ async def _(event: MessageEvent, matcher: Matcher):
             await matcher.finish('用户信息请求失败')
         else:
             if await checkUser(userData[1]) is False:
-                matcher.finish('用户不存在')
+                await matcher.finish('用户不存在')
             userName = await getUserName(userData[1])
     if event.sender.user_id is None:  # 理论上是不会有None出现的，ide快乐行属于是（
         logger.error('获取QQ号失败')
