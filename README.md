@@ -5,24 +5,30 @@ TETRIS Stats
 目前支持
 * [TETR.IO](https://tetr.io/)
 * [茶服](https://teatube.cn/tos/)
-
-计划支持
 * [TOP](http://tetrisonline.pl/)
 
 安装
 ----
 
-* 使用 nb-cli（推荐）
-
+* 使用 nb-cli
 ```
 nb plugin install nonebot-plugin-tetris-stats
 ```
 
-* 使用 pip（不推荐）
-
+* 使用 pip
 ```
 pip install nonebot-plugin-tetris-stats
-# 修改bot.py
+```
+* 对于 Windows
+```
+# CMD or PowerShell
+playwright install firefox
+```
+* 对于 Linux
+```
+# 似乎 playwright官方 只支持 Ubuntu, 如果你是其他系统请自行尝试解决依赖问题
+playwright install firefox
+playwright install-deps firefox
 ```
 
 使用
