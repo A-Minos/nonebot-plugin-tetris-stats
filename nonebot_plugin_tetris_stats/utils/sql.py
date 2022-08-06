@@ -20,7 +20,7 @@ async def _():
 @driver.on_shutdown
 async def _():
     if isinstance(_DB, Connection):
-        await _DB.close()
+        _DB.close()
 
 
 async def init_db() -> Connection:
