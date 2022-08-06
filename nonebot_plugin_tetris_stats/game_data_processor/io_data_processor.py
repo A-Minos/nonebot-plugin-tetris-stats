@@ -125,6 +125,7 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
             except JSONDecodeError:
                 await page.wait_for_timeout(1000)
             else:
+                await page.close()
                 return (True, data['success'], data)
             if attempts >= 60:
                 break
