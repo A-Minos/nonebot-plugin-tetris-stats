@@ -1,1 +1,1 @@
-from . import message_analyzer, sql
+from . import message_analyzer, sql, config
