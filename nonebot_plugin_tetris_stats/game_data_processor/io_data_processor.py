@@ -8,20 +8,15 @@ from nonebot import get_driver, on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
 from nonebot.log import logger
 from nonebot.matcher import Matcher
+from playwright.async_api import Browser, Response, async_playwright
 from ujson import JSONDecodeError, dumps, loads
-from playwright.async_api import (
-    Browser,
-    Response,
-    async_playwright
-)
 
 from ..utils.config import Config
-from ..utils.sql import query_bind_info, write_bind_info
+from ..utils.database import DataBase
 from ..utils.message_analyzer import (
     handle_bind_message,
     handle_stats_query_message
 )
-
 
 IOBind = on_regex(pattern=r'^io绑定|^iobind', flags=I, permission=GROUP)
 IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
@@ -54,7 +49,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         logger.error('获取QQ号失败')
         await matcher.finish('获取QQ号失败')
     await matcher.finish(
-        await write_bind_info(
+        await DataBase.write_bind_info(
             qq_number=event.sender.user_id,
             user=user_id,
             game_type='IO'
@@ -70,7 +65,7 @@ async def _(event: MessageEvent, matcher: Matcher):
     elif decoded_message[0] == 'AT':
         if event.is_tome() is True:
             await matcher.finish('不能查询bot的信息')
-        bind_info = await query_bind_info(qq_number=decoded_message[1][1], game_type='IO')
+        bind_info = await DataBase.query_bind_info(qq_number=decoded_message[1][1], game_type='IO')
         if bind_info is None:
             message = '未查询到绑定信息'
         else:
@@ -79,7 +74,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         if event.sender.user_id is None:
             logger.error('获取QQ号失败')
             await matcher.finish('获取QQ号失败, 请联系bot主人')
-        bind_info = await query_bind_info(qq_number=event.sender.user_id, game_type='IO')
+        bind_info = await DataBase.query_bind_info(qq_number=event.sender.user_id, game_type='IO')
         if bind_info is None:
             message = '未查询到绑定信息'
         else:
@@ -239,6 +234,7 @@ async def generate_message(user_name: str = None, user_id: str = None) -> str:
 
 
 class Request:
+    '''网络请求相关类'''
     _browser: Browser | None = None
     _headers: dict | None = None
     _cookies: dict | None = None

@@ -1,16 +1,19 @@
-from typing import Any
 from re import I
-from lxml import etree
-from pandas import read_html
-import aiohttp
+from typing import Any
 
+import aiohttp
+from lxml import etree
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
-from nonebot.matcher import Matcher
 from nonebot.log import logger
+from nonebot.matcher import Matcher
+from pandas import read_html
 
-from ..utils.message_analyzer import handle_bind_message, handle_stats_query_message
-from ..utils.sql import query_bind_info, write_bind_info
+from ..utils.database import DataBase
+from ..utils.message_analyzer import (
+    handle_bind_message,
+    handle_stats_query_message
+)
 
 TOPBind = on_regex(pattern=r'^top绑定|^topbind', flags=I, permission=GROUP)
 TopStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
@@ -32,7 +35,7 @@ async def _(event: MessageEvent, matcher: Matcher):
     if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
         logger.error('获取QQ号失败')
         await matcher.finish('获取QQ号失败')
-    await matcher.finish(await write_bind_info(qq_number=event.sender.user_id, user=user_name, game_type='TOP'))
+    await matcher.finish(await DataBase.write_bind_info(qq_number=event.sender.user_id, user=user_name, game_type='TOP'))
 
 
 @TopStats.handle()
@@ -43,7 +46,7 @@ async def _(event: MessageEvent, matcher: Matcher):
     elif decoded_message[0] == 'AT':
         if event.is_tome() is True:
             await matcher.finish(message='不能查询bot的信息')
-        bind_info = await query_bind_info(qq_number=decoded_message[1][1], game_type='TOP')
+        bind_info = await DataBase.query_bind_info(qq_number=decoded_message[1][1], game_type='TOP')
         if bind_info is None:
             message = '未查询到绑定信息'
         else:
@@ -52,7 +55,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         if event.sender.user_id is None:
             logger.error('获取QQ号失败')
             await matcher.finish('获取QQ号失败, 请联系bot主人')
-        bind_info = await query_bind_info(qq_number=event.sender.user_id, game_type='TOP')
+        bind_info = await DataBase.query_bind_info(qq_number=event.sender.user_id, game_type='TOP')
         if bind_info is None:
             message = '未查询到绑定信息'
         else:

@@ -1,12 +1,12 @@
-from typing import Any
 from asyncio import gather
 from re import I
-import aiohttp
+from typing import Any
 
+import aiohttp
 from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
-from nonebot.matcher import Matcher
 from nonebot.log import logger
+from nonebot.matcher import Matcher
 
 from ..utils.message_analyzer import handle_stats_query_message
 
