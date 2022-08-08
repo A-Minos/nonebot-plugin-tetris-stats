@@ -298,7 +298,7 @@ class Request:
                 file.write(
                     dumps(
                         {
-                            'headers': cls._browser,
+                            'headers': cls._headers,
                             'cookies': cls._cookies
                         }
                     )
@@ -329,7 +329,7 @@ class Request:
                 file.write(
                     dumps(
                         {
-                            'headers': cls._browser,
+                            'headers': cls._headers,
                             'cookies': cls._cookies
                         }
                     )
