@@ -1,25 +1,34 @@
-from typing import Any
+import os
 from asyncio import gather
 from re import I
-from playwright.async_api import Browser, async_playwright
-from ujson import loads, JSONDecodeError
+from typing import Any
+
 import aiohttp
-
-from nonebot import on_regex, get_driver
+from nonebot import get_driver, on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
-from nonebot.matcher import Matcher
 from nonebot.log import logger
+from nonebot.matcher import Matcher
+from ujson import JSONDecodeError, dumps, loads
+from playwright.async_api import (
+    Browser,
+    Response,
+    async_playwright
+)
 
-from ..utils.message_analyzer import handle_bind_message, handle_stats_query_message
+from ..utils.config import Config
 from ..utils.sql import query_bind_info, write_bind_info
-
-_BROWSER: Browser | None = None
+from ..utils.message_analyzer import (
+    handle_bind_message,
+    handle_stats_query_message
+)
 
 
 IOBind = on_regex(pattern=r'^io绑定|^iobind', flags=I, permission=GROUP)
 IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
 
 driver = get_driver()
+
+config = Config.parse_obj(get_driver().config)
 
 
 @IOBind.handle()
@@ -28,7 +37,7 @@ async def _(event: MessageEvent, matcher: Matcher):
     if decoded_message[0] is None:
         await matcher.finish(decoded_message[1][0])
     if decoded_message[0] == 'ID':
-        user_id_stats = await check_user_id(user_id=decoded_message[1][1])
+        user_id_stats = await check_user_id(decoded_message[1][1])
         if user_id_stats[0] is False:
             await matcher.finish(user_id_stats[1])
         else:
@@ -40,13 +49,17 @@ async def _(event: MessageEvent, matcher: Matcher):
         elif user_data[1] is False:
             await matcher.finish(f'用户信息请求错误:\n{user_data[2]["error"]}')
         else:
-            user_id = await get_user_id(user_data=user_data[2])
+            user_id = await get_user_id(user_data[2])
     if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
         logger.error('获取QQ号失败')
         await matcher.finish('获取QQ号失败')
-    await matcher.finish(await write_bind_info(qq_number=event.sender.user_id,
-                                               user=user_id,
-                                               game_type='IO'))
+    await matcher.finish(
+        await write_bind_info(
+            qq_number=event.sender.user_id,
+            user=user_id,
+            game_type='IO'
+        )
+    )
 
 
 @IOStats.handle()
@@ -56,7 +69,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'AT':
         if event.is_tome() is True:
-            await matcher.finish(message='不能查询bot的信息')
+            await matcher.finish('不能查询bot的信息')
         bind_info = await query_bind_info(qq_number=decoded_message[1][1], game_type='IO')
         if bind_info is None:
             message = '未查询到绑定信息'
@@ -75,67 +88,24 @@ async def _(event: MessageEvent, matcher: Matcher):
         message = await generate_message(user_id=decoded_message[1][1])
     elif decoded_message[0] == 'Name':
         message = await generate_message(user_name=decoded_message[1][1])
-    await matcher.finish(message=message)
+    await matcher.finish(message)
+
+
+@driver.on_startup
+async def _():
+    await Request.init_cache()
+    await Request.read_cache()
 
 
 @driver.on_shutdown
 async def _():
-    if isinstance(_BROWSER, Browser):
-        await _BROWSER.close()
+    await Request.close_browser()
 
 
-async def init_playwright() -> Browser:
-    '''初始化playwright'''
-    global _BROWSER
-    p = await async_playwright().start()
-    _BROWSER = await p.firefox.launch()
-    return _BROWSER
-
-
-async def get_browser() -> Browser:
-    '''获取浏览器对象'''
-    return _BROWSER or await init_playwright()
-
-
-async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
-    '''请求api'''
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                data = await resp.json()
-                return (True, data['success'], data)
-    except aiohttp.client_exceptions.ClientConnectorError as error:
-        logger.error(f'请求错误\n{error}')
-        return (False, False, {})
-    except aiohttp.client_exceptions.ContentTypeError:
-        # 如果有五秒盾就用firefox硬穿
-        browser = await get_browser()
-        page = await browser.new_page()
-        await page.goto(url)
-        attempts = 0
-        while True:
-            text = await page.locator("body").text_content()
-            if text is None:
-                continue
-            attempts += 1
-            if await page.title() == 'Please Wait... | Cloudflare':
-                break
-            try:
-                data = loads(text)
-            except JSONDecodeError:
-                await page.wait_for_timeout(1000)
-            else:
-                await page.close()
-                return (True, data['success'], data)
-            if attempts >= 60:
-                break
-        await page.close()
-        return (True, False, {'error': '绕过五秒盾失败'})
-
-
-async def get_user_data(user_name: str = None,
-                        user_id: str = None
-                        ) -> tuple[bool, bool, dict[str, Any]]:
+async def get_user_data(
+    user_name: str = None,
+    user_id: str = None
+) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户数据'''
     if user_name is not None and user_id is None:
         user_data_url = f'https://ch.tetr.io/api/users/{user_name}'
@@ -143,12 +113,13 @@ async def get_user_data(user_name: str = None,
         user_data_url = f'https://ch.tetr.io/api/users/{user_id}'
     else:
         raise ValueError('预期外行为, 请上报GitHub')
-    return await request(url=user_data_url)
+    return await Request.request(user_data_url)
 
 
-async def get_solo_data(user_name: str = None,
-                        user_id: str = None
-                        ) -> tuple[bool, bool, dict[str, Any]]:
+async def get_solo_data(
+    user_name: str = None,
+    user_id: str = None
+) -> tuple[bool, bool, dict[str, Any]]:
     '''获取Solo数据'''
     if user_name is not None and user_id is None:
         user_solo_url = f'https://ch.tetr.io/api/users/{user_name}/records'
@@ -156,7 +127,7 @@ async def get_solo_data(user_name: str = None,
         user_solo_url = f'https://ch.tetr.io/api/users/{user_id}/records'
     else:
         raise ValueError('预期外行为, 请上报GitHub')
-    return await request(url=user_solo_url)
+    return await Request.request(user_solo_url)
 
 
 async def get_user_id(user_data: dict) -> str:
@@ -168,11 +139,11 @@ async def check_user_id(user_id: str) -> tuple[bool, str]:
     '''检查用户ID是否有效'''
     user_data = await get_user_data(user_id=user_id)
     if user_data[0] is False:
-        return (False, '用户信息请求失败')
+        return False, '用户信息请求失败'
     if user_data[1] is False:
-        return (False, f'用户信息请求错误:\n{user_data[2]["error"]}')
+        return False, f'用户信息请求错误:\n{user_data[2]["error"]}'
     if user_id == user_data[2]['data']['user']['_id']:
-        return (True, '')
+        return True, ''
     raise ValueError('服务器返回的userID和用户提供的不一致, 这种情况理论上不应该发生, 以防万一还是写一下（x')
 
 
@@ -226,8 +197,10 @@ async def get_blitz_stats(solo_data: dict) -> dict[str, Any]:
 
 async def generate_message(user_name: str = None, user_id: str = None) -> str:
     '''生成消息'''
-    user_data, solo_data = await gather(get_user_data(user_name=user_name, user_id=user_id),
-                                        get_solo_data(user_name=user_name, user_id=user_id))
+    user_data, solo_data = await gather(
+        get_user_data(user_name=user_name, user_id=user_id),
+        get_solo_data(user_name=user_name, user_id=user_id)
+    )
     if user_data[0] is False:
         return '用户信息请求失败'
     if user_data[1] is False:
@@ -254,10 +227,138 @@ async def generate_message(user_name: str = None, user_id: str = None) -> str:
         return f'{message}\nSolo统计数据请求失败'
     if solo_data[1] is False:
         return f'{message}\nSolo统计数据请求错误:\n{solo_data[2]["error"]}'
-    sprint_stats, blitz_stats = await gather(get_sprint_stats(solo_data[2]),
-                                             get_blitz_stats(solo_data[2]))
+    sprint_stats, blitz_stats = await gather(
+        get_sprint_stats(solo_data[2]),
+        get_blitz_stats(solo_data[2])
+    )
     message += f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
     message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
     message += f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
     message += f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
     return message
+
+
+class Request:
+    _browser: Browser | None = None
+    _headers: dict | None = None
+    _cookies: dict | None = None
+
+    @classmethod
+    async def _init_playwright(cls) -> Browser:
+        '''初始化playwright'''
+        playwright = await async_playwright().start()
+        cls._browser = await playwright.firefox.launch()
+        return cls._browser
+
+    @classmethod
+    async def _get_browser(cls) -> Browser:
+        '''获取浏览器对象'''
+        return cls._browser or await cls._init_playwright()
+
+    @classmethod
+    async def _anti_cloudflare(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
+        '''用firefox硬穿五秒盾'''
+        browser = await cls._get_browser()
+        context = await browser.new_context()
+        page = await context.new_page()
+        response = await page.goto(url)
+        attempts = 0
+        while attempts < 60:
+            attempts += 1
+            text = await page.locator("body").text_content()
+            if text is None:
+                await page.wait_for_timeout(1000)
+                continue
+            if await page.title() == 'Please Wait... | Cloudflare':
+                # TODO 有无人来做一个过验证码（
+                break
+            try:
+                data = loads(text)
+            except JSONDecodeError:
+                await page.wait_for_timeout(1000)
+            else:
+                assert isinstance(response, Response)
+                cls._headers = await response.request.all_headers()
+                cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                await cls._write_cache()
+                await page.close()
+                await context.close()
+                return True, data['success'], data
+        await page.close()
+        await context.close()
+        return True, False, {'error': '绕过五秒盾失败'}
+
+    @classmethod
+    async def init_cache(cls) -> None:
+        '''初始化缓存文件'''
+        if not os.path.exists(os.path.dirname(config.cache_path)):
+            os.makedirs(os.path.dirname(config.cache_path))
+        if not os.path.exists(config.cache_path):
+            with open(file=config.cache_path, mode='w', encoding='UTF-8') as file:
+                file.write(
+                    dumps(
+                        {
+                            'headers': cls._browser,
+                            'cookies': cls._cookies
+                        }
+                    )
+                )
+
+    @classmethod
+    async def read_cache(cls) -> None:
+        '''读取缓存文件'''
+        try:
+            with open(file=config.cache_path, mode='r', encoding='UTF-8') as file:
+                json = loads(file.read())
+                cls._headers = json['headers']
+                cls._cookies = json['cookies']
+        except FileNotFoundError:
+            await cls.init_cache()
+        except PermissionError:
+            os.remove(config.cache_path)
+            await cls.init_cache()
+        except JSONDecodeError:
+            os.remove(config.cache_path)
+            await cls.init_cache()
+
+    @classmethod
+    async def _write_cache(cls) -> None:
+        '''写入缓存文件'''
+        try:
+            with open(file=config.cache_path, mode='r+', encoding='UTF-8') as file:
+                file.write(
+                    dumps(
+                        {
+                            'headers': cls._browser,
+                            'cookies': cls._cookies
+                        }
+                    )
+                )
+        except FileNotFoundError:
+            await cls.init_cache()
+        except PermissionError:
+            os.remove(config.cache_path)
+            await cls.init_cache()
+        except JSONDecodeError:
+            os.remove(config.cache_path)
+            await cls.init_cache()
+
+    @classmethod
+    async def request(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
+        '''请求api'''
+        try:
+            async with aiohttp.ClientSession(cookies=cls._cookies) as session:
+                async with session.get(url, headers=cls._headers) as resp:
+                    data = await resp.json()
+                    return True, data['success'], data
+        except aiohttp.client_exceptions.ClientConnectorError as error:
+            logger.error(f'请求错误\n{error}')
+            return False, False, {}
+        except aiohttp.client_exceptions.ContentTypeError:
+            return await cls._anti_cloudflare(url)
+
+    @classmethod
+    async def close_browser(cls) -> None:
+        '''关闭浏览器对象'''
+        if isinstance(cls._browser, Browser):
+            await cls._browser.close()
