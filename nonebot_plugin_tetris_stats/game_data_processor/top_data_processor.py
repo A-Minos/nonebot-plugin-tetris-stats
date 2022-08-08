@@ -1,3 +1,4 @@
+from asyncio import gather
 from re import I
 from typing import Any
 
@@ -35,7 +36,13 @@ async def _(event: MessageEvent, matcher: Matcher):
     if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
         logger.error('获取QQ号失败')
         await matcher.finish('获取QQ号失败')
-    await matcher.finish(await DataBase.write_bind_info(qq_number=event.sender.user_id, user=user_name, game_type='TOP'))
+    await matcher.finish(
+        await DataBase.write_bind_info(
+            qq_number=event.sender.user_id,
+            user=user_name,
+            game_type='TOP'
+        )
+    )
 
 
 @TopStats.handle()
@@ -45,7 +52,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'AT':
         if event.is_tome() is True:
-            await matcher.finish(message='不能查询bot的信息')
+            await matcher.finish('不能查询bot的信息')
         bind_info = await DataBase.query_bind_info(qq_number=decoded_message[1][1], game_type='TOP')
         if bind_info is None:
             message = '未查询到绑定信息'
@@ -62,7 +69,7 @@ async def _(event: MessageEvent, matcher: Matcher):
             message = (f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}')
     elif decoded_message[0] == 'Name':
         message = await generate_message(decoded_message[1][1])
-    await matcher.finish(message=message)
+    await matcher.finish(message)
 
 
 async def get_user_data(user_name: str) -> tuple[bool, str]:
@@ -71,10 +78,10 @@ async def get_user_data(user_name: str) -> tuple[bool, str]:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
-                return (True, await resp.text())
+                return True, await resp.text()
     except aiohttp.client_exceptions.ClientConnectorError as error:
         logger.error(error)
-        return (False, '')
+        return False, ''
 
 
 async def check_user(user_data: str) -> bool:
@@ -156,8 +163,10 @@ async def generate_message(user_name: str) -> str:
         return '用户信息请求失败'
     if await check_user(user_data[1]) is False:
         return '用户不存在'
-    user_name = await get_user_name(user_data[1])
-    game_stats = await get_game_stats(user_data[1])
+    user_name, game_stats = await gather(
+        get_user_name(user_data[1]),
+        get_game_stats(user_data[1])
+    )
     message = ''
     if game_stats['24H'] and game_stats['All']:
         message += f'用户 {user_name} 24小时内统计数据为: '

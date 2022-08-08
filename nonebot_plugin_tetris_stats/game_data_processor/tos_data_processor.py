@@ -10,8 +10,11 @@ from nonebot.matcher import Matcher
 
 from ..utils.message_analyzer import handle_stats_query_message
 
-TOSStats = on_regex(pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats',
-                    flags=I, permission=GROUP)
+TOSStats = on_regex(
+    pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats',
+    flags=I,
+    permission=GROUP
+)
 
 
 @TOSStats.handle()
@@ -21,13 +24,13 @@ async def _(event: MessageEvent, matcher: Matcher):
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'AT' or decoded_message[0] == 'QQ':
         if decoded_message[1][1] == event.self_id:
-            await matcher.finish(message='不能查询bot的信息')
+            await matcher.finish('不能查询bot的信息')
         message = await generate_message(tea_id=decoded_message[1][1])
     elif decoded_message[0] == 'ME':
         message = await generate_message(tea_id=event.sender.user_id)
     elif decoded_message[0] == 'Name':
         message = await generate_message(user_name=decoded_message[1][1])
-    await matcher.finish(message=message)
+    await matcher.finish(message)
 
 
 async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
@@ -36,15 +39,16 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.json()
-                return (True, data['success'], data)
+                return True, data['success'], data
     except aiohttp.client_exceptions.ClientConnectorError as error:
         logger.error(f'请求错误\n{error}')
-        return (False, False, {})
+        return False, False, {}
 
 
-async def get_user_info(user_name: str = None,
-                        tea_id: int = None
-                        ) -> tuple[bool, bool, dict[str, Any]]:
+async def get_user_info(
+    user_name: str = None,
+    tea_id: int = None
+) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户信息'''
     if user_name is not None and tea_id is None:
         user_data_url = f'https://teatube.cn:8888/getUsernameInfo?username={user_name}'
@@ -52,13 +56,14 @@ async def get_user_info(user_name: str = None,
         user_data_url = f'https://teatube.cn:8888/getTeaIdInfo?teaId={tea_id}'
     else:
         raise ValueError('预期外行为, 请上报GitHub')
-    return await request(url=user_data_url)
+    return await request(user_data_url)
 
 
-async def get_user_data(user_name: str = None,
-                        tea_id: int = None,
-                        other_parameter: str = ''
-                        ) -> tuple[bool, bool, dict[str, Any]]:
+async def get_user_data(
+    user_name: str = None,
+    tea_id: int = None,
+    other_parameter: str = ''
+) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户数据'''
     if user_name is not None and tea_id is None:
         user_data_url = f'https://teatube.cn:8888/getProfile?id={user_name}{other_parameter}'
@@ -66,7 +71,7 @@ async def get_user_data(user_name: str = None,
         user_data_url = f'https://teatube.cn:8888/getProfile?id={tea_id}{other_parameter}'
     else:
         raise ValueError('预期外行为, 请上报GitHub')
-    return await request(url=user_data_url)
+    return await request(user_data_url)
 
 
 async def get_rank_stats(user_info: dict) -> dict[str, float]:
@@ -133,13 +138,18 @@ async def get_pb_data(user_info: dict) -> dict[str, float | str]:
 
 async def generate_message(user_name: str = None, tea_id: int = None) -> str:
     '''生成消息'''
-    user_info, user_data = await gather(get_user_info(user_name=user_name, tea_id=tea_id),
-                                        get_user_data(user_name=user_name, tea_id=tea_id))
+    user_info, user_data = await gather(
+        get_user_info(user_name=user_name, tea_id=tea_id),
+        get_user_data(user_name=user_name, tea_id=tea_id)
+    )
     if user_info[0] is False:
         return '用户信息请求失败'
     if user_info[1] is False:
         return f'用户信息请求错误:\n{user_info[2]["error"]}'
-    rank_stats, pb_data = await gather(get_rank_stats(user_info[2]), get_pb_data(user_info[2]))
+    rank_stats, pb_data = await gather(
+        get_rank_stats(user_info[2]),
+        get_pb_data(user_info[2])
+    )
     message = f'用户 {user_info[2]["data"]["name"]} ({user_info[2]["data"]["teaId"]}) '
     if not rank_stats:
         message += '暂无段位统计数据'
