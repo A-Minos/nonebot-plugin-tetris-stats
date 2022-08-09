@@ -22,7 +22,7 @@ Brotli = "^1.0.9"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.971"
-autopep8 = "^1.6.0"
+autopep8 = "^1.7.0"
 pylint = "^2.14.5"
 types-ujson = "^5.4.0"
 lxml-stubs = "^0.4.0"
