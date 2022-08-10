@@ -1,0 +1,25 @@
+name: Release CI
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Poetry
+        shell: bash
+        run: |
+          pip install poetry
+      - name: Build
+        shell: bash
+        run: |
+          poetry install
+          poetry env use python
+          poetry publish --build -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }} -n
