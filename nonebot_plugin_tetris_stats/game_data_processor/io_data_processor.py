@@ -95,6 +95,7 @@ async def _():
 @driver.on_shutdown
 async def _():
     await Request.close_browser()
+    await Request.write_cache()
 
 
 async def get_user_data(
@@ -276,7 +277,6 @@ class Request:
                 assert isinstance(response, Response)
                 cls._headers = await response.request.all_headers()
                 cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
-                await cls._write_cache()
                 await page.close()
                 await context.close()
                 return True, data['success'], data
@@ -318,7 +318,7 @@ class Request:
             await cls.init_cache()
 
     @classmethod
-    async def _write_cache(cls) -> None:
+    async def write_cache(cls) -> None:
         '''写入缓存文件'''
         try:
             with open(file=config.cache_path, mode='r+', encoding='UTF-8') as file:
