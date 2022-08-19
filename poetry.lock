@@ -162,10 +162,10 @@ pydantic = ">=1.6.2,<1.7 || >1.7,<1.7.1 || >1.7.1,<1.7.2 || >1.7.2,<1.7.3 || >1.
 starlette = "0.19.1"
 
 [package.extras]
-all = ["requests (>=2.24.0,<3.0.0)", "jinja2 (>=2.11.2,<4.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "itsdangerous (>=1.1.0,<3.0.0)", "pyyaml (>=5.3.1,<7.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)", "orjson (>=3.2.1,<4.0.0)", "email_validator (>=1.1.1,<2.0.0)", "uvicorn[standard] (>=0.12.0,<0.18.0)"]
-dev = ["python-jose[cryptography] (>=3.3.0,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "autoflake (>=1.4.0,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "uvicorn[standard] (>=0.12.0,<0.18.0)", "pre-commit (>=2.17.0,<3.0.0)"]
-doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.3.0)", "typer (>=0.4.1,<0.5.0)", "pyyaml (>=5.3.1,<7.0.0)"]
-test = ["pytest (>=6.2.4,<7.0.0)", "pytest-cov (>=2.12.0,<4.0.0)", "mypy (==0.910)", "flake8 (>=3.8.3,<4.0.0)", "black (==22.3.0)", "isort (>=5.0.6,<6.0.0)", "requests (>=2.24.0,<3.0.0)", "httpx (>=0.14.0,<0.19.0)", "email_validator (>=1.1.1,<2.0.0)", "sqlalchemy (>=1.3.18,<1.5.0)", "peewee (>=3.13.3,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.6.0)", "orjson (>=3.2.1,<4.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "flask (>=1.1.2,<3.0.0)", "anyio[trio] (>=3.2.1,<4.0.0)", "types-ujson (==4.2.1)", "types-orjson (==3.6.2)", "types-dataclasses (==0.6.5)"]
+test = ["types-dataclasses (==0.6.5)", "types-orjson (==3.6.2)", "types-ujson (==4.2.1)", "anyio[trio] (>=3.2.1,<4.0.0)", "flask (>=1.1.2,<3.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)", "orjson (>=3.2.1,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.6.0)", "peewee (>=3.13.3,<4.0.0)", "sqlalchemy (>=1.3.18,<1.5.0)", "email_validator (>=1.1.1,<2.0.0)", "httpx (>=0.14.0,<0.19.0)", "requests (>=2.24.0,<3.0.0)", "isort (>=5.0.6,<6.0.0)", "black (==22.3.0)", "flake8 (>=3.8.3,<4.0.0)", "mypy (==0.910)", "pytest-cov (>=2.12.0,<4.0.0)", "pytest (>=6.2.4,<7.0.0)"]
+doc = ["pyyaml (>=5.3.1,<7.0.0)", "typer (>=0.4.1,<0.5.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.3.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "mkdocs (>=1.1.2,<2.0.0)"]
+dev = ["pre-commit (>=2.17.0,<3.0.0)", "uvicorn[standard] (>=0.12.0,<0.18.0)", "flake8 (>=3.8.3,<4.0.0)", "autoflake (>=1.4.0,<2.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)"]
+all = ["uvicorn[standard] (>=0.12.0,<0.18.0)", "email_validator (>=1.1.1,<2.0.0)", "orjson (>=3.2.1,<4.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)", "pyyaml (>=5.3.1,<7.0.0)", "itsdangerous (>=1.1.0,<3.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "jinja2 (>=2.11.2,<4.0.0)", "requests (>=2.24.0,<3.0.0)"]
 
 [[package]]
 name = "frozenlist"
@@ -222,10 +222,10 @@ optional = false
 python-versions = ">=3.6.1,<4.0"
 
 [package.extras]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
-requirements_deprecated_finder = ["pipreqs", "pip-api"]
-colors = ["colorama (>=0.4.3,<0.5.0)"]
 plugins = ["setuptools"]
+colors = ["colorama (>=0.4.3,<0.5.0)"]
+requirements_deprecated_finder = ["pip-api", "pipreqs"]
+pipfile_deprecated_finder = ["requirementslib", "pipreqs"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -356,11 +356,11 @@ uvicorn = {version = ">=0.18.0,<0.19.0", extras = ["standard"]}
 yarl = ">=1.7.2,<2.0.0"
 
 [package.extras]
-quart = ["Quart (>=0.17.0,<0.18.0)"]
-all = ["Quart (>=0.17.0,<0.18.0)", "websockets (>=10.0,<11.0)", "aiohttp[speedups] (>=3.7.4,<4.0.0)", "httpx[http2] (>=0.20.0,<1.0.0)"]
-websockets = ["websockets (>=10.0,<11.0)"]
-aiohttp = ["aiohttp[speedups] (>=3.7.4,<4.0.0)"]
 httpx = ["httpx[http2] (>=0.20.0,<1.0.0)"]
+all = ["httpx[http2] (>=0.20.0,<1.0.0)", "aiohttp[speedups] (>=3.7.4,<4.0.0)", "websockets (>=10.0,<11.0)", "Quart (>=0.17.0,<0.18.0)"]
+aiohttp = ["aiohttp[speedups] (>=3.7.4,<4.0.0)"]
+websockets = ["websockets (>=10.0,<11.0)"]
+quart = ["Quart (>=0.17.0,<0.18.0)"]
 
 [[package]]
 name = "numpy"
@@ -411,7 +411,7 @@ docs = ["sphinx (>=4)", "sphinx-autodoc-typehints (>=1.12)", "proselint (>=0.10.
 
 [[package]]
 name = "playwright"
-version = "1.24.1"
+version = "1.25.1"
 description = "A high-level API to automate web browsers"
 category = "main"
 optional = false
@@ -443,8 +443,8 @@ python-dotenv = {version = ">=0.10.4", optional = true, markers = "extra == \"do
 typing-extensions = ">=3.7.4.3"
 
 [package.extras]
-dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
+dotenv = ["python-dotenv (>=0.10.4)"]
 
 [[package]]
 name = "pyee"
@@ -481,8 +481,8 @@ tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 tomlkit = ">=0.10.1"
 
 [package.extras]
-spelling = ["pyenchant (>=3.2,<4.0)"]
 testutils = ["gitpython (>3)"]
+spelling = ["pyenchant (>=3.2,<4.0)"]
 
 [[package]]
 name = "python-dateutil"
@@ -550,7 +550,7 @@ python-versions = ">=3.6"
 anyio = ">=3.4.0,<5"
 
 [package.extras]
-full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests"]
+full = ["requests", "pyyaml", "python-multipart", "jinja2", "itsdangerous"]
 
 [[package]]
 name = "toml"
@@ -628,7 +628,7 @@ watchfiles = {version = ">=0.13", optional = true, markers = "extra == \"standar
 websockets = {version = ">=10.0", optional = true, markers = "extra == \"standard\""}
 
 [package.extras]
-standard = ["websockets (>=10.0)", "httptools (>=0.4.0)", "watchfiles (>=0.13)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "colorama (>=0.4)"]
+standard = ["colorama (>=0.4)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "PyYAML (>=5.1)", "python-dotenv (>=0.13)", "watchfiles (>=0.13)", "httptools (>=0.4.0)", "websockets (>=10.0)"]
 
 [[package]]
 name = "uvloop"
@@ -1384,13 +1384,13 @@ platformdirs = [
     {file = "platformdirs-2.5.2.tar.gz", hash = "sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19"},
 ]
 playwright = [
-    {file = "playwright-1.24.1-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:04575c6682098a2f5e851a3fb04bc0e3269af6e00732798103a02f63e4409dfb"},
-    {file = "playwright-1.24.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:279c8f150662292814499b61ccbc35917f5041592ede1853e2a46e59456500df"},
-    {file = "playwright-1.24.1-py3-none-macosx_11_0_universal2.whl", hash = "sha256:e0821859b625ad3dd1c89c9359d5d10d48ce1af81dc99d702437721ab72cd150"},
-    {file = "playwright-1.24.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:f6add5cc97a8b3bca775c38ba3382fe73004d59adc9e404bf59f23f35442ede7"},
-    {file = "playwright-1.24.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b3f2acda4c22e78c94a47eb5b6f77f20c0313ec76f8e19d77c09bee1c44631d9"},
-    {file = "playwright-1.24.1-py3-none-win32.whl", hash = "sha256:5ad16b26f4ae2d539c580273bd323907e24a125dbf0f38460466608d1cb39c83"},
-    {file = "playwright-1.24.1-py3-none-win_amd64.whl", hash = "sha256:7355d00cd2cb24265779b1cd9b18d9dcac17eea4a558d57ce20df650fc766f53"},
+    {file = "playwright-1.25.1-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:1dbe89f4e3dae53add2c6b642cd07c44474eaba88593e29be7ae82106ede8e63"},
+    {file = "playwright-1.25.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:58641991bcf43ade2a0740ece6e9d22deff228a6358f9aa61a290b7c4ab6f6ab"},
+    {file = "playwright-1.25.1-py3-none-macosx_11_0_universal2.whl", hash = "sha256:426f2e839671b6fe803a87ce3c7b38a8b3c552565863700791238a97f5f1ad24"},
+    {file = "playwright-1.25.1-py3-none-manylinux1_x86_64.whl", hash = "sha256:25b7ca2ee2bdf668dc487563355f42fc354bf5a386eaf639ace44133af7c7ab3"},
+    {file = "playwright-1.25.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:de9cd487b28e7d03eb04ab8f8e23bfa75c18dffc897396dffa8e9f1be0982d22"},
+    {file = "playwright-1.25.1-py3-none-win32.whl", hash = "sha256:ca66ec55858fddfb0255a35c4c320795178b69424a51f95fe09530fed71e9abf"},
+    {file = "playwright-1.25.1-py3-none-win_amd64.whl", hash = "sha256:d5c64d4b6f4ab56ea0acf5446f3aa3834beea8d871c58a49eff189aa3cf85d13"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.9.1-py2.py3-none-any.whl", hash = "sha256:d1735fc58b418fd7c5f658d28d943854f8a849b01a5d0a1e6f3f3fdd0166804b"},
