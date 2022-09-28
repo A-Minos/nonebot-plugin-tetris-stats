@@ -586,7 +586,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-ujson"
-version = "5.4.0"
+version = "5.5.0"
 description = "Typing stubs for ujson"
 category = "dev"
 optional = false
@@ -696,7 +696,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10,<3.11"
-content-hash = "7fa2ec0208a1e00c351916dba304f477ac10987b1693297edde7f3da2f171e7b"
+content-hash = "ee49c3a4777918a6c452ba31bda8967ae1c2671c7742f5e5534250b7efd168bd"
 
 [metadata.files]
 aiohttp = [
@@ -1534,8 +1534,8 @@ types-pytz = [
     {file = "types_pytz-2022.1.2-py3-none-any.whl", hash = "sha256:8aa9fd2af9dee5f5bd7221c6804c9addeafa7ebc0008f544d4ace02b066818a4"},
 ]
 types-ujson = [
-    {file = "types-ujson-5.4.0.tar.gz", hash = "sha256:c6124cadc36e565a90b01213aeec3447f571d9793d177e1653146a3867c81beb"},
-    {file = "types_ujson-5.4.0-py3-none-any.whl", hash = "sha256:551bb93e13f010cdc17ccc97cab0e44b7891d54acb8977f0ab64fcb9d6e44cc2"},
+    {file = "types-ujson-5.5.0.tar.gz", hash = "sha256:74bc0ec76e3caf3682625703aad4aa9999327517e39afae67bb5aa3100a39bb8"},
+    {file = "types_ujson-5.5.0-py3-none-any.whl", hash = "sha256:6051e6b80d71382f1f85b0f97b475d84621eae3e2789ed24c5721f784b0846e1"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
