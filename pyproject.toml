@@ -21,7 +21,7 @@ ujson = "^5.4.0"
 Brotli = "^1.0.9"
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.981"
+mypy = "^0.982"
 autopep8 = "^1.7.0"
 pylint = "^2.15.3"
 types-ujson = "^5.5.0"
