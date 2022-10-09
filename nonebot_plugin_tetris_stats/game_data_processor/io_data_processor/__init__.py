@@ -22,6 +22,8 @@ async def _(event: MessageEvent, matcher: Matcher):
 
 @IOStats.handle()
 async def _(event: MessageEvent, matcher: Matcher):
+    if event.is_tome():
+        await matcher.finish('不能查询bot的信息')
     await matcher.finish(
         await Processor.handle_query(
             message=event.raw_message,
