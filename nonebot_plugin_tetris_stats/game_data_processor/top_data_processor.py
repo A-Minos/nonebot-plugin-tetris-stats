@@ -33,16 +33,16 @@ async def _(event: MessageEvent, matcher: Matcher):
             if await check_user(user_data[1]) is False:
                 await matcher.finish('用户不存在')
             user_name = await get_user_name(user_data[1])
-    if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
-        logger.error('获取QQ号失败')
-        await matcher.finish('获取QQ号失败')
-    await matcher.finish(
-        await DataBase.write_bind_info(
-            qq_number=event.sender.user_id,
-            user=user_name,
-            game_type='TOP'
-        )
-    )
+            if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
+                logger.error('获取QQ号失败')
+                await matcher.finish('获取QQ号失败')
+            await matcher.finish(
+                await DataBase.write_bind_info(
+                    qq_number=event.sender.user_id,
+                    user=user_name,
+                    game_type='TOP'
+                )
+            )
 
 
 @TopStats.handle()
@@ -69,6 +69,8 @@ async def _(event: MessageEvent, matcher: Matcher):
             message = (f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}')
     elif decoded_message[0] == 'Name':
         message = await generate_message(decoded_message[1][1])
+    else:
+        raise ValueError('预期外行为, 请上报GitHub')
     await matcher.finish(message)
 
 
@@ -79,7 +81,7 @@ async def get_user_data(user_name: str) -> tuple[bool, str]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 return True, await resp.text()
-    except aiohttp.client_exceptions.ClientConnectorError as error:
+    except aiohttp.client_exceptions.ClientConnectorError as error: # type: ignore
         logger.error(error)
         return False, ''
 

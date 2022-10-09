@@ -76,6 +76,8 @@ class DataBase():
             cursor.execute(
                 f'INSERT INTO {game_type}BIND (QQ, USER) VALUES (?, ?)', (qq_number, user))
             message = '绑定成功'
+        else:
+            raise ValueError('预期外行为, 请上报GitHub')
         db.commit()
         return message
 

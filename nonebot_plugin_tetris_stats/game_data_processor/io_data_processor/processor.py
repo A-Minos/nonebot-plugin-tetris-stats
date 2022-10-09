@@ -30,16 +30,18 @@ class Processor:
             if user_data[1] is False:
                 return f'用户信息请求错误:\n{user_data[2]["error"]}'
             user_id = await cls.get_user_id(user_data[2])
-        if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是（
-            logger.error('获取QQ号失败')
-            return '获取QQ号失败'
-        return (
-            await DataBase.write_bind_info(
-                qq_number=qq_number,
-                user=user_id,
-                game_type='IO'
+            if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是（
+                logger.error('获取QQ号失败')
+                return '获取QQ号失败'
+            return (
+                await DataBase.write_bind_info(
+                    qq_number=qq_number,
+                    user=user_id,
+                    game_type='IO'
+                )
             )
-        )
+        logger.error('预期外行为, 请上报GitHub')
+        return '出现预期外行为，请查看后台信息'
 
     @classmethod
     async def handle_query(cls, message: str, qq_number: int | None):
@@ -68,8 +70,8 @@ class Processor:
     @classmethod
     async def get_user_data(
         cls,
-        user_name: str = None,
-        user_id: str = None
+        user_name: str | None = None,
+        user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取用户数据'''
         if user_name is not None and user_id is None:
@@ -83,8 +85,8 @@ class Processor:
     @classmethod
     async def get_solo_data(
         cls,
-        user_name: str = None,
-        user_id: str = None
+        user_name: str | None = None,
+        user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取Solo数据'''
         if user_name is not None and user_id is None:
@@ -162,7 +164,11 @@ class Processor:
         return blitz_stats
 
     @classmethod
-    async def generate_message(cls, user_name: str = None, user_id: str = None) -> str:
+    async def generate_message(
+        cls,
+        user_name: str | None = None,
+        user_id: str | None = None
+    ) -> str:
         '''生成消息'''
         user_data, solo_data = await gather(
             cls.get_user_data(user_name=user_name, user_id=user_id),

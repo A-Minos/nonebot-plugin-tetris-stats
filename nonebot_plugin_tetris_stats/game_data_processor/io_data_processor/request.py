@@ -68,7 +68,10 @@ class Request:
             else:
                 assert isinstance(response, Response)
                 cls._headers = await response.request.all_headers()
-                cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                try:
+                    cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                except KeyError:
+                    cls._cookies = None
                 await page.close()
                 await context.close()
                 return True, data['success'], data
@@ -139,10 +142,10 @@ class Request:
                 async with session.get(url, headers=cls._headers) as resp:
                     data = await resp.json()
                     return True, data['success'], data
-        except aiohttp.client_exceptions.ClientConnectorError as error:
+        except aiohttp.client_exceptions.ClientConnectorError as error: # type: ignore
             logger.error(f'请求错误\n{error}')
             return False, False, {}
-        except aiohttp.client_exceptions.ContentTypeError:
+        except aiohttp.client_exceptions.ContentTypeError:  # type: ignore
             return await cls._anti_cloudflare(url)
 
     @classmethod

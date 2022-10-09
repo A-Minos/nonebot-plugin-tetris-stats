@@ -30,6 +30,8 @@ async def _(event: MessageEvent, matcher: Matcher):
         message = await generate_message(tea_id=event.sender.user_id)
     elif decoded_message[0] == 'Name':
         message = await generate_message(user_name=decoded_message[1][1])
+    else:
+        raise ValueError('预期外行为, 请上报GitHub')
     await matcher.finish(message)
 
 
@@ -40,14 +42,14 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
             async with session.get(url) as resp:
                 data = await resp.json()
                 return True, data['success'], data
-    except aiohttp.client_exceptions.ClientConnectorError as error:
+    except aiohttp.client_exceptions.ClientConnectorError as error: # type: ignore
         logger.error(f'请求错误\n{error}')
         return False, False, {}
 
 
 async def get_user_info(
-    user_name: str = None,
-    tea_id: int = None
+    user_name: str | None = None,
+    tea_id: int | None = None
 ) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户信息'''
     if user_name is not None and tea_id is None:
@@ -60,8 +62,8 @@ async def get_user_info(
 
 
 async def get_user_data(
-    user_name: str = None,
-    tea_id: int = None,
+    user_name: str | None = None,
+    tea_id: int | None = None,
     other_parameter: str = ''
 ) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户数据'''
@@ -77,8 +79,8 @@ async def get_user_data(
 async def get_rank_stats(user_info: dict) -> dict[str, float]:
     '''获取Rank数据'''
     data = user_info['data']
+    rank_stats = {}
     if int(data['rankedGames']) != 0:
-        rank_stats = {}
         rank_stats['Rating'] = round(float(data['ratingNow']), 2)
         rank_stats['RD'] = round(float(data['rdNow']), 2)
         rank_stats['Vol'] = round(float(data['volNow']), 3)
@@ -87,8 +89,8 @@ async def get_rank_stats(user_info: dict) -> dict[str, float]:
 
 async def get_game_data(user_data: dict) -> dict[str, int | float]:
     '''获取游戏数据'''
+    game_data: dict[str, int | float] = {}
     if user_data['data'] != []:
-        game_data: dict[str, int | float] = {}
         weighted_total_lpm = weighted_total_apm = weighted_total_adpm = total_time = num = 0
         for i in user_data['data']:
             # 排除单人局和时间为0的游戏
@@ -136,7 +138,10 @@ async def get_pb_data(user_info: dict) -> dict[str, float | str]:
     return pb_data
 
 
-async def generate_message(user_name: str = None, tea_id: int = None) -> str:
+async def generate_message(
+    user_name: str | None = None,
+    tea_id: int | None = None
+) -> str:
     '''生成消息'''
     user_info, user_data = await gather(
         get_user_info(user_name=user_name, tea_id=tea_id),
