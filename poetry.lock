@@ -468,7 +468,7 @@ python-versions = "*"
 
 [[package]]
 name = "pylint"
-version = "2.15.5"
+version = "2.15.6"
 description = "python code static checker"
 category = "dev"
 optional = false
@@ -692,7 +692,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10,<3.11"
-content-hash = "b2ec9f9629b9dd0c5882f94333cd0d2e91c137aaf243da5151b2d87a7a61962c"
+content-hash = "d5770c2d50e2c0a193c1ae112c88cae8e028609bd32898374813a8f6dd770807"
 
 [metadata.files]
 aiohttp = [
@@ -1491,8 +1491,8 @@ pygtrie = [
     {file = "pygtrie-2.5.0.tar.gz", hash = "sha256:203514ad826eb403dab1d2e2ddd034e0d1534bbe4dbe0213bb0593f66beba4e2"},
 ]
 pylint = [
-    {file = "pylint-2.15.5-py3-none-any.whl", hash = "sha256:c2108037eb074334d9e874dc3c783752cc03d0796c88c9a9af282d0f161a1004"},
-    {file = "pylint-2.15.5.tar.gz", hash = "sha256:3b120505e5af1d06a5ad76b55d8660d44bf0f2fc3c59c2bdd94e39188ee3a4df"},
+    {file = "pylint-2.15.6-py3-none-any.whl", hash = "sha256:15060cc22ed6830a4049cf40bc24977744df2e554d38da1b2657591de5bcd052"},
+    {file = "pylint-2.15.6.tar.gz", hash = "sha256:25b13ddcf5af7d112cf96935e21806c1da60e676f952efb650130f2a4483421c"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
