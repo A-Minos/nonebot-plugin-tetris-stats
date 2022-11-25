@@ -26,7 +26,7 @@ autopep8 = "^2.0.0"
 pylint = "^2.15.5"
 types-ujson = "^5.5.0"
 lxml-stubs = "^0.4.0"
-pandas-stubs = "^1.5.1"
+pandas-stubs = "^1.5.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
