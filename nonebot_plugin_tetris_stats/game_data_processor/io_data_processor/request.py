@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from typing import Any
 
 import aiohttp
@@ -82,9 +82,14 @@ class Request:
     @classmethod
     async def init_cache(cls) -> None:
         '''初始化缓存文件'''
-        if not os.path.exists(os.path.dirname(config.cache_path)):
-            os.makedirs(os.path.dirname(config.cache_path))
-        if not os.path.exists(config.cache_path):
+        cache_path = Path(config.cache_path)
+        cache_dir = cache_path.parent
+        if not cache_dir.exists():
+            cache_dir.mkdir(parents=True)
+        elif not cache_dir.is_dir():
+            cache_dir.unlink()
+            cache_dir.mkdir(parents=True)
+        if not cache_path.exists():
             with open(file=config.cache_path, mode='w', encoding='UTF-8') as file:
                 file.write(
                     dumps(
@@ -106,10 +111,10 @@ class Request:
         except FileNotFoundError:
             await cls.init_cache()
         except PermissionError:
-            os.remove(config.cache_path)
+            Path(config.cache_path).unlink()
             await cls.init_cache()
         except JSONDecodeError:
-            os.remove(config.cache_path)
+            Path(config.cache_path).unlink()
             await cls.init_cache()
 
     @classmethod
@@ -128,10 +133,10 @@ class Request:
         except FileNotFoundError:
             await cls.init_cache()
         except PermissionError:
-            os.remove(config.cache_path)
+            Path(config.cache_path).unlink()
             await cls.init_cache()
         except JSONDecodeError:
-            os.remove(config.cache_path)
+            Path(config.cache_path).unlink()
             await cls.init_cache()
 
     @classmethod
@@ -142,7 +147,7 @@ class Request:
                 async with session.get(url, headers=cls._headers) as resp:
                     data = await resp.json()
                     return True, data['success'], data
-        except aiohttp.client_exceptions.ClientConnectorError as error: # type: ignore
+        except aiohttp.client_exceptions.ClientConnectorError as error:  # type: ignore
             logger.error(f'请求错误\n{error}')
             return False, False, {}
         except aiohttp.client_exceptions.ContentTypeError:  # type: ignore

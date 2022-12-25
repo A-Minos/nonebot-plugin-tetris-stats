@@ -1,5 +1,5 @@
-import os
 from asyncio import gather
+from pathlib import Path
 from sqlite3 import Connection, connect
 
 from nonebot import get_driver
@@ -29,8 +29,12 @@ class DataBase():
     @classmethod
     async def init_db(cls) -> Connection:
         '''初始化数据库'''
-        if not os.path.exists(os.path.dirname(config.db_path)):
-            os.makedirs(os.path.dirname(config.db_path))
+        db_dir = Path(Config.db_path).parent
+        if not db_dir.exists():
+            db_dir.mkdir(parents=True)
+        elif not db_dir.is_dir():
+            db_dir.unlink()
+            db_dir.mkdir(parents=True)
         cls._db = connect(config.db_path)
         cursor = cls._db.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS IOBIND
