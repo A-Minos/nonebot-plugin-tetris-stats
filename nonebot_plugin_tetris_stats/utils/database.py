@@ -29,22 +29,23 @@ class DataBase():
     @classmethod
     async def init_db(cls) -> Connection:
         '''初始化数据库'''
-        db_dir = Path(Config.db_path).parent
-        if not db_dir.exists():
-            db_dir.mkdir(parents=True)
-        elif not db_dir.is_dir():
-            db_dir.unlink()
-            db_dir.mkdir(parents=True)
-        cls._db = connect(config.db_path)
-        cursor = cls._db.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS IOBIND
-                        (QQ INTEGER NOT NULL,
-                        USER TEXT NOT NULL)''')
-        cursor.execute('''CREATE TABLE IF NOT EXISTS TOPBIND
-                        (QQ INTEGER NOT NULL,
-                        USER TEXT NOT NULL)''')
-        cls._db.commit()
-        logger.info('数据库初始化完成')
+        if cls._db is None:
+            db_dir = Path(Config.db_path).parent
+            if not db_dir.exists():
+                db_dir.mkdir(parents=True)
+            elif not db_dir.is_dir():
+                db_dir.unlink()
+                db_dir.mkdir(parents=True)
+            cls._db = connect(config.db_path)
+            cursor = cls._db.cursor()
+            cursor.execute('''CREATE TABLE IF NOT EXISTS IOBIND
+                            (QQ INTEGER NOT NULL,
+                            USER TEXT NOT NULL)''')
+            cursor.execute('''CREATE TABLE IF NOT EXISTS TOPBIND
+                            (QQ INTEGER NOT NULL,
+                            USER TEXT NOT NULL)''')
+            cls._db.commit()
+            logger.info('数据库初始化完成')
         return cls._db
 
     @classmethod
