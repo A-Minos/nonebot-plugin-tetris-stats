@@ -1,10 +1,18 @@
 from re import I
 
-from nonebot import on_regex
+from nonebot import get_driver, on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
 from nonebot.matcher import Matcher
 
+from ...utils.database import DataBase
 from .processor import Processor
+
+driver = get_driver()
+
+
+@driver.on_startup
+async def _():
+    await DataBase.register_column('BIND', 'IO', 'TEXT')
 
 IOBind = on_regex(pattern=r'^io绑定|^iobind', flags=I, permission=GROUP)
 IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)

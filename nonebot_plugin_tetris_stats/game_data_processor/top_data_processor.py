@@ -4,7 +4,7 @@ from typing import Any
 
 import aiohttp
 from lxml import etree
-from nonebot import on_regex
+from nonebot import get_driver, on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
 from nonebot.log import logger
 from nonebot.matcher import Matcher
@@ -15,6 +15,13 @@ from ..utils.message_analyzer import (
     handle_bind_message,
     handle_stats_query_message
 )
+
+driver = get_driver()
+
+
+@driver.on_startup
+async def _():
+    await DataBase.register_column('BIND', 'TOP', 'TEXT')
 
 TOPBind = on_regex(pattern=r'^top绑定|^topbind', flags=I, permission=GROUP)
 TopStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
