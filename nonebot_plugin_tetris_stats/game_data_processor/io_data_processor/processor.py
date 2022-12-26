@@ -4,10 +4,7 @@ from typing import Any
 from nonebot.log import logger
 
 from ...utils.database import DataBase
-from ...utils.message_analyzer import (
-    handle_bind_message,
-    handle_stats_query_message
-)
+from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
 from .request import Request
 
 
@@ -33,12 +30,8 @@ class Processor:
             if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是（
                 logger.error('获取QQ号失败')
                 return '获取QQ号失败'
-            return (
-                await DataBase.write_bind_info(
-                    qq_number=qq_number,
-                    user=user_id,
-                    game_type='IO'
-                )
+            return await DataBase.write_bind_info(
+                qq_number=qq_number, user=user_id, game_type='IO'
             )
         logger.error('预期外行为, 请上报GitHub')
         return '出现预期外行为，请查看后台信息'
@@ -46,11 +39,15 @@ class Processor:
     @classmethod
     async def handle_query(cls, message: str, qq_number: int | None):
         '''处理查询消息'''
-        decoded_message = await handle_stats_query_message(message=message, game_type='IO')
+        decoded_message = await handle_stats_query_message(
+            message=message, game_type='IO'
+        )
         if decoded_message[0] is None:
             return decoded_message[1][0]
         if decoded_message[0] == 'AT':  # 在入口处判断是否@bot本身
-            bind_info = await DataBase.query_bind_info(qq_number=decoded_message[1][1], game_type='IO')
+            bind_info = await DataBase.query_bind_info(
+                qq_number=decoded_message[1][1], game_type='IO'
+            )
             if bind_info is None:
                 return '未查询到绑定信息'
             return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
@@ -58,7 +55,9 @@ class Processor:
             if qq_number is None:
                 logger.error('获取QQ号失败')
                 return '获取QQ号失败, 请联系bot主人'
-            bind_info = await DataBase.query_bind_info(qq_number=qq_number, game_type='IO')
+            bind_info = await DataBase.query_bind_info(
+                qq_number=qq_number, game_type='IO'
+            )
             if bind_info is None:
                 return '未查询到绑定信息'
             return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
@@ -69,9 +68,7 @@ class Processor:
 
     @classmethod
     async def get_user_data(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+        cls, user_name: str | None = None, user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取用户数据'''
         if user_name is not None and user_id is None:
@@ -84,9 +81,7 @@ class Processor:
 
     @classmethod
     async def get_solo_data(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+        cls, user_name: str | None = None, user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取Solo数据'''
         if user_name is not None and user_id is None:
@@ -123,7 +118,8 @@ class Processor:
             league_stats['PPS'] = league['pps']
             league_stats['APM'] = league['apm']
             league_stats['VS'] = 0 if league['vs'] is None else league['vs']
-            league_stats['Rank'] = 'Z' if league['rank'] == 'z' else league['rank'].upper(
+            league_stats['Rank'] = (
+                'Z' if league['rank'] == 'z' else league['rank'].upper()
             )
             if league['rating'] == -1:
                 league_stats['Rank'] = None
@@ -133,11 +129,11 @@ class Processor:
                 league_stats['RD'] = round(league['rd'], 2)
             league_stats['Standing'] = league['standing']
             league_stats['LPM'] = round((league['pps'] * 24), 2)
-            league_stats['APL'] = round(
-                (league_stats['APM'] / league_stats['LPM']), 2)
+            league_stats['APL'] = round((league_stats['APM'] / league_stats['LPM']), 2)
             league_stats['ADPM'] = round((league_stats['VS'] * 0.6), 2)
             league_stats['ADPL'] = round(
-                (league_stats['ADPM'] / league_stats['LPM']), 2)
+                (league_stats['ADPM'] / league_stats['LPM']), 2
+            )
         return league_stats
 
     @classmethod
@@ -147,7 +143,8 @@ class Processor:
         solo = solo_data['data']['records']['40l']
         if solo['record'] is not None:
             sprint_stats['Time'] = round(
-                solo['record']['endcontext']['finalTime'] / 1000, 2)
+                solo['record']['endcontext']['finalTime'] / 1000, 2
+            )
             if solo['rank'] is not None:
                 sprint_stats['Rank'] = solo['rank']
         return sprint_stats
@@ -165,14 +162,12 @@ class Processor:
 
     @classmethod
     async def generate_message(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+        cls, user_name: str | None = None, user_id: str | None = None
     ) -> str:
         '''生成消息'''
         user_data, solo_data = await gather(
             cls.get_user_data(user_name=user_name, user_id=user_id),
-            cls.get_solo_data(user_name=user_name, user_id=user_id)
+            cls.get_solo_data(user_name=user_name, user_id=user_id),
         )
         if user_data[0] is False:
             return '用户信息请求失败'
@@ -191,7 +186,9 @@ class Processor:
                     message += f'用户 {user_name} 暂无段位, {league_stats["Rating"]} TR'
                 else:
                     message += f'{league_stats["Rank"]} 段用户 {user_name} {league_stats["Rating"]} TR (#{league_stats["Standing"]})'
-                message += f', 段位分 {league_stats["Glicko"]}±{league_stats["RD"]}, 最近十场的数据:'
+                message += (
+                    f', 段位分 {league_stats["Glicko"]}±{league_stats["RD"]}, 最近十场的数据:'
+                )
             message += f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
             message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
             if league_stats["VS"] != 0:
@@ -201,8 +198,7 @@ class Processor:
         if solo_data[1] is False:
             return f'{message}\nSolo统计数据请求错误:\n{solo_data[2]["error"]}'
         sprint_stats, blitz_stats = await gather(
-            cls.get_sprint_stats(solo_data[2]),
-            cls.get_blitz_stats(solo_data[2])
+            cls.get_sprint_stats(solo_data[2]), cls.get_blitz_stats(solo_data[2])
         )
         message += f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
         message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''

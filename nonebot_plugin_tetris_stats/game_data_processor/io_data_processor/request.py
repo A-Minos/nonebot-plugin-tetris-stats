@@ -28,6 +28,7 @@ async def _():
 
 class Request:
     '''网络请求相关类'''
+
     _browser: Browser | None = None
     _headers: dict | None = None
     _cookies: dict | None = None
@@ -69,7 +70,9 @@ class Request:
                 assert isinstance(response, Response)
                 cls._headers = await response.request.all_headers()
                 try:
-                    cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                    cls._cookies = {
+                        i['name']: i['value'] for i in await context.cookies()
+                    }
                 except KeyError:
                     cls._cookies = None
                 await page.close()
@@ -91,14 +94,7 @@ class Request:
             cache_dir.mkdir(parents=True)
         if not cache_path.exists():
             with open(file=config.cache_path, mode='w', encoding='UTF-8') as file:
-                file.write(
-                    dumps(
-                        {
-                            'headers': cls._headers,
-                            'cookies': cls._cookies
-                        }
-                    )
-                )
+                file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
 
     @classmethod
     async def read_cache(cls) -> None:
@@ -122,14 +118,7 @@ class Request:
         '''写入缓存文件'''
         try:
             with open(file=config.cache_path, mode='r+', encoding='UTF-8') as file:
-                file.write(
-                    dumps(
-                        {
-                            'headers': cls._headers,
-                            'cookies': cls._cookies
-                        }
-                    )
-                )
+                file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
         except FileNotFoundError:
             await cls.init_cache()
         except PermissionError:

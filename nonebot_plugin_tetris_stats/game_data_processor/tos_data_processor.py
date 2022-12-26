@@ -11,15 +11,15 @@ from nonebot.matcher import Matcher
 from ..utils.message_analyzer import handle_stats_query_message
 
 TOSStats = on_regex(
-    pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats',
-    flags=I,
-    permission=GROUP
+    pattern=r'^tos查|^tostats|^tosstats|^茶服查|^茶服stats', flags=I, permission=GROUP
 )
 
 
 @TOSStats.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_stats_query_message(message=event.raw_message, game_type='TOS')
+    decoded_message = await handle_stats_query_message(
+        message=event.raw_message, game_type='TOS'
+    )
     if decoded_message[0] is None:
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'AT' or decoded_message[0] == 'QQ':
@@ -48,8 +48,7 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
 
 
 async def get_user_info(
-    user_name: str | None = None,
-    tea_id: int | None = None
+    user_name: str | None = None, tea_id: int | None = None
 ) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户信息'''
     if user_name is not None and tea_id is None:
@@ -62,15 +61,17 @@ async def get_user_info(
 
 
 async def get_user_data(
-    user_name: str | None = None,
-    tea_id: int | None = None,
-    other_parameter: str = ''
+    user_name: str | None = None, tea_id: int | None = None, other_parameter: str = ''
 ) -> tuple[bool, bool, dict[str, Any]]:
     '''获取用户数据'''
     if user_name is not None and tea_id is None:
-        user_data_url = f'https://teatube.cn:8888/getProfile?id={user_name}{other_parameter}'
+        user_data_url = (
+            f'https://teatube.cn:8888/getProfile?id={user_name}{other_parameter}'
+        )
     elif user_name is None and tea_id is not None:
-        user_data_url = f'https://teatube.cn:8888/getProfile?id={tea_id}{other_parameter}'
+        user_data_url = (
+            f'https://teatube.cn:8888/getProfile?id={tea_id}{other_parameter}'
+        )
     else:
         raise ValueError('预期外行为, 请上报GitHub')
     return await request(user_data_url)
@@ -91,7 +92,11 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
     '''获取游戏数据'''
     game_data: dict[str, int | float] = {}
     if user_data['data'] != []:
-        weighted_total_lpm = weighted_total_apm = weighted_total_adpm = total_time = num = 0
+        weighted_total_lpm = 0
+        weighted_total_apm = 0
+        weighted_total_adpm = 0
+        total_time = 0
+        num = 0
         for i in user_data['data']:
             # 排除单人局和时间为0的游戏
             if i['num_players'] == 1 or i['time'] == 0:
@@ -118,8 +123,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
             game_data['ADPM'] = round((weighted_total_adpm / total_time), 2)
             game_data['PPS'] = round((game_data['LPM'] / 24), 2)
             game_data['APL'] = round((game_data['APM'] / game_data['LPM']), 2)
-            game_data['ADPL'] = round(
-                (game_data['ADPM'] / game_data['LPM']), 2)
+            game_data['ADPL'] = round((game_data['ADPM'] / game_data['LPM']), 2)
             game_data['VS'] = round((game_data['ADPM'] / 60 * 100), 2)
         # TODO: 如果有效局数不满50, 没有无dig信息的局, 且userData['data']内有50个局, 则继续往前获取信息
     return game_data
@@ -139,27 +143,27 @@ async def get_pb_data(user_info: dict) -> dict[str, float | str]:
 
 
 async def generate_message(
-    user_name: str | None = None,
-    tea_id: int | None = None
+    user_name: str | None = None, tea_id: int | None = None
 ) -> str:
     '''生成消息'''
     user_info, user_data = await gather(
         get_user_info(user_name=user_name, tea_id=tea_id),
-        get_user_data(user_name=user_name, tea_id=tea_id)
+        get_user_data(user_name=user_name, tea_id=tea_id),
     )
     if user_info[0] is False:
         return '用户信息请求失败'
     if user_info[1] is False:
         return f'用户信息请求错误:\n{user_info[2]["error"]}'
     rank_stats, pb_data = await gather(
-        get_rank_stats(user_info[2]),
-        get_pb_data(user_info[2])
+        get_rank_stats(user_info[2]), get_pb_data(user_info[2])
     )
     message = f'用户 {user_info[2]["data"]["name"]} ({user_info[2]["data"]["teaId"]}) '
     if not rank_stats:
         message += '暂无段位统计数据'
     else:
-        message += f', 段位分 {rank_stats["Rating"]}±{rank_stats["RD"]} ({rank_stats["Vol"]}) '
+        message += (
+            f', 段位分 {rank_stats["Rating"]}±{rank_stats["RD"]} ({rank_stats["Vol"]}) '
+        )
     if user_data[0] is False:
         message = f'{message.rstrip()}\n游戏数据请求失败'
     elif user_data[1] is False:

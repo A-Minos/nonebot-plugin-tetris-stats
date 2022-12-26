@@ -3,8 +3,7 @@ from re import match, sub
 
 async def handle_bind_message(message: str, game_type: str) -> tuple[str | None, tuple]:
     '''返回值为tuple[gameType, tuple[message, user]]'''
-    _cmd_aliases = {'IO': ['io绑定', 'iobind'],
-                    'TOP': ['top绑定', 'topbind']}
+    _cmd_aliases = {'IO': ['io绑定', 'iobind'], 'TOP': ['top绑定', 'topbind']}
     # 剔除命令前缀
     for i in _cmd_aliases[game_type]:
         if match(rf'(?i){i}', message):
@@ -18,17 +17,68 @@ async def handle_bind_message(message: str, game_type: str) -> tuple[str | None,
     return await check_name(message, game_type)
 
 
-async def handle_stats_query_message(message: str, game_type: str) -> tuple[str | None, tuple]:
+async def handle_stats_query_message(
+    message: str, game_type: str
+) -> tuple[str | None, tuple]:
     '''返回值为tuple[gameType, tuple[message, user]]'''
-    _cmd_aliases = {'IO': ['io查', 'iostats'],
-                    'TOS': ['tos查', 'tostats', 'tosstats', '茶服查', '茶服stats'],
-                    'TOP': ['top查', 'topstats']}
+    _cmd_aliases = {
+        'IO': ['io查', 'iostats'],
+        'TOS': ['tos查', 'tostats', 'tosstats', '茶服查', '茶服stats'],
+        'TOP': ['top查', 'topstats'],
+    }
     _me = [
-        '我', '自己', '我等', '卑人', '愚', '老身', '爷', '老娘', '本姑娘', '本大爷', '鄙人', '寡人',
-        '小生', '贫僧', '本人', '孤', '吾', '俺', '咱', '私', 'me', '洒家', '在下', '偶', '人家',
-        '本小姐', '老夫', '老子', '朕', '本尊', '僕', '拙者', '妾', '儂', '自分', '吾輩', '我輩', '某',
-        '己等', '俺等', '此方', '哥', '姐', '劳资', '本宝宝', '余', '本喵',  'watashi',  'i', 'myself',
-        'self', 'oneself'
+        '我',
+        '自己',
+        '我等',
+        '卑人',
+        '愚',
+        '老身',
+        '爷',
+        '老娘',
+        '本姑娘',
+        '本大爷',
+        '鄙人',
+        '寡人',
+        '小生',
+        '贫僧',
+        '本人',
+        '孤',
+        '吾',
+        '俺',
+        '咱',
+        '私',
+        'me',
+        '洒家',
+        '在下',
+        '偶',
+        '人家',
+        '本小姐',
+        '老夫',
+        '老子',
+        '朕',
+        '本尊',
+        '僕',
+        '拙者',
+        '妾',
+        '儂',
+        '自分',
+        '吾輩',
+        '我輩',
+        '某',
+        '己等',
+        '俺等',
+        '此方',
+        '哥',
+        '姐',
+        '劳资',
+        '本宝宝',
+        '余',
+        '本喵',
+        'watashi',
+        'i',
+        'myself',
+        'self',
+        'oneself',
     ]
     # 剔除命令前缀
     for i in _cmd_aliases[game_type]:
@@ -66,9 +116,14 @@ async def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
             return 'Name', (None, name)
         return None, ('用户名不合法', None)
     if game_type == 'TOS':
-        if (match(r'^(?!\.)(?!com[0-9]$)(?!con$)(?!lpt[0-9]$)(?!nul$)(?!prn$)[^\-][^\+][^\|\*\?\\\s\!:<>/$"]*[^\.\|\*\?\\\s\!:<>/$"]+$', name)
+        if (
+            match(
+                r'^(?!\.)(?!com[0-9]$)(?!con$)(?!lpt[0-9]$)(?!nul$)(?!prn$)[^\-][^\+][^\|\*\?\\\s\!:<>/$"]*[^\.\|\*\?\\\s\!:<>/$"]+$',
+                name,
+            )
             and name.isdigit() is False
-                and 2 <= len(name) <= 18):
+            and 2 <= len(name) <= 18
+        ):
             # 虽然我也不想这么长 但是似乎确实得这么长
             # TODO 简化正则表达式
             return 'Name', (None, name)

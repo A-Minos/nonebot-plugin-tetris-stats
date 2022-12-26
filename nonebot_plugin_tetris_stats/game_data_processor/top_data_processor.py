@@ -11,10 +11,7 @@ from nonebot.matcher import Matcher
 from pandas import read_html
 
 from ..utils.database import DataBase
-from ..utils.message_analyzer import (
-    handle_bind_message,
-    handle_stats_query_message
-)
+from ..utils.message_analyzer import handle_bind_message, handle_stats_query_message
 
 driver = get_driver()
 
@@ -23,13 +20,16 @@ driver = get_driver()
 async def _():
     await DataBase.register_column('BIND', 'TOP', 'TEXT')
 
+
 TOPBind = on_regex(pattern=r'^top绑定|^topbind', flags=I, permission=GROUP)
 TopStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
 
 
 @TOPBind.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_bind_message(message=event.raw_message, game_type='TOP')
+    decoded_message = await handle_bind_message(
+        message=event.raw_message, game_type='TOP'
+    )
     if decoded_message[0] is None:
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'Name':
@@ -45,35 +45,43 @@ async def _(event: MessageEvent, matcher: Matcher):
                 await matcher.finish('获取QQ号失败')
             await matcher.finish(
                 await DataBase.write_bind_info(
-                    qq_number=event.sender.user_id,
-                    user=user_name,
-                    game_type='TOP'
+                    qq_number=event.sender.user_id, user=user_name, game_type='TOP'
                 )
             )
 
 
 @TopStats.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_stats_query_message(message=event.raw_message, game_type='TOP')
+    decoded_message = await handle_stats_query_message(
+        message=event.raw_message, game_type='TOP'
+    )
     if decoded_message[0] is None:
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'AT':
         if event.is_tome() is True:
             await matcher.finish('不能查询bot的信息')
-        bind_info = await DataBase.query_bind_info(qq_number=decoded_message[1][1], game_type='TOP')
+        bind_info = await DataBase.query_bind_info(
+            qq_number=decoded_message[1][1], game_type='TOP'
+        )
         if bind_info is None:
             message = '未查询到绑定信息'
         else:
-            message = (f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}')
+            message = (
+                f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}'
+            )
     elif decoded_message[0] == 'ME':
         if event.sender.user_id is None:
             logger.error('获取QQ号失败')
             await matcher.finish('获取QQ号失败, 请联系bot主人')
-        bind_info = await DataBase.query_bind_info(qq_number=event.sender.user_id, game_type='TOP')
+        bind_info = await DataBase.query_bind_info(
+            qq_number=event.sender.user_id, game_type='TOP'
+        )
         if bind_info is None:
             message = '未查询到绑定信息'
         else:
-            message = (f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}')
+            message = (
+                f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await generate_message(bind_info)}'
+            )
     elif decoded_message[0] == 'Name':
         message = await generate_message(decoded_message[1][1])
     else:
@@ -125,14 +133,17 @@ async def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
     else:
         raise TypeError('预期外行为, 请上报GitHub')
     # 如果没有24H统计数据
-    if game_stats['24H'].get('LPM') in [None, ''] or game_stats['24H'].get('APM') in [None, '']:
+    if game_stats['24H'].get('LPM') in [None, ''] or game_stats['24H'].get('APM') in [
+        None,
+        '',
+    ]:
         game_stats['24H'].pop('LPM', None)
         game_stats['24H'].pop('APM', None)
     else:
-        game_stats['24H']['PPS'] = round(
-            float(game_stats['24H']['LPM']) / 24, 2)
+        game_stats['24H']['PPS'] = round(float(game_stats['24H']['LPM']) / 24, 2)
         game_stats['24H']['APL'] = round(
-            float(game_stats['24H']['APM']) / float(game_stats['24H']['LPM']), 2)
+            float(game_stats['24H']['APM']) / float(game_stats['24H']['LPM']), 2
+        )
         game_stats['24H']['LPM'] = round(float(game_stats['24H']['LPM']), 2)
         game_stats['24H']['APM'] = round(float(game_stats['24H']['APM']), 2)
     table = html.xpath('//table')
@@ -148,18 +159,14 @@ async def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
                     if isinstance(i, dict):
                         game_stats['All']['LPM'] += i['lpm']
                         game_stats['All']['APM'] += i['apm']
-                game_stats['All']['LPM'] = game_stats['All']['LPM'] / \
-                    len(results)
-                game_stats['All']['APM'] = game_stats['All']['APM'] / \
-                    len(results)
-                game_stats['All']['PPS'] = round(
-                    game_stats['All']['LPM'] / 24, 2)
+                game_stats['All']['LPM'] = game_stats['All']['LPM'] / len(results)
+                game_stats['All']['APM'] = game_stats['All']['APM'] / len(results)
+                game_stats['All']['PPS'] = round(game_stats['All']['LPM'] / 24, 2)
                 game_stats['All']['APL'] = round(
-                    float(game_stats['All']['APM']) / float(game_stats['All']['LPM']), 2)
-                game_stats['All']['LPM'] = round(
-                    float(game_stats['All']['LPM']), 2)
-                game_stats['All']['APM'] = round(
-                    float(game_stats['All']['APM']), 2)
+                    float(game_stats['All']['APM']) / float(game_stats['All']['LPM']), 2
+                )
+                game_stats['All']['LPM'] = round(float(game_stats['All']['LPM']), 2)
+                game_stats['All']['APM'] = round(float(game_stats['All']['APM']), 2)
     else:
         raise TypeError('预期外行为, 请上报GitHub')
     return game_stats
@@ -173,30 +180,39 @@ async def generate_message(user_name: str) -> str:
     if await check_user(user_data[1]) is False:
         return '用户不存在'
     user_name, game_stats = await gather(
-        get_user_name(user_data[1]),
-        get_game_stats(user_data[1])
+        get_user_name(user_data[1]), get_game_stats(user_data[1])
     )
     message = ''
     if game_stats['24H'] and game_stats['All']:
         message += f'用户 {user_name} 24小时内统计数据为: '
-        message += f'\nL\'PM: {game_stats["24H"]["LPM"]} ( {game_stats["24H"]["PPS"]} pps )'
+        message += (
+            f'\nL\'PM: {game_stats["24H"]["LPM"]} ( {game_stats["24H"]["PPS"]} pps )'
+        )
         message += f'\nAPM: {game_stats["24H"]["APM"]} ( x{game_stats["24H"]["APL"]} )'
         message += '\n历史统计数据为: '
-        message += f'\nL\'PM: {game_stats["All"]["LPM"]} ( {game_stats["All"]["PPS"]} pps )'
+        message += (
+            f'\nL\'PM: {game_stats["All"]["LPM"]} ( {game_stats["All"]["PPS"]} pps )'
+        )
         message += f'\nAPM: {game_stats["All"]["APM"]} ( x{game_stats["All"]["APL"]} )'
     elif game_stats['24H'] and not game_stats['All']:
         message += f'用户 {user_name} 24小时内统计数据为: '
-        message += f'\nL\'PM: {game_stats["24H"]["LPM"]} ( {game_stats["24H"]["PPS"]} pps )'
+        message += (
+            f'\nL\'PM: {game_stats["24H"]["LPM"]} ( {game_stats["24H"]["PPS"]} pps )'
+        )
         message += f'\nAPM: {game_stats["24H"]["APM"]} ( x{game_stats["24H"]["APL"]} )'
         message += '\n暂无历史统计数据'
         message += '\n( 这理论上不该存在, 如果你看到了, 请联系bot主人查看后台'
-        logger.error(f'老实说这个不算Error, 但是理论上不应该有, 如果你看到了这条日志, 我希望你能来Github发个issue（\
+        logger.error(
+            f'老实说这个不算Error, 但是理论上不应该有, 如果你看到了这条日志, 我希望你能来Github发个issue（\
 user_name: {user_name}\
 user_data: {user_data}\
-game_stats: {game_stats}')
+game_stats: {game_stats}'
+        )
     elif not game_stats['24H'] and game_stats['All']:
         message += f'用户 {user_name} 暂无24小时内统计数据, 历史统计数据为: '
-        message += f'\nL\'PM: {game_stats["All"]["LPM"]} ( {game_stats["All"]["PPS"]} pps )'
+        message += (
+            f'\nL\'PM: {game_stats["All"]["LPM"]} ( {game_stats["All"]["PPS"]} pps )'
+        )
         message += f'\nAPM: {game_stats["All"]["APM"]} ( x{game_stats["All"]["APL"]} )'
     else:
         message += f'用户 {user_name} 暂无24小时内统计数据, 暂无历史统计数据'
