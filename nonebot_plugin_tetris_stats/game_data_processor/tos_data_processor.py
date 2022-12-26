@@ -42,7 +42,7 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
             async with session.get(url) as resp:
                 data = await resp.json()
                 return True, data['success'], data
-    except aiohttp.client_exceptions.ClientConnectorError as error: # type: ignore
+    except aiohttp.client_exceptions.ClientConnectorError as error:  # type: ignore
         logger.error(f'请求错误\n{error}')
         return False, False, {}
 
