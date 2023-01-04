@@ -59,11 +59,11 @@ class DataBase:
         '''注册字段'''
         db = await cls._get_db()
         cursor = db.cursor()
-        cursor.execute('PRAGMA TABLE_INFO(?)', (table_name))
+        cursor.execute(f'PRAGMA TABLE_INFO({table_name})')
         columns = [row[1].upper() for row in cursor.fetchall()]
         if column_name.upper() not in columns:
             cursor.execute(
-                'ALTER TABLE ? ADD COLUMN ? ?', (table_name, column_name, column_type)
+                f'ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}'
             )
             db.commit()
         cursor.close()
@@ -73,7 +73,7 @@ class DataBase:
         '''查询绑定信息'''
         db = await cls._get_db()
         cursor = db.cursor()
-        cursor.execute('SELECT ? FROM BIND WHERE QQ = ?', (game_type, qq_number))
+        cursor.execute(f'SELECT {game_type} FROM BIND WHERE QQ = ?', (qq_number,))
         user = cursor.fetchone()
         cursor.close()
         if user is None:
@@ -91,12 +91,12 @@ class DataBase:
         cursor = db.cursor()
         if bind_info is not None:
             cursor.execute(
-                'UPDATE BIND SET ? = ? WHERE QQ = ?', (game_type, user, qq_number)
+                f'UPDATE BIND SET {game_type} = ? WHERE QQ = ?', (user, qq_number)
             )
             message = '更新成功'
         elif bind_info is None:
             cursor.execute(
-                'INSERT INTO BIND (QQ, ?) VALUES (?, ?)', (game_type, qq_number, user)
+                f'INSERT INTO BIND (QQ, {game_type}) VALUES (?, ?)', (qq_number, user)
             )
             message = '绑定成功'
         else:
