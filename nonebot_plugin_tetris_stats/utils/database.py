@@ -31,7 +31,7 @@ class DataBase:
     async def init_db(cls) -> Connection:
         '''初始化数据库'''
         if cls._db is None:
-            db_dir = Path(Config.db_path).parent
+            db_dir = Path(config.db_path).parent
             if not db_dir.exists():
                 db_dir.mkdir(parents=True)
             elif not db_dir.is_dir():
