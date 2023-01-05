@@ -1,10 +1,11 @@
 from re import I
 
 from nonebot import get_driver, on_regex
-from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
+from nonebot.adapters.onebot.v11 import GROUP, Bot, MessageEvent
 from nonebot.matcher import Matcher
 
 from ...utils.database import DataBase
+from ...utils.recorder import receive, recorder
 from .processor import Processor
 
 driver = get_driver()
@@ -20,7 +21,8 @@ IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
 
 
 @IOBind.handle()
-async def _(event: MessageEvent, matcher: Matcher):
+@recorder(receive)
+async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     await matcher.finish(
         await Processor.handle_bind(
             message=event.raw_message, qq_number=event.sender.user_id

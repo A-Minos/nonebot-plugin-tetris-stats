@@ -5,11 +5,14 @@ from nonebot.log import logger
 
 from ...utils.database import DataBase
 from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
+from ...utils.recorder import recorder, send
 from .request import Request
 
 
 class Processor:
+    # TODO 把 user 相关存到 cls 里 例如 user_id, user_data
     @classmethod
+    @recorder(send)
     async def handle_bind(cls, message: str, qq_number: int | None) -> str:
         '''处理绑定消息'''
         decoded_message = await handle_bind_message(message=message, game_type='IO')
