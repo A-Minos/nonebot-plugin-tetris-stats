@@ -2,7 +2,7 @@ from re import match, sub
 
 
 async def handle_bind_message(message: str, game_type: str) -> tuple[str | None, tuple]:
-    '''返回值为tuple[gameType, tuple[message, user]]'''
+    '''返回值为tuple[handleType, tuple[message, user]]'''
     _cmd_aliases = {'IO': ['io绑定', 'iobind'], 'TOP': ['top绑定', 'topbind']}
     # 剔除命令前缀
     for i in _cmd_aliases[game_type]:
@@ -20,7 +20,7 @@ async def handle_bind_message(message: str, game_type: str) -> tuple[str | None,
 async def handle_stats_query_message(
     message: str, game_type: str
 ) -> tuple[str | None, tuple]:
-    '''返回值为tuple[gameType, tuple[message, user]]'''
+    '''返回值为tuple[handleType, tuple[message, user]]'''
     _cmd_aliases = {
         'IO': ['io查', 'iostats'],
         'TOS': ['tos查', 'tostats', 'tosstats', '茶服查', '茶服stats'],
@@ -104,7 +104,7 @@ async def handle_stats_query_message(
 
 
 async def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
-    '''返回值为tuple[gameType, tuple[message, user]]'''
+    '''返回值为tuple[handleType, tuple[message, user]]'''
     if game_type == 'IO':
         if match(r'^[a-f0-9]{24}$', name):
             return 'ID', (None, name)
