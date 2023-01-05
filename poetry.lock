@@ -943,6 +943,18 @@ files = [
 ]
 
 [[package]]
+name = "objprint"
+version = "0.2.2"
+description = "A library that can print Python objects in human readable format"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "objprint-0.2.2-py3-none-any.whl", hash = "sha256:9f50bb3b7cbe95b6d22c79e4f08a5273e3f7e5ff5ce35e146f6e7854abd276a0"},
+    {file = "objprint-0.2.2.tar.gz", hash = "sha256:90f2f3c19dfda1b5eb50d87d82ccbc20511ca4f02c4878553c56edc711e39689"},
+]
+
+[[package]]
 name = "pandas"
 version = "1.5.2"
 description = "Powerful data structures for data analysis, time series, and statistics"
@@ -1717,4 +1729,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "1945791c900fa851cfdc25a8990901325129c04e546b8ef0c1bff87519ac52b9"
+content-hash = "fd0e9c7b8332e2819dcdac67db91a18a69877cde8f5f51a9ac877cca127d6668"
