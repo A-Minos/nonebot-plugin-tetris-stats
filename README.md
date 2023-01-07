@@ -1,7 +1,7 @@
 <div align="center">
 
 <p align="center">
-  <img src="img/logo.svg" width="200" height="200" alt="Tetris Stats"></a>
+  <img src="img/logo.svg" width="200" height="200" alt="logo" title="Tetris Stats"></a>
 </p>
 
 # Tetris Stats
@@ -12,19 +12,19 @@
 <a href="https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE">
   <img
     src="https://img.shields.io/github/license/shoucandanghehe/nonebot-plugin-tetris-stats"
-    alt="license"
+    alt="License"
   />
 </a>
 <a href="https://pypi.python.org/pypi/nonebot-plugin-tetris-stats">
   <img 
     src="https://img.shields.io/pypi/v/nonebot-plugin-tetris-stats"
-    alt="pypi"
+    alt="PyPi"
   />
 </a>
 <a href="https://www.python.org/">
   <img 
     src="https://img.shields.io/badge/Python-3.10+-blue"
-    alt="python"
+    alt="Python"
   />
 </a>
 <a href="https://github.com/psf/black">
