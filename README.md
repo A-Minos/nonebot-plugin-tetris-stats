@@ -1,5 +1,9 @@
 <div align="center">
 
+<p align="center">
+  <img src="img/logo.svg" width="200" height="200" alt="Tetris Stats"></a>
+</p>
+
 # Tetris Stats
 ✨一款基于[NoneBot2](https://github.com/nonebot/nonebot2)的用于查询Tetris相关游戏玩家数据的插件✨
 </div>
@@ -38,6 +42,7 @@
 </p>
 
 ✨ 目前支持的游戏
+----
 * [TETR.IO](https://tetr.io/)
 * [茶服](https://teatube.cn/tos/)
 * [TOP](http://tetrisonline.pl/)
