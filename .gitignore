@@ -1,5 +1,8 @@
 dist
-test*
+test_*
 Untitled*
 *copy*
 .vscode
+dev*
+*cache*
+*backup*
