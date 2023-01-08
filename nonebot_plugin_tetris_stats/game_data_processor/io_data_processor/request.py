@@ -136,11 +136,11 @@ class Request:
                 async with session.get(url, headers=cls._headers) as resp:
                     data = await resp.json()
                     return True, data['success'], data
-        except aiohttp.client_exceptions.ClientConnectorError as error:  # type: ignore
+        except aiohttp.ContentTypeError:
+            return await cls._anti_cloudflare(url)
+        except aiohttp.ClientError as error:
             logger.error(f'请求错误\n{error}')
             return False, False, {}
-        except aiohttp.client_exceptions.ContentTypeError:  # type: ignore
-            return await cls._anti_cloudflare(url)
 
     @classmethod
     async def close_browser(cls) -> None:

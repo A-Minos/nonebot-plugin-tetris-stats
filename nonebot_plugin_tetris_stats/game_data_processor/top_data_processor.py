@@ -96,8 +96,8 @@ async def get_user_data(user_name: str) -> tuple[bool, str]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 return True, await resp.text()
-    except aiohttp.client_exceptions.ClientConnectorError as error:  # type: ignore
-        logger.error(error)
+    except aiohttp.ClientError as error:
+        logger.error(f'请求错误\n{error}')
         return False, ''
 
 
