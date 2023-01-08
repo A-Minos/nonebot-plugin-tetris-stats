@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import GROUP, Bot, MessageEvent
 from nonebot.matcher import Matcher
 
 from ...utils.database import DataBase
+from ...utils.exception import NeedCatchException
 from ...utils.recorder import receive, recorder
 from .processor import Processor
 
@@ -26,7 +27,10 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     proc = Processor(
         message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
     )
-    await matcher.finish(await proc.handle_bind())
+    try:
+        await matcher.finish(await proc.handle_bind())
+    except NeedCatchException as e:
+        await matcher.finish(str(e))
 
 
 @IOStats.handle()
@@ -37,4 +41,7 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     proc = Processor(
         message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
     )
-    await matcher.finish(await proc.handle_query())
+    try:
+        await matcher.finish(await proc.handle_query())
+    except NeedCatchException as e:
+        await matcher.finish(str(e))
