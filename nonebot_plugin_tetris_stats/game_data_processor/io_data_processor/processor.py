@@ -2,7 +2,7 @@ from asyncio import gather
 from typing import Any, NoReturn
 
 from ...utils.database import DataBase
-from ...utils.exception import RequestErrorException, WhatTheFuckException
+from ...utils.exception import RequestError, WhatTheFuckError
 from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
 from ...utils.recorder import recorder, send
 from ...utils.typing import CommandType, GameType
@@ -96,7 +96,7 @@ class Processor:
     async def check_user(self) -> None | NoReturn:
         user_name, user_id = self.user['Name'], self.user['ID']
         if user_name is None and user_id is None:
-            raise WhatTheFuckException('为什么 UserName 和 UserID 都没有')
+            raise WhatTheFuckError('为什么 UserName 和 UserID 都没有')
         return None
 
     async def get_user_data(self) -> dict[str, Any] | NoReturn:
@@ -107,9 +107,9 @@ class Processor:
             user_data_url = f'https://ch.tetr.io/api/users/{user_name or user_id}'
             req_stats, srv_stats, user_data = await Request.request(user_data_url)
             if req_stats is False:
-                raise RequestErrorException('用户信息请求失败')
+                raise RequestError('用户信息请求失败')
             if srv_stats is False:
-                raise RequestErrorException(f'用户信息请求错误:\n{user_data["error"]}')
+                raise RequestError(f'用户信息请求错误:\n{user_data["error"]}')
             self.response['user_data'] = user_data
         return self.response['user_data']
 
@@ -120,9 +120,9 @@ class Processor:
         req_stats, srv_stats, user_data = await Request.request(user_solo_url)
         if 'solo_data' not in self.response:
             if req_stats is False:
-                raise RequestErrorException('Solo统计数据请求失败')
+                raise RequestError('Solo统计数据请求失败')
             if srv_stats is False:
-                raise RequestErrorException(f'Solo统计数据请求错误:\n{user_data["error"]}')
+                raise RequestError(f'Solo统计数据请求错误:\n{user_data["error"]}')
             self.response['solo_data'] = user_data
         return user_data
 
@@ -143,7 +143,7 @@ class Processor:
         '''
         _, user_id = await self.get_user_info()  # type: ignore[misc]
         if user_id != (await self.get_user_data())['data']['user']['_id']:  # type: ignore[index]
-            raise WhatTheFuckException('服务器返回的userID和用户提供的不一致')
+            raise WhatTheFuckError('服务器返回的userID和用户提供的不一致')
         return None  # 如果不显式写 return, mypy 会报错 原因不明
 
     async def get_league_stats(self) -> dict[str, Any] | NoReturn:
@@ -227,7 +227,7 @@ class Processor:
             sprint_stats, blitz_stats = await gather(
                 self.get_sprint_stats(), self.get_blitz_stats()
             )
-        except RequestErrorException as e:
+        except RequestError as e:
             return f'{ret_message}\n{str(e)}'
         ret_message += (
             f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''

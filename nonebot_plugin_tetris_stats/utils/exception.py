@@ -1,4 +1,4 @@
-class TetrisStatsException(Exception):
+class TetrisStatsError(Exception):
     '''所有 TetrisStats 发生的异常基类'''
 
     def __init__(self, message: str | None = None):
@@ -8,17 +8,17 @@ class TetrisStatsException(Exception):
         return self.message
 
 
-class NeedCatchException(TetrisStatsException):
+class NeedCatchError(TetrisStatsError):
     '''需要被捕获的异常基类'''
 
 
-class DoNotCatchException(TetrisStatsException):
+class DoNotCatchError(TetrisStatsError):
     '''不应该被捕获的异常基类'''
 
 
-class RequestErrorException(NeedCatchException):
+class RequestError(NeedCatchError):
     '''用于表示请求错误'''
 
 
-class WhatTheFuckException(DoNotCatchException):
+class WhatTheFuckError(DoNotCatchError):
     '''用于表示不应该出现的情况（'''
