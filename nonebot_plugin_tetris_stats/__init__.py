@@ -1,1 +1,1 @@
-from . import game_data_processor
+from . import game_data_processor  # noqa: F401
