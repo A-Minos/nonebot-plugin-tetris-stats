@@ -3,6 +3,7 @@ from time import time_ns
 from typing import Any, Awaitable, Callable, Type
 
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
+from nonebot.exception import FinishedException
 from nonebot.log import logger
 
 AsyncCallable = Callable[..., Awaitable[Any]]
@@ -19,15 +20,15 @@ async def receive(bot: Bot, event: MessageEvent, *args, **kwargs):
     )
 
 
-async def send(cls: Type, *args, **kwargs):
-    game_type = getattr(cls, 'game_type', None)
+async def send(cls: Type, ret: Any, *args, **kwargs):
+    game_type = getattr(cls, 'GAME_TYPE', None)
+    user = getattr(cls, 'user', None)
     command_type = getattr(cls, 'command_type', None)
-    user_id = getattr(cls, 'user_id', None)
     command_args = getattr(cls, 'command_args', None)
     response = getattr(cls, 'response', None)
     processed_data = getattr(cls, 'processed_data', None)
     logger.debug(
-        f'game_type: {game_type}, command_type: {command_type}, user_id: {user_id}, command_args: {command_args}, response: {response}, processed_data: {processed_data}'
+        f'game_type: {game_type}, command_type: {command_type}, user: {user}, command_args: {command_args}, response: {response}, processed_data: {processed_data}, return_message: {ret}'
     )
 
 
@@ -35,8 +36,12 @@ def recorder(collector: AsyncCallable):
     def _inner(func: AsyncCallable):
         @wraps(func)
         async def _wrapper(*args, **kwargs):
-            await collector(*args, **kwargs)
-            ret = await func(*args, **kwargs)
+            try:
+                ret = await func(*args, **kwargs)
+            except FinishedException:
+                ret = None
+            await collector(ret=ret, *args, **kwargs)
+            # 或许应该把 try 放到 receive函数里
             return ret
 
         return _wrapper

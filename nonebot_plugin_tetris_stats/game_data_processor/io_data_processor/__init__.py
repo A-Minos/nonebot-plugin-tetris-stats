@@ -23,19 +23,18 @@ IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
 @IOBind.handle()
 @recorder(receive)
 async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
-    await matcher.finish(
-        await Processor.handle_bind(
-            message=event.raw_message, qq_number=event.sender.user_id
-        )
+    proc = Processor(
+        message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
     )
+    await matcher.finish(await proc.handle_bind())
 
 
 @IOStats.handle()
-async def _(event: MessageEvent, matcher: Matcher):
-    if event.is_tome():
+@recorder(receive)
+async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
+    if event.is_tome():  # tome会把私聊判断为True 如果需要支持私聊则需要找其他办法
         await matcher.finish('不能查询bot的信息')
-    await matcher.finish(
-        await Processor.handle_query(
-            message=event.raw_message, qq_number=event.sender.user_id
-        )
+    proc = Processor(
+        message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
     )
+    await matcher.finish(await proc.handle_query())

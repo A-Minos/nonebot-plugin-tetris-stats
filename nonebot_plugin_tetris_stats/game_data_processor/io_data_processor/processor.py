@@ -1,121 +1,155 @@
 from asyncio import gather
-from typing import Any
-
-from nonebot.log import logger
+from typing import Any, NoReturn
 
 from ...utils.database import DataBase
+from ...utils.exception import RequestErrorException, WhatTheFuckException
 from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
 from ...utils.recorder import recorder, send
+from ...utils.typing import CommandType, GameType
 from .request import Request
 
 
 class Processor:
-    # TODO 把 user 相关存到 cls 里 例如 user_id, user_data
-    @classmethod
+    def __init__(self, message: str, bot_id: str, source_id: str) -> None:
+        self.message = message
+        self.bot_id = bot_id
+        self.source_id = source_id
+        self.GAME_TYPE: GameType = 'IO'
+        self.command_type: CommandType | None = None
+        self.command_args: str | None = None
+        self.user: dict[str, str | None] = {'ID': None, 'Name': None}
+        self.response: dict[str, Any] = {}
+        self.processed_data: dict[str, Any] = {}
+
     @recorder(send)
-    async def handle_bind(cls, message: str, qq_number: int | None) -> str:
+    async def handle_bind(self) -> str:
         '''处理绑定消息'''
-        decoded_message = await handle_bind_message(message=message, game_type='IO')
-        if decoded_message[0] is None:
-            return decoded_message[1][0]
-        if decoded_message[0] == 'ID':
-            user_id_stats = await cls.check_user_id(decoded_message[1][1])
-            if user_id_stats[0] is False:
-                return user_id_stats[1]
-            user_id = decoded_message[1][1]
-        elif decoded_message[0] == 'Name':
-            user_data = await cls.get_user_data(user_name=decoded_message[1][1])
-            if user_data[0] is False:
-                return '用户信息请求失败'
-            if user_data[1] is False:
-                return f'用户信息请求错误:\n{user_data[2]["error"]}'
-            user_id = await cls.get_user_id(user_data[2])
-            if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是（
-                logger.error('获取QQ号失败')
-                return '获取QQ号失败'
-            return await DataBase.write_bind_info(
-                qq_number=qq_number, user=user_id, game_type='IO'
-            )
-        logger.error('预期外行为, 请上报GitHub')
-        return '出现预期外行为，请查看后台信息'
-
-    @classmethod
-    async def handle_query(cls, message: str, qq_number: int | None):
-        '''处理查询消息'''
-        decoded_message = await handle_stats_query_message(
-            message=message, game_type='IO'
+        self.command_type = 'bind'
+        decoded_message = await handle_bind_message(
+            message=self.message, game_type=self.GAME_TYPE
         )
-        if decoded_message[0] is None:
-            return decoded_message[1][0]
-        if decoded_message[0] == 'AT':  # 在入口处判断是否@bot本身
-            bind_info = await DataBase.query_bind_info(
-                qq_number=decoded_message[1][1], game_type='IO'
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
-        if decoded_message[0] == 'ME':
-            if qq_number is None:
-                logger.error('获取QQ号失败')
-                return '获取QQ号失败, 请联系bot主人'
-            bind_info = await DataBase.query_bind_info(
-                qq_number=qq_number, game_type='IO'
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
-        if decoded_message[0] == 'ID':
-            return await Processor.generate_message(user_id=decoded_message[1][1])
-        if decoded_message[0] == 'Name':
-            return await Processor.generate_message(user_name=decoded_message[1][1])
+        handle_type = decoded_message[0]
+        ret_message = decoded_message[1][0]
+        user = decoded_message[1][1]
+        if handle_type is None:
+            return ret_message
+        if handle_type == 'ID':
+            self.user['ID'] = user
+            await self.check_user_id()
+        elif handle_type == 'Name':
+            self.user['Name'] = user
+            await self.get_user_id()
+        assert isinstance(self.user['ID'], str)
+        return await DataBase.write_bind_info(
+            qq_number=self.source_id, user=self.user['ID'], game_type=self.GAME_TYPE
+        )
 
-    @classmethod
-    async def get_user_data(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> tuple[bool, bool, dict[str, Any]]:
+    @recorder(send)
+    async def handle_query(self):
+        '''处理查询消息'''
+        self.command_type = 'query'
+        decoded_message = await handle_stats_query_message(
+            message=self.message, game_type=self.GAME_TYPE
+        )
+        handle_type = decoded_message[0]
+        ret_message = decoded_message[1][0]
+        user = decoded_message[1][1]
+        if handle_type is None:
+            return ret_message
+        if handle_type == 'AT':  # 在入口处判断是否@bot本身
+            bind_info = await DataBase.query_bind_info(
+                qq_number=user, game_type=self.GAME_TYPE
+            )
+            if bind_info is None:
+                return '未查询到绑定信息'
+            self.user['ID'] = bind_info
+            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await self.generate_message()}'
+        if handle_type == 'ME':
+            bind_info = await DataBase.query_bind_info(
+                qq_number=self.source_id, game_type=self.GAME_TYPE
+            )
+            if bind_info is None:
+                return '未查询到绑定信息'
+            self.user['ID'] = bind_info
+            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await self.generate_message()}'
+        if handle_type == 'ID':
+            self.user['ID'] = user
+            return await self.generate_message()
+        if handle_type == 'Name':
+            self.user['Name'] = user
+            return await self.generate_message()
+
+    async def get_user_info(self) -> tuple[str, str] | NoReturn:
+        '''
+        用于获取 UserName 和 UserID 的函数
+
+        如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException（
+        '''
+        await self.check_user()
+        user_name, user_id = self.user['Name'], self.user['ID']
+        if user_name is None:
+            user_name = (await self.get_user_data())['data']['user']['username']  # type: ignore[index]
+        if user_id is None:
+            user_id = await self.get_user_id()
+        return user_name, user_id
+
+    async def check_user(self) -> None | NoReturn:
+        user_name, user_id = self.user['Name'], self.user['ID']
+        if user_name is None and user_id is None:
+            raise WhatTheFuckException('为什么 UserName 和 UserID 都没有')
+        return None
+
+    async def get_user_data(self) -> dict[str, Any] | NoReturn:
         '''获取用户数据'''
-        if user_name is not None and user_id is None:
-            user_data_url = f'https://ch.tetr.io/api/users/{user_name}'
-        elif user_name is None and user_id is not None:
-            user_data_url = f'https://ch.tetr.io/api/users/{user_id}'
-        else:
-            raise ValueError('预期外行为, 请上报GitHub')
-        return await Request.request(user_data_url)
+        if 'user_data' not in self.response:
+            await self.check_user()
+            user_name, user_id = self.user['Name'], self.user['ID']
+            user_data_url = f'https://ch.tetr.io/api/users/{user_name or user_id}'
+            req_stats, srv_stats, user_data = await Request.request(user_data_url)
+            if req_stats is False:
+                raise RequestErrorException('用户信息请求失败')
+            if srv_stats is False:
+                raise RequestErrorException(f'用户信息请求错误:\n{user_data["error"]}')
+            self.response['user_data'] = user_data
+        return self.response['user_data']
 
-    @classmethod
-    async def get_solo_data(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> tuple[bool, bool, dict[str, Any]]:
+    async def get_solo_data(self) -> dict[str, Any] | NoReturn:
         '''获取Solo数据'''
-        if user_name is not None and user_id is None:
-            user_solo_url = f'https://ch.tetr.io/api/users/{user_name}/records'
-        elif user_name is None and user_id is not None:
-            user_solo_url = f'https://ch.tetr.io/api/users/{user_id}/records'
-        else:
-            raise ValueError('预期外行为, 请上报GitHub')
-        return await Request.request(user_solo_url)
+        user_name, user_id = await self.get_user_info()  # type: ignore[misc]
+        user_solo_url = f'https://ch.tetr.io/api/users/{user_name or user_id}/records'
+        req_stats, srv_stats, user_data = await Request.request(user_solo_url)
+        if 'solo_data' not in self.response:
+            if req_stats is False:
+                raise RequestErrorException('Solo统计数据请求失败')
+            if srv_stats is False:
+                raise RequestErrorException(f'Solo统计数据请求错误:\n{user_data["error"]}')
+            self.response['solo_data'] = user_data
+        return user_data
 
-    @classmethod
-    async def get_user_id(cls, user_data: dict) -> str:
+    async def get_user_id(self) -> str | NoReturn:
         '''获取用户ID'''
-        return user_data['data']['user']['_id']
+        if self.user['ID'] is None:
+            self.user['ID'] = (await self.get_user_data())['data']['user']['_id']  # type: ignore[index]
+        assert isinstance(self.user['ID'], str)
+        return self.user['ID']
 
-    @classmethod
-    async def check_user_id(cls, user_id: str) -> tuple[bool, str]:
-        '''检查用户ID是否有效 返回值为tuple[bool, message]'''
-        user_data = await cls.get_user_data(user_id=user_id)
-        if user_data[0] is False:
-            return False, '用户信息请求失败'
-        if user_data[1] is False:
-            return False, f'用户信息请求错误:\n{user_data[2]["error"]}'
-        if user_id == user_data[2]['data']['user']['_id']:
-            return True, ''
-        raise ValueError('服务器返回的userID和用户提供的不一致, 这种情况理论上不应该发生, 以防万一还是写一下（x')
+    async def check_user_id(self) -> None | NoReturn:
+        '''
+        检查用户ID是否有效
 
-    @classmethod
-    async def get_league_stats(cls, user_data: dict) -> dict[str, Any]:
+        如果无效会 raise 一个 Exception, 具体 Exception 类型以无效原因为准
+
+        如果有效会返回 None
+        '''
+        _, user_id = await self.get_user_info()  # type: ignore[misc]
+        if user_id != (await self.get_user_data())['data']['user']['_id']:  # type: ignore[index]
+            raise WhatTheFuckException('服务器返回的userID和用户提供的不一致')
+        return None  # 如果不显式写 return, mypy 会报错 原因不明
+
+    async def get_league_stats(self) -> dict[str, Any] | NoReturn:
         '''获取排位统计数据'''
-        league = user_data['data']['user']['league']
+        user_data = await self.get_user_data()
+        league = user_data['data']['user']['league']  # type: ignore[index]
         league_stats: dict[str, Any] = {}
         if league['gamesplayed'] != 0:
             league_stats['PPS'] = league['pps']
@@ -139,72 +173,68 @@ class Processor:
             )
         return league_stats
 
-    @classmethod
-    async def get_sprint_stats(cls, solo_data: dict) -> dict[str, Any]:
+    async def get_sprint_stats(self) -> dict[str, Any] | NoReturn:
         '''获取40L统计数据'''
-        sprint_stats = {}
-        solo = solo_data['data']['records']['40l']
-        if solo['record'] is not None:
+        solo_data = await self.get_solo_data()
+        sprint_stats: dict[str, Any] = {}
+        l40 = solo_data['data']['records']['40l']  # type: ignore[index]
+        # l40 倒装句了属于是
+        if l40['record'] is not None:
             sprint_stats['Time'] = round(
-                solo['record']['endcontext']['finalTime'] / 1000, 2
+                l40['record']['endcontext']['finalTime'] / 1000, 2
             )
-            if solo['rank'] is not None:
-                sprint_stats['Rank'] = solo['rank']
+            if l40['rank'] is not None:
+                sprint_stats['Rank'] = l40['rank']
         return sprint_stats
 
-    @classmethod
-    async def get_blitz_stats(cls, solo_data: dict) -> dict[str, Any]:
+    async def get_blitz_stats(self) -> dict[str, Any] | NoReturn:
         '''获取Blitz统计数据'''
-        blitz_stats = {}
-        blitz = solo_data['data']['records']['blitz']
+        solo_data = await self.get_solo_data()
+        blitz_stats: dict[str, Any] = {}
+        blitz = solo_data['data']['records']['blitz']  # type: ignore[index]
         if blitz['record'] is not None:
             blitz_stats['Score'] = blitz['record']['endcontext']['score']
             if blitz['rank'] is not None:
                 blitz_stats['Rank'] = blitz['rank']
         return blitz_stats
 
-    @classmethod
-    async def generate_message(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> str:
+    async def generate_message(self) -> str:
         '''生成消息'''
-        user_data, solo_data = await gather(
-            cls.get_user_data(user_name=user_name, user_id=user_id),
-            cls.get_solo_data(user_name=user_name, user_id=user_id),
-        )
-        if user_data[0] is False:
-            return '用户信息请求失败'
-        if user_data[1] is False:
-            return f'用户信息请求错误:\n{user_data[2]["error"]}'
-        user_name = user_data[2]['data']['user']['username'].upper()
-        league_stats = await cls.get_league_stats(user_data[2])
-        message = ''
+        user_name, _ = await self.get_user_info()  # type: ignore[misc]
+        user_name = user_name.upper()
+        league_stats = await self.get_league_stats()
+        ret_message = ''
         if not league_stats:
-            message += f'用户 {user_name} 没有排位统计数据'
+            ret_message += f'用户 {user_name} 没有排位统计数据'
         else:
             if league_stats['Rank'] is None:
-                message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
+                ret_message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
             else:
                 if league_stats['Rank'] == 'Z':
-                    message += f'用户 {user_name} 暂无段位, {league_stats["Rating"]} TR'
+                    ret_message += f'用户 {user_name} 暂无段位, {league_stats["Rating"]} TR'
                 else:
-                    message += f'{league_stats["Rank"]} 段用户 {user_name} {league_stats["Rating"]} TR (#{league_stats["Standing"]})'
-                message += (
+                    ret_message += f'{league_stats["Rank"]} 段用户 {user_name} {league_stats["Rating"]} TR (#{league_stats["Standing"]})'
+                ret_message += (
                     f', 段位分 {league_stats["Glicko"]}±{league_stats["RD"]}, 最近十场的数据:'
                 )
-            message += f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
-            message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
+            ret_message += (
+                f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
+            )
+            ret_message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
             if league_stats["VS"] != 0:
-                message += f'\nADPM: {league_stats["ADPM"]} ( x{league_stats["ADPL"]} ) ( {league_stats["VS"]}vs )'
-        if solo_data[0] is False:
-            return f'{message}\nSolo统计数据请求失败'
-        if solo_data[1] is False:
-            return f'{message}\nSolo统计数据请求错误:\n{solo_data[2]["error"]}'
-        sprint_stats, blitz_stats = await gather(
-            cls.get_sprint_stats(solo_data[2]), cls.get_blitz_stats(solo_data[2])
+                ret_message += f'\nADPM: {league_stats["ADPM"]} ( x{league_stats["ADPL"]} ) ( {league_stats["VS"]}vs )'
+        try:
+            sprint_stats, blitz_stats = await gather(
+                self.get_sprint_stats(), self.get_blitz_stats()
+            )
+        except RequestErrorException as e:
+            return f'{ret_message}\n{str(e)}'
+        ret_message += (
+            f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
         )
-        message += f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
-        message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
-        message += f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
-        message += f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
-        return message
+        ret_message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
+        ret_message += (
+            f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
+        )
+        ret_message += f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
+        return ret_message
