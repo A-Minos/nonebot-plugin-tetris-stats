@@ -1,26 +1,39 @@
 from functools import wraps
-from time import time_ns
+from time import time
 from typing import Any, Type
 
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
-from nonebot.exception import FinishedException
 from nonebot.log import logger
 
 from .typing import AsyncCallable
 
 
-async def receive(bot: Bot, event: MessageEvent, *args, **kwargs):
+async def receive(
+    func: AsyncCallable, bot: Bot, event: MessageEvent, *args, **kwargs
+) -> Any:
     message_id = event.message_id
-    message_time = time_ns()
+    message_time = int(time())
     bot_id = bot.self_id
     source_id = event.get_session_id()
     message = event.raw_message
     logger.debug(
-        f'message_id: {message_id}, time: {message_time}, bot_id: {bot_id}, source_id: {source_id}, message: {message}'
+        f'''
+message_id: {message_id}
+time: {message_time}
+bot_id: {bot_id}
+source_id: {source_id}
+message: {message}
+'''
     )
+    kwargs.update(bot=bot, event=event)
+    ret = await func(*args, **kwargs)
+    return ret
 
 
-async def send(cls: Type, ret: Any, *args, **kwargs):
+async def send(func: AsyncCallable, cls: Type, *args, **kwargs) -> Any:
+    args = (cls,)
+    ret = await func(*args, **kwargs)
+    call_time = int(time())
     game_type = getattr(cls, 'GAME_TYPE', None)
     user = getattr(cls, 'user', None)
     command_type = getattr(cls, 'command_type', None)
@@ -28,20 +41,25 @@ async def send(cls: Type, ret: Any, *args, **kwargs):
     response = getattr(cls, 'response', None)
     processed_data = getattr(cls, 'processed_data', None)
     logger.debug(
-        f'game_type: {game_type}, command_type: {command_type}, user: {user}, command_args: {command_args}, response: {response}, processed_data: {processed_data}, return_message: {ret}'
+        f'''
+call_time: {call_time}
+game_type: {game_type}
+command_type: {command_type}
+user: {user}
+command_args: {command_args}
+response: {response}
+processed_data: {processed_data}
+return_message: {ret}
+'''
     )
+    return ret
 
 
 def recorder(collector: AsyncCallable):
     def _inner(func: AsyncCallable):
         @wraps(func)
         async def _wrapper(*args, **kwargs):
-            try:
-                ret = await func(*args, **kwargs)
-            except FinishedException:
-                ret = None
-            await collector(ret=ret, *args, **kwargs)
-            # 或许应该把 try 放到 receive函数里
+            ret = await collector(func, *args, **kwargs)
             return ret
 
         return _wrapper

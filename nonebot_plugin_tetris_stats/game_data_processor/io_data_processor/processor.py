@@ -203,6 +203,7 @@ class Processor:
         user_name, _ = await self.get_user_info()  # type: ignore[misc]
         user_name = user_name.upper()
         league_stats = await self.get_league_stats()
+        self.processed_data.update(league_stats=league_stats)
         ret_message = ''
         if not league_stats:
             ret_message += f'用户 {user_name} 没有排位统计数据'
@@ -228,13 +229,21 @@ class Processor:
                 self.get_sprint_stats(), self.get_blitz_stats()
             )
         except RequestError as e:
-            return f'{ret_message}\n{str(e)}'
-        ret_message += (
-            f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
-        )
-        ret_message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
-        ret_message += (
-            f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
-        )
-        ret_message += f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
+            ret_message += f'\n{str(e)}'
+        else:
+            self.processed_data.update(
+                sprint_stats=sprint_stats, blitz_stats=blitz_stats
+            )
+            ret_message += (
+                f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
+            )
+            ret_message += (
+                f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
+            )
+            ret_message += (
+                f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
+            )
+            ret_message += (
+                f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
+            )
         return ret_message
