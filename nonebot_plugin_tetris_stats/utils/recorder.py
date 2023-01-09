@@ -1,12 +1,12 @@
 from functools import wraps
 from time import time_ns
-from typing import Any, Awaitable, Callable, Type
+from typing import Any, Type
 
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from nonebot.exception import FinishedException
 from nonebot.log import logger
 
-AsyncCallable = Callable[..., Awaitable[Any]]
+from .typing import AsyncCallable
 
 
 async def receive(bot: Bot, event: MessageEvent, *args, **kwargs):
