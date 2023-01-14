@@ -10,7 +10,10 @@ from .request import Request
 
 
 class Processor:
-    def __init__(self, message: str, bot_id: str, source_id: str) -> None:
+    def __init__(
+        self, message_id: int, message: str, bot_id: str, source_id: str
+    ) -> None:
+        self.message_id = message_id
         self.message = message
         self.bot_id = bot_id
         self.source_id = source_id

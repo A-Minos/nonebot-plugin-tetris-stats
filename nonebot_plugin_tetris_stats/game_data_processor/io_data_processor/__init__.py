@@ -25,7 +25,10 @@ IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
 @recorder(receive)
 async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     proc = Processor(
-        message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
+        message_id=event.message_id,
+        message=event.raw_message,
+        bot_id=bot.self_id,
+        source_id=event.get_user_id(),
     )
     try:
         await matcher.finish(await proc.handle_bind())
@@ -39,7 +42,10 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     if event.is_tome():  # tome会把私聊判断为True 如果需要支持私聊则需要找其他办法
         await matcher.finish('不能查询bot的信息')
     proc = Processor(
-        message=event.raw_message, bot_id=bot.self_id, source_id=event.get_user_id()
+        message_id=event.message_id,
+        message=event.raw_message,
+        bot_id=bot.self_id,
+        source_id=event.get_user_id(),
     )
     try:
         await matcher.finish(await proc.handle_query())

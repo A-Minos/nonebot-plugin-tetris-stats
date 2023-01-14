@@ -33,6 +33,7 @@ message: {message}
 async def send(func: AsyncCallable, cls: Type, *args, **kwargs) -> Any:
     args = (cls,)
     ret = await func(*args, **kwargs)
+    message_id = getattr(cls, 'message_id', None)
     call_time = int(time())
     game_type = getattr(cls, 'GAME_TYPE', None)
     user = getattr(cls, 'user', None)
@@ -42,6 +43,7 @@ async def send(func: AsyncCallable, cls: Type, *args, **kwargs) -> Any:
     processed_data = getattr(cls, 'processed_data', None)
     logger.debug(
         f'''
+message_id: {message_id}
 call_time: {call_time}
 game_type: {game_type}
 command_type: {command_type}
