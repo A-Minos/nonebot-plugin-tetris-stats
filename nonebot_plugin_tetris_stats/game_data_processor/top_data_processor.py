@@ -4,22 +4,14 @@ from typing import Any
 
 import aiohttp
 from lxml import etree
-from nonebot import get_driver, on_regex
+from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
 from nonebot.log import logger
 from nonebot.matcher import Matcher
 from pandas import read_html
 
-from ..utils.database import DataBase
+from ..db.database import DataBase
 from ..utils.message_analyzer import handle_bind_message, handle_stats_query_message
-
-driver = get_driver()
-
-
-@driver.on_startup
-async def _():
-    await DataBase.register_column('BIND', 'TOP', 'TEXT')
-
 
 TOPBind = on_regex(pattern=r'^top绑定|^topbind', flags=I, permission=GROUP)
 TopStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
@@ -40,12 +32,12 @@ async def _(event: MessageEvent, matcher: Matcher):
             if await check_user(user_data[1]) is False:
                 await matcher.finish('用户不存在')
             user_name = await get_user_name(user_data[1])
-            if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是（
+            if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是 (
                 logger.error('获取QQ号失败')
                 await matcher.finish('获取QQ号失败')
             await matcher.finish(
                 await DataBase.write_bind_info(
-                    qq_number=event.sender.user_id, user=user_name, game_type='TOP'
+                    user_ids={'qq': event.sender.user_id}, player_ids={'TOP': user_name}
                 )
             )
 
@@ -61,7 +53,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         if event.is_tome() is True:
             await matcher.finish('不能查询bot的信息')
         bind_info = await DataBase.query_bind_info(
-            qq_number=decoded_message[1][1], game_type='TOP'
+            user_ids={'qq': decoded_message[1][1]}, game_type='TOP'
         )
         if bind_info is None:
             message = '未查询到绑定信息'
@@ -74,7 +66,7 @@ async def _(event: MessageEvent, matcher: Matcher):
             logger.error('获取QQ号失败')
             await matcher.finish('获取QQ号失败, 请联系bot主人')
         bind_info = await DataBase.query_bind_info(
-            qq_number=event.sender.user_id, game_type='TOP'
+            user_ids={'qq': event.sender.user_id}, game_type='TOP'
         )
         if bind_info is None:
             message = '未查询到绑定信息'
@@ -203,7 +195,7 @@ async def generate_message(user_name: str) -> str:
         message += '\n暂无历史统计数据'
         message += '\n( 这理论上不该存在, 如果你看到了, 请联系bot主人查看后台'
         logger.error(
-            f'老实说这个不算Error, 但是理论上不应该有, 如果你看到了这条日志, 我希望你能来Github发个issue（\
+            f'老实说这个不算Error, 但是理论上不应该有, 如果你看到了这条日志, 我希望你能来Github发个issue (\
 user_name: {user_name}\
 user_data: {user_data}\
 game_stats: {game_stats}'

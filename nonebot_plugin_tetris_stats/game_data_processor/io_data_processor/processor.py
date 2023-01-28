@@ -1,7 +1,7 @@
 from asyncio import gather
 from typing import Any, NoReturn
 
-from ...utils.database import DataBase
+from ...db.database import DataBase
 from ...utils.exception import RequestError, WhatTheFuckError
 from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
 from ...utils.recorder import recorder, send
@@ -44,7 +44,8 @@ class Processor:
             await self.get_user_id()
         assert isinstance(self.user['ID'], str)
         return await DataBase.write_bind_info(
-            qq_number=self.source_id, user=self.user['ID'], game_type=self.GAME_TYPE
+            user_ids={'qq': self.source_id},
+            player_ids={self.GAME_TYPE: self.user['ID']},
         )
 
     @recorder(send)
@@ -61,7 +62,7 @@ class Processor:
             return ret_message
         if handle_type == 'AT':  # 在入口处判断是否@bot本身
             bind_info = await DataBase.query_bind_info(
-                qq_number=user, game_type=self.GAME_TYPE
+                user_ids={'qq': self.source_id}, game_type=self.GAME_TYPE
             )
             if bind_info is None:
                 return '未查询到绑定信息'
@@ -69,7 +70,7 @@ class Processor:
             return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await self.generate_message()}'
         if handle_type == 'ME':
             bind_info = await DataBase.query_bind_info(
-                qq_number=self.source_id, game_type=self.GAME_TYPE
+                user_ids={'qq': self.source_id}, game_type=self.GAME_TYPE
             )
             if bind_info is None:
                 return '未查询到绑定信息'
@@ -86,7 +87,7 @@ class Processor:
         '''
         用于获取 UserName 和 UserID 的函数
 
-        如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException（
+        如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException (
         '''
         await self.check_user()
         user_name, user_id = self.user['Name'], self.user['ID']

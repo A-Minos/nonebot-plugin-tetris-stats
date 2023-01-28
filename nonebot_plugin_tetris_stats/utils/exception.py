@@ -20,5 +20,9 @@ class RequestError(NeedCatchError):
     '''用于表示请求错误'''
 
 
+class DatabaseVersionError(DoNotCatchError):
+    '''用于表示数据库版本错误'''
+
+
 class WhatTheFuckError(DoNotCatchError):
-    '''用于表示不应该出现的情况（'''
+    '''用于表示不应该出现的情况 ('''
