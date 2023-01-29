@@ -115,8 +115,9 @@ class DataBase:
         '''查询绑定信息'''
         result = await Bind.get_or_none(**user_ids)
         if result is not None:
-            exec(f'player_id = result.{game_type}')
-            return locals()['player_id']
+            loc: dict = {}
+            exec(f'player_id = result.{game_type}', globals(), loc)
+            return loc['player_id']
         return None
 
     @classmethod
