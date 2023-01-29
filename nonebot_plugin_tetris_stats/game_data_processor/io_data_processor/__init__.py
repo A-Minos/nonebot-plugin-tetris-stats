@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import GROUP, Bot, MessageEvent
 from nonebot.matcher import Matcher
 
 from ...utils.exception import NeedCatchError
-from ...utils.recorder import receive, recorder
+from ...utils.recorder import Recorder
 from .processor import Processor
 
 IOBind = on_regex(pattern=r'^io绑定|^iobind', flags=I, permission=GROUP)
@@ -13,7 +13,7 @@ IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
 
 
 @IOBind.handle()
-@recorder(receive)
+@Recorder.recorder(Recorder.receive)
 async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     proc = Processor(
         message_id=event.message_id,
@@ -28,7 +28,7 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
 
 
 @IOStats.handle()
-@recorder(receive)
+@Recorder.recorder(Recorder.receive)
 async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
     if event.is_tome():  # tome会把私聊判断为True 如果需要支持私聊则需要找其他办法
         await matcher.finish('不能查询bot的信息')

@@ -4,7 +4,7 @@ from typing import Any, NoReturn
 from ...db.database import DataBase
 from ...utils.exception import RequestError, WhatTheFuckError
 from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
-from ...utils.recorder import recorder, send
+from ...utils.recorder import Recorder
 from ...utils.typing import CommandType, GameType
 from .request import Request
 
@@ -24,7 +24,7 @@ class Processor:
         self.response: dict[str, Any] = {}
         self.processed_data: dict[str, Any] = {}
 
-    @recorder(send)
+    @Recorder.recorder(Recorder.send)
     async def handle_bind(self) -> str:
         '''处理绑定消息'''
         self.command_type = 'bind'
@@ -48,7 +48,7 @@ class Processor:
             player_ids={self.GAME_TYPE: self.user['ID']},
         )
 
-    @recorder(send)
+    @Recorder.recorder(Recorder.send)
     async def handle_query(self):
         '''处理查询消息'''
         self.command_type = 'query'
