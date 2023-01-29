@@ -115,7 +115,7 @@ class DataBase:
         '''查询绑定信息'''
         result = await Bind.get_or_none(**user_ids)
         if result is not None:
-            loc: dict = {}
+            loc = locals().copy()
             exec(f'player_id = result.{game_type}', globals(), loc)
             return loc['player_id']
         return None
