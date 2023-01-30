@@ -21,13 +21,13 @@ class Bind(Model):
 
 class Historical_Data(Model):
     id = IntField(pk=True, generated=True)
-    receive_time = DatetimeField(null=True)
+    receive_time = DatetimeField(null=True, index=True)
     bot_id = CharField(max_length=16, null=True)
     source_type = TextField(null=True)
     source_id = TextField(null=True)
-    message_id = IntField(null=True, index=True)
+    message_id = IntField(null=True)
     message = TextField(null=True)
-    call_time = DatetimeField(null=True)
+    call_time = DatetimeField(null=True, index=True)
     game_type = CharField(max_length=16, null=True)
     command_type = CharField(max_length=16, null=True)
     command_args = TextField(null=True)
@@ -35,7 +35,7 @@ class Historical_Data(Model):
     response = JSONField(null=True)
     processed_data = JSONField(null=True)
     return_message = BinaryField(null=True)
-    send_time = DatetimeField(null=True)
+    send_time = DatetimeField(null=True, index=True)
 
 
 class Version(Model):
