@@ -1412,14 +1412,14 @@ files = [
 
 [[package]]
 name = "types-ujson"
-version = "5.6.0.0"
+version = "5.7.0.0"
 description = "Typing stubs for ujson"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "types-ujson-5.6.0.0.tar.gz", hash = "sha256:1a20cf7946772756736582612e0da5656d2dbeccd24be4c1e97d1e66b072b97e"},
-    {file = "types_ujson-5.6.0.0-py3-none-any.whl", hash = "sha256:010b221260c24a915c6e713a83f366b91390766850ec110304de5b20c86b4b11"},
+    {file = "types-ujson-5.7.0.0.tar.gz", hash = "sha256:d7c001f668a2e1ac2decbafd2c42cc0bf58798a5cc3b5a3ee397b7ee37775919"},
+    {file = "types_ujson-5.7.0.0-py3-none-any.whl", hash = "sha256:ad48848c3da10e8023e9e75b1833282c28568ea680938c271e34d4d1426be816"},
 ]
 
 [[package]]
@@ -1796,4 +1796,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "753e4a7affed653f5654b1656c3b160e4b8b5b8aa35c9a0636332b987e7f31d9"
+content-hash = "bf3cab6de966c2d297398bc10907a260b69dbda480d861a603756f07520bdf38"
