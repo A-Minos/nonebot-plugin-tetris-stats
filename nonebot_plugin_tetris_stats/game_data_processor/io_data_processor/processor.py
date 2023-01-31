@@ -93,6 +93,7 @@ class Processor:
         user_name, user_id = self.user['Name'], self.user['ID']
         if user_name is None:
             user_name = (await self.get_user_data())['data']['user']['username']  # type: ignore[index]
+            self.user['Name'] = user_name
         if user_id is None:
             user_id = await self.get_user_id()
         return user_name, user_id

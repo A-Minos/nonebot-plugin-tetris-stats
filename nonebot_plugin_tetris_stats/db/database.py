@@ -47,11 +47,12 @@ class DataBase:
             elif not db_dir.is_dir():
                 db_dir.unlink()
                 db_dir.mkdir(parents=True)
-        from . import models  # noqa: F401
+        from . import models
 
         await Tortoise.init(
             db_url=config.db_url,
-            modules={"models": [locals()["models"]]},
+            modules={"models": [models]},
+            timezone='Asia/Shanghai',
         )
         await Tortoise.generate_schemas()
         await cls.check_and_update_db()
@@ -79,15 +80,15 @@ class DataBase:
             old_io = await conn.execute_query_dict('select * from IOBIND;')
             old_top = await conn.execute_query_dict('select * from TOPBIND;')
             new_bind = {
-                str(i['QQ']): {'io': None, 'top': None} for i in old_io + old_top
+                str(i['QQ']): {'IO': None, 'TOP': None} for i in old_io + old_top
             }
             for i in old_io:
-                new_bind[str(i['QQ'])].update(io=i['USER'])
+                new_bind[str(i['QQ'])].update(IO=i['USER'])
             for i in old_top:
-                new_bind[str(i['QQ'])].update(top=i['USER'])
+                new_bind[str(i['QQ'])].update(TOP=i['USER'])
             del new_bind['']
             await Bind.bulk_create(
-                [Bind(qq=i, io=j['io'], top=j['top']) for i, j in new_bind.items()]
+                [Bind(qq=i, IO=j['IO'], TOP=j['TOP']) for i, j in new_bind.items()]
             )
             await conn.execute_script('DROP TABLE IOBIND;')
             await conn.execute_script('DROP TABLE TOPBIND;')
@@ -129,9 +130,10 @@ class DataBase:
         return '绑定成功'
 
     @classmethod
-    async def write_historical(cls) -> None:
-        ...
+    async def write_historical(cls, **kwargs) -> None:
+        await Historical_Data.create(**kwargs)
 
     @classmethod
     async def query_historical(cls) -> None:
+        # TODO
         ...
