@@ -27,7 +27,7 @@ async def _():
 
 
 class Request:
-    '''网络请求相关类'''
+    """网络请求相关类"""
 
     _browser: Browser | None = None
     _headers: dict | None = None
@@ -35,19 +35,19 @@ class Request:
 
     @classmethod
     async def _init_playwright(cls) -> Browser:
-        '''初始化playwright'''
+        """初始化playwright"""
         playwright = await async_playwright().start()
         cls._browser = await playwright.firefox.launch()
         return cls._browser
 
     @classmethod
     async def _get_browser(cls) -> Browser:
-        '''获取浏览器对象'''
+        """获取浏览器对象"""
         return cls._browser or await cls._init_playwright()
 
     @classmethod
     async def _anti_cloudflare(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
-        '''用firefox硬穿五秒盾'''
+        """用firefox硬穿五秒盾"""
         browser = await cls._get_browser()
         context = await browser.new_context()
         page = await context.new_page()
@@ -55,7 +55,7 @@ class Request:
         attempts = 0
         while attempts < 60:
             attempts += 1
-            text = await page.locator("body").text_content()
+            text = await page.locator('body').text_content()
             if text is None:
                 await page.wait_for_timeout(1000)
                 continue
@@ -84,7 +84,7 @@ class Request:
 
     @classmethod
     async def init_cache(cls) -> None:
-        '''初始化缓存文件'''
+        """初始化缓存文件"""
         cache_path = Path(config.cache_path)
         cache_dir = cache_path.parent
         if not cache_dir.exists():
@@ -98,7 +98,7 @@ class Request:
 
     @classmethod
     async def read_cache(cls) -> None:
-        '''读取缓存文件'''
+        """读取缓存文件"""
         try:
             with open(file=config.cache_path, mode='r', encoding='UTF-8') as file:
                 json = loads(file.read())
@@ -115,7 +115,7 @@ class Request:
 
     @classmethod
     async def write_cache(cls) -> None:
-        '''写入缓存文件'''
+        """写入缓存文件"""
         try:
             with open(file=config.cache_path, mode='r+', encoding='UTF-8') as file:
                 file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
@@ -130,7 +130,7 @@ class Request:
 
     @classmethod
     async def request(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
-        '''请求api'''
+        """请求api"""
         try:
             async with aiohttp.ClientSession(cookies=cls._cookies) as session:
                 async with session.get(url, headers=cls._headers) as resp:
@@ -144,6 +144,6 @@ class Request:
 
     @classmethod
     async def close_browser(cls) -> None:
-        '''关闭浏览器对象'''
+        """关闭浏览器对象"""
         if isinstance(cls._browser, Browser):
             await cls._browser.close()

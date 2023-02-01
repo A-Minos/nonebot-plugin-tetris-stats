@@ -36,7 +36,7 @@ async def _(event: MessageEvent, matcher: Matcher):
 
 
 async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
-    '''请求api'''
+    """请求api"""
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
@@ -50,7 +50,7 @@ async def request(url: str) -> tuple[bool, bool, dict[str, Any]]:
 async def get_user_info(
     user_name: str | None = None, tea_id: int | None = None
 ) -> tuple[bool, bool, dict[str, Any]]:
-    '''获取用户信息'''
+    """获取用户信息"""
     if user_name is not None and tea_id is None:
         user_data_url = f'https://teatube.cn:8888/getUsernameInfo?username={user_name}'
     elif user_name is None and tea_id is not None:
@@ -63,7 +63,7 @@ async def get_user_info(
 async def get_user_data(
     user_name: str | None = None, tea_id: int | None = None, other_parameter: str = ''
 ) -> tuple[bool, bool, dict[str, Any]]:
-    '''获取用户数据'''
+    """获取用户数据"""
     if user_name is not None and tea_id is None:
         user_data_url = (
             f'https://teatube.cn:8888/getProfile?id={user_name}{other_parameter}'
@@ -78,7 +78,7 @@ async def get_user_data(
 
 
 async def get_rank_stats(user_info: dict) -> dict[str, float]:
-    '''获取Rank数据'''
+    """获取Rank数据"""
     data = user_info['data']
     rank_stats = {}
     if int(data['rankedGames']) != 0:
@@ -89,7 +89,7 @@ async def get_rank_stats(user_info: dict) -> dict[str, float]:
 
 
 async def get_game_data(user_data: dict) -> dict[str, int | float]:
-    '''获取游戏数据'''
+    """获取游戏数据"""
     game_data: dict[str, int | float] = {}
     if user_data['data'] != []:
         weighted_total_lpm = 0
@@ -101,7 +101,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
             # 排除单人局和时间为0的游戏
             if i['num_players'] == 1 or i['time'] == 0:
                 continue
-            # 茶：不计算没挖掘的局, 即使apm和lpm也如此
+            # 茶: 不计算没挖掘的局, 即使apm和lpm也如此
             if i['dig'] is None:
                 continue
             # 加权计算
@@ -130,7 +130,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
 
 
 async def get_pb_data(user_info: dict) -> dict[str, float | str]:
-    '''获取PB数据'''
+    """获取PB数据"""
     pb_data: dict[str, float | str] = {}
     data = user_info['data']
     if int(data['PBSprint']) != 2147483647:
@@ -145,7 +145,7 @@ async def get_pb_data(user_info: dict) -> dict[str, float | str]:
 async def generate_message(
     user_name: str | None = None, tea_id: int | None = None
 ) -> str:
-    '''生成消息'''
+    """生成消息"""
     user_info, user_data = await gather(
         get_user_info(user_name=user_name, tea_id=tea_id),
         get_user_data(user_name=user_name, tea_id=tea_id),
@@ -175,8 +175,8 @@ async def generate_message(
         else:
             message += f', 最近 {game_data["NUM"]} 局数据'
             message += f'\nL\'PM: {game_data["LPM"]} ( {game_data["PPS"]} pps )'
-            message += f'\nAPM：{game_data["APM"]} ( x{game_data["APL"]} )'
-            message += f'\nADPM：{game_data["ADPM"]} ( x{game_data["ADPL"]} ) ( {game_data["VS"]}vs )'
+            message += f'\nAPM: {game_data["APM"]} ( x{game_data["APL"]} )'
+            message += f'\nADPM: {game_data["ADPM"]} ( x{game_data["ADPL"]} ) ( {game_data["VS"]}vs )'
     message += f'\n40L: {pb_data["Sprint"]}s' if 'Sprint' in pb_data else ''
     message += f'\nMarathon: {pb_data["Marathon"]}' if 'Marathon' in pb_data else ''
     message += f'\nChallenge: {pb_data["Challenge"]}' if 'Challenge' in pb_data else ''

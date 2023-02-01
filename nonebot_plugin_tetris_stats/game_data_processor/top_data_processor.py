@@ -82,7 +82,7 @@ async def _(event: MessageEvent, matcher: Matcher):
 
 
 async def get_user_data(user_name: str) -> tuple[bool, str]:
-    '''获取用户信息'''
+    """获取用户信息"""
     url = f'http://tetrisonline.pl/top/profile.php?user={user_name}'
     try:
         async with aiohttp.ClientSession() as session:
@@ -94,20 +94,20 @@ async def get_user_data(user_name: str) -> tuple[bool, str]:
 
 
 async def check_user(user_data: str) -> bool:
-    '''如果用户存在返回True, 如果用户不存在返回False'''
+    """如果用户存在返回True, 如果用户不存在返回False"""
     return user_data.find('user not found!') == -1
 
 
 async def get_user_name(user_data: str) -> str:
-    '''获取用户名'''
+    """获取用户名"""
     data = etree.HTML(user_data).xpath('//div[@class="mycontent"]/h1/text()')
     if isinstance(data, list):
-        return str(data[0]).replace('\'s profile', '')
+        return str(data[0]).replace("'s profile", '')
     raise TypeError('预期外行为, 请上报GitHub')
 
 
 async def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
-    '''获取游戏统计数据'''
+    """获取游戏统计数据"""
     game_stats: dict[str, Any] = {'24H': {}, 'All': {}}
     html = etree.HTML(user_data)
     data = html.xpath('//div[@class="mycontent"]//text()')
@@ -165,7 +165,7 @@ async def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
 
 
 async def generate_message(user_name: str) -> str:
-    '''生成消息'''
+    """生成消息"""
     user_data = await get_user_data(user_name)
     if user_data[0] is False:
         return '用户信息请求失败'

@@ -26,7 +26,7 @@ class Processor:
 
     @Recorder.recorder(Recorder.send)
     async def handle_bind(self) -> str:
-        '''处理绑定消息'''
+        """处理绑定消息"""
         self.command_type = 'bind'
         decoded_message = await handle_bind_message(
             message=self.message, game_type=self.GAME_TYPE
@@ -50,7 +50,7 @@ class Processor:
 
     @Recorder.recorder(Recorder.send)
     async def handle_query(self):
-        '''处理查询消息'''
+        """处理查询消息"""
         self.command_type = 'query'
         decoded_message = await handle_stats_query_message(
             message=self.message, game_type=self.GAME_TYPE
@@ -84,11 +84,11 @@ class Processor:
             return await self.generate_message()
 
     async def get_user_info(self) -> tuple[str, str] | NoReturn:
-        '''
+        """
         用于获取 UserName 和 UserID 的函数
 
         如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException (
-        '''
+        """
         await self.check_user()
         user_name, user_id = self.user['Name'], self.user['ID']
         if user_name is None:
@@ -105,7 +105,7 @@ class Processor:
         return None
 
     async def get_user_data(self) -> dict[str, Any] | NoReturn:
-        '''获取用户数据'''
+        """获取用户数据"""
         if 'user_data' not in self.response:
             await self.check_user()
             user_name, user_id = self.user['Name'], self.user['ID']
@@ -119,7 +119,7 @@ class Processor:
         return self.response['user_data']
 
     async def get_solo_data(self) -> dict[str, Any] | NoReturn:
-        '''获取Solo数据'''
+        """获取Solo数据"""
         user_name, user_id = await self.get_user_info()  # type: ignore[misc]
         user_solo_url = f'https://ch.tetr.io/api/users/{user_name or user_id}/records'
         req_stats, srv_stats, user_data = await Request.request(user_solo_url)
@@ -132,27 +132,27 @@ class Processor:
         return user_data
 
     async def get_user_id(self) -> str | NoReturn:
-        '''获取用户ID'''
+        """获取用户ID"""
         if self.user['ID'] is None:
             self.user['ID'] = (await self.get_user_data())['data']['user']['_id']  # type: ignore[index]
         assert isinstance(self.user['ID'], str)
         return self.user['ID']
 
     async def check_user_id(self) -> None | NoReturn:
-        '''
+        """
         检查用户ID是否有效
 
         如果无效会 raise 一个 Exception, 具体 Exception 类型以无效原因为准
 
         如果有效会返回 None
-        '''
+        """
         _, user_id = await self.get_user_info()  # type: ignore[misc]
         if user_id != (await self.get_user_data())['data']['user']['_id']:  # type: ignore[index]
             raise WhatTheFuckError('服务器返回的userID和用户提供的不一致')
         return None  # 如果不显式写 return, mypy 会报错 原因不明
 
     async def get_league_stats(self) -> dict[str, Any] | NoReturn:
-        '''获取排位统计数据'''
+        """获取排位统计数据"""
         user_data = await self.get_user_data()
         league = user_data['data']['user']['league']  # type: ignore[index]
         league_stats: dict[str, Any] = {}
@@ -179,7 +179,7 @@ class Processor:
         return league_stats
 
     async def get_sprint_stats(self) -> dict[str, Any] | NoReturn:
-        '''获取40L统计数据'''
+        """获取40L统计数据"""
         solo_data = await self.get_solo_data()
         sprint_stats: dict[str, Any] = {}
         l40 = solo_data['data']['records']['40l']  # type: ignore[index]
@@ -193,7 +193,7 @@ class Processor:
         return sprint_stats
 
     async def get_blitz_stats(self) -> dict[str, Any] | NoReturn:
-        '''获取Blitz统计数据'''
+        """获取Blitz统计数据"""
         solo_data = await self.get_solo_data()
         blitz_stats: dict[str, Any] = {}
         blitz = solo_data['data']['records']['blitz']  # type: ignore[index]
@@ -204,7 +204,7 @@ class Processor:
         return blitz_stats
 
     async def generate_message(self) -> str:
-        '''生成消息'''
+        """生成消息"""
         user_name, _ = await self.get_user_info()  # type: ignore[misc]
         user_name = user_name.upper()
         league_stats = await self.get_league_stats()
@@ -227,7 +227,7 @@ class Processor:
                 f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
             )
             ret_message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
-            if league_stats["VS"] != 0:
+            if league_stats['VS'] != 0:
                 ret_message += f'\nADPM: {league_stats["ADPM"]} ( x{league_stats["ADPL"]} ) ( {league_stats["VS"]}vs )'
         try:
             sprint_stats, blitz_stats = await gather(

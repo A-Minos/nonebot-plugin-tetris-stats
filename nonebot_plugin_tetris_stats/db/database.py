@@ -30,13 +30,13 @@ async def _():
 
 
 class DataBase:
-    '''数据库交互类'''
+    """数据库交互类"""
 
     db_type: str | None = None
 
     @classmethod
     async def init_db(cls) -> None:
-        '''初始化数据库'''
+        """初始化数据库"""
         logger.debug('开始初始化数据库')
         if config.db_url.startswith('sqlite://'):
             logger.debug('检测到 sqlite 数据库, 进行路径校验')
@@ -51,7 +51,7 @@ class DataBase:
 
         await Tortoise.init(
             db_url=config.db_url,
-            modules={"models": [models]},
+            modules={'models': [models]},
             timezone='Asia/Shanghai',
         )
         await Tortoise.generate_schemas()
@@ -113,7 +113,7 @@ class DataBase:
     async def query_bind_info(
         cls, user_ids: dict[str, Any], game_type: GameType
     ) -> str | None:
-        '''查询绑定信息'''
+        """查询绑定信息"""
         result = await Bind.get_or_none(**user_ids)
         if result is not None:
             loc = locals().copy()
@@ -125,7 +125,7 @@ class DataBase:
     async def write_bind_info(
         cls, user_ids: dict[str, Any], player_ids: dict[GameType, Any]
     ) -> str:
-        '''写入绑定信息'''
+        """写入绑定信息"""
         await Bind.update_or_create(defaults=player_ids, **user_ids)
         return '绑定成功'
 

@@ -45,7 +45,7 @@ class Recorder:
     async def receive(
         cls, func: AsyncCallable, bot: Bot, event: MessageEvent, *args, **kwargs
     ) -> Any:
-        receive_time = now()  # 保证时间最接近（？
+        receive_time = now()  # 保证时间最接近 (?
         message_id = event.message_id
         temp = await cls._create_temp_instance(await cls._message_id_to_id(message_id))
         temp.receive_time = receive_time
