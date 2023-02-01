@@ -48,7 +48,7 @@ select = [
     'RUF',  # Ruff-specific rules
 ]
 ignore = [
-    'E501',
+    'E501',  # 过长的行由 black 处理, 剩余的都是字符串
 ]
 line-length = 88
 flake8-quotes = {inline-quotes = 'single', multiline-quotes = 'double'}
