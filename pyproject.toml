@@ -20,16 +20,13 @@ playwright = "^1.24.1"
 ujson = "^5.4.0"
 tortoise-orm = "^0.19.2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 mypy = "^0.991"
 types-ujson = "^5.7.0"
 lxml-stubs = "^0.4.0"
 pandas-stubs = "^1.5.2"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.0.193"
+ruff = "^0.0.239"
 black = {version = "^23.1a1", allow-prereleases = true}
-
 
 [tool.poetry.group.debug.dependencies]
 objprint = "^0.2.2"
