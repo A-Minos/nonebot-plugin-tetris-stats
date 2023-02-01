@@ -1,54 +1,54 @@
 [tool.poetry]
-name = "nonebot-plugin-tetris-stats"
-version = "0.3.3"
-description = "一个基于nonebot2的用于查询TETRIS相关游戏玩家数据的插件"
-authors = ["scdhh <wallfjjd@gmail.com>"]
-readme = "README.md"
-homepage = "https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats"
-repository = "https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats"
-license = "MIT"
+name = 'nonebot-plugin-tetris-stats'
+version = '0.3.3'
+description = '一个基于nonebot2的用于查询TETRIS相关游戏玩家数据的插件'
+authors = ['scdhh <wallfjjd@gmail.com>']
+readme = 'README.md'
+homepage = 'https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats'
+repository = 'https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats'
+license = 'MIT'
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
-nonebot-adapter-onebot = "^2.0.0-beta.1"
-aiohttp = "^3.8.1"
-asyncio = "^3.4.3"
-nonebot2 = "^2.0.0-beta.3"
-lxml = "^4.9.1"
-pandas = "^1.4.3"
-playwright = "^1.24.1"
-ujson = "^5.4.0"
-tortoise-orm = "^0.19.2"
+python = '^3.10,<3.12'
+nonebot-adapter-onebot = '^2.0.0-beta.1'
+aiohttp = '^3.8.1'
+asyncio = '^3.4.3'
+nonebot2 = '^2.0.0-beta.3'
+lxml = '^4.9.1'
+pandas = '^1.4.3'
+playwright = '^1.24.1'
+ujson = '^5.4.0'
+tortoise-orm = '^0.19.2'
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^0.991"
-types-ujson = "^5.7.0"
-lxml-stubs = "^0.4.0"
-pandas-stubs = "^1.5.2"
-ruff = "^0.0.239"
-black = {version = "^23.1a1", allow-prereleases = true}
+mypy = '^0.991'
+types-ujson = '^5.7.0'
+lxml-stubs = '^0.4.0'
+pandas-stubs = '^1.5.2'
+ruff = '^0.0.239'
+black = {version = '^23.1a1', allow-prereleases = true}
 
 [tool.poetry.group.debug.dependencies]
-objprint = "^0.2.2"
+objprint = '^0.2.2'
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ['poetry-core>=1.0.0']
+build-backend = 'poetry.core.masonry.api'
 
 [tool.ruff]
 select = [
-    "F",  # pyflakes
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "I",  # isort
-    "C",  # flake8-comprehensions
-    "B",  # flake8-bugbear
-    "Q",  # flake8-quotes
-    "PL",  # pylint
-    "RUF",  # Ruff-specific rules
+    'F',  # pyflakes
+    'E',  # pycodestyle errors
+    'W',  # pycodestyle warnings
+    'I',  # isort
+    'C',  # flake8-comprehensions
+    'B',  # flake8-bugbear
+    'Q',  # flake8-quotes
+    'PL',  # pylint
+    'RUF',  # Ruff-specific rules
 ]
 ignore = [
-    "E501",
+    'E501',
 ]
 line-length = 88
 flake8-quotes = {inline-quotes = 'single', multiline-quotes = 'double'}
