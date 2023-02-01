@@ -36,7 +36,22 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
+select = [
+    "F",  # pyflakes
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "Q",  # flake8-quotes
+    "PL",  # pylint
+    "RUF",  # Ruff-specific rules
+]
+ignore = [
+    "E501",
+]
 line-length = 88
+flake8-quotes = {inline-quotes = 'single', multiline-quotes = 'double'}
 
 [tool.black]
 line-length = 88
