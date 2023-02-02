@@ -60,6 +60,7 @@ class Request:
                 await page.wait_for_timeout(1000)
                 continue
             if await page.title() == 'Please Wait... | Cloudflare':
+                logger.warning('疑似触发了 Cloudflare 的验证码')
                 break
             try:
                 data = loads(text)
