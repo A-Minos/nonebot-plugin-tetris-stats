@@ -41,7 +41,7 @@ class DataBase:
         if config.db_url.startswith('sqlite://'):
             logger.debug('检测到 sqlite 数据库, 进行路径校验')
             cls.db_type = 'sqlite'
-            db_dir = Path(config.db_url.strip('sqlite://')).parent
+            db_dir = Path(config.db_url.replace('sqlite://', '')).parent
             if not db_dir.exists():
                 db_dir.mkdir(parents=True)
             elif not db_dir.is_dir():
@@ -71,7 +71,7 @@ class DataBase:
             logger.debug('开始迁移数据库')
             if cls.db_type == 'sqlite':
                 copyfile(
-                    p := Path(config.db_url.strip('sqlite://')),
+                    p := Path(config.db_url.replace('sqlite://', '')),
                     p.with_name('backup.db'),
                 )
                 logger.debug('数据库备份完成')
