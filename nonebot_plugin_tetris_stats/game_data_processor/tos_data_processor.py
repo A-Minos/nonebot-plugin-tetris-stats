@@ -114,7 +114,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
             weighted_total_adpm += adpm * time
             total_time += time
             num += 1
-            if num == 50:
+            if num == 50:  # noqa: PLR2004
                 break
         if num > 0:
             game_data['NUM'] = num
@@ -133,7 +133,7 @@ async def get_pb_data(user_info: dict) -> dict[str, float | str]:
     """获取PB数据"""
     pb_data: dict[str, float | str] = {}
     data = user_info['data']
-    if int(data['PBSprint']) != 2147483647:
+    if int(data['PBSprint']) != 2147483647:  # noqa: PLR2004
         pb_data['Sprint'] = round(float(data['PBSprint']) / 1000, 2)
     if int(data['PBMarathon']) != 0:
         pb_data['Marathon'] = data['PBMarathon']

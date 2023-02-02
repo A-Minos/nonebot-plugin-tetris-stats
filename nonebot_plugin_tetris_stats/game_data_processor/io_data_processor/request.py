@@ -53,7 +53,7 @@ class Request:
         page = await context.new_page()
         response = await page.goto(url)
         attempts = 0
-        while attempts < 60:
+        while attempts < 60:  # noqa: PLR2004
             attempts += 1
             text = await page.locator('body').text_content()
             if text is None:
