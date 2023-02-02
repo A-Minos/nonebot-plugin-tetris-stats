@@ -60,7 +60,6 @@ class Request:
                 await page.wait_for_timeout(1000)
                 continue
             if await page.title() == 'Please Wait... | Cloudflare':
-                # TODO 有无人来做一个过验证码 (
                 break
             try:
                 data = loads(text)

@@ -125,7 +125,7 @@ async def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
             and 2 <= len(name) <= 18  # noqa: PLR2004
         ):
             # 虽然我也不想这么长 但是似乎确实得这么长
-            # TODO 简化正则表达式
+            # TODO: 简化正则表达式
             return 'Name', (None, name)
         if name.isdigit() is True:
             return 'QQ', (None, name)

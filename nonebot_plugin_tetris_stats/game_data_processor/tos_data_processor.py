@@ -114,7 +114,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
             weighted_total_adpm += adpm * time
             total_time += time
             num += 1
-            if num == 50:  # noqa: PLR2004
+            if num == 50:  # noqa: PLR2004  # TODO: 将查询局数作为可选命令参数
                 break
         if num > 0:
             game_data['NUM'] = num
