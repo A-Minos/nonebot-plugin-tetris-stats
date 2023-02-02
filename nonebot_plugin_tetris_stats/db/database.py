@@ -11,7 +11,7 @@ from ..utils.config import Config
 from ..utils.exception import DatabaseVersionError, WhatTheFuckError
 from ..utils.typing import GameType
 from ..version import __version__
-from .models import Bind, Historical_Data, Version
+from .models import Bind, HistoricalData, Version
 
 driver = get_driver()
 
@@ -131,7 +131,7 @@ class DataBase:
 
     @classmethod
     async def write_historical(cls, **kwargs) -> None:
-        await Historical_Data.create(**kwargs)
+        await HistoricalData.create(**kwargs)
 
     @classmethod
     async def query_historical(cls) -> None:

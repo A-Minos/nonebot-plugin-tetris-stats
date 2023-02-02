@@ -19,7 +19,7 @@ class Bind(Model):
     # TOP_verify = BooleanField(null=True)
 
 
-class Historical_Data(Model):
+class HistoricalData(Model):
     id = IntField(pk=True, generated=True)
     receive_time = DatetimeField(null=True, index=True)
     bot_id = CharField(max_length=16, null=True)
