@@ -7,6 +7,7 @@ from nonebot.log import logger
 from playwright.async_api import Browser, Response, async_playwright
 from ujson import JSONDecodeError, dumps, loads
 
+from ...utils import browser  # noqa: F401
 from ...utils.config import Config
 
 driver = get_driver()
