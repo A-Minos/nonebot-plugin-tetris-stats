@@ -37,7 +37,7 @@ class DataBase:
     @classmethod
     async def init_db(cls) -> None:
         """初始化数据库"""
-        logger.debug('开始初始化数据库')
+        logger.info('开始初始化数据库')
         if config.db_url.startswith('sqlite://'):
             logger.debug('检测到 sqlite 数据库, 进行路径校验')
             cls.db_type = 'sqlite'
@@ -56,7 +56,7 @@ class DataBase:
         )
         await Tortoise.generate_schemas()
         await cls.check_and_update_db()
-        logger.debug('数据库初始化完成')
+        logger.success('数据库初始化成功')
 
     @classmethod
     async def migrate(cls) -> None:
