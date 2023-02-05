@@ -11,7 +11,7 @@ from ...utils.config import Config
 
 driver = get_driver()
 
-config = Config.parse_obj(get_driver().config)
+config = Config.parse_obj(driver.config)
 
 
 @driver.on_startup
