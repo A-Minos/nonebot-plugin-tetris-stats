@@ -33,6 +33,12 @@
     alt="black"
   />
 </a>
+<a href="https://github.com/charliermarsh/ruff">
+  <img 
+    src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json"
+    alt="Ruff"
+  />
+</a>
 <a href="https://gitmoji.dev">
   <img
     src="https://img.shields.io/badge/gitmoji-%20😜%20😍-FFDD67.svg?style=flat-square"
@@ -59,36 +65,25 @@ nb plugin install nonebot-plugin-tetris-stats
 ```
 pip install nonebot-plugin-tetris-stats
 ```
-* 对于 Windows
-```
-# CMD or PowerShell
-playwright install firefox
-```
-* 对于 Linux
-```
-# 似乎 playwright官方 只支持 Ubuntu, 如果你是其他系统请自行尝试解决依赖问题
-playwright install firefox
-playwright install-deps firefox
-```
 
-使用
+♿️ 使用
 ----
 
 参考NoneBot2文档 [加载插件](https://v2.nonebot.dev/docs/tutorial/plugin/load-plugin/)
 
-依赖
+📌 依赖
 ----
 
 目前只支持 `OneBot V11` 协议
 
-鸣谢
+🎉 鸣谢
 ----
 
 * [NoneBot2](https://v2.nonebot.dev/)
 * [OneBot](https://onebot.dev/)
 * [go-cqhttp](https://github.com/Mrs4s/go-cqhttp/)
 
-开源
+📝 开源
 ----
 
-本项目使用[MIT](https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE)许可证开源
+本项目使用 [AGPL-3.0](https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE) 许可证开源
