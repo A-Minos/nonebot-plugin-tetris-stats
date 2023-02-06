@@ -4,10 +4,10 @@ from typing import Any
 import aiohttp
 from nonebot import get_driver
 from nonebot.log import logger
-from playwright.async_api import Browser, Response, async_playwright
+from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
 
-from ...utils import browser  # noqa: F401
+from ...utils.browser import BrowserManager
 from ...utils.config import Config
 
 driver = get_driver()
@@ -23,33 +23,19 @@ async def _():
 
 @driver.on_shutdown
 async def _():
-    await Request.close_browser()
     await Request.write_cache()
 
 
 class Request:
     """网络请求相关类"""
 
-    _browser: Browser | None = None
     _headers: dict | None = None
     _cookies: dict | None = None
 
     @classmethod
-    async def _init_playwright(cls) -> Browser:
-        """初始化playwright"""
-        playwright = await async_playwright().start()
-        cls._browser = await playwright.firefox.launch()
-        return cls._browser
-
-    @classmethod
-    async def _get_browser(cls) -> Browser:
-        """获取浏览器对象"""
-        return cls._browser or await cls._init_playwright()
-
-    @classmethod
     async def _anti_cloudflare(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
         """用firefox硬穿五秒盾"""
-        browser = await cls._get_browser()
+        browser = await BrowserManager.get_browser()
         context = await browser.new_context()
         page = await context.new_page()
         response = await page.goto(url)
@@ -142,9 +128,3 @@ class Request:
         except aiohttp.ClientError as error:
             logger.error(f'请求错误\n{error}')
             return False, False, {}
-
-    @classmethod
-    async def close_browser(cls) -> None:
-        """关闭浏览器对象"""
-        if isinstance(cls._browser, Browser):
-            await cls._browser.close()
