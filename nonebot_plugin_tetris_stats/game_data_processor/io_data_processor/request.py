@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 import aiohttp
@@ -8,11 +7,9 @@ from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
 
 from ...utils.browser import BrowserManager
-from ...utils.config import Config
+from ...utils.config import CACHE_PATH
 
 driver = get_driver()
-
-config = Config.parse_obj(driver.config)
 
 
 @driver.on_startup
@@ -29,6 +26,7 @@ async def _():
 class Request:
     """网络请求相关类"""
 
+    _CACHE_FILE = CACHE_PATH.joinpath('cloudflare_cache.json')
     _headers: dict | None = None
     _cookies: dict | None = None
 
@@ -72,47 +70,35 @@ class Request:
     @classmethod
     async def init_cache(cls) -> None:
         """初始化缓存文件"""
-        cache_path = Path(config.cache_path)
-        cache_dir = cache_path.parent
-        if not cache_dir.exists():
-            cache_dir.mkdir(parents=True)
-        elif not cache_dir.is_dir():
-            cache_dir.unlink()
-            cache_dir.mkdir(parents=True)
-        if not cache_path.exists():
-            with open(file=config.cache_path, mode='w', encoding='UTF-8') as file:
+        if not cls._CACHE_FILE.exists():
+            with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
                 file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
 
     @classmethod
     async def read_cache(cls) -> None:
         """读取缓存文件"""
         try:
-            with open(file=config.cache_path, mode='r', encoding='UTF-8') as file:
+            with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
                 json = loads(file.read())
-                cls._headers = json['headers']
-                cls._cookies = json['cookies']
         except FileNotFoundError:
             await cls.init_cache()
-        except PermissionError:
-            Path(config.cache_path).unlink()
+        except (PermissionError, JSONDecodeError):
+            cls._CACHE_FILE.unlink()
             await cls.init_cache()
-        except JSONDecodeError:
-            Path(config.cache_path).unlink()
-            await cls.init_cache()
+        else:
+            cls._headers = json['headers']
+            cls._cookies = json['cookies']
 
     @classmethod
     async def write_cache(cls) -> None:
         """写入缓存文件"""
         try:
-            with open(file=config.cache_path, mode='r+', encoding='UTF-8') as file:
+            with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
                 file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
         except FileNotFoundError:
             await cls.init_cache()
-        except PermissionError:
-            Path(config.cache_path).unlink()
-            await cls.init_cache()
-        except JSONDecodeError:
-            Path(config.cache_path).unlink()
+        except (PermissionError, JSONDecodeError):
+            cls._CACHE_FILE.unlink()
             await cls.init_cache()
 
     @classmethod
