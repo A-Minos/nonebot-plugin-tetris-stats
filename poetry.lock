@@ -1214,14 +1214,14 @@ test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
 name = "pandas-stubs"
-version = "1.5.3.230304"
+version = "2.0.0.230412"
 description = "Type annotations for pandas"
 category = "dev"
 optional = false
-python-versions = ">=3.8,<3.12"
+python-versions = ">=3.8"
 files = [
-    {file = "pandas_stubs-1.5.3.230304-py3-none-any.whl", hash = "sha256:ebb545329109e98510cdf6357074497dfbdf62f173d8ec8b5430486716360639"},
-    {file = "pandas_stubs-1.5.3.230304.tar.gz", hash = "sha256:853174ea5aac1ee2001b3ae708dea9780c60d546ee490abb5eeb7c37ed57d255"},
+    {file = "pandas_stubs-2.0.0.230412-py3-none-any.whl", hash = "sha256:311ab8b42ee574d9fea5061d1f63aeca297e472de6073ba84bf2a017c6cb1b6b"},
+    {file = "pandas_stubs-2.0.0.230412.tar.gz", hash = "sha256:016f567cb9947edd0067ea2665ab00b77fa47e73a65ce1a097de4f499b3485c0"},
 ]
 
 [package.dependencies]
@@ -1854,4 +1854,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "4846a6d3ac84c17f166b00da2dbedcb0f2b277b0c0a107f5a8459ed71be93afc"
+content-hash = "562add6892ea70dbefe05afd00976f53049db8b12c34e1b211ddc2596715db9f"
