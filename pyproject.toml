@@ -26,7 +26,7 @@ mypy = '>=0.991,<1.2'
 types-ujson = '^5.7.0'
 lxml-stubs = '^0.4.0'
 pandas-stubs = '^1.5.2'
-ruff = '>=0.0.239,<0.0.255'
+ruff = '>=0.0.239,<0.0.268'
 black = {version = '^23.1a1', allow-prereleases = true}
 
 [tool.poetry.group.debug.dependencies]
