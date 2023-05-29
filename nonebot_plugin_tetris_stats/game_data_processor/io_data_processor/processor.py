@@ -102,16 +102,24 @@ class Processor:
 
             return await Processor.query_rank(message=message)
         else:
-            message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})'
-            message += f'\n{rank_info[2]} 玩家'
-            message += '\n'
-            message += f'\n平均 APM: {rank_info[3]}'
-            message += f'\n平均 PPS: {rank_info[4]}'
-            message += f'\n平均 VS: {rank_info[5]}'
-            message += '\n'
-            message += f'\n数据更新日期: {rank_info[6]}'
+            avg_apm = round(rank_info[3], 2)
+            avg_pps = round(rank_info[4], 2)
+            avg_vs = round(rank_info[5], 2)
+            avg_lpm = round((avg_pps * 24), 2)
+            avg_apl = round((avg_apm / avg_lpm), 2)
+            avg_adpm = round((avg_vs * 0.6), 2)
+            avg_adpl = round((avg_adpm / avg_lpm), 2)
 
-            return message
+            message = f'{rank.upper()} 段, {round(rank_info[1], 2)} TR, {rank_info[2]} 玩家'
+            message += f'\n对比昨日趋势: {rank_info[0]}'
+            message += '\n'
+            message += f'\nL\'PM: {avg_lpm} ( {avg_pps} pps )'
+            message += f'\nAPM: {avg_apm} ( x{avg_apl} )'
+            message += f'\nADPM: {avg_adpm} ( x{avg_adpl} ) ( {avg_vs}vs )'
+            message += '\n'
+            message += f'\n数据更新时间: {rank_info[6]}'
+
+        return message
 
     @classmethod
     async def handle_query(cls, message: str, qq_number: int | None):
