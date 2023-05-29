@@ -8,7 +8,7 @@ from .processor import Processor
 
 IOBind = on_regex(pattern=r'^io绑定|^iobind', flags=I, permission=GROUP)
 IOStats = on_regex(pattern=r'^io查|^iostats', flags=I, permission=GROUP)
-
+IORank = on_regex(pattern=r'^io段位|^iorank', flags=I, permission=GROUP)
 
 @IOBind.handle()
 async def _(event: MessageEvent, matcher: Matcher):
@@ -28,5 +28,13 @@ async def _(event: MessageEvent, matcher: Matcher):
         await Processor.handle_query(
             message=event.raw_message,
             qq_number=event.sender.user_id
+        )
+    )
+
+@IORank.handle()
+async def _(event: MessageEvent, matcher: Matcher):
+    await matcher.finish(
+        await Processor.query_rank(
+            rank=event.raw_message
         )
     )

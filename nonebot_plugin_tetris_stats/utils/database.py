@@ -1,3 +1,4 @@
+import datetime
 import os
 from asyncio import gather
 from sqlite3 import Connection, connect
@@ -39,9 +40,59 @@ class DataBase():
         cursor.execute('''CREATE TABLE IF NOT EXISTS TOPBIND
                         (QQ INTEGER NOT NULL,
                         USER TEXT NOT NULL)''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS IORANK
+                        (RANK VARCHAR(2) NOT NULL,
+                         TRENDING CHAR(1) NOT NULL,
+                         TRLINE FLOAT NOT NULL,
+                         PLAYERCOUNT INTEGER NOT NULL,
+                         AVGAPM FLOAT NOT NULL,
+                         AVGPPS FLOAT NOT NULL,
+                         ARGVS FLOAT NOT NULL
+                         DATE TEXT NOT NULL)''')
         cls._db.commit()
         logger.info('数据库初始化完成')
         return cls._db
+
+    @classmethod
+    async def query_rank_info_today(cls, rank: str) -> list | None:
+        '''查询段位信息'''
+        cursor = cls._db.cursor()
+        cursor.execute('''SELECT TRENDING, TRLINE, PLAYERCOUNT, AVGAPM, AVGPPS, ARGVS, DATE
+                        FROM IORANK
+                        WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today()))
+        result = cursor.fetchone()
+
+        if result is None:
+            return None
+
+        return list(result)
+
+    @classmethod
+    async def write_rank_info_today(cls, rank: str, trline: int, playercount: int, avgapm: float, avgpps: float, avgvs: float):
+        '''写入段位信息'''
+
+        cursor = cls._db.cursor()
+        cursor.execute('''SELECT TRLINE
+                        FROM IORANK
+                        WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today()))
+
+        result = cursor.fetchone()
+
+        if result is None:
+            trending = '?'
+        else:
+            if result[0] > trline:
+                trending = '↑'
+            else:
+                trending = '↓'
+
+        cursor = cls._db.cursor()
+        cursor.execute('''INSERT INTO IORANK
+                        (RANK, TRENDING, TRLINE, PLAYERCOUNT, AVGAPM, AVGPPS, ARGVS, DATE)
+                        VALUES (?,?,?,?,?,?,?,?)''',
+                       (rank, trending, trline, playercount, avgapm, avgpps, avgvs, datetime.date.today()))
+
+        cls._db.commit()
 
     @classmethod
     async def _get_db(cls) -> Connection:

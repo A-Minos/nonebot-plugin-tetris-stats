@@ -1,14 +1,15 @@
+import math
 from asyncio import gather
 from typing import Any
 
 from nonebot.log import logger
 
+from .request import Request
 from ...utils.database import DataBase
 from ...utils.message_analyzer import (
     handle_bind_message,
     handle_stats_query_message
 )
-from .request import Request
 
 
 class Processor:
@@ -44,6 +45,63 @@ class Processor:
         return '出现预期外行为，请查看后台信息'
 
     @classmethod
+    async def query_rank(cls, rank: str | None):
+        rank_info = DataBase.query_rank_info_today(rank=rank)
+
+        if rank_info is None:
+            ranks_percentiles = {
+                "x": 1,
+                "u": 5,
+                "ss": 11,
+                "s+": 17,
+                "s": 23,
+                "s-": 30,
+                "a+": 38,
+                "a": 46,
+                "a-": 54,
+                "b+": 62,
+                "b": 70,
+                "b-": 78,
+                "c+": 84,
+                "c": 90,
+                "c-": 95,
+                "d+": 97.5,
+                "d": 100,
+            }
+
+            result = await Request.request('https://ch.tetr.io/api/users/lists/league/all')
+            users: list = result['data']['users']
+
+            for rank in ranks_percentiles.keys():
+                offset = math.floor((ranks_percentiles[rank] / 100) * len(users)) - 1
+                tr = users[offset]['league']['rating']
+
+                rank_users = list(filter(lambda x: x['league']['rank'] is rank, users))
+
+                def avg(column: str) -> float:
+                    return sum(map(lambda x: x['league'][column], rank_users)) / len(rank_users)
+
+                avg_apm = avg('apm')
+                avg_pps = avg('pps')
+                avg_vs = avg('vs')
+
+                await DataBase.write_rank_info_today(rank=rank, trline=tr, playercount=len(rank_users), avgapm=avg_apm,
+                                                     avgpps=avg_pps, avgvs=avg_vs)
+
+            return Processor.query_rank(rank=rank)
+        else:
+            message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})',
+            message += f'\n{rank_info[2]} 玩家'
+            message += '\n'
+            message += f'\n平均 APM: {rank_info[3]}'
+            message += f'\n平均 PPS: {rank_info[4]}'
+            message += f'\n平均 VS: {rank_info[5]}'
+            message += '\n'
+            message += f'\n数据更新日期: {rank_info[6]}'
+
+            return message
+
+    @classmethod
     async def handle_query(cls, message: str, qq_number: int | None):
         '''处理查询消息'''
         decoded_message = await handle_stats_query_message(message=message, game_type='IO')
@@ -69,9 +127,9 @@ class Processor:
 
     @classmethod
     async def get_user_data(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+            cls,
+            user_name: str | None = None,
+            user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取用户数据'''
         if user_name is not None and user_id is None:
@@ -84,9 +142,9 @@ class Processor:
 
     @classmethod
     async def get_solo_data(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+            cls,
+            user_name: str | None = None,
+            user_id: str | None = None
     ) -> tuple[bool, bool, dict[str, Any]]:
         '''获取Solo数据'''
         if user_name is not None and user_id is None:
@@ -165,9 +223,9 @@ class Processor:
 
     @classmethod
     async def generate_message(
-        cls,
-        user_name: str | None = None,
-        user_id: str | None = None
+            cls,
+            user_name: str | None = None,
+            user_id: str | None = None
     ) -> str:
         '''生成消息'''
         user_data, solo_data = await gather(
