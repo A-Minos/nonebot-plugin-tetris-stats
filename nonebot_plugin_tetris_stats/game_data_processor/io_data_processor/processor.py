@@ -43,7 +43,7 @@ class Processor:
 
     @classmethod
     async def query_rank(cls, rank: str | None):
-        rank_info = DataBase.query_rank_info_today(rank=rank)
+        rank_info = await DataBase.query_rank_info_today(rank=rank)
 
         if rank_info is None:
             ranks_percentiles = {
