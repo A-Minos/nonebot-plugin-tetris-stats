@@ -84,7 +84,7 @@ class Processor:
                 offset = math.floor((percentile / 100) * len(users)) - 1
                 tr = users[offset]['league']['rating']
 
-                rank_users = list(filter(lambda x: x['league']['rank'] is rank, users))
+                rank_users = list(filter(lambda x: x['league']['rank'] == rank, users))
                 playercount = len(rank_users)
 
                 avg_apm = avg(rank_users, 'apm', playercount)
