@@ -42,7 +42,7 @@ class Processor:
         return '出现预期外行为，请查看后台信息'
 
     @classmethod
-    async def query_rank(cls, rank: str | None):
+    async def query_rank(cls, rank: str):
         rank_info = await DataBase.query_rank_info_today(rank=rank)
 
         if rank_info is None:
