@@ -47,7 +47,7 @@ class DataBase():
                          PLAYERCOUNT INTEGER NOT NULL,
                          AVGAPM FLOAT NOT NULL,
                          AVGPPS FLOAT NOT NULL,
-                         ARGVS FLOAT NOT NULL
+                         ARGVS FLOAT NOT NULL,
                          DATE TEXT NOT NULL)''')
         cls._db.commit()
         logger.info('数据库初始化完成')
