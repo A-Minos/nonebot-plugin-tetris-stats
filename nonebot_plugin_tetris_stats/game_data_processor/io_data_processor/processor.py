@@ -70,7 +70,7 @@ class Processor:
                 return '未知段位'
 
             result = await Request.request('https://ch.tetr.io/api/users/lists/league/all')
-            users: list = result['data']['users']
+            users: list = result[2]['data']['users']
 
             def avg(rank_users: list, column: str, playercount: int | None = None) -> float:
                 return sum(i['league'][column] for i in rank_users) / (playercount or len(rank_users))
