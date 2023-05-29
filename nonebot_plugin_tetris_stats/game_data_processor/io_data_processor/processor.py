@@ -66,27 +66,34 @@ class Processor:
                 'd': 100,
             }
 
-            if rank.lower() not in list(map(lambda x: x.lower(), ranks_percentiles.keys())):
+            if rank.lower() not in (i for i in ranks_percentiles.keys()):
                 return '未知段位'
 
             result = await Request.request('https://ch.tetr.io/api/users/lists/league/all')
             users: list = result['data']['users']
 
-            for rank in ranks_percentiles.keys():
-                offset = math.floor((ranks_percentiles[rank] / 100) * len(users)) - 1
+            def avg(rank_users: list, column: str, playercount: int | None = None) -> float:
+                return sum(i['league'][column] for i in rank_users) / (playercount or len(rank_users))
+
+            for rank, percentile in ranks_percentiles.items():
+                offset = math.floor((percentile / 100) * len(users)) - 1
                 tr = users[offset]['league']['rating']
 
                 rank_users = list(filter(lambda x: x['league']['rank'] is rank, users))
+                playercount = len(rank_users)
 
-                def avg(column: str) -> float:
-                    return sum(map(lambda x: x['league'][column], rank_users)) / len(rank_users)
+                avg_apm = avg(rank_users, 'apm', playercount)
+                avg_pps = avg(rank_users, 'pps', playercount)
+                avg_vs = avg(rank_users, 'vs', playercount)
 
-                avg_apm = avg('apm')
-                avg_pps = avg('pps')
-                avg_vs = avg('vs')
-
-                await DataBase.write_rank_info_today(rank=rank, trline=tr, playercount=len(rank_users), avgapm=avg_apm,
-                                                     avgpps=avg_pps, avgvs=avg_vs)
+                await DataBase.write_rank_info_today(
+                    rank=rank,
+                    trline=tr,
+                    playercount=playercount,
+                    avgapm=avg_apm,
+                    avgpps=avg_pps,
+                    avgvs=avg_vs
+                    )
 
             return Processor.query_rank(rank=rank)
         else:
