@@ -100,7 +100,7 @@ class Processor:
                     avgvs=avg_vs
                     )
 
-            return Processor.query_rank(message=message)
+            return await Processor.query_rank(message=message)
         else:
             message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})'
             message += f'\n{rank_info[2]} 玩家'
