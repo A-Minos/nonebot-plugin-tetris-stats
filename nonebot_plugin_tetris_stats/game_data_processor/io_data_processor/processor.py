@@ -97,7 +97,7 @@ class Processor:
 
             return Processor.query_rank(rank=rank)
         else:
-            message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})',
+            message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})'
             message += f'\n{rank_info[2]} 玩家'
             message += '\n'
             message += f'\n平均 APM: {rank_info[3]}'
