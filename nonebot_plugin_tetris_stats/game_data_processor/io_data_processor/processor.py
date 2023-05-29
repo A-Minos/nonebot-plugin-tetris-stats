@@ -112,7 +112,7 @@ class Processor:
 
             message = f'{query_rank.upper()} 段, 分数线 {round(rank_info[1], 2)} TR, {rank_info[2]} 名玩家'
             message += f'\n对比昨日趋势: {rank_info[0]}'
-            message += '\n'
+            message += '\n平均数据: '
             message += f"\nL'PM: {avg_lpm} ( {avg_pps} pps )"
             message += f'\nAPM: {avg_apm} ( x{avg_apl} )'
             message += f'\nADPM: {avg_adpm} ( x{avg_adpl} ) ( {avg_vs}vs )'
