@@ -69,7 +69,7 @@ class Processor:
                 "d": 100,
             }
 
-            if rank.lower() not in list(map(lambda x: x.lower(), ranks_percentiles)):
+            if rank.lower() not in list(map(lambda x: x.lower(), ranks_percentiles.keys())):
                 return '未知段位'
 
             result = await Request.request('https://ch.tetr.io/api/users/lists/league/all')
