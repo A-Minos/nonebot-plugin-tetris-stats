@@ -56,7 +56,8 @@ class DataBase():
     @classmethod
     async def query_rank_info_today(cls, rank: str) -> list | None:
         '''查询段位信息'''
-        cursor = cls._db.cursor()
+        db = await cls._get_db()
+        cursor = db.cursor()
         cursor.execute('''SELECT TRENDING, TRLINE, PLAYERCOUNT, AVGAPM, AVGPPS, ARGVS, DATE
                         FROM IORANK
                         WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today()))
@@ -71,7 +72,8 @@ class DataBase():
     async def write_rank_info_today(cls, rank: str, trline: int, playercount: int, avgapm: float, avgpps: float, avgvs: float):
         '''写入段位信息'''
 
-        cursor = cls._db.cursor()
+        db = await cls._get_db()
+        cursor = db.cursor()
         cursor.execute('''SELECT TRLINE
                         FROM IORANK
                         WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today()))
@@ -86,13 +88,12 @@ class DataBase():
             else:
                 trending = '↓'
 
-        cursor = cls._db.cursor()
         cursor.execute('''INSERT INTO IORANK
                         (RANK, TRENDING, TRLINE, PLAYERCOUNT, AVGAPM, AVGPPS, ARGVS, DATE)
                         VALUES (?,?,?,?,?,?,?,?)''',
                        (rank, trending, trline, playercount, avgapm, avgpps, avgvs, datetime.date.today()))
 
-        cls._db.commit()
+        db.commit()
 
     @classmethod
     async def _get_db(cls) -> Connection:
