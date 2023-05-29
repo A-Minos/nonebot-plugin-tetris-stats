@@ -5,7 +5,11 @@ from typing import Any
 from nonebot.log import logger
 
 from ...utils.database import DataBase
-from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
+from ...utils.message_analyzer import (
+    handle_bind_message,
+    handle_rank_message,
+    handle_stats_query_message,
+)
 from .request import Request
 
 
@@ -42,7 +46,8 @@ class Processor:
         return '出现预期外行为，请查看后台信息'
 
     @classmethod
-    async def query_rank(cls, rank: str):
+    async def query_rank(cls, message: str):
+        rank = await handle_rank_message(message)
         rank_info = await DataBase.query_rank_info_today(rank=rank)
 
         if rank_info is None:
@@ -95,7 +100,7 @@ class Processor:
                     avgvs=avg_vs
                     )
 
-            return Processor.query_rank(rank=rank)
+            return Processor.query_rank(message=message)
         else:
             message = f'{rank}段 {rank_info[1]} TR ({rank_info[0]})'
             message += f'\n{rank_info[2]} 玩家'

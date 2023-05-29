@@ -53,6 +53,19 @@ async def handle_stats_query_message(message: str, game_type: str) -> tuple[str 
         return await check_name(message, game_type)
 
 
+async def handle_rank_message(message: str) -> str:
+    _cmd_aliases = ['io段位', 'iorank']
+    # 剔除命令前缀
+    for i in _cmd_aliases:
+        if match(rf'(?i){i}', message):
+            message = sub(rf'(?i){i}', '', message)
+            message = message.strip()
+            break
+    else:
+        raise ValueError('预期外行为, 请上报GitHub')
+    return message
+
+
 async def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
     '''返回值为tuple[gameType, tuple[message, user]]'''
     if game_type == 'IO':

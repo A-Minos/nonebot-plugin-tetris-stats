@@ -35,6 +35,6 @@ async def _(event: MessageEvent, matcher: Matcher):
 async def _(event: MessageEvent, matcher: Matcher):
     await matcher.finish(
         await Processor.query_rank(
-            rank=event.raw_message
+            message=event.raw_message
         )
     )
