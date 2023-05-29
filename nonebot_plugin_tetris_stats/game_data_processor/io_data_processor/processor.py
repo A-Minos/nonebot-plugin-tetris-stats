@@ -110,10 +110,10 @@ class Processor:
             avg_adpm = round((avg_vs * 0.6), 2)
             avg_adpl = round((avg_adpm / avg_lpm), 2)
 
-            message = f'{rank.upper()} 段, {round(rank_info[1], 2)} TR, {rank_info[2]} 玩家'
+            message = f'{rank.upper()} 段, 分数线 {round(rank_info[1], 2)} TR, {rank_info[2]} 名玩家'
             message += f'\n对比昨日趋势: {rank_info[0]}'
             message += '\n'
-            message += f'\nL\'PM: {avg_lpm} ( {avg_pps} pps )'
+            message += f"\nL'PM: {avg_lpm} ( {avg_pps} pps )"
             message += f'\nAPM: {avg_apm} ( x{avg_apl} )'
             message += f'\nADPM: {avg_adpm} ( x{avg_adpl} ) ( {avg_vs}vs )'
             message += '\n'
