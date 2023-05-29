@@ -46,9 +46,9 @@ class Processor:
         return '出现预期外行为，请查看后台信息'
 
     @classmethod
-    async def query_rank(cls, message: str):
-        rank = await handle_rank_message(message)
-        rank_info = await DataBase.query_rank_info_today(rank=rank)
+    async def handle_rank(cls, message: str):
+        query_rank = await handle_rank_message(message)
+        rank_info = await DataBase.query_rank_info_today(rank=query_rank)
 
         if rank_info is None:
             ranks_percentiles = {
@@ -71,7 +71,7 @@ class Processor:
                 'd': 100,
             }
 
-            if rank.lower() not in (i for i in ranks_percentiles.keys()):
+            if query_rank.lower() not in (i for i in ranks_percentiles.keys()):
                 return '未知段位'
 
             result = await Request.request('https://ch.tetr.io/api/users/lists/league/all')
@@ -100,7 +100,7 @@ class Processor:
                     avgvs=avg_vs
                     )
 
-            return await Processor.query_rank(message=message)
+            return await Processor.handle_rank(message=message)
         else:
             avg_apm = round(rank_info[3], 2)
             avg_pps = round(rank_info[4], 2)
@@ -110,7 +110,7 @@ class Processor:
             avg_adpm = round((avg_vs * 0.6), 2)
             avg_adpl = round((avg_adpm / avg_lpm), 2)
 
-            message = f'{rank.upper()} 段, 分数线 {round(rank_info[1], 2)} TR, {rank_info[2]} 名玩家'
+            message = f'{query_rank.upper()} 段, 分数线 {round(rank_info[1], 2)} TR, {rank_info[2]} 名玩家'
             message += f'\n对比昨日趋势: {rank_info[0]}'
             message += '\n'
             message += f"\nL'PM: {avg_lpm} ( {avg_pps} pps )"

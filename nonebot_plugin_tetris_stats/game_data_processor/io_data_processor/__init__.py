@@ -34,7 +34,7 @@ async def _(event: MessageEvent, matcher: Matcher):
 @IORank.handle()
 async def _(event: MessageEvent, matcher: Matcher):
     await matcher.finish(
-        await Processor.query_rank(
+        await Processor.handle_rank(
             message=event.raw_message
         )
     )
