@@ -4,12 +4,9 @@ from typing import Any
 
 from nonebot.log import logger
 
-from .request import Request
 from ...utils.database import DataBase
-from ...utils.message_analyzer import (
-    handle_bind_message,
-    handle_stats_query_message
-)
+from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
+from .request import Request
 
 
 class Processor:
