@@ -76,7 +76,7 @@ class DataBase():
         cursor = db.cursor()
         cursor.execute('''SELECT TRLINE
                         FROM IORANK
-                        WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today()))
+                        WHERE RANK = ? AND DATE = ?''', (rank, datetime.date.today() - datetime.timedelta(days=1)))
 
         result = cursor.fetchone()
 
