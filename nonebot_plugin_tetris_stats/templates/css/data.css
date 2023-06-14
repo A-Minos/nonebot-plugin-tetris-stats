@@ -1,0 +1,502 @@
+@font-face {
+    font-family: 'CabinetGrotesk-Variable';
+    src: url('../static/fonts/CabinetGrotesk/CabinetGrotesk-Variable.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.main-content {
+    background-color: #F1F1F1;
+    width: 625px;
+    height: 1400px;
+    font-family: 'CabinetGrotesk-Variable';
+}
+
+.title {
+    position: absolute;
+    width: 319px;
+    height: 43px;
+    left: 25px;
+    top: 22px;
+
+    font-style: normal;
+    font-weight: 900;
+    font-size: 35px;
+    line-height: 43px;
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.user-information {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    left: 25px;
+    top: 75px;
+
+    background: #FAFAFA;
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.header-img {
+    position: absolute;
+    width: 125px;
+    height: 125px;
+    left: calc(50% - 125px/2 + 0.5px);
+    top: 30px;
+
+    background: url(../static/header-img.jpg);
+    filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
+    border-radius: 65px;
+}
+
+.username {
+    position: absolute;
+    width: 84px;
+    height: 31px;
+    left: calc(50% - 84px/2 - 3px);
+    top: 183px;
+
+    font-style: normal;
+    font-weight: 800;
+    font-size: 25px;
+    line-height: 31px;
+
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.game-type {
+    position: absolute;
+    width: 300px;
+    height: 100px;
+    left: 300px;
+    top: 75px;
+
+    background: #FAFAFA;
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.game-logo {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: calc(50% - 50px/2 - 100px);
+    top: calc(50% - 50px/2);
+
+    background: url(../static/logo/TETR.IO.svg);
+    border-radius: 10px;
+}
+
+.game-name {
+    position: absolute;
+    width: 88px;
+    height: 31px;
+    left: calc(50% - 88px/2 + 22px);
+    top: calc(50% - 31px/2 + 0.5px);
+
+    font-style: normal;
+    font-weight: 800;
+    font-size: 25px;
+    line-height: 31px;
+
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.rankings {
+    position: absolute;
+    width: 300px;
+    height: 125px;
+    left: 300px;
+    top: 200px;
+
+    background: #FAFAFA;
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.rankings-title {
+    position: absolute;
+    width: 90px;
+    height: 31px;
+    left: 24px;
+    top: 19px;
+
+    font-style: normal;
+    font-weight: 800;
+    font-size: 25px;
+    line-height: 31px;
+
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.rankings-value {
+    position: absolute;
+    width: 222px;
+    height: 60px;
+    left: 24px;
+    bottom: 15px;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 50px;
+    line-height: 120%;
+
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.rating-table {
+    position: absolute;
+    width: 575px;
+    height: 275px;
+    left: 25px;
+    top: 350px;
+
+    background: linear-gradient(222.34deg, #525252 11.97%, #1D1916 89.73%);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+}
+
+.table-title {
+    position: absolute;
+    width: 188px;
+    height: 31px;
+    left: 24px;
+    top: 19px;
+
+    font-style: normal;
+    font-weight: 800;
+    font-size: 25px;
+    line-height: 31px;
+
+    display: flex;
+    align-items: center;
+
+    color: #FAFAFA;
+}
+
+.rank-icon {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: 27px;
+    top: 90px;
+}
+
+.line-table {
+    position: absolute;
+    width: 575px;
+    height: 275px;
+    left: 0px;
+    top: 0px;
+
+    z-index: 0;
+}
+
+.rating-value {
+    position: absolute;
+    width: 272px;
+    height: 60px;
+    left: 24px;
+    top: 140px;
+
+    font-style: normal;
+    font-weight: 800;
+    font-size: 45px;
+    line-height: 120%;
+
+    display: flex;
+    align-items: center;
+
+    color: #FAFAFA;
+
+    z-index: 99;
+}
+
+.multiplayer-title {
+    position: absolute;
+    width: 277px;
+    height: 43px;
+    left: 25px;
+    top: 668px;
+
+    font-style: normal;
+    font-weight: 900;
+    font-size: 35px;
+    line-height: 43px;
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.lpm-table {
+    position: absolute;
+    width: 275px;
+    height: 125px;
+    left: 25px;
+    top: 725px;
+
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.lpm-value {
+    position: absolute;
+    width: 92px;
+    height: 56px;
+    left: 24px;
+    top: 52px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 45px;
+    line-height: 56px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #4D7D0F;
+}
+
+.pps-value {
+    position: absolute;
+    width: 57px;
+    height: 19px;
+    right: 25px;
+    top: 79px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 19px;
+    /* identical to box height */
+
+    text-align: right;
+
+    color: #4D7D0F;
+}
+
+.apm-table {
+    position: absolute;
+    width: 275px;
+    height: 125px;
+    left: 25px;
+    top: 875px;
+
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.apm-value {
+    position: absolute;
+    width: 85px;
+    height: 56px;
+    left: 24px;
+    top: 52px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 45px;
+    line-height: 56px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #B5530A;
+}
+
+.apl-value {
+    position: absolute;
+    width: 33px;
+    height: 19px;
+    right: 25px;
+    top: 79px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 19px;
+    /* identical to box height */
+
+    text-align: right;
+
+    color: #B5530A;
+}
+
+.adpm-table {
+    position: absolute;
+    width: 275px;
+    height: 125px;
+    left: 25px;
+    top: 1025px;
+
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.adpm-value {
+    position: absolute;
+    width: 102px;
+    height: 56px;
+    left: 24px;
+    top: 52px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 45px;
+    line-height: 56px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #235DB4;
+}
+
+.adpl-value {
+    position: absolute;
+    width: 23px;
+    height: 19px;
+    right: 25px;
+    top: 56px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 19px;
+    /* identical to box height */
+
+    text-align: right;
+
+    color: #4779C6;
+}
+
+.vs-value {
+    position: absolute;
+    width: 55px;
+    height: 19px;
+    right: 25px;
+    top: 79px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 19px;
+    /* identical to box height */
+
+    text-align: right;
+
+    color: #4779C6;
+}
+
+.radar-map {
+    position: absolute;
+    width: 275px;
+    height: 275px;
+    left: 325px;
+    top: 725px;
+
+    background: linear-gradient(222.34deg, #525252 11.97%, #1D1916 89.73%), linear-gradient(222.34deg, #4F9DFF 11.97%, #2563EA 89.73%);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+}
+
+.singleplayer-title {
+    position: absolute;
+    width: 293px;
+    height: 43px;
+    left: 25px;
+    top: 1193px;
+
+    font-style: normal;
+    font-weight: 900;
+    font-size: 35px;
+    line-height: 43px;
+    display: flex;
+    align-items: center;
+
+    color: #000000;
+}
+
+.sprint-table {
+    position: absolute;
+    width: 275px;
+    height: 125px;
+    left: 25px;
+    top: 1250px;
+
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.sprint-value {
+    position: absolute;
+    width: 118px;
+    height: 56px;
+    left: 24px;
+    top: 52px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 45px;
+    line-height: 56px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #B42323;
+}
+
+.blitz-table {
+    position: absolute;
+    width: 275px;
+    height: 125px;
+    left: 325px;
+    top: 1250px;
+
+    box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 30px;
+}
+
+.blitz-value {
+    position: absolute;
+    width: 170px;
+    height: 56px;
+    left: 24px;
+    top: 52px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 45px;
+    line-height: 56px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+
+    color: #8E23B4;
+}
