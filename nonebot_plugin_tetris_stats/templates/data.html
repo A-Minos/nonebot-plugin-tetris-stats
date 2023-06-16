@@ -191,8 +191,9 @@
 
     <script>
         // rankings数据处理
-        let ranking_data =
-            document.getElementsByClassName('data-input')[0].innerText;
+        let ranking_data = document
+            .getElementsByClassName('data-input')[0]
+            .innerText.trim();
         ranking_data = ranking_data.split('.');
         document.querySelector('.rankings-data-int').innerText =
             ranking_data[0] + '.';
@@ -202,8 +203,9 @@
 
     <script>
         // rating数据处理
-        let rating_data =
-            document.getElementsByClassName('rating-input')[0].innerText;
+        let rating_data = document
+            .getElementsByClassName('rating-input')[0]
+            .innerText.trim();
         rating_data = rating_data.split('.');
         document.querySelector('.rating-int').innerText = rating_data[0] + '.';
         document.querySelector('.rating-float').innerText = rating_data[1];
@@ -211,9 +213,9 @@
 
     <script>
         // lpm数据处理
-        let lpm_data =
-            document.getElementsByClassName('lpm-value-input')[0].innerText;
-        console.log(lpm_data);
+        let lpm_data = document
+            .getElementsByClassName('lpm-value-input')[0]
+            .innerText.trim();
         lpm_data = lpm_data.split('.');
         document.querySelector('.lpm-value-int').innerText = lpm_data[0] + '.';
         document.querySelector('.lpm-value-float').innerText = lpm_data[1];
@@ -221,8 +223,9 @@
 
     <script>
         // apm数据处理
-        let apm_data =
-            document.getElementsByClassName('apm-value-input')[0].innerText;
+        let apm_data = document
+            .getElementsByClassName('apm-value-input')[0]
+            .innerText.trim();
         apm_data = apm_data.split('.');
         document.querySelector('.apm-value-int').innerText = apm_data[0] + '.';
         document.querySelector('.apm-value-float').innerText = apm_data[1];
@@ -230,8 +233,9 @@
 
     <script>
         // adpm数据处理
-        let adpm_data =
-            document.getElementsByClassName('adpm-value-input')[0].innerText;
+        let adpm_data = document
+            .getElementsByClassName('adpm-value-input')[0]
+            .innerText.trim();
         adpm_data = adpm_data.split('.');
         document.querySelector('.adpm-value-int').innerText =
             adpm_data[0] + '.';
@@ -240,8 +244,9 @@
 
     <script>
         // sprint数据处理
-        let sprint_data =
-            document.getElementsByClassName('sprint-value-input')[0].innerText;
+        let sprint_data = document
+            .getElementsByClassName('sprint-value-input')[0]
+            .innerText.trim();
         sprint_data = sprint_data.split(/[\s.]+/);
         document.querySelector('.sprint-value-int').innerText =
             sprint_data[0] + '.';
