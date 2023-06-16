@@ -1,6 +1,7 @@
 @font-face {
     font-family: 'CabinetGrotesk-Variable';
-    src: url('../static/fonts/CabinetGrotesk/CabinetGrotesk-Variable.woff2') format('woff2');
+    src: url('../static/fonts/CabinetGrotesk/CabinetGrotesk-Variable.woff2')
+        format('woff2');
     font-display: swap;
     font-style: normal;
 }
@@ -11,7 +12,7 @@
 }
 
 .main-content {
-    background-color: #F1F1F1;
+    background-color: #f1f1f1;
     width: 625px;
     height: 1400px;
     font-family: 'CabinetGrotesk-Variable';
@@ -41,7 +42,7 @@
     left: 25px;
     top: 75px;
 
-    background: #FAFAFA;
+    background: #fafafa;
     box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
     border-radius: 30px;
 }
@@ -50,7 +51,7 @@
     position: absolute;
     width: 125px;
     height: 125px;
-    left: calc(50% - 125px/2 + 0.5px);
+    left: calc(50% - 125px / 2 + 0.5px);
     top: 30px;
 
     background: url(../static/header-img.jpg);
@@ -62,7 +63,7 @@
     position: absolute;
     width: 84px;
     height: 31px;
-    left: calc(50% - 84px/2 - 3px);
+    left: calc(50% - 84px / 2 - 3px);
     top: 183px;
 
     font-style: normal;
@@ -83,7 +84,7 @@
     left: 300px;
     top: 75px;
 
-    background: #FAFAFA;
+    background: #fafafa;
     box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
     border-radius: 30px;
 }
@@ -92,8 +93,8 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    left: calc(50% - 50px/2 - 100px);
-    top: calc(50% - 50px/2);
+    left: calc(50% - 50px / 2 - 100px);
+    top: calc(50% - 50px / 2);
 
     background: url(../static/logo/TETR.IO.svg);
     border-radius: 10px;
@@ -103,8 +104,8 @@
     position: absolute;
     width: 88px;
     height: 31px;
-    left: calc(50% - 88px/2 + 22px);
-    top: calc(50% - 31px/2 + 0.5px);
+    left: calc(50% - 88px / 2 + 22px);
+    top: calc(50% - 31px / 2 + 0.5px);
 
     font-style: normal;
     font-weight: 800;
@@ -124,7 +125,7 @@
     left: 300px;
     top: 200px;
 
-    background: #FAFAFA;
+    background: #fafafa;
     box-shadow: 0px 9px 25px rgba(0, 0, 0, 0.15);
     border-radius: 30px;
 }
@@ -172,7 +173,7 @@
     left: 25px;
     top: 350px;
 
-    background: linear-gradient(222.34deg, #525252 11.97%, #1D1916 89.73%);
+    background: linear-gradient(222.34deg, #525252 11.97%, #1d1916 89.73%);
     box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
     border-radius: 30px;
 }
@@ -192,7 +193,7 @@
     display: flex;
     align-items: center;
 
-    color: #FAFAFA;
+    color: #fafafa;
 }
 
 .rank-icon {
@@ -228,7 +229,7 @@
     display: flex;
     align-items: center;
 
-    color: #FAFAFA;
+    color: #fafafa;
 
     z-index: 99;
 }
@@ -277,7 +278,7 @@
     display: flex;
     align-items: center;
 
-    color: #4D7D0F;
+    color: #4d7d0f;
 }
 
 .pps-value {
@@ -295,7 +296,7 @@
 
     text-align: right;
 
-    color: #4D7D0F;
+    color: #4d7d0f;
 }
 
 .apm-table {
@@ -325,7 +326,7 @@
     display: flex;
     align-items: center;
 
-    color: #B5530A;
+    color: #b5530a;
 }
 
 .apl-value {
@@ -343,7 +344,7 @@
 
     text-align: right;
 
-    color: #B5530A;
+    color: #b5530a;
 }
 
 .adpm-table {
@@ -373,7 +374,7 @@
     display: flex;
     align-items: center;
 
-    color: #235DB4;
+    color: #235db4;
 }
 
 .adpl-value {
@@ -391,7 +392,7 @@
 
     text-align: right;
 
-    color: #4779C6;
+    color: #4779c6;
 }
 
 .vs-value {
@@ -409,7 +410,7 @@
 
     text-align: right;
 
-    color: #4779C6;
+    color: #4779c6;
 }
 
 .radar-map {
@@ -419,7 +420,8 @@
     left: 325px;
     top: 725px;
 
-    background: linear-gradient(222.34deg, #525252 11.97%, #1D1916 89.73%), linear-gradient(222.34deg, #4F9DFF 11.97%, #2563EA 89.73%);
+    background: linear-gradient(222.34deg, #525252 11.97%, #1d1916 89.73%),
+        linear-gradient(222.34deg, #4f9dff 11.97%, #2563ea 89.73%);
     box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
     border-radius: 30px;
 }
@@ -468,7 +470,7 @@
     display: flex;
     align-items: center;
 
-    color: #B42323;
+    color: #b42323;
 }
 
 .blitz-table {
@@ -498,5 +500,5 @@
     display: flex;
     align-items: center;
 
-    color: #8E23B4;
+    color: #8e23b4;
 }
