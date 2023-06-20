@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+        <link href="./css/data-v2.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <div class="main-content">
+            <span class="account-title">Account&Rankings</span>
+            <div class="user-info-box">
+                <div class="user-avatar"></div>
+                <div class="user-name">C1ystal</div>
+                <div class="user-sgin">
+                    “I am not in danger, Skyler. I am the danger. A guy opens
+                    his door and gets shot...”
+                </div>
+            </div>
+            <div class="game-info-box">
+                <div class="game-type-box">
+                    <img class="game-logo" src="./static/logo/TETR.IO.svg" />
+                    <span class="game-name">TETR.IO</span>
+                </div>
+                <div class="game-info-dividing-line"></div>
+                <div class="ranking-info-box">
+                    <span class="ranking-title">Ranking</span>
+                    <span class="ranking">2429.21</span>
+                    <span class="rd">±62.29</span>
+                </div>
+            </div>
+            <div class="TR-curve-chart" id="TR-curve-chart">
+                <span class="TR-title">Tetra Rating (TR)</span>
+                <img class="rank-icon" src="./static/rank/U.svg" />
+                <span class="TR" style="display: flex; align-items: flex-end"
+                    >24,165.82&nbsp;
+                    <p
+                        style="
+                            font-size: 30px;
+                            font-weight: 400;
+                            line-height: 47px;
+                        "
+                    >
+                        (#743)
+                    </p>
+                </span>
+            </div>
+            <span class="multiplayer-title">Multiplayer Stats</span>
+            <div class="lpm-table">
+                <img src="./static/data/LPM.svg" />
+                <span class="lpm-value">48.72</span>
+                <span class="pps-value">2.03 pps</span>
+            </div>
+            <div class="apm-table">
+                <img src="./static/data/APM.svg" />
+                <span class="apm-value">76.87</span>
+                <span class="apl-value">x1.58</span>
+            </div>
+            <div class="adpm-table">
+                <img src="./static/data/ADPM.svg" />
+                <span class="adpm-value">102.31</span>
+                <span class="adpl-value">x2.1</span>
+                <span class="vs-value">170.51 vs</span>
+            </div>
+            <div class="radar-map" id="radar-map"></div>
+            <span class="singleplayer-title">Singleplayer Stats</span>
+            <div class="sprint-table">
+                <img src="./static/data/40L.svg" />
+                <span class="sprint-value">1m 10.2s</span>
+            </div>
+            <div class="blitz-table">
+                <img src="./static/data/Blitz.svg" />
+                <span class="blitz-value">289,085</span>
+            </div>
+        </div>
+    </body>
+
+    <script src="./js/echarts.js"></script>
+
+    <script>
+        // 曲线图
+        var lineChartDom = document.getElementById('TR-curve-chart');
+        var lineChart = echarts.init(lineChartDom, null, { renderer: 'svg' });
+        var option;
+
+        var offset = 0;
+        var overflow = 0;
+        var split_value;
+        // 执行顺序有问题，需要放到python层
+        function calculate_split(value_max, value_min) {
+            console.log('get_offset');
+            console.log(value_max, value_min);
+
+            let new_max_value;
+            let new_min_value;
+
+            while (true) {
+                new_max_value = value_max + offset + overflow;
+                if (new_max_value > 25000) {
+                    overflow -= 1;
+                    continue;
+                }
+                new_min_value = value_min - offset + overflow;
+                if (new_min_value < 0) {
+                    overflow += 1;
+                    continue;
+                }
+                if (Number.isInteger((new_max_value - new_min_value) / 40)) {
+                    split_value =
+                        (value_max + offset - (value_min - offset)) / 4;
+                    break;
+                }
+                offset += 1;
+            }
+        }
+
+        /** @type EChartsOption */
+        option = {
+            grid: {
+                left: '-5%',
+                bottom: '17%',
+                width: '90%',
+                height: '70%',
+            },
+
+            xAxis: {
+                type: 'time',
+                minInterval: 3600 * 48 * 1000,
+                axisTick: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+                    lineStyle: {
+                        color: '#FFFFFF',
+                    },
+                },
+                axisLabel: {
+                    fontFamily: 'CabinetGrotesk-Variable',
+                    fontSize: 15,
+                    align: 'center',
+                    formatter: function (value, index) {
+                        console.log(value, index);
+                        var date = new Date(value);
+                        var lst;
+                        var ret;
+                        function format_date() {
+                            return new Intl.DateTimeFormat('en-US', {
+                                month: '2-digit',
+                                day: '2-digit',
+                            })
+                                .format(date)
+                                .split('/');
+                        }
+                        switch (index) {
+                            case 0:
+                            case 6:
+                                ret = '';
+                                break;
+                            default:
+                                lst = format_date();
+                                if (index === 5) {
+                                    ret =
+                                        '{last_month|' +
+                                        lst[0] +
+                                        '}\n{last_day|' +
+                                        lst[1] +
+                                        '}';
+                                    break;
+                                }
+                                ret =
+                                    '{month|' +
+                                    lst[0] +
+                                    '}\n{day|' +
+                                    lst[1] +
+                                    '}';
+                        }
+                        console.log(ret);
+                        return ret;
+                    },
+                    rich: {
+                        month: {
+                            fontFamily: 'CabinetGrotesk-Variable',
+                            fontSize: 13,
+                            fontWeight: '400',
+                            color: '#FFFFFF',
+                            opacity: 0.6,
+                        },
+                        day: {
+                            fontFamily: 'CabinetGrotesk-Variable',
+                            fontSize: 20,
+                            fontWeight: '800',
+                            color: '#FFFFFF',
+                            opacity: 0.6,
+                        },
+                        last_month: {
+                            fontFamily: 'CabinetGrotesk-Variable',
+                            fontSize: 13,
+                            fontWeight: '400',
+                            color: '#373533',
+                            backgroundColor: '#FAFAFA',
+                            borderRadius: 6,
+                            padding: [-10, 0, 10, 0],
+                            width: 36,
+                            height: 37,
+                            lineHeight: 32,
+                        },
+                        last_day: {
+                            fontFamily: 'CabinetGrotesk-Variable',
+                            fontSize: 20,
+                            fontWeight: '800',
+                            color: '#373533',
+                            padding: [-18, 0, 0, 0],
+                            lineHeight: 0,
+                        },
+                    },
+                },
+                zlevel: 1,
+            },
+
+            yAxis: {
+                type: 'value',
+                // 执行顺序有问题，需要放到python层
+                // interval: split_value,
+                interval: 140,
+                position: 'right',
+                splitLine: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+                    lineStyle: {
+                        color: '#FFFFFF',
+                    },
+                },
+                axisLabel: {
+                    align: 'right',
+                    formatter: function (value, index) {
+                        return '{value|' + value.toLocaleString() + '}';
+                    },
+                    rich: {
+                        value: {
+                            fontFamily: 'CabinetGrotesk-Variable',
+                            fontSize: 15,
+                            fontWeight: '500',
+                            color: '#FFFFFF',
+                            opacity: 0.6,
+                        },
+                    },
+                },
+                offset: 70,
+                max: function (value) {
+                    let value_max = 10 * Math.ceil(value.max / 10);
+                    let value_min = 10 * Math.floor(value.min / 10);
+                    calculate_split(value_max, value_min);
+                    return value_max + offset + overflow;
+                },
+                min: function (value) {
+                    let value_max = 10 * Math.ceil(value.max / 10);
+                    let value_min = 10 * Math.floor(value.min / 10);
+                    calculate_split(value_max, value_min);
+                    return value_min - offset + overflow;
+                },
+            },
+            series: [
+                {
+                    data: [
+                        // 10天的数据，最后一天只要第一条 (时间戳最少要多1ms)
+                        [new Date(1687363200000), 24510],
+                        [new Date(1687449600000), 24560],
+                        [new Date(1687536000000), 24520],
+                        [new Date(1687622400000), 24550],
+                        [new Date(1687708800000), 25000],
+                        [new Date(1687795200000), 24450],
+                        [new Date(1687881600000), 24530],
+                        [new Date(1687968000000), 24520],
+                        [new Date(1688054400000), 24550],
+                        [new Date(1688140800001), 25000],
+                    ],
+                    type: 'line',
+                    smooth: true,
+                    symbol: function (value, params) {
+                        console.log(value);
+                        console.log(params);
+                        // 模板化时传入
+                        if (9 === params.dataIndex) {
+                            return 'image://static/data/point.svg';
+                        }
+                        return 'none';
+                    },
+                    symbolSize: 75,
+                    color: ['#FAFAFA99'],
+                    markLine: {
+                        data: [
+                            {
+                                xAxis: 'max',
+                                y: 300,
+                            },
+                        ],
+                        label: {
+                            show: false,
+                        },
+                        lineStyle: {
+                            color: '#FAFAFA',
+                            width: 3,
+                            type: 'dashed',
+                            cap: 'round',
+                            // dashOffset: 1,
+                        },
+                        symbol: 'none',
+                        animation: false,
+                    },
+                    z: 5,
+                },
+            ],
+        };
+        option && lineChart.setOption(option);
+    </script>
+
+    <script>
+        // 雷达图
+        var radarChartDom = document.getElementById('radar-map');
+        var radarChart = echarts.init(radarChartDom, null, { renderer: 'svg' });
+        var option;
+
+        option = {
+            radar: [
+                {
+                    indicator: [
+                        { text: 'SPM' },
+                        { text: 'APM', nameRotate: 60 },
+                        { text: 'ADPM', nameRotate: -60 },
+                        { text: "D'PM" },
+                        { text: 'DPM', nameRotate: 60 },
+                        { text: "L'PM", nameRotate: -60 },
+                    ],
+                    center: ['50%', '50%'],
+                    radius: '65%',
+                    startAngle: 90,
+                    splitNumber: 4,
+                    shape: 'circle',
+                    axisName: {
+                        color: '#FAFAFA',
+                    },
+                    splitArea: {
+                        show: false,
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: 'rgba(250, 250, 250, 0.3)',
+                        },
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: 'rgba(250, 250, 250, 0.3)',
+                        },
+                    },
+                },
+            ],
+            series: [
+                {
+                    type: 'radar',
+                    symbol: 'none',
+                    emphasis: {
+                        disabled: true,
+                    },
+                    lineStyle: {
+                        color: 'rgba(250, 250, 250, 1)',
+                        shadowBlur: 12,
+                        shadowColor: 'rgba(250, 250, 250, 1.5)',
+                    },
+                    areaStyle: {
+                        color: 'rgba(250, 250, 250, 0.45)',
+                    },
+                    data: [
+                        {
+                            value: [100, 8, 100, 80, 2000, 100],
+                            name: 'Data A',
+                        },
+                    ],
+                },
+            ],
+        };
+        option && radarChart.setOption(option);
+    </script>
+</html>
