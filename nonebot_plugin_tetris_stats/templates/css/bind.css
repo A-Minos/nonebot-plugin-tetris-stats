@@ -1,0 +1,170 @@
+@font-face {
+    font-family: 'SourceHanSansSC-VF';
+    src: url('../static/fonts/SourceHanSans/SourceHanSansSC-VF.otf.woff2')
+        format('woff2');
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CabinetGrotesk-Variable';
+    src: url('../static/fonts/CabinetGrotesk/CabinetGrotesk-Variable.woff2')
+        format('woff2');
+    font-display: swap;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    /* Auto layout */
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px;
+    gap: 10px;
+
+    position: relative;
+    width: 444px;
+    height: 319px;
+
+    background: #f1f1f1;
+    font-family: 'SourceHanSansSC-VF', 'CabinetGrotesk-Variable';
+}
+
+.main-content {
+    /* Auto layout */
+
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 0px;
+    gap: 15px;
+
+    width: 384px;
+    height: 259px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.bind-subject {
+    /* Auto layout */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    gap: 30px;
+
+    width: 384px;
+    height: 245px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.bind-icons {
+    /* Auto layout */
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 32px;
+
+    width: 384px;
+    height: 96px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.user-avatar {
+    width: 96px;
+    height: 96px;
+
+    filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
+    border-radius: 20px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.state {
+    width: 128px;
+    height: 56px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.logo {
+    width: 96px;
+    height: 96px;
+
+    filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
+    border-radius: 20px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
+
+.command-result {
+    font-style: normal;
+    font-weight: 350;
+    font-size: 25px;
+    line-height: 36.2px;
+    text-align: center;
+
+    color: #000000;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.extra-info {
+    width: 324px;
+    height: 46px;
+
+    font-style: normal;
+    margin: 0 auto;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    text-align: center;
+
+    color: #52525c;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
