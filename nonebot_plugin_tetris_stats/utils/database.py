@@ -85,11 +85,9 @@ class DataBase():
         else:
             if trline > result[0]:
                 trending = '↑'
-
-            if trline == result[0]:
+            elif trline == result[0]:
                 trending = '-'
-                
-            if trline < result[0]:
+            elif trline < result[0]:
                 trending = '↓'
 
         cursor.execute('''INSERT INTO IORANK
