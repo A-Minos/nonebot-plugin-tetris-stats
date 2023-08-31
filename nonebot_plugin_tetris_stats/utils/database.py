@@ -82,11 +82,12 @@ class DataBase():
 
         if result is None:
             trending = '?'
-        else:
-            if result[0] > trline:
-                trending = '↑'
-            else:
-                trending = '↓'
+        elif trline > result[0]:
+            trending = '↑'
+        elif trline == result[0]:
+            trending = '-'
+        elif trline < result[0]:
+            trending = '↓'
 
         cursor.execute('''INSERT INTO IORANK
                         (RANK, TRENDING, TRLINE, PLAYERCOUNT, AVGAPM, AVGPPS, ARGVS, DATE)
