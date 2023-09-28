@@ -1,7 +1,7 @@
 from asyncio import get_running_loop
 from datetime import datetime
 from functools import wraps
-from typing import Any, Type
+from typing import Any, ClassVar, Type
 
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from nonebot.log import logger
@@ -39,7 +39,7 @@ class Recorder:
                 logger.warning('在保存之前就调用了 del, 如果处理过程中发生了异常, 这可能是正确的')
                 self.save()
 
-    instances: dict[str, Temp] = {}
+    instances: ClassVar[dict[str, Temp]] = {}
 
     @classmethod
     async def receive(
