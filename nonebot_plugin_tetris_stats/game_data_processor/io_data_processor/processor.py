@@ -234,7 +234,7 @@ class Processor:
                 self.get_sprint_stats(), self.get_blitz_stats()
             )
         except RequestError as e:
-            ret_message += f'\n{str(e)}'
+            ret_message += f'\n{e}'
         else:
             self.processed_data.update(
                 sprint_stats=sprint_stats, blitz_stats=blitz_stats
