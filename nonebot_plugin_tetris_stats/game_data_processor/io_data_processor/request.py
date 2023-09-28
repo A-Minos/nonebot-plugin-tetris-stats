@@ -1,6 +1,7 @@
 from typing import Any
 
 import aiohttp
+from aiofiles import open
 from nonebot import get_driver
 from nonebot.log import logger
 from playwright.async_api import Response
@@ -71,15 +72,17 @@ class Request:
     async def init_cache(cls) -> None:
         """初始化缓存文件"""
         if not cls._CACHE_FILE.exists():
-            with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
-                file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
+            async with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
+                await file.write(
+                    dumps({'headers': cls._headers, 'cookies': cls._cookies})
+                )
 
     @classmethod
     async def read_cache(cls) -> None:
         """读取缓存文件"""
         try:
-            with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
-                json = loads(file.read())
+            async with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
+                json = loads(await file.read())
         except FileNotFoundError:
             await cls.init_cache()
         except (PermissionError, JSONDecodeError):
@@ -93,8 +96,10 @@ class Request:
     async def write_cache(cls) -> None:
         """写入缓存文件"""
         try:
-            with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
-                file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
+            async with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
+                await file.write(
+                    dumps({'headers': cls._headers, 'cookies': cls._cookies})
+                )
         except FileNotFoundError:
             await cls.init_cache()
         except (PermissionError, JSONDecodeError):
