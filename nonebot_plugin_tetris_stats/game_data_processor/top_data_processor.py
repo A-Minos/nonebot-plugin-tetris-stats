@@ -1,4 +1,3 @@
-from asyncio import gather
 from re import I
 from typing import Any
 
@@ -19,9 +18,7 @@ TopStats = on_regex(pattern=r'^top查|^topstats', flags=I, permission=GROUP)
 
 @TOPBind.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_bind_message(
-        message=event.raw_message, game_type='TOP'
-    )
+    decoded_message = handle_bind_message(message=event.raw_message, game_type='TOP')
     if decoded_message[0] is None:
         await matcher.finish(decoded_message[1][0])
     elif decoded_message[0] == 'Name':
@@ -29,9 +26,9 @@ async def _(event: MessageEvent, matcher: Matcher):
         if user_data[0] is False:
             await matcher.finish('用户信息请求失败')
         else:
-            if await check_user(user_data[1]) is False:
+            if check_user(user_data[1]) is False:
                 await matcher.finish('用户不存在')
-            user_name = await get_user_name(user_data[1])
+            user_name = get_user_name(user_data[1])
             if event.sender.user_id is None:  # 理论上是不会有None出现的, ide快乐行属于是 (
                 logger.error('获取QQ号失败')
                 await matcher.finish('获取QQ号失败')
@@ -44,7 +41,7 @@ async def _(event: MessageEvent, matcher: Matcher):
 
 @TopStats.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_stats_query_message(
+    decoded_message = handle_stats_query_message(
         message=event.raw_message, game_type='TOP'
     )
     if decoded_message[0] is None:
@@ -93,12 +90,12 @@ async def get_user_data(user_name: str) -> tuple[bool, str]:
         return False, ''
 
 
-async def check_user(user_data: str) -> bool:
+def check_user(user_data: str) -> bool:
     """如果用户存在返回True, 如果用户不存在返回False"""
     return user_data.find('user not found!') == -1
 
 
-async def get_user_name(user_data: str) -> str:
+def get_user_name(user_data: str) -> str:
     """获取用户名"""
     data = etree.HTML(user_data).xpath('//div[@class="mycontent"]/h1/text()')
     if isinstance(data, list):
@@ -106,7 +103,7 @@ async def get_user_name(user_data: str) -> str:
     raise TypeError('预期外行为, 请上报GitHub')
 
 
-async def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
+def get_game_stats(user_data: str) -> dict[str, dict[str, Any]]:
     """获取游戏统计数据"""
     game_stats: dict[str, Any] = {'24H': {}, 'All': {}}
     html = etree.HTML(user_data)
@@ -169,11 +166,9 @@ async def generate_message(user_name: str) -> str:
     user_data = await get_user_data(user_name)
     if user_data[0] is False:
         return '用户信息请求失败'
-    if await check_user(user_data[1]) is False:
+    if check_user(user_data[1]) is False:
         return '用户不存在'
-    user_name, game_stats = await gather(
-        get_user_name(user_data[1]), get_game_stats(user_data[1])
-    )
+    user_name, game_stats = get_user_name(user_data[1]), get_game_stats(user_data[1])
     message = ''
     if game_stats['24H'] and game_stats['All']:
         message += f'用户 {user_name} 24小时内统计数据为: '

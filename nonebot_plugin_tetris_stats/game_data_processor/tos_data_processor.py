@@ -17,7 +17,7 @@ TOSStats = on_regex(
 
 @TOSStats.handle()
 async def _(event: MessageEvent, matcher: Matcher):
-    decoded_message = await handle_stats_query_message(
+    decoded_message = handle_stats_query_message(
         message=event.raw_message, game_type='TOS'
     )
     if decoded_message[0] is None:
@@ -77,7 +77,7 @@ async def get_user_data(
     return await request(user_data_url)
 
 
-async def get_rank_stats(user_info: dict) -> dict[str, float]:
+def get_rank_stats(user_info: dict) -> dict[str, float]:
     """获取Rank数据"""
     data = user_info['data']
     rank_stats = {}
@@ -88,7 +88,7 @@ async def get_rank_stats(user_info: dict) -> dict[str, float]:
     return rank_stats
 
 
-async def get_game_data(user_data: dict) -> dict[str, int | float]:
+def get_game_data(user_data: dict) -> dict[str, int | float]:
     """获取游戏数据"""
     game_data: dict[str, int | float] = {}
     if user_data['data'] != []:
@@ -129,7 +129,7 @@ async def get_game_data(user_data: dict) -> dict[str, int | float]:
     return game_data
 
 
-async def get_pb_data(user_info: dict) -> dict[str, float | str]:
+def get_pb_data(user_info: dict) -> dict[str, float | str]:
     """获取PB数据"""
     pb_data: dict[str, float | str] = {}
     data = user_info['data']
@@ -154,9 +154,8 @@ async def generate_message(
         return '用户信息请求失败'
     if user_info[1] is False:
         return f'用户信息请求错误:\n{user_info[2]["error"]}'
-    rank_stats, pb_data = await gather(
-        get_rank_stats(user_info[2]), get_pb_data(user_info[2])
-    )
+    rank_stats, pb_data = get_rank_stats(user_info[2]), get_pb_data(user_info[2])
+
     message = f'用户 {user_info[2]["data"]["name"]} ({user_info[2]["data"]["teaId"]}) '
     if not rank_stats:
         message += '暂无段位统计数据'
@@ -169,7 +168,7 @@ async def generate_message(
     elif user_data[1] is False:
         message = f'{message.rstrip()}\n游戏数据请求错误:\n{user_data[2]["error"]}'
     else:
-        game_data = await get_game_data(user_data[2])
+        game_data = get_game_data(user_data[2])
         if not game_data:
             message += ', 暂无游戏数据'
         else:

@@ -37,16 +37,12 @@ class BrowserManager:
         environ[
             'PLAYWRIGHT_DOWNLOAD_HOST'
         ] = 'https://npmmirror.com/mirrors/playwright/'
-        if await cls._handle_error(
-            await cls._call_playwright(['', 'install', 'firefox'])
-        ):
+        if cls._handle_error(cls._call_playwright(['', 'install', 'firefox'])):
             logger.success('安装/更新 playwright 浏览器成功')
         else:
             logger.warning('playwright 浏览器 安装/更新 失败, 尝试使用原始仓库下载')
             del environ['PLAYWRIGHT_DOWNLOAD_HOST']
-            if await cls._handle_error(
-                await cls._call_playwright(['', 'install', 'firefox'])
-            ):
+            if cls._handle_error(cls._call_playwright(['', 'install', 'firefox'])):
                 logger.success('安装/更新 playwright 浏览器成功')
             else:
                 logger.error('安装/更新 playwright 浏览器失败')
@@ -60,7 +56,7 @@ class BrowserManager:
             logger.success('playwright 启动成功')
 
     @classmethod
-    async def _call_playwright(cls, argv: list[str]) -> BaseException:
+    def _call_playwright(cls, argv: list[str]) -> BaseException:
         """等价于调用 playwright 的命令行程序"""
         argv_backup = sys.argv.copy()
         from re import sub
@@ -76,7 +72,7 @@ class BrowserManager:
         return SystemExit(0)
 
     @classmethod
-    async def _handle_error(cls, error: BaseException) -> bool:
+    def _handle_error(cls, error: BaseException) -> bool:
         if isinstance(error, SystemExit) and error.code == 0:
             return True
         return False

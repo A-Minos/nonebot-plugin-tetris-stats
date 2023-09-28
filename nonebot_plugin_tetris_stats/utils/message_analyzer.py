@@ -1,7 +1,7 @@
 from re import match, sub
 
 
-async def handle_bind_message(message: str, game_type: str) -> tuple[str | None, tuple]:
+def handle_bind_message(message: str, game_type: str) -> tuple[str | None, tuple]:
     """返回值为tuple[handleType, tuple[message, user]]"""
     _cmd_aliases = {'IO': ['io绑定', 'iobind'], 'TOP': ['top绑定', 'topbind']}
     # 剔除命令前缀
@@ -14,10 +14,10 @@ async def handle_bind_message(message: str, game_type: str) -> tuple[str | None,
         raise ValueError('预期外行为, 请上报GitHub')
     if message == '' or message.isspace():
         return None, ('用户名为空', None)
-    return await check_name(message, game_type)
+    return check_name(message, game_type)
 
 
-async def handle_stats_query_message(
+def handle_stats_query_message(
     message: str, game_type: str
 ) -> tuple[str | None, tuple]:
     """返回值为tuple[handleType, tuple[message, user]]"""
@@ -100,10 +100,10 @@ async def handle_stats_query_message(
         # TODO: 在判断是否可能是查自己的情况的时候 也去判断是否能成立为一个UserName
         return 'ME', (None, None)
     else:
-        return await check_name(message, game_type)
+        return check_name(message, game_type)
 
 
-async def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
+def check_name(name: str, game_type: str) -> tuple[str | None, tuple]:
     """返回值为tuple[handleType, tuple[message, user]]"""
     if game_type == 'IO':
         if match(r'^[a-f0-9]{24}$', name):

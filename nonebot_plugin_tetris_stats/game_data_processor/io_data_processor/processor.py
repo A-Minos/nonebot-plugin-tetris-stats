@@ -28,7 +28,7 @@ class Processor:
     async def handle_bind(self) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
-        decoded_message = await handle_bind_message(
+        decoded_message = handle_bind_message(
             message=self.message, game_type=self.GAME_TYPE
         )
         handle_type = decoded_message[0]
@@ -52,7 +52,7 @@ class Processor:
     async def handle_query(self):
         """处理查询消息"""
         self.command_type = 'query'
-        decoded_message = await handle_stats_query_message(
+        decoded_message = handle_stats_query_message(
             message=self.message, game_type=self.GAME_TYPE
         )
         handle_type = decoded_message[0]
@@ -89,7 +89,7 @@ class Processor:
 
         如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException (
         """
-        await self.check_user()
+        self.check_user()
         user_name, user_id = self.user['Name'], self.user['ID']
         if user_name is None:
             user_name = (await self.get_user_data())['data']['user']['username']  # type: ignore[index]
@@ -98,7 +98,7 @@ class Processor:
             user_id = await self.get_user_id()
         return user_name, user_id
 
-    async def check_user(self) -> None | NoReturn:
+    def check_user(self) -> None | NoReturn:
         user_name, user_id = self.user['Name'], self.user['ID']
         if user_name is None and user_id is None:
             raise WhatTheFuckError('为什么 UserName 和 UserID 都没有')
@@ -107,7 +107,7 @@ class Processor:
     async def get_user_data(self) -> dict[str, Any] | NoReturn:
         """获取用户数据"""
         if 'user_data' not in self.response:
-            await self.check_user()
+            self.check_user()
             user_name, user_id = self.user['Name'], self.user['ID']
             user_data_url = f'https://ch.tetr.io/api/users/{user_name or user_id}'
             req_stats, srv_stats, user_data = await Request.request(user_data_url)
