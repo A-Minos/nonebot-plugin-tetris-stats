@@ -47,7 +47,7 @@ class Recorder:
     ) -> Any:
         receive_time = now()  # 保证时间最接近 (?
         message_id = event.message_id
-        temp = await cls._create_temp_instance(await cls._message_id_to_id(message_id))
+        temp = cls._create_temp_instance(cls._message_id_to_id(message_id))
         temp.receive_time = receive_time
         temp.bot_id = bot.self_id
         temp.source_type = event.get_event_name()
@@ -62,7 +62,7 @@ class Recorder:
     async def send(cls, func: AsyncCallable, instance: Type, *args, **kwargs) -> Any:
         call_time = now()
         message_id = getattr(instance, 'message_id', None)
-        temp = await cls._get_temp_instance(await cls._message_id_to_id(message_id))
+        temp = cls._get_temp_instance(cls._message_id_to_id(message_id))
         temp.call_time = call_time
         temp.game_type = getattr(instance, 'GAME_TYPE', None)
         args = (instance,)
@@ -74,7 +74,7 @@ class Recorder:
         temp.response = getattr(instance, 'response', None)
         temp.processed_data = getattr(instance, 'processed_data', None)
         temp.return_message = bytes(ret, 'UTF-8') if isinstance(ret, str) else ret
-        await cls._save_temp_instance(await cls._message_id_to_id(message_id))
+        cls._save_temp_instance(cls._message_id_to_id(message_id))
         return ret
 
     @classmethod
@@ -90,26 +90,26 @@ class Recorder:
         return _inner
 
     @classmethod
-    async def _message_id_to_id(cls, message_id) -> str:
+    def _message_id_to_id(cls, message_id) -> str:
         return str(message_id)
 
     @classmethod
-    async def _create_temp_instance(cls, id: str) -> Temp:
+    def _create_temp_instance(cls, id: str) -> Temp:
         if id in cls.instances:
             logger.warning('可能出现了撞 message_id 或者其他神秘问题')
             del cls.instances[id]
         cls.instances[id] = cls.Temp()
-        return await cls._get_temp_instance(id)
+        return cls._get_temp_instance(id)
 
     @classmethod
-    async def _get_temp_instance(cls, id: str) -> Temp:
+    def _get_temp_instance(cls, id: str) -> Temp:
         return cls.instances[id]
 
     @classmethod
-    async def _save_temp_instance(cls, id: str) -> None:
-        (await cls._get_temp_instance(id)).save()
-        await cls.__del_temp(id)
+    def _save_temp_instance(cls, id: str) -> None:
+        cls._get_temp_instance(id).save()
+        cls.__del_temp(id)
 
     @classmethod
-    async def __del_temp(cls, id: str) -> None:
+    def __del_temp(cls, id: str) -> None:
         del cls.instances[id]
