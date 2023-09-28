@@ -15,13 +15,13 @@ driver = get_driver()
 
 @driver.on_startup
 async def _():
-    await Request.init_cache()
-    await Request.read_cache()
+    await Request._init_cache()
+    await Request._read_cache()
 
 
 @driver.on_shutdown
 async def _():
-    await Request.write_cache()
+    await Request._write_cache()
 
 
 class Request:
@@ -69,7 +69,7 @@ class Request:
         return True, False, {'error': '绕过五秒盾失败'}
 
     @classmethod
-    async def init_cache(cls) -> None:
+    async def _init_cache(cls) -> None:
         """初始化缓存文件"""
         if not cls._CACHE_FILE.exists():
             async with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
@@ -78,22 +78,22 @@ class Request:
                 )
 
     @classmethod
-    async def read_cache(cls) -> None:
+    async def _read_cache(cls) -> None:
         """读取缓存文件"""
         try:
             async with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
                 json = loads(await file.read())
         except FileNotFoundError:
-            await cls.init_cache()
+            await cls._init_cache()
         except (PermissionError, JSONDecodeError):
             cls._CACHE_FILE.unlink()
-            await cls.init_cache()
+            await cls._init_cache()
         else:
             cls._headers = json['headers']
             cls._cookies = json['cookies']
 
     @classmethod
-    async def write_cache(cls) -> None:
+    async def _write_cache(cls) -> None:
         """写入缓存文件"""
         try:
             async with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
@@ -101,10 +101,10 @@ class Request:
                     dumps({'headers': cls._headers, 'cookies': cls._cookies})
                 )
         except FileNotFoundError:
-            await cls.init_cache()
+            await cls._init_cache()
         except (PermissionError, JSONDecodeError):
             cls._CACHE_FILE.unlink()
-            await cls.init_cache()
+            await cls._init_cache()
 
     @classmethod
     async def request(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
