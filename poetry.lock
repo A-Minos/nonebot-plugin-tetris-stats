@@ -1228,13 +1228,13 @@ files = [
 
 [[package]]
 name = "objprint"
-version = "0.2.2"
+version = "0.2.3"
 description = "A library that can print Python objects in human readable format"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "objprint-0.2.2-py3-none-any.whl", hash = "sha256:9f50bb3b7cbe95b6d22c79e4f08a5273e3f7e5ff5ce35e146f6e7854abd276a0"},
-    {file = "objprint-0.2.2.tar.gz", hash = "sha256:90f2f3c19dfda1b5eb50d87d82ccbc20511ca4f02c4878553c56edc711e39689"},
+    {file = "objprint-0.2.3-py3-none-any.whl", hash = "sha256:1721e6f97bae5c5b86c2716a0d45a9dd2c9a4cd9f52cfc8a0dfbe801805554cb"},
+    {file = "objprint-0.2.3.tar.gz", hash = "sha256:73d0ad5a7c3151fce634c8892e5c2a050ccae3b1a353bf1316f08b7854da863b"},
 ]
 
 [[package]]
