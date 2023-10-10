@@ -19,8 +19,9 @@ pandas = '>=1.4.3,<3.0.0'
 playwright = '^1.24.1'
 ujson = '^5.4.0'
 tortoise-orm = '^0.19.2'
-nonebot-plugin-datastore = ">=0.5.7,<1.2.0"
 aiofiles = "^23.2.1"
+nonebot-plugin-orm = "^0.1.1"
+nonebot-plugin-localstore = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy = '>=0.991,<1.6'
@@ -28,7 +29,7 @@ types-ujson = '^5.7.0'
 lxml-stubs = '^0.4.0'
 pandas-stubs = '>=1.5.2,<3.0.0'
 ruff = '>=0.0.239,<0.0.292'
-black = {version = '^23.1a1', allow-prereleases = true}
+black = { version = '^23.1a1', allow-prereleases = true }
 types-aiofiles = "^23.2.0.0"
 
 [tool.poetry.group.debug.dependencies]
@@ -40,22 +41,22 @@ build-backend = 'poetry.core.masonry.api'
 
 [tool.ruff]
 select = [
-    'F',  # pyflakes
-    'E',  # pycodestyle errors
-    'W',  # pycodestyle warnings
-    'N',  # PEP8-naming
-    'I',  # isort
-    'C',  # flake8-comprehensions
-    'B',  # flake8-bugbear
-    'Q',  # flake8-quotes
+    'F',   # pyflakes
+    'E',   # pycodestyle errors
+    'W',   # pycodestyle warnings
+    'N',   # PEP8-naming
+    'I',   # isort
+    'C',   # flake8-comprehensions
+    'B',   # flake8-bugbear
+    'Q',   # flake8-quotes
     'PL',  # pylint
-    'RUF',  # Ruff-specific rules
+    'RUF', # Ruff-specific rules
 ]
 ignore = [
-    'E501',  # 过长的行由 black 处理, 剩余的都是字符串
+    'E501', # 过长的行由 black 处理, 剩余的都是字符串
 ]
 line-length = 88
-flake8-quotes = {inline-quotes = 'single', multiline-quotes = 'double'}
+flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
 [tool.black]
 line-length = 88
