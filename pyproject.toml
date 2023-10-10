@@ -28,7 +28,7 @@ mypy = '>=0.991,<1.6'
 types-ujson = '^5.7.0'
 lxml-stubs = '^0.4.0'
 pandas-stubs = '>=1.5.2,<3.0.0'
-ruff = '>=0.0.239,<0.0.292'
+ruff = '>=0.0.239,<0.0.293'
 black = { version = '^23.1a1', allow-prereleases = true }
 types-aiofiles = "^23.2.0.0"
 
