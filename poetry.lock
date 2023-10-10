@@ -1517,13 +1517,13 @@ files = [
 
 [[package]]
 name = "tortoise-orm"
-version = "0.19.3"
+version = "0.20.0"
 description = "Easy async ORM for python, built with relations in mind"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "tortoise_orm-0.19.3-py3-none-any.whl", hash = "sha256:9e368820c70a0866ef9c521d43aa5503485bd7a20a561edc0933b7b0f7036fbc"},
-    {file = "tortoise_orm-0.19.3.tar.gz", hash = "sha256:ca574bca5191f55608f9013314b1f5d1c6ffd4165a1fcc2f60f6c902f529b3b6"},
+    {file = "tortoise_orm-0.20.0-py3-none-any.whl", hash = "sha256:1891ad935de689ddf002c5c65c864176d28659ab6069e45f0e2cde32359bb8d9"},
+    {file = "tortoise_orm-0.20.0.tar.gz", hash = "sha256:283af584d685dcc58d6cc1da35b9115bb1e41c89075eae2a19c493b39b9b41f7"},
 ]
 
 [package.dependencies]
@@ -1535,10 +1535,10 @@ pytz = "*"
 [package.extras]
 accel = ["ciso8601", "orjson", "uvloop"]
 aiomysql = ["aiomysql"]
-asyncmy = ["asyncmy (>=0.2.5,<0.3.0)"]
+asyncmy = ["asyncmy (>=0.2.8,<0.3.0)"]
 asyncodbc = ["asyncodbc (>=0.1.1,<0.2.0)"]
 asyncpg = ["asyncpg"]
-psycopg = ["psycopg[binary,pool] (==3.0.12)"]
+psycopg = ["psycopg[binary,pool] (>=3.0.12,<4.0.0)"]
 
 [[package]]
 name = "types-aiofiles"
@@ -1769,4 +1769,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "befb21456b6bb6e93301799e1b7c27d6bf8feba8a386a9f9fc231bdc3a22e1ae"
+content-hash = "60ebe5ebeedc69b297e869db112dbddf5ac83e8843d4374f89dfa659a86c1eea"
