@@ -24,7 +24,7 @@ nonebot-plugin-orm = "^0.1.1"
 nonebot-plugin-localstore = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
-mypy = '>=0.991,<1.6'
+mypy = '>=0.991,<1.7'
 types-ujson = '^5.7.0'
 lxml-stubs = '^0.4.0'
 pandas-stubs = '>=1.5.2,<3.0.0'
