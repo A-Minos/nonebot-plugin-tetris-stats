@@ -1113,13 +1113,13 @@ typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "nonebot-plugin-orm"
-version = "0.1.1"
+version = "0.1.2"
 description = "SQLAlchemy ORM support for nonebot"
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "nonebot_plugin_orm-0.1.1-py3-none-any.whl", hash = "sha256:3ad0d19e939f90942b7d17de1de08547a2dbdb7e15ae65bd54f48ab9c50ce1f9"},
-    {file = "nonebot_plugin_orm-0.1.1.tar.gz", hash = "sha256:2cdd5f86d7185857fbac7f7f256f89885fee54b41f53679e7858f04715dcfdd0"},
+    {file = "nonebot_plugin_orm-0.1.2-py3-none-any.whl", hash = "sha256:cfc76b479b655fd45d1fa8308ce20c7b4eb3e73d2d874ab72f0ce767de2cc91f"},
+    {file = "nonebot_plugin_orm-0.1.2.tar.gz", hash = "sha256:39b08ce780d1765114ed8e3629168247f077663abe1382f0095e77e6ac69dcd7"},
 ]
 
 [package.dependencies]
@@ -1130,9 +1130,14 @@ sqlalchemy = ">=2.0,<3.0"
 typing-extensions = {version = ">=4.8,<5.0", markers = "python_version < \"3.12\""}
 
 [package.extras]
+aiomysql = ["aiomysql (>=0.2,<1.0)"]
+aiosqlite = ["aiosqlite (>=0.19,<1.0)"]
+asyncmy = ["asyncmy (>=0.2,<1.0)"]
+asyncpg = ["asyncpg (>=0.28,<1.0)"]
 default = ["aiosqlite (>=0.19,<1.0)", "nonebot-plugin-localstore (>=0.5,<1.0)"]
 mysql = ["aiomysql (>=0.2,<1.0)"]
 postgresql = ["psycopg[binary] (>=3.1,<4.0)"]
+psycopg = ["psycopg[binary] (>=3.1,<4.0)"]
 sqlite = ["aiosqlite (>=0.19,<1.0)"]
 
 [[package]]
