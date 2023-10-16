@@ -638,6 +638,21 @@ files = [
 ]
 
 [[package]]
+name = "importlib-resources"
+version = "6.1.0"
+description = "Read resources from Python packages"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "importlib_resources-6.1.0-py3-none-any.whl", hash = "sha256:aa50258bbfa56d4e33fbd8aa3ef48ded10d1735f11532b8df95388cc6bdb7e83"},
+    {file = "importlib_resources-6.1.0.tar.gz", hash = "sha256:9d48dcccc213325e810fd723e7fbb45ccb39f6cf5c31f00cf2b965f5f10f3cb9"},
+]
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
+testing = ["pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-ruff", "zipp (>=3.17)"]
+
+[[package]]
 name = "iso8601"
 version = "1.1.0"
 description = "Simple module to parse ISO 8601 dates"
@@ -1113,26 +1128,32 @@ typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "nonebot-plugin-orm"
-version = "0.1.1"
+version = "0.2.1"
 description = "SQLAlchemy ORM support for nonebot"
 optional = false
-python-versions = "<4.0,>=3.9"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "nonebot_plugin_orm-0.1.1-py3-none-any.whl", hash = "sha256:3ad0d19e939f90942b7d17de1de08547a2dbdb7e15ae65bd54f48ab9c50ce1f9"},
-    {file = "nonebot_plugin_orm-0.1.1.tar.gz", hash = "sha256:2cdd5f86d7185857fbac7f7f256f89885fee54b41f53679e7858f04715dcfdd0"},
+    {file = "nonebot_plugin_orm-0.2.1-py3-none-any.whl", hash = "sha256:3a63670228f4a1fde9d8d2b470a74f9fcc92dd8a01cd08b1cebe762f065f5c9c"},
+    {file = "nonebot_plugin_orm-0.2.1.tar.gz", hash = "sha256:b673ad4efb726cccbabdb73325f052a901ca6b4e9cd5506c95bd2256892c7af6"},
 ]
 
 [package.dependencies]
 alembic = ">=1.12,<2.0"
 click = ">=8.1,<9.0"
+importlib-resources = {version = ">=6.1,<7.0", markers = "python_version < \"3.12\""}
 nonebot2 = ">=2.1,<3.0"
 sqlalchemy = ">=2.0,<3.0"
 typing-extensions = {version = ">=4.8,<5.0", markers = "python_version < \"3.12\""}
 
 [package.extras]
+aiomysql = ["aiomysql (>=0.2,<1.0)"]
+aiosqlite = ["aiosqlite (>=0.19,<1.0)"]
+asyncmy = ["asyncmy (>=0.2,<1.0)"]
+asyncpg = ["asyncpg (>=0.28,<1.0)"]
 default = ["aiosqlite (>=0.19,<1.0)", "nonebot-plugin-localstore (>=0.5,<1.0)"]
 mysql = ["aiomysql (>=0.2,<1.0)"]
 postgresql = ["psycopg[binary] (>=3.1,<4.0)"]
+psycopg = ["psycopg[binary] (>=3.1,<4.0)"]
 sqlite = ["aiosqlite (>=0.19,<1.0)"]
 
 [[package]]
@@ -1881,4 +1902,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "6d5769567125dd49b9b116bf47b5650e9b9a73983830eb4325caa83999028d4e"
+content-hash = "9ae363f75d81c3b4395c257da39659d4b16277e17aa5ba3356d13c1130f88f60"
