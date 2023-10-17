@@ -1,15 +1,9 @@
 from pathlib import Path
 
-from nonebot import require
+from nonebot_plugin_localstore import get_cache_dir
 from pydantic import BaseModel
 
-require('nonebot_plugin_datastore')
-
-from nonebot_plugin_datastore import get_plugin_data  # type: ignore # noqa: E402
-
-plugin_data = get_plugin_data()
-
-CACHE_PATH: Path = plugin_data.cache_dir
+CACHE_PATH: Path = get_cache_dir('nonebot_plugin_tetris_stats')
 
 
 class Config(BaseModel):
