@@ -8,7 +8,7 @@ from sqlalchemy import select
 from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.recorder import Recorder
-from .request import Request
+from ...utils.request import Request
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,

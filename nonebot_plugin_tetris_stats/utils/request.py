@@ -5,9 +5,9 @@ from nonebot.log import logger
 from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
 
-from ...utils.browser import BrowserManager
-from ...utils.config import CACHE_PATH
-from ...utils.exception import RequestError
+from .browser import BrowserManager
+from .config import CACHE_PATH
+from .exception import RequestError
 
 driver = get_driver()
 
@@ -106,13 +106,17 @@ class Request:
             await cls._init_cache()
 
     @classmethod
-    async def request(cls, url: str) -> bytes:
+    async def request(cls, url: str, json: bool = True) -> bytes:
         """请求api"""
         try:
             async with AsyncClient(cookies=cls._cookies) as session:
                 response = await session.get(url, headers=cls._headers)
+                if json:
+                    loads(response.content)
                 return response.content
         except HTTPError as e:
             raise RequestError(f'请求错误\n{e}') from e
         except JSONDecodeError:
-            return await cls._anti_cloudflare(url)
+            if 'tetr.io' in url:
+                return await cls._anti_cloudflare(url)
+            raise
