@@ -1,10 +1,13 @@
 class TetrisStatsError(Exception):
     """所有 TetrisStats 发生的异常基类"""
 
-    def __init__(self, message: str | None = None):
+    def __init__(self, message: str = ''):
         self.message = message
 
     def __str__(self):
+        return self.message
+
+    def __repr__(self) -> str:
         return self.message
 
 
@@ -17,11 +20,15 @@ class DoNotCatchError(TetrisStatsError):
 
 
 class RequestError(NeedCatchError):
-    """用于表示请求错误"""
+    """请求错误"""
+
+
+class MessageFormatError(NeedCatchError):
+    """用户发送的消息格式不正确"""
 
 
 class DatabaseVersionError(DoNotCatchError):
-    """用于表示数据库版本错误"""
+    """数据库版本错误"""
 
 
 class WhatTheFuckError(DoNotCatchError):

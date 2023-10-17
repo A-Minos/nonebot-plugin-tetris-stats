@@ -1,254 +1,181 @@
-from asyncio import gather
-from typing import Any, NoReturn
+from dataclasses import dataclass
+from re import match
 
-from ...db.database import DataBase
-from ...utils.exception import RequestError, WhatTheFuckError
-from ...utils.message_analyzer import handle_bind_message, handle_stats_query_message
+from nonebot_plugin_orm import AsyncSession, get_session
+from pydantic import parse_raw_as
+from sqlalchemy import select
+
+from ...db.models import Bind
+from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.recorder import Recorder
-from ...utils.typing import CommandType, GameType
 from .request import Request
+from .schemas.user_info import FailedModel as InfoFailed
+from .schemas.user_info import (
+    NeverPlayedLeague,
+    NeverRatedLeague,
+    UserInfo,
+)
+from .schemas.user_info import SuccessModel as InfoSuccess
+from .schemas.user_records import FailedModel as RecordsFailed
+from .schemas.user_records import SoloRecord, UserRecords
+from .schemas.user_records import SuccessModel as RecordsSuccess
+
+
+@dataclass
+class User:
+    ID: str | None = None
+    name: str | None = None
+
+
+@dataclass
+class RawResponse:
+    user_info: bytes | None = None
+    user_records: bytes | None = None
+
+
+@dataclass
+class ProcessedData:
+    user_info: InfoSuccess | None = None
+    user_records: RecordsSuccess | None = None
+
+
+def identify_user_info(info: str) -> User:
+    if match(r'^[a-f0-9]{24}$', info):
+        return User(ID=info)
+    if match(r'^[a-zA-Z0-9_-]{3,16}$', info):
+        return User(name=info.lower())
+    else:
+        raise MessageFormatError('用户名/ID不合法')
+
+
+async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:
+    return (
+        await session.scalars(select(Bind).where(Bind.qq_number == qq_number))
+    ).one_or_none()
 
 
 class Processor:
+    event_id: int
+    command_args: list[str]
+    user: User
+    raw_response: RawResponse
+    processed_data: ProcessedData
+
     def __init__(
-        self, message_id: int, message: str, bot_id: str, source_id: str
+        self,
+        event_id: int,
+        user: User,
+        command_args: list[str],
     ) -> None:
-        self.message_id = message_id
-        self.message = message
-        self.bot_id = bot_id
-        self.source_id = source_id
-        self.GAME_TYPE: GameType = 'IO'
-        self.command_type: CommandType | None = None
-        self.command_args: str | None = None
-        self.user: dict[str, str | None] = {'ID': None, 'Name': None}
-        self.response: dict[str, Any] = {}
-        self.processed_data: dict[str, Any] = {}
+        self.event_id = event_id
+        self.command_args = command_args
+        self.user = user
+        self.raw_response = RawResponse()
 
     @Recorder.recorder(Recorder.send)
-    async def handle_bind(self) -> str:
+    async def handle_bind(self, source_id: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
-        decoded_message = handle_bind_message(
-            message=self.message, game_type=self.GAME_TYPE
-        )
-        handle_type = decoded_message[0]
-        ret_message = decoded_message[1][0]
-        user = decoded_message[1][1]
-        if handle_type is None:
-            return ret_message
-        if handle_type == 'ID':
-            self.user['ID'] = user
-            await self.check_user_id()
-        elif handle_type == 'Name':
-            self.user['Name'] = user
-            await self.get_user_id()
-        assert isinstance(self.user['ID'], str)
-        return await DataBase.write_bind_info(
-            user_ids={'qq': self.source_id},
-            player_ids={self.GAME_TYPE: self.user['ID']},
-        )
+        await self.get_user()
+        async with get_session() as session:
+            bind = (
+                await session.scalars(select(Bind).where(Bind.qq_number == source_id))
+            ).one_or_none()
+            if bind is None:
+                bind = Bind(qq_number=source_id, IO_id=self.user.ID)
+                session.add(bind)
+                message = '绑定成功'
+            elif bind.IO_id is None:
+                message = '绑定成功'
+            else:
+                message = '更新成功'
+            bind.IO_id = self.user.ID
+            await session.commit()
+        return message
 
     @Recorder.recorder(Recorder.send)
     async def handle_query(self):
         """处理查询消息"""
         self.command_type = 'query'
-        decoded_message = handle_stats_query_message(
-            message=self.message, game_type=self.GAME_TYPE
-        )
-        handle_type = decoded_message[0]
-        ret_message = decoded_message[1][0]
-        user = decoded_message[1][1]
-        if handle_type is None:
-            return ret_message
-        if handle_type == 'AT':  # 在入口处判断是否@bot本身
-            bind_info = await DataBase.query_bind_info(
-                user_ids={'qq': self.source_id}, game_type=self.GAME_TYPE
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            self.user['ID'] = bind_info
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await self.generate_message()}'
-        if handle_type == 'ME':
-            bind_info = await DataBase.query_bind_info(
-                user_ids={'qq': self.source_id}, game_type=self.GAME_TYPE
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            self.user['ID'] = bind_info
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await self.generate_message()}'
-        if handle_type == 'ID':
-            self.user['ID'] = user
-            return await self.generate_message()
-        if handle_type == 'Name':
-            self.user['Name'] = user
-            return await self.generate_message()
+        await self.get_user()
+        return await self.generate_message()
 
-    async def get_user_info(self) -> tuple[str, str] | NoReturn:
+    async def get_user(self) -> None:
         """
         用于获取 UserName 和 UserID 的函数
 
         如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException (
         """
-        self.check_user()
-        user_name, user_id = self.user['Name'], self.user['ID']
-        if user_name is None:
-            user_name = (await self.get_user_data())['data']['user']['username']  # type: ignore[index]
-            self.user['Name'] = user_name
-        if user_id is None:
-            user_id = await self.get_user_id()
-        return user_name, user_id
-
-    def check_user(self) -> None | NoReturn:
-        user_name, user_id = self.user['Name'], self.user['ID']
-        if user_name is None and user_id is None:
+        if self.user.ID is None and self.user.name is None:
             raise WhatTheFuckError('为什么 UserName 和 UserID 都没有')
-        return None
+        if self.user.name is None:
+            self.user.name = (await self.get_user_info()).data.user.username
+        if self.user.ID is None:
+            self.user.ID = (await self.get_user_info()).data.user.id
 
-    async def get_user_data(self) -> dict[str, Any] | NoReturn:
+    async def get_user_info(self) -> InfoSuccess:
         """获取用户数据"""
-        if 'user_data' not in self.response:
-            self.check_user()
-            user_name, user_id = self.user['Name'], self.user['ID']
-            user_data_url = f'https://ch.tetr.io/api/users/{user_name or user_id}'
-            req_stats, srv_stats, user_data = await Request.request(user_data_url)
-            if req_stats is False:
-                raise RequestError('用户信息请求失败')
-            if srv_stats is False:
-                raise RequestError(f'用户信息请求错误:\n{user_data["error"]}')
-            self.response['user_data'] = user_data
-        return self.response['user_data']
+        if self.processed_data.user_info is None:
+            self.raw_response.user_info = await Request.request(
+                f'https://ch.tetr.io/api/users/{self.user.ID or self.user.name}'
+            )
+            user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
+            if isinstance(user_info, InfoFailed):
+                raise RequestError(f'用户信息请求错误:\n{user_info.error}')
+            self.processed_data.user_info = user_info
+        return self.processed_data.user_info
 
-    async def get_solo_data(self) -> dict[str, Any] | NoReturn:
+    async def get_user_records(self) -> RecordsSuccess:
         """获取Solo数据"""
-        user_name, user_id = await self.get_user_info()  # type: ignore[misc]
-        user_solo_url = f'https://ch.tetr.io/api/users/{user_name or user_id}/records'
-        req_stats, srv_stats, user_data = await Request.request(user_solo_url)
-        if 'solo_data' not in self.response:
-            if req_stats is False:
-                raise RequestError('Solo统计数据请求失败')
-            if srv_stats is False:
-                raise RequestError(f'Solo统计数据请求错误:\n{user_data["error"]}')
-            self.response['solo_data'] = user_data
-        return user_data
-
-    async def get_user_id(self) -> str | NoReturn:
-        """获取用户ID"""
-        if self.user['ID'] is None:
-            self.user['ID'] = (await self.get_user_data())['data']['user']['_id']  # type: ignore[index]
-        assert isinstance(self.user['ID'], str)
-        return self.user['ID']
-
-    async def check_user_id(self) -> None | NoReturn:
-        """
-        检查用户ID是否有效
-
-        如果无效会 raise 一个 Exception, 具体 Exception 类型以无效原因为准
-
-        如果有效会返回 None
-        """
-        _, user_id = await self.get_user_info()  # type: ignore[misc]
-        if user_id != (await self.get_user_data())['data']['user']['_id']:  # type: ignore[index]
-            raise WhatTheFuckError('服务器返回的userID和用户提供的不一致')
-        return None  # 如果不显式写 return, mypy 会报错 原因不明
-
-    async def get_league_stats(self) -> dict[str, Any] | NoReturn:
-        """获取排位统计数据"""
-        user_data = await self.get_user_data()
-        league = user_data['data']['user']['league']  # type: ignore[index]
-        league_stats: dict[str, Any] = {}
-        if league['gamesplayed'] != 0:
-            league_stats['PPS'] = league['pps']
-            league_stats['APM'] = league['apm']
-            league_stats['VS'] = 0 if league['vs'] is None else league['vs']
-            league_stats['Rank'] = (
-                'Z' if league['rank'] == 'z' else league['rank'].upper()
+        if self.processed_data.user_records is None:
+            self.raw_response.user_records = await Request.request(
+                f'https://ch.tetr.io/api/users/{self.user.ID or self.user.name}/records'
             )
-            if league['rating'] == -1:
-                league_stats['Rank'] = None
-            else:
-                league_stats['Rating'] = round(league['rating'], 2)
-                league_stats['Glicko'] = round(league['glicko'], 2)
-                league_stats['RD'] = round(league['rd'], 2)
-            league_stats['Standing'] = league['standing']
-            league_stats['LPM'] = round((league['pps'] * 24), 2)
-            league_stats['APL'] = round((league_stats['APM'] / league_stats['LPM']), 2)
-            league_stats['ADPM'] = round((league_stats['VS'] * 0.6), 2)
-            league_stats['ADPL'] = round(
-                (league_stats['ADPM'] / league_stats['LPM']), 2
+            user_records: UserRecords = parse_raw_as(
+                UserRecords, self.raw_response.user_records  # type: ignore[arg-type]
             )
-        return league_stats
-
-    async def get_sprint_stats(self) -> dict[str, Any] | NoReturn:
-        """获取40L统计数据"""
-        solo_data = await self.get_solo_data()
-        sprint_stats: dict[str, Any] = {}
-        l40 = solo_data['data']['records']['40l']  # type: ignore[index]
-        # l40 倒装句了属于是
-        if l40['record'] is not None:
-            sprint_stats['Time'] = round(
-                l40['record']['endcontext']['finalTime'] / 1000, 2
-            )
-            if l40['rank'] is not None:
-                sprint_stats['Rank'] = l40['rank']
-        return sprint_stats
-
-    async def get_blitz_stats(self) -> dict[str, Any] | NoReturn:
-        """获取Blitz统计数据"""
-        solo_data = await self.get_solo_data()
-        blitz_stats: dict[str, Any] = {}
-        blitz = solo_data['data']['records']['blitz']  # type: ignore[index]
-        if blitz['record'] is not None:
-            blitz_stats['Score'] = blitz['record']['endcontext']['score']
-            if blitz['rank'] is not None:
-                blitz_stats['Rank'] = blitz['rank']
-        return blitz_stats
+            if isinstance(user_records, RecordsFailed):
+                raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
+            self.processed_data.user_records = user_records
+        return self.processed_data.user_records
 
     async def generate_message(self) -> str:
         """生成消息"""
-        user_name, _ = await self.get_user_info()  # type: ignore[misc]
-        user_name = user_name.upper()
-        league_stats = await self.get_league_stats()
-        self.processed_data.update(league_stats=league_stats)
+        user_name = (await self.get_user_info()).data.user.username
+        user_info = await self.get_user_info()
+        league = user_info.data.user.league
         ret_message = ''
-        if not league_stats:
+        if isinstance(league, NeverPlayedLeague):
             ret_message += f'用户 {user_name} 没有排位统计数据'
         else:
-            if league_stats['Rank'] is None:
+            if isinstance(league, NeverRatedLeague):
                 ret_message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
+            elif league.rank == 'z':
+                ret_message += f'用户 {user_name} 暂无段位, {league.rating} TR'
             else:
-                if league_stats['Rank'] == 'Z':
-                    ret_message += f'用户 {user_name} 暂无段位, {league_stats["Rating"]} TR'
-                else:
-                    ret_message += f'{league_stats["Rank"]} 段用户 {user_name} {league_stats["Rating"]} TR (#{league_stats["Standing"]})'
-                ret_message += (
-                    f', 段位分 {league_stats["Glicko"]}±{league_stats["RD"]}, 最近十场的数据:'
-                )
+                ret_message += f'{league.rank.upper()} 段用户 {user_name} {league.rating} TR (#{league.standing})'
+                ret_message += f', 段位分 {league.glicko}±{league.rd}, 最近十场的数据:'
+            lpm = league.pps * 24
+            ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
             ret_message += (
-                f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
+                f'\nAPM: {league.apm} ( x{round(league.apm/(league.pps*24),2)} )'
             )
-            ret_message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
-            if league_stats['VS'] != 0:
-                ret_message += f'\nADPM: {league_stats["ADPM"]} ( x{league_stats["ADPL"]} ) ( {league_stats["VS"]}vs )'
-        try:
-            sprint_stats, blitz_stats = await gather(
-                self.get_sprint_stats(), self.get_blitz_stats()
-            )
-        except RequestError as e:
-            ret_message += f'\n{e}'
-        else:
-            self.processed_data.update(
-                sprint_stats=sprint_stats, blitz_stats=blitz_stats
-            )
+            if league.vs is not None:
+                adpm = league.vs * 0.6
+                ret_message += f'\nADPM: {round(adpm,2)} ( x{round(adpm/lpm,2)} ) ( {league.vs}vs )'
+        user_records = await self.get_user_records()
+        sprint = user_records.data.records.sprint
+        if sprint.record is not None:
+            if not isinstance(sprint.record, SoloRecord):
+                raise WhatTheFuckError('40L记录不是单人记录')
             ret_message += (
-                f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
+                f'\n40L: {round(sprint.record.endcontext.final_time/1000,2)}s'
             )
-            ret_message += (
-                f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
-            )
-            ret_message += (
-                f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
-            )
-            ret_message += (
-                f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
-            )
+            ret_message += f' ( #{sprint.rank} )' if sprint.rank is not None else ''
+        blitz = user_records.data.records.blitz
+        if blitz.record is not None:
+            if not isinstance(blitz.record, SoloRecord):
+                raise WhatTheFuckError('Blitz记录不是单人记录')
+            ret_message += f'\nBlitz: {blitz.record.endcontext.score}'
+            ret_message += f' ( #{blitz.rank} )' if blitz.rank is not None else ''
         return ret_message

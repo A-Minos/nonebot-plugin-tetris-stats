@@ -1,7 +1,5 @@
-from typing import Any
-
-import aiohttp
 from aiofiles import open
+from httpx import AsyncClient, HTTPError
 from nonebot import get_driver
 from nonebot.log import logger
 from playwright.async_api import Response
@@ -9,6 +7,7 @@ from ujson import JSONDecodeError, dumps, loads
 
 from ...utils.browser import BrowserManager
 from ...utils.config import CACHE_PATH
+from ...utils.exception import RequestError
 
 driver = get_driver()
 
@@ -32,7 +31,7 @@ class Request:
     _cookies: dict | None = None
 
     @classmethod
-    async def _anti_cloudflare(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
+    async def _anti_cloudflare(cls, url: str) -> bytes:
         """用firefox硬穿五秒盾"""
         browser = await BrowserManager.get_browser()
         context = await browser.new_context()
@@ -49,7 +48,7 @@ class Request:
                 logger.warning('疑似触发了 Cloudflare 的验证码')
                 break
             try:
-                data = loads(text)
+                loads(text)
             except JSONDecodeError:
                 await page.wait_for_timeout(1000)
             else:
@@ -63,10 +62,10 @@ class Request:
                     cls._cookies = None
                 await page.close()
                 await context.close()
-                return True, data['success'], data
+                return await response.body()
         await page.close()
         await context.close()
-        return True, False, {'error': '绕过五秒盾失败'}
+        raise RequestError('绕过五秒盾失败')
 
     @classmethod
     async def _init_cache(cls) -> None:
@@ -107,15 +106,13 @@ class Request:
             await cls._init_cache()
 
     @classmethod
-    async def request(cls, url: str) -> tuple[bool, bool, dict[str, Any]]:
+    async def request(cls, url: str) -> bytes:
         """请求api"""
         try:
-            async with aiohttp.ClientSession(cookies=cls._cookies) as session:
-                async with session.get(url, headers=cls._headers) as resp:
-                    data = await resp.json()
-                    return True, data['success'], data
-        except aiohttp.ContentTypeError:
+            async with AsyncClient(cookies=cls._cookies) as session:
+                response = await session.get(url, headers=cls._headers)
+                return response.content
+        except HTTPError as e:
+            raise RequestError(f'请求错误\n{e}') from e
+        except JSONDecodeError:
             return await cls._anti_cloudflare(url)
-        except aiohttp.ClientError as error:
-            logger.error(f'请求错误\n{error}')
-            return False, False, {}
