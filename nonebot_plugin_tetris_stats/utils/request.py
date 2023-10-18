@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from aiofiles import open
 from httpx import AsyncClient, HTTPError
 from nonebot import get_driver
@@ -21,6 +23,15 @@ async def _():
 @driver.on_shutdown
 async def _():
     await Request._write_cache()
+
+
+def splice_url(url_list: list[str]) -> str:
+    url = ''
+    if len(url_list):
+        url = url_list.pop(0)
+        for i in url_list:
+            urljoin(url, i)
+    return url
 
 
 class Request:
