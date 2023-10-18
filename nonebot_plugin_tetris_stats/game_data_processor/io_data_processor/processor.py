@@ -45,8 +45,7 @@ def identify_user_info(info: str) -> User:
         return User(ID=info)
     if match(r'^[a-zA-Z0-9_-]{3,16}$', info):
         return User(name=info.lower())
-    else:
-        raise MessageFormatError('用户名/ID不合法')
+    raise MessageFormatError('用户名/ID不合法')
 
 
 async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:
