@@ -73,6 +73,7 @@ class Processor:
         self.command_args = command_args
         self.user = user
         self.raw_response = RawResponse()
+        self.processed_data = ProcessedData()
 
     @Recorder.recorder(Recorder.send)
     async def handle_bind(self, source_id: str) -> str:
