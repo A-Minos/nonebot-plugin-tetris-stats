@@ -9,6 +9,7 @@ from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.recorder import Recorder
 from ...utils.request import Request
+from ...utils.typing import CommandType
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,
@@ -56,6 +57,7 @@ async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:
 
 class Processor:
     event_id: int
+    command_type: CommandType
     command_args: list[str]
     user: User
     raw_response: RawResponse
