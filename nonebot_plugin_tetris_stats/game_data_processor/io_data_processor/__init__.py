@@ -69,10 +69,11 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
             await matcher.finish('未查询到绑定信息')
         user = User(ID=bind.IO_id)
         message += '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
-    try:
-        user = identify_user_info(decoded_message[1])
-    except MessageFormatError as e:
-        await matcher.finish(str(e))
+    else:
+        try:
+            user = identify_user_info(decoded_message[1])
+        except MessageFormatError as e:
+            await matcher.finish(str(e))
     proc = Processor(
         event_id=id(event),
         user=user,
