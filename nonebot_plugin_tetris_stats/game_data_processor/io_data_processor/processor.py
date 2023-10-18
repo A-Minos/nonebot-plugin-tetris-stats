@@ -105,11 +105,7 @@ class Processor:
     async def get_user(self) -> None:
         """
         用于获取 UserName 和 UserID 的函数
-
-        如果 UserName 和 UserID 都是 None 会 raise 一个 WhatTheFuckException (
         """
-        if self.user.ID is None and self.user.name is None:
-            raise WhatTheFuckError('为什么 UserName 和 UserID 都没有')
         if self.user.name is None:
             self.user.name = (await self.get_user_info()).data.user.username
         if self.user.ID is None:
