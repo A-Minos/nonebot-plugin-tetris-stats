@@ -53,7 +53,7 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
         await matcher.finish('不能查询bot的信息')
     try:
         decoded_message = handle_message(
-            command_prefix=BIND_COMMAND, message=event.raw_message
+            command_prefix=QUERY_COMMAND, message=event.raw_message
         )
     except MessageFormatError as e:
         await matcher.finish(str(e))
