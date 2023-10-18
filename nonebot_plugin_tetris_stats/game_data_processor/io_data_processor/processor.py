@@ -139,8 +139,8 @@ class Processor:
 
     async def generate_message(self) -> str:
         """生成消息"""
-        user_name = (await self.get_user_info()).data.user.username
         user_info = await self.get_user_info()
+        user_name = user_info.data.user.username
         league = user_info.data.user.league
         ret_message = ''
         if isinstance(league, NeverPlayedLeague):
