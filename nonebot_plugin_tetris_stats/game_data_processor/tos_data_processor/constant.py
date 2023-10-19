@@ -8,6 +8,6 @@ QUERY_COMMAND = [
     'tosquery',
     '茶服查',
     '茶服stats',
-    'tosquery',
+    '茶服query',
 ]
 BASE_URL = 'https://teatube.cn:8888/'
