@@ -40,7 +40,7 @@ async def _(event: MessageEvent, matcher: Matcher):
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_bind())
+        await matcher.finish(await proc.handle_bind(source_id=event.get_user_id()))
     except NeedCatchError as e:
         await matcher.finish(str(e))
 
