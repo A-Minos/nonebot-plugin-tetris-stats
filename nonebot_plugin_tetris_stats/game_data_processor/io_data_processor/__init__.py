@@ -65,7 +65,7 @@ async def _(bot: Bot, event: MessageEvent, matcher: Matcher):
                 event.get_user_id() if decoded_message == 'ME' else decoded_message[1]
             ),
         )
-        if bind is None:
+        if bind is None or bind.IO_id is None:
             await matcher.finish('未查询到绑定信息')
         user = User(ID=bind.IO_id)
         message += '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
