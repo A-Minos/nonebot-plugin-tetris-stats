@@ -80,9 +80,7 @@ class Processor:
         self.command_type = 'bind'
         await self.get_user()
         async with get_session() as session:
-            bind = (
-                await session.scalars(select(Bind).where(Bind.qq_number == source_id))
-            ).one_or_none()
+            bind = await query_bind_info(session=session, qq_number=source_id)
             if bind is None:
                 bind = Bind(qq_number=source_id, IO_id=self.user.ID)
                 session.add(bind)
