@@ -8,7 +8,7 @@ from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
 
 from .browser import BrowserManager
-from .config import CACHE_PATH
+from ..config.config import CACHE_PATH
 from .exception import RequestError
 
 driver = get_driver()
