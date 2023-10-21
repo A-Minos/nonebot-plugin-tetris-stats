@@ -1,11 +1,10 @@
 from nonebot import require
 from nonebot.plugin import PluginMetadata
 
-from .config.config import migrations
-
 require('nonebot_plugin_localstore')
 require('nonebot_plugin_orm')
 
+from .config.config import migrations  # noqa: E402
 
 __plugin_meta__ = PluginMetadata(
     name='Tetris Stats',
