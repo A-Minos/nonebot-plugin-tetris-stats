@@ -1158,6 +1158,22 @@ nonebot2 = ">=2.1.0,<3.0.0"
 typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
+name = "nonebot-adapter-qq"
+version = "1.0.0"
+description = "QQ adapter for nonebot2"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "nonebot_adapter_qq-1.0.0-py3-none-any.whl", hash = "sha256:72bab1dc9762b19f74454688612b693390f7dc32cf2cf19c8baf5a7dc8d5a20f"},
+    {file = "nonebot_adapter_qq-1.0.0.tar.gz", hash = "sha256:079056872386d4480648ea58b1a3299b86f6dbe52a0352d7c2535a0e79ec929d"},
+]
+
+[package.dependencies]
+nonebot2 = ">=2.1.0,<3.0.0"
+pydantic = ">=1.9.0,<2.0.0"
+typing-extensions = ">=4.4.0,<5.0.0"
+
+[[package]]
 name = "nonebot-plugin-localstore"
 version = "0.5.1"
 description = "Local Storage Support for NoneBot2"
@@ -2312,4 +2328,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "36ed78964bc6b2daf6d13e8de0223b0adb7f8f8c778f84e263673ca0f6f8f370"
+content-hash = "7aefa3b7397df488d8853970a98bb2e2337effe7d638409342e20ada4d8b2ab5"
