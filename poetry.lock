@@ -1838,20 +1838,21 @@ files = [
 
 [[package]]
 name = "types-lxml"
-version = "2023.3.28"
+version = "2023.10.21"
 description = "Complete lxml external type annotation"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types_lxml-2023.3.28-py3-none-any.whl", hash = "sha256:f1b5867e8ff5be5084916738dfc1cb9e003ae6350e97c74d00929f5910965558"},
-    {file = "types_lxml-2023.3.28.tar.gz", hash = "sha256:8b072a331520582f2d7c44110a53885605679ee79a09d39ef59b1abfc6109380"},
+    {file = "types-lxml-2023.10.21.tar.gz", hash = "sha256:daf1458b7d9b2fb421354137b97c6029c4fe75cef2cbab0d8e144d8c548d9b98"},
+    {file = "types_lxml-2023.10.21-py3-none-any.whl", hash = "sha256:545097ca5f69d568827416d671285cae203a5b3d99937294e155c4cc0e46e712"},
 ]
 
 [package.dependencies]
 types-beautifulsoup4 = "*"
+typing-extensions = ">=4.5,<5.0"
 
 [package.extras]
-dev = ["black", "isort", "lxml (>=4.9,<5.0)", "mypy (==1.1.*)", "pyright (>=1.1.288)", "pytest-mypy-plugins (>1.10.0,<2.0)"]
+dev = ["black", "isort (>=5)", "lxml (==4.9.*)", "mypy (>=1.1,<1.4)", "pyright (>=1.1.289,<1.1.332)", "pytest (>=7)", "pytest-mypy-plugins (>=1.10.1,<2.0)", "typeguard (==3.0.*)"]
 
 [[package]]
 name = "types-pytz"
