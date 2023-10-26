@@ -34,6 +34,7 @@ black = { version = '^23.1a1', allow-prereleases = true }
 types-aiofiles = "^23.2.0.0"
 nonebot2 = { extras = ["fastapi"], version = "^2.1.1" }
 types-lxml = "^2023.3.28"
+nonebot-plugin-orm = {extras = ["default"], version = "^0.3.0"}
 
 [tool.poetry.group.debug.dependencies]
 objprint = '^0.2.2'
