@@ -37,6 +37,7 @@ types-lxml = "^2023.3.28"
 
 [tool.poetry.group.debug.dependencies]
 objprint = '^0.2.2'
+viztracer = "^0.16.0"
 
 [build-system]
 requires = ['poetry-core>=1.0.0']

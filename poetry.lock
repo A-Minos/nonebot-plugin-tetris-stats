@@ -1201,13 +1201,13 @@ yarl = ">=1.9.0,<2.0.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.30.3"
+version = "0.30.6"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.30.3-py3-none-any.whl", hash = "sha256:b7a103f17a1fe3417d59399a0fd692585c910e3ed59db5a1562cc49f850e29aa"},
-    {file = "nonebot_plugin_alconna-0.30.3.tar.gz", hash = "sha256:1a0f70d5505fe746abe8075731f016ef2847c28e033d1b85c5cf3909950ba57a"},
+    {file = "nonebot_plugin_alconna-0.30.6-py3-none-any.whl", hash = "sha256:8c185976a7e42e6d6b9274b72e85e912636cf26af26d16b1ecf5c0e76fb14fcc"},
+    {file = "nonebot_plugin_alconna-0.30.6.tar.gz", hash = "sha256:16e1361d4b2516bd3a246cd01131c340c0b62d8ac03c5a17375033bda2c1ef2b"},
 ]
 
 [package.dependencies]
@@ -2112,6 +2112,52 @@ docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)", "sphinxc
 test = ["Cython (>=0.29.36,<0.30.0)", "aiohttp (==3.9.0b0)", "aiohttp (>=3.8.1)", "flake8 (>=5.0,<6.0)", "mypy (>=0.800)", "psutil", "pyOpenSSL (>=23.0.0,<23.1.0)", "pycodestyle (>=2.9.0,<2.10.0)"]
 
 [[package]]
+name = "viztracer"
+version = "0.16.0"
+description = "A debugging and profiling tool that can trace and visualize python code execution"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "viztracer-0.16.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:334e303c275bb9da78effa2035dc2109ddbfbdc3ea79dfea766c71081bc4a2f2"},
+    {file = "viztracer-0.16.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c8c477fbebde7c9ea01ebad97ad2c07a487bcd0b84e78a0bb37e56bd2a5c2c83"},
+    {file = "viztracer-0.16.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fb3caacff02dcf3c13bcfa69d3c7b2af182f2dca346364e9ca49f9c633d2d070"},
+    {file = "viztracer-0.16.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:31c36bf33ed1a7d40e2c92cbf8f30669b5731eed94091106fcca2cea6de13d5f"},
+    {file = "viztracer-0.16.0-cp310-cp310-win32.whl", hash = "sha256:79745c6c2a0d715319a743d8bf8c518c96f972dae2acdd7e7b14d737e43521fc"},
+    {file = "viztracer-0.16.0-cp310-cp310-win_amd64.whl", hash = "sha256:14f5af5e7386796170b6e05900868a693b997d9fcc29061e767e0c44a226638d"},
+    {file = "viztracer-0.16.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:70f4456303e671b624fbbabe5be7cdd0faa5afca68b98c51a8bd0959b33c047a"},
+    {file = "viztracer-0.16.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:87056eb227b40855d7f3a128779fb26eb957bbfc134c4a76cdfc05a5d93d2492"},
+    {file = "viztracer-0.16.0-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8b3842642efe73d7ede92d29e92c6ee508ddd5b7b1aacbc615b771548a16fa9d"},
+    {file = "viztracer-0.16.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2920f144d55dce1dfb2877f1be99ecad0b4092295d10b804a3b85088a0b41407"},
+    {file = "viztracer-0.16.0-cp311-cp311-win32.whl", hash = "sha256:c91b364d09d2b661a97372c985cca0bc644b1575d13942d7e7c60b8e03e0dbba"},
+    {file = "viztracer-0.16.0-cp311-cp311-win_amd64.whl", hash = "sha256:d0637df42cde083175fd831cb808a2d2b6634f14121330edf39743d1d9247a4d"},
+    {file = "viztracer-0.16.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:e9a5fc0040bf81eca44df9e5e93b38f33d1e48c6041288267f909cecf90ca282"},
+    {file = "viztracer-0.16.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2de12b7a3ba47448abfa2969bc57f0ef498da9ca8c351445c2b2fd7ca4d003b1"},
+    {file = "viztracer-0.16.0-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a4652686574f304a97afc4b8ed376fd22832435e105565d2f3ecee6695fb7637"},
+    {file = "viztracer-0.16.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b329a1c6ac7b40d00f14978d63d13d4651fa496882f5ea7764aacb7f0e49c98f"},
+    {file = "viztracer-0.16.0-cp312-cp312-win32.whl", hash = "sha256:0cfc8d9d1145215335af21625405dc07692539f41491df0de4f7ecf6b2f51259"},
+    {file = "viztracer-0.16.0-cp312-cp312-win_amd64.whl", hash = "sha256:3431e3f4d8346c782a5f388795f41838d6a95f62e85719f8912591b52e9a0828"},
+    {file = "viztracer-0.16.0-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:e3bfa351da503b64bb742694b1f0d4c89ba0b84d59b7461c468f9c1f09ceaba1"},
+    {file = "viztracer-0.16.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:97e80a118baab28ac0cf69bd17c77c59c6d7b8dc1f7ec5f231d28b8577884aed"},
+    {file = "viztracer-0.16.0-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4b6a71b4d5e93e044cef08412034e5e63d407aafdaf1ab21f0743cf6bdb7d3ef"},
+    {file = "viztracer-0.16.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bc0f389e6f7344484f4280f4324148eeb970cacb2df599a0e7f864755fe0554d"},
+    {file = "viztracer-0.16.0-cp38-cp38-win32.whl", hash = "sha256:1bdabe95ea851ba4ee0ff71b36d85ff9f6d82ba863f6ae45a43827d75bfe86a4"},
+    {file = "viztracer-0.16.0-cp38-cp38-win_amd64.whl", hash = "sha256:b016d4991bef001864827b22dec24d3b193ed312fa0d07d949c93538ce2e32a6"},
+    {file = "viztracer-0.16.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:8e9ebae7e1515da9f913e77b4086d676b19c4cc3ca3aa67a210f5cb7aa772fcd"},
+    {file = "viztracer-0.16.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:536cc9c23295c45a3b163a1d09d625902f4ecb2ab16669c02a4a23ccb42b1d14"},
+    {file = "viztracer-0.16.0-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:169d240e4b32457bd1694019c6c1faf64cf001f04ac684627890fb12f8eaabaa"},
+    {file = "viztracer-0.16.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:af94ad611ac0c58b4ac7f50dd1105173c8f38e09f049ecf497b765054769e7db"},
+    {file = "viztracer-0.16.0-cp39-cp39-win32.whl", hash = "sha256:626eb1605587a04b65c46b083729ff6af082ce22c2ecc5307a639f5f04339c84"},
+    {file = "viztracer-0.16.0-cp39-cp39-win_amd64.whl", hash = "sha256:a5ea63d298c94f084eed34a49722c5b49d14f6e4cbf08e7604634d694ddd732f"},
+    {file = "viztracer-0.16.0.tar.gz", hash = "sha256:934a99d4985f4bde23c8039cef4ab248f4b55e799b785c33b55fe314d29fac80"},
+]
+
+[package.dependencies]
+objprint = ">0.1.3"
+
+[package.extras]
+full = ["orjson"]
+
+[[package]]
 name = "watchfiles"
 version = "0.21.0"
 description = "Simple, modern and high performance file watching and code reload in python."
@@ -2383,4 +2429,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "66a617b50c42c4a979e7e10a3344d55ffc12b690b9ac773f3de787f1e034bc0d"
+content-hash = "5093110a72d977e54ca3709ec2333161c03509d23a46319a186c9eb61accd3d0"
