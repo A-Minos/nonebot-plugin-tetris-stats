@@ -10,7 +10,6 @@ from sqlalchemy import select
 
 from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError
-from ...utils.recorder import Recorder
 from ...utils.request import Request, splice_url
 from ...utils.typing import CommandType
 from .constant import BASE_URL
@@ -75,7 +74,6 @@ class Processor:
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
-    @Recorder.recorder(Recorder.send)
     async def handle_bind(self, source_id: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
@@ -96,7 +94,6 @@ class Processor:
             await session.commit()
         return message
 
-    @Recorder.recorder(Recorder.send)
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'

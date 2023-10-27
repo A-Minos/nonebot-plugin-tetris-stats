@@ -7,7 +7,6 @@ from sqlalchemy import select
 
 from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
-from ...utils.recorder import Recorder
 from ...utils.request import Request
 from ...utils.typing import CommandType
 from .schemas.user_info import FailedModel as InfoFailed
@@ -74,7 +73,6 @@ class Processor:
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
-    @Recorder.recorder(Recorder.send)
     async def handle_bind(self, source_id: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
@@ -93,7 +91,6 @@ class Processor:
             await session.commit()
         return message
 
-    @Recorder.recorder(Recorder.send)
     async def handle_query(self):
         """处理查询消息"""
         self.command_type = 'query'

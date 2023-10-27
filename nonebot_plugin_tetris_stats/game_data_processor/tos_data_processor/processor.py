@@ -6,7 +6,6 @@ from urllib.parse import urlencode
 from pydantic import parse_raw_as
 
 from ...utils.exception import MessageFormatError, RequestError
-from ...utils.recorder import Recorder
 from ...utils.request import Request, splice_url
 from ...utils.typing import CommandType
 from .constant import BASE_URL
@@ -80,7 +79,6 @@ class Processor:
         self.raw_response = RawResponse(user_profile={})
         self.processed_data = ProcessedData(user_profile={})
 
-    @Recorder.recorder(Recorder.send)
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
