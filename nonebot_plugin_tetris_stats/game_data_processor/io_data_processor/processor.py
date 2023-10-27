@@ -135,7 +135,7 @@ class Processor:
     async def generate_message(self) -> str:
         """生成消息"""
         user_info = await self.get_user_info()
-        user_name = user_info.data.user.username
+        user_name = user_info.data.user.username.upper()
         league = user_info.data.user.league
         ret_message = ''
         if isinstance(league, NeverPlayedLeague):
@@ -144,10 +144,12 @@ class Processor:
             if isinstance(league, NeverRatedLeague):
                 ret_message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
             elif league.rank == 'z':
-                ret_message += f'用户 {user_name} 暂无段位, {league.rating} TR'
+                ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
             else:
-                ret_message += f'{league.rank.upper()} 段用户 {user_name} {league.rating} TR (#{league.standing})'
-                ret_message += f', 段位分 {league.glicko}±{league.rd}, 最近十场的数据:'
+                ret_message += f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
+                ret_message += (
+                    f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
+                )
             lpm = league.pps * 24
             ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
             ret_message += (
