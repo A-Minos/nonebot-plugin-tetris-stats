@@ -53,7 +53,6 @@ alc = on_alconna(
         ),
     ),
     skip_for_unmatch=False,
-    auto_send_output=True,
 )
 
 
@@ -117,6 +116,7 @@ async def _(bot: Bot, matcher: Matcher, user: At | Me):
 
 @alc.handle()
 async def _(matcher: Matcher, matches: AlcMatches):
-    if not matches.matched:
-        await matcher.finish(str(matches.error_info))
-    await matcher.finish('输入"io --help"查看帮助')
+    if matches.head_matched:
+        if not matches.matched:
+            await matcher.finish(str(matches.error_info))
+        await matcher.finish('输入"io --help"查看帮助')
