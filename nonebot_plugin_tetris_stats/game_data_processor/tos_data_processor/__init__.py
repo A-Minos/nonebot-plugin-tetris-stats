@@ -18,7 +18,7 @@ alc = on_alconna(
             QUERY_COMMAND[0],
             Args(
                 Arg(
-                    'user',
+                    'target',
                     identify_user_info | Me | At,
                     notice='茶服 用户名 / TeaID | @想要查询的人 | 自己',
                     flags=[ArgFlag.HIDDEN],
@@ -37,19 +37,27 @@ alc = on_alconna(
         ),
     ),
     skip_for_unmatch=False,
+    auto_send_output=True,
 )
 
 
 @alc.assign('query')
-async def _(bot: OB11Bot, event: OB11MessageEvent, matcher: Matcher, user: At | Me):
+async def _(bot: OB11Bot, event: OB11MessageEvent, matcher: Matcher, target: At | Me):
     if event.is_tome() and await GROUP(bot, event):
         await matcher.finish('不能查询bot的信息')
+    if isinstance(
+        (
+            user := identify_user_info(
+                target.target if isinstance(target, At) else event.get_user_id()
+            )
+        ),
+        MessageFormatError,
+    ):
+        await matcher.finish(f'{target!r}')
     try:
         proc = Processor(
             event_id=id(event),
-            user=identify_user_info(
-                user.target if isinstance(user, At) else event.get_user_id()
-            ),
+            user=user,
             command_args=[],
         )
     except MessageFormatError as e:
@@ -61,10 +69,10 @@ async def _(bot: OB11Bot, event: OB11MessageEvent, matcher: Matcher, user: At | 
 
 
 @alc.assign('query')
-async def _(event: Event, matcher: Matcher, user: User):
+async def _(event: Event, matcher: Matcher, target: User):
     proc = Processor(
         event_id=id(event),
-        user=user,
+        user=target,
         command_args=[],
     )
     try:
@@ -74,13 +82,20 @@ async def _(event: Event, matcher: Matcher, user: User):
 
 
 @alc.assign('query')
-async def _(bot: Bot, matcher: Matcher, user: At | Me):
+async def _(bot: Bot, matcher: Matcher, target: At | Me):
     await matcher.finish(f'{bot.type} 适配器暂不支持绑定')
+
+
+@alc.handle()
+async def _(matcher: Matcher, target: MessageFormatError):
+    await matcher.finish(str(target))
 
 
 @alc.handle()
 async def _(matcher: Matcher, matches: AlcMatches):
     if matches.head_matched:
-        if not matches.matched:
-            await matcher.finish(str(matches.error_info))
-        await matcher.finish('输入"茶服 --help"查看帮助')
+        await matcher.finish(
+            f'{matches.error_info!r}\n'
+            if matches.error_info is not None
+            else '' + '输入"io --help"查看帮助'
+        )

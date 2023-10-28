@@ -39,12 +39,12 @@ class ProcessedData:
     user_records: RecordsSuccess | None = None
 
 
-def identify_user_info(info: str) -> User:
+def identify_user_info(info: str) -> User | MessageFormatError:
     if match(r'^[a-f0-9]{24}$', info):
         return User(ID=info)
     if match(r'^[a-zA-Z0-9_-]{3,16}$', info):
         return User(name=info.lower())
-    raise MessageFormatError('用户名/ID不合法')
+    return MessageFormatError('用户名/ID不合法')
 
 
 async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:

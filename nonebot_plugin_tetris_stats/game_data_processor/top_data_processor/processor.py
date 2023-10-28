@@ -42,10 +42,10 @@ class GameData:
     total: Data | None
 
 
-def identify_user_info(info: str) -> User:
+def identify_user_info(info: str) -> User | MessageFormatError:
     if match(r'^[a-zA-Z0-9_]{1,16}$', info):
         return User(name=info)
-    raise MessageFormatError('用户名不合法')
+    return MessageFormatError('用户名不合法')
 
 
 async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:

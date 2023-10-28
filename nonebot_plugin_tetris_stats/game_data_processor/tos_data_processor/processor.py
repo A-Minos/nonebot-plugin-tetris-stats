@@ -44,7 +44,7 @@ class GameData:
     vs: float
 
 
-def identify_user_info(info: str) -> User:
+def identify_user_info(info: str) -> User | MessageFormatError:
     if (
         match(
             r'^(?!\.)(?!com[0-9]$)(?!con$)(?!lpt[0-9]$)(?!nul$)(?!prn$)[^\-][^\+][^\|\*\?\\\s\!:<>/$"]*[^\.\|\*\?\\\s\!:<>/$"]+$',
@@ -56,7 +56,7 @@ def identify_user_info(info: str) -> User:
         return User(name=info)
     if info.isdigit():
         return User(teaid=info)
-    raise MessageFormatError('用户名/QQ号不合法')
+    return MessageFormatError('用户名/QQ号不合法')
 
 
 class Processor:
