@@ -125,7 +125,8 @@ class Processor:
                 f'https://ch.tetr.io/api/users/{self.user.ID or self.user.name}/records'
             )
             user_records: UserRecords = parse_raw_as(
-                UserRecords, self.raw_response.user_records  # type: ignore[arg-type]
+                UserRecords,  # type: ignore[arg-type]
+                self.raw_response.user_records,
             )
             if isinstance(user_records, RecordsFailed):
                 raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
@@ -147,9 +148,7 @@ class Processor:
                 ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
             else:
                 ret_message += f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
-                ret_message += (
-                    f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
-                )
+                ret_message += f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
             lpm = league.pps * 24
             ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
             ret_message += (

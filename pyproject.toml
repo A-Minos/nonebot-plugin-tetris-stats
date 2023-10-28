@@ -30,11 +30,10 @@ mypy = '>=0.991,<1.7'
 types-ujson = '^5.7.0'
 pandas-stubs = '>=1.5.2,<3.0.0'
 ruff = '>=0.0.239,<0.1.4'
-black = { version = '^23.1a1', allow-prereleases = true }
 types-aiofiles = "^23.2.0.0"
 nonebot2 = { extras = ["fastapi"], version = "^2.1.1" }
 types-lxml = "^2023.3.28"
-nonebot-plugin-orm = {extras = ["default"], version = "^0.3.0"}
+nonebot-plugin-orm = { extras = ["default"], version = "^0.3.0" }
 
 [tool.poetry.group.debug.dependencies]
 objprint = '^0.2.2'
@@ -61,11 +60,11 @@ ignore = [
     'E501', # 过长的行由 black 处理, 剩余的都是字符串
 ]
 line-length = 88
+target-version = "py310"
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
-[tool.black]
-line-length = 88
-skip-string-normalization = true
+[tool.ruff.format]
+quote-style = 'single'
 
 [tool.nonebot]
 plugins = ['nonebot_plugin_tetris_stats']
