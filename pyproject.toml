@@ -65,8 +65,9 @@ select = [
     'ISC',   # flake8-implicit-str-concat
     'PIE',   # flake8-pie
     'T20',   #flake8-print
-    'RSE',   # flake8-raise
     'Q',     # flake8-quotes
+    'RSE',   # flake8-raise
+    'RET',   # flake8-return
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
 ]
