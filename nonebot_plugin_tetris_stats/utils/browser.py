@@ -48,7 +48,7 @@ class BrowserManager:
                 logger.error('安装/更新 playwright 浏览器失败')
         try:
             await cls._start_browser()
-        except Exception as e:
+        except BaseException as e:  # noqa: BLE001 不知道会有什么异常, 交给用户解决
             raise ImportError(
                 'playwright 启动失败, 请尝试在命令行运行 playwright install-deps firefox, 如果仍然启动失败, 请参考上面的报错👆'
             ) from e
@@ -65,7 +65,7 @@ class BrowserManager:
         sys.argv = argv
         try:
             main()
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001 不在这里处理 playwright 的异常
             return e
         finally:
             sys.argv = argv_backup

@@ -55,6 +55,7 @@ select = [
     'ANN',   # flake8-annotations
     'ASYNC', # flake8-async
     'S',     # flake8-bandit
+    'BLE',   # flake8-blind-except
     'C',     # flake8-comprehensions
     'B',     # flake8-bugbear
     'Q',     # flake8-quotes
