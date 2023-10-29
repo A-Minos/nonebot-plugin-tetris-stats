@@ -48,8 +48,9 @@ select = [
     'F',   # pyflakes
     'E',   # pycodestyle errors
     'W',   # pycodestyle warnings
-    'N',   # PEP8-naming
     'I',   # isort
+    'N',   # PEP8-naming
+    'UP',  # pyupgrade
     'C',   # flake8-comprehensions
     'B',   # flake8-bugbear
     'Q',   # flake8-quotes
