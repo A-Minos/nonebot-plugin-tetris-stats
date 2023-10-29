@@ -45,19 +45,20 @@ build-backend = 'poetry.core.masonry.api'
 
 [tool.ruff]
 select = [
-    'F',   # pyflakes
-    'E',   # pycodestyle errors
-    'W',   # pycodestyle warnings
-    'I',   # isort
-    'N',   # PEP8-naming
-    'UP',  # pyupgrade
-    'YTT', # flake8-2020
-    'ANN', # flake8-annotations
-    'C',   # flake8-comprehensions
-    'B',   # flake8-bugbear
-    'Q',   # flake8-quotes
-    'PL',  # pylint
-    'RUF', # Ruff-specific rules
+    'F',     # pyflakes
+    'E',     # pycodestyle errors
+    'W',     # pycodestyle warnings
+    'I',     # isort
+    'N',     # PEP8-naming
+    'UP',    # pyupgrade
+    'YTT',   # flake8-2020
+    'ANN',   # flake8-annotations
+    'ASYNC', # flake8-async
+    'C',     # flake8-comprehensions
+    'B',     # flake8-bugbear
+    'Q',     # flake8-quotes
+    'PL',    # pylint
+    'RUF',   # Ruff-specific rules
 ]
 ignore = [
     'E501',   # 过长的行由 black 处理, 剩余的都是字符串
