@@ -28,7 +28,7 @@ class BrowserManager:
     _browser: Browser | None = None
 
     @classmethod
-    async def _init_playwright(cls):
+    async def _init_playwright(cls) -> None:
         if system() == 'Windows' and getattr(global_config, 'fastapi_reload', False):
             raise ImportError(
                 '加载失败, Windows 必须设置 FASTAPI_RELOAD=false 才能正常运行 playwright'

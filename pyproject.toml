@@ -52,6 +52,7 @@ select = [
     'N',   # PEP8-naming
     'UP',  # pyupgrade
     'YTT', # flake8-2020
+    'ANN', # flake8-annotations
     'C',   # flake8-comprehensions
     'B',   # flake8-bugbear
     'Q',   # flake8-quotes
@@ -59,11 +60,17 @@ select = [
     'RUF', # Ruff-specific rules
 ]
 ignore = [
-    'E501', # 过长的行由 black 处理, 剩余的都是字符串
+    'E501',   # 过长的行由 black 处理, 剩余的都是字符串
+    'ANN101', # 由 type checker 自动推断
+    'ANN102', # 由 type checker 自动推断
+    'ANN202', # 向 NoneBot 注册的函数
 ]
 line-length = 88
 target-version = "py310"
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true
 
 [tool.ruff.format]
 quote-style = 'single'

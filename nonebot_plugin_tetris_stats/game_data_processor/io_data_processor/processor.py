@@ -91,7 +91,7 @@ class Processor:
             await session.commit()
         return message
 
-    async def handle_query(self):
+    async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
         await self.get_user()
