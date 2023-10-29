@@ -84,7 +84,7 @@ class SuccessModel(BaseModel):
                 discord: Discord | None
 
             class Distinguishment(BaseModel):
-                type: str
+                type: str  # noqa: A003
 
             id: str = Field(..., alias='_id')
             username: str

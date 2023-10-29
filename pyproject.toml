@@ -57,8 +57,9 @@ select = [
     'S',     # flake8-bandit
     'BLE',   # flake8-blind-except
     'FBT',   # flake8-boolean-trap
-    'C',     # flake8-comprehensions
     'B',     # flake8-bugbear
+    'A',     # flake8-builtins
+    'C4',    # flake8-comprehensions
     'Q',     # flake8-quotes
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
@@ -75,6 +76,9 @@ flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
 [tool.ruff.flake8-annotations]
 mypy-init-return = true
+
+[tool.ruff.flake8-builtins]
+builtins-ignorelist = ["id"]
 
 [tool.ruff.format]
 quote-style = 'single'
