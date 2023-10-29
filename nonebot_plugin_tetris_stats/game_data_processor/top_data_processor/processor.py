@@ -107,7 +107,7 @@ class Processor:
             url = splice_url(
                 [BASE_URL, 'profile.php', f'?{urlencode({"user":self.user.name})}']
             )
-            self.raw_response.user_profile = await Request.request(url, json=False)
+            self.raw_response.user_profile = await Request.request(url, is_json=False)
             self.processed_data.user_profile = self.raw_response.user_profile.decode()
         return self.processed_data.user_profile
 
