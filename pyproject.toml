@@ -60,6 +60,7 @@ select = [
     'B',     # flake8-bugbear
     'A',     # flake8-builtins
     'C4',    # flake8-comprehensions
+    'DTZ',   # flake8-datetimez
     'Q',     # flake8-quotes
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
