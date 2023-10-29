@@ -54,6 +54,7 @@ select = [
     'YTT',   # flake8-2020
     'ANN',   # flake8-annotations
     'ASYNC', # flake8-async
+    'S',     # flake8-bandit
     'C',     # flake8-comprehensions
     'B',     # flake8-bugbear
     'Q',     # flake8-quotes

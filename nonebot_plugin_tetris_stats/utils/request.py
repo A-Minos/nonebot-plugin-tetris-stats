@@ -63,17 +63,19 @@ class Request:
             except JSONDecodeError:
                 await page.wait_for_timeout(1000)
             else:
-                assert isinstance(response, Response)
-                cls._headers = await response.request.all_headers()
-                try:
-                    cls._cookies = {
-                        i['name']: i['value'] for i in await context.cookies()
-                    }
-                except KeyError:
-                    cls._cookies = None
-                await page.close()
-                await context.close()
-                return await response.body()
+                if isinstance(response, Response):
+                    cls._headers = await response.request.all_headers()
+                    try:
+                        cls._cookies = {
+                            i['name']: i['value'] for i in await context.cookies()
+                        }
+                    except KeyError:
+                        cls._cookies = None
+                    await page.close()
+                    await context.close()
+                    return await response.body()
+                else:
+                    raise RequestError('api请求失败')
         await page.close()
         await context.close()
         raise RequestError('绕过五秒盾失败')
