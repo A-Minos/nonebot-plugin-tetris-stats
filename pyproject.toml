@@ -51,6 +51,7 @@ select = [
     'I',   # isort
     'N',   # PEP8-naming
     'UP',  # pyupgrade
+    'YTT', # flake8-2020
     'C',   # flake8-comprehensions
     'B',   # flake8-bugbear
     'Q',   # flake8-quotes
