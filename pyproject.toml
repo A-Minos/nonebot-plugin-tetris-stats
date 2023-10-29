@@ -64,6 +64,7 @@ select = [
     'FA',    # flake8-future-annotations
     'ISC',   # flake8-implicit-str-concat
     'PIE',   # flake8-pie
+    'T20',   #flake8-print
     'Q',     # flake8-quotes
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
