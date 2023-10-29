@@ -62,6 +62,7 @@ select = [
     'C4',    # flake8-comprehensions
     'DTZ',   # flake8-datetimez
     'FA',    # flake8-future-annotations
+    'ISC',   # flake8-implicit-str-concat
     'Q',     # flake8-quotes
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
