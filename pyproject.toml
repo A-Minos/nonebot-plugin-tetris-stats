@@ -72,6 +72,7 @@ select = [
     'PTH',   # flake8-use-pathlib
     'PD',    # pandas-vet
     'PL',    # pylint
+    'TRY',   # tryceratops
     'RUF',   # Ruff-specific rules
 ]
 ignore = [
@@ -79,6 +80,7 @@ ignore = [
     'ANN101', # 由 type checker 自动推断
     'ANN102', # 由 type checker 自动推断
     'ANN202', # 向 NoneBot 注册的函数
+    'TRY003',
 ]
 line-length = 88
 target-version = "py310"
