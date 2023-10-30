@@ -73,6 +73,7 @@ select = [
     'PD',    # pandas-vet
     'PL',    # pylint
     'TRY',   # tryceratops
+    'FLY',   # flynt
     'RUF',   # Ruff-specific rules
 ]
 ignore = [
