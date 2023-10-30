@@ -69,6 +69,7 @@ select = [
     'RSE',   # flake8-raise
     'RET',   # flake8-return
     'SIM',   # flake8-simplify
+    'PTH',   # flake8-use-pathlib
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
 ]
