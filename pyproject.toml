@@ -64,10 +64,11 @@ select = [
     'FA',    # flake8-future-annotations
     'ISC',   # flake8-implicit-str-concat
     'PIE',   # flake8-pie
-    'T20',   #flake8-print
+    'T20',   # flake8-print
     'Q',     # flake8-quotes
     'RSE',   # flake8-raise
     'RET',   # flake8-return
+    'SIM',   # flake8-simplify
     'PL',    # pylint
     'RUF',   # Ruff-specific rules
 ]

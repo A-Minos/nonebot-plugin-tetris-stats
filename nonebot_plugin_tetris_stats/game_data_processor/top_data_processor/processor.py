@@ -1,3 +1,4 @@
+from contextlib import suppress
 from dataclasses import dataclass
 from io import StringIO
 from re import match
@@ -127,7 +128,7 @@ class Processor:
         """获取游戏统计数据"""
         html = etree.HTML(await self.get_user_profile())
         day = None
-        try:
+        with suppress(ValueError):
             day = Data(
                 lpm=float(
                     str(html.xpath('//div[@class="mycontent"]/text()[3]')[0])
@@ -140,8 +141,6 @@ class Processor:
                     .strip()
                 ),
             )
-        except ValueError:
-            pass
         table = StringIO(
             etree.tostring(
                 html.xpath('//div[@class="mycontent"]/table[@class="mytable"]')[0],
