@@ -1206,13 +1206,13 @@ typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "nonebot-plugin-orm"
-version = "0.4.0"
+version = "0.4.1"
 description = "SQLAlchemy ORM support for nonebot"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "nonebot_plugin_orm-0.4.0-py3-none-any.whl", hash = "sha256:f9c973d8905377fc5a9395ec65deec806426531e8f3fa2371f557e8ae7553416"},
-    {file = "nonebot_plugin_orm-0.4.0.tar.gz", hash = "sha256:3442dc40b2d3f503303db6936b0b04375ffb37b5fe9511b55c5ed1b6643b81f6"},
+    {file = "nonebot_plugin_orm-0.4.1-py3-none-any.whl", hash = "sha256:3b46cf1668946bc121d0e9102a3b98c4bd760efa758a516b29ac3b30f00c1b09"},
+    {file = "nonebot_plugin_orm-0.4.1.tar.gz", hash = "sha256:5833a7a337eba9592c95e10767b293f3bf8c6ab6031a6a13e714819e1d64ac6d"},
 ]
 
 [package.dependencies]
