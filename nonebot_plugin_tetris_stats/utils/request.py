@@ -30,7 +30,7 @@ def splice_url(url_list: list[str]) -> str:
     if len(url_list):
         url = url_list.pop(0)
         for i in url_list:
-            urljoin(url, i)
+            url = urljoin(url, i)
     return url
 
 
