@@ -19,7 +19,7 @@ pandas = '>=1.4.3,<3.0.0'
 playwright = '^1.24.1'
 ujson = '^5.4.0'
 aiofiles = "^23.2.1"
-nonebot-plugin-orm = ">=0.1.1,<0.5.0"
+nonebot-plugin-orm = ">=0.1.1,<0.6.0"
 nonebot-plugin-localstore = "^0.5.1"
 httpx = "^0.25.0"
 nonebot-adapter-qq = "^1.0.0"
@@ -33,7 +33,7 @@ ruff = '>=0.0.239,<0.1.4'
 types-aiofiles = "^23.2.0.0"
 nonebot2 = { extras = ["fastapi"], version = "^2.1.1" }
 types-lxml = "^2023.3.28"
-nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.5" }
+nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.6" }
 
 [tool.poetry.group.debug.dependencies]
 objprint = '^0.2.2'
