@@ -3,12 +3,15 @@ from re import match
 from typing import Any
 from urllib.parse import urlencode
 
+from nonebot_plugin_orm import get_session
 from pydantic import parse_raw_as
 
+from ...db import query_bind_info
+from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
 from ...utils.typing import CommandType
-from .constant import BASE_URL
+from .constant import BASE_URL, GAME_TYPE
 from .schemas.user_info import SuccessModel as InfoSuccess
 from .schemas.user_info import UserInfo
 from .schemas.user_profile import UserProfile
@@ -22,13 +25,13 @@ class User:
 
 @dataclass
 class RawResponse:
-    user_profile: dict[dict, bytes]
+    user_profile: dict[frozenset[tuple[str, Any]], bytes]
     user_info: bytes | None = None
 
 
 @dataclass
 class ProcessedData:
-    user_profile: dict[dict, UserProfile]
+    user_profile: dict[frozenset[tuple[str, Any]], UserProfile]
     user_info: InfoSuccess | None = None
 
 
@@ -79,6 +82,34 @@ class Processor:
         self.raw_response = RawResponse(user_profile={})
         self.processed_data = ProcessedData(user_profile={})
 
+    async def handle_bind(self, platform: str, account: str) -> str:
+        """处理绑定消息"""
+        self.command_type = 'bind'
+        await self.get_user()
+        if self.user.name is None:
+            raise  # FIXME: 不知道怎么才能把这类型给变过来了
+        async with get_session() as session:
+            bind = await query_bind_info(
+                session=session,
+                chat_platform=platform,
+                chat_account=account,
+                game_platform=GAME_TYPE,
+            )
+            if bind is None:
+                bind = Bind(
+                    chat_platform=platform,
+                    chat_account=account,
+                    game_platform=GAME_TYPE,
+                    game_account=self.user.name,
+                )
+                session.add(bind)
+                message = '绑定成功'
+            else:
+                message = '更新成功'
+            bind.game_account = self.user.name
+            await session.commit()
+        return message
+
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
@@ -126,8 +157,9 @@ class Processor:
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
-        if self.processed_data.user_profile.get(other_parameter) is None:
-            self.raw_response.user_profile[other_parameter] = await Request.request(
+        fset = frozenset(other_parameter.items())
+        if self.processed_data.user_profile.get(fset) is None:
+            self.raw_response.user_profile[fset] = await Request.request(
                 splice_url(
                     [
                         BASE_URL,
@@ -136,10 +168,10 @@ class Processor:
                     ]
                 )
             )
-            self.processed_data.user_profile[other_parameter] = UserProfile.parse_raw(
-                self.raw_response.user_profile[other_parameter]
+            self.processed_data.user_profile[fset] = UserProfile.parse_raw(
+                self.raw_response.user_profile[fset]
             )
-        return self.processed_data.user_profile[other_parameter]
+        return self.processed_data.user_profile[fset]
 
     async def get_game_data(self) -> GameData | None:
         """获取游戏数据"""
@@ -202,7 +234,7 @@ class Processor:
                 f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
             )
         message += (
-            f'\n40L: {user_info.pb_sprint}s'
+            f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s'
             if user_info.pb_sprint != 2147483647  # noqa: PLR2004
             else ''
         )

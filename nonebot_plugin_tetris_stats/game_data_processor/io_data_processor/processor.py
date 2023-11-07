@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 from re import match
 
-from nonebot_plugin_orm import AsyncSession, get_session
+from nonebot_plugin_orm import get_session
 from pydantic import parse_raw_as
-from sqlalchemy import select
 
+from ...db import query_bind_info
 from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
-from ...utils.request import Request
+from ...utils.request import Request, splice_url
 from ...utils.typing import CommandType
+from .constant import BASE_URL, GAME_TYPE
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,
@@ -47,12 +48,6 @@ def identify_user_info(info: str) -> User | MessageFormatError:
     return MessageFormatError('用户名/ID不合法')
 
 
-async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:
-    return (
-        await session.scalars(select(Bind).where(Bind.qq_number == qq_number))
-    ).one_or_none()
-
-
 class Processor:
     event_id: int
     command_type: CommandType
@@ -73,21 +68,31 @@ class Processor:
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
-    async def handle_bind(self, source_id: str) -> str:
+    async def handle_bind(self, platform: str, account: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.get_user()
+        if self.user.ID is None:
+            raise  # FIXME: 不知道怎么才能把这类型给变过来了
         async with get_session() as session:
-            bind = await query_bind_info(session=session, qq_number=source_id)
+            bind = await query_bind_info(
+                session=session,
+                chat_platform=platform,
+                chat_account=account,
+                game_platform=GAME_TYPE,
+            )
             if bind is None:
-                bind = Bind(qq_number=source_id, IO_id=self.user.ID)
+                bind = Bind(
+                    chat_platform=platform,
+                    chat_account=account,
+                    game_platform=GAME_TYPE,
+                    game_account=self.user.ID,
+                )
                 session.add(bind)
-                message = '绑定成功'
-            elif bind.IO_id is None:
                 message = '绑定成功'
             else:
                 message = '更新成功'
-            bind.IO_id = self.user.ID
+            bind.game_account = self.user.ID
             await session.commit()
         return message
 
@@ -110,7 +115,7 @@ class Processor:
         """获取用户数据"""
         if self.processed_data.user_info is None:
             self.raw_response.user_info = await Request.request(
-                f'https://ch.tetr.io/api/users/{self.user.ID or self.user.name}'
+                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
             )
             user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
             if isinstance(user_info, InfoFailed):
@@ -122,7 +127,14 @@ class Processor:
         """获取Solo数据"""
         if self.processed_data.user_records is None:
             self.raw_response.user_records = await Request.request(
-                f'https://ch.tetr.io/api/users/{self.user.ID or self.user.name}/records'
+                splice_url(
+                    [
+                        BASE_URL,
+                        'users/',
+                        f'{self.user.ID or self.user.name}/',
+                        'records',
+                    ]
+                )
             )
             user_records: UserRecords = parse_raw_as(
                 UserRecords,  # type: ignore[arg-type]
