@@ -1,8 +1,8 @@
 """init db
 
-修订 ID: 134153ebc681
-父修订:
-创建时间: 2023-10-21 22:14:03.714641
+迁移 ID: e27c73a7a9a8
+父迁移:
+创建时间: 2023-11-07 19:04:47.184385
 
 """
 from __future__ import annotations
@@ -12,7 +12,7 @@ from collections.abc import Sequence
 import sqlalchemy as sa
 from alembic import op
 
-revision: str = '134153ebc681'
+revision: str = 'e27c73a7a9a8'
 down_revision: str | Sequence[str] | None = None
 branch_labels: str | Sequence[str] | None = ('nonebot_plugin_tetris_stats',)
 depends_on: str | Sequence[str] | None = None
@@ -25,17 +25,23 @@ def upgrade(name: str = '') -> None:
     op.create_table(
         'nonebot_plugin_tetris_stats_bind',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('qq_number', sa.String(), nullable=False),
-        sa.Column('IO_id', sa.String(), nullable=True),
-        sa.Column('TOP_id', sa.String(), nullable=True),
+        sa.Column('chat_platform', sa.String(length=32), nullable=False),
+        sa.Column('chat_account', sa.String(), nullable=False),
+        sa.Column('game_platform', sa.String(length=32), nullable=False),
+        sa.Column('game_account', sa.String(), nullable=False),
         sa.PrimaryKeyConstraint('id', name=op.f('pk_nonebot_plugin_tetris_stats_bind')),
     )
     with op.batch_alter_table(
         'nonebot_plugin_tetris_stats_bind', schema=None
     ) as batch_op:
         batch_op.create_index(
-            batch_op.f('ix_nonebot_plugin_tetris_stats_bind_qq_number'),
-            ['qq_number'],
+            batch_op.f('ix_nonebot_plugin_tetris_stats_bind_chat_account'),
+            ['chat_account'],
+            unique=False,
+        )
+        batch_op.create_index(
+            batch_op.f('ix_nonebot_plugin_tetris_stats_bind_chat_platform'),
+            ['chat_platform'],
             unique=False,
         )
 
@@ -43,13 +49,12 @@ def upgrade(name: str = '') -> None:
         'nonebot_plugin_tetris_stats_historicaldata',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('trigger_time', sa.DateTime(), nullable=False),
-        sa.Column('bot_platform', sa.String(length=32), nullable=False),
-        sa.Column('bot_id', sa.String(length=64), nullable=False),
-        sa.Column('source_type', sa.String(length=32), nullable=False),
-        sa.Column('source_id', sa.String(length=64), nullable=False),
-        sa.Column('message', sa.String(), nullable=False),
-        sa.Column('message_id', sa.String(length=64), nullable=False),
-        sa.Column('game_type', sa.String(length=16), nullable=False),
+        sa.Column('bot_platform', sa.String(length=32), nullable=True),
+        sa.Column('bot_account', sa.String(), nullable=True),
+        sa.Column('source_platform', sa.String(length=32), nullable=True),
+        sa.Column('source_account', sa.String(), nullable=True),
+        sa.Column('message', sa.PickleType(), nullable=True),
+        sa.Column('game_platform', sa.String(length=32), nullable=False),
         sa.Column('command_type', sa.String(length=16), nullable=False),
         sa.Column('command_args', sa.JSON(), nullable=False),
         sa.Column('game_user', sa.JSON(), nullable=False),
@@ -69,13 +74,18 @@ def upgrade(name: str = '') -> None:
             unique=False,
         )
         batch_op.create_index(
-            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_game_type'),
-            ['game_type'],
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_game_platform'),
+            ['game_platform'],
             unique=False,
         )
         batch_op.create_index(
-            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_id'),
-            ['source_id'],
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_account'),
+            ['source_account'],
+            unique=False,
+        )
+        batch_op.create_index(
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_platform'),
+            ['source_platform'],
             unique=False,
         )
 
@@ -90,10 +100,13 @@ def downgrade(name: str = '') -> None:
         'nonebot_plugin_tetris_stats_historicaldata', schema=None
     ) as batch_op:
         batch_op.drop_index(
-            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_id')
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_platform')
         )
         batch_op.drop_index(
-            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_game_type')
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_source_account')
+        )
+        batch_op.drop_index(
+            batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_game_platform')
         )
         batch_op.drop_index(
             batch_op.f('ix_nonebot_plugin_tetris_stats_historicaldata_command_type')
@@ -103,7 +116,12 @@ def downgrade(name: str = '') -> None:
     with op.batch_alter_table(
         'nonebot_plugin_tetris_stats_bind', schema=None
     ) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_nonebot_plugin_tetris_stats_bind_qq_number'))
+        batch_op.drop_index(
+            batch_op.f('ix_nonebot_plugin_tetris_stats_bind_chat_platform')
+        )
+        batch_op.drop_index(
+            batch_op.f('ix_nonebot_plugin_tetris_stats_bind_chat_account')
+        )
 
     op.drop_table('nonebot_plugin_tetris_stats_bind')
     # ### end Alembic commands ###

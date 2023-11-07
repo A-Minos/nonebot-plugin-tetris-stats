@@ -6,15 +6,15 @@ from typing import NoReturn
 from urllib.parse import urlencode
 
 from lxml import etree
-from nonebot_plugin_orm import AsyncSession, get_session
+from nonebot_plugin_orm import get_session
 from pandas import read_html
-from sqlalchemy import select
 
+from ...db import query_bind_info
 from ...db.models import Bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
 from ...utils.typing import CommandType
-from .constant import BASE_URL
+from .constant import BASE_URL, GAME_TYPE
 
 
 @dataclass
@@ -50,12 +50,6 @@ def identify_user_info(info: str) -> User | MessageFormatError:
     return MessageFormatError('用户名不合法')
 
 
-async def query_bind_info(session: AsyncSession, qq_number: str) -> Bind | None:
-    return (
-        await session.scalars(select(Bind).where(Bind.qq_number == qq_number))
-    ).one_or_none()
-
-
 class Processor:
     event_id: int
     command_type: CommandType
@@ -76,23 +70,29 @@ class Processor:
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
-    async def handle_bind(self, source_id: str) -> str:
+    async def handle_bind(self, platform: str, account: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.check_user()
         async with get_session() as session:
-            bind = (
-                await session.scalars(select(Bind).where(Bind.qq_number == source_id))
-            ).one_or_none()
+            bind = await query_bind_info(
+                session=session,
+                chat_platform=platform,
+                chat_account=account,
+                game_platform=GAME_TYPE,
+            )
             if bind is None:
-                bind = Bind(qq_number=source_id, TOP_id=self.user.name)
+                bind = Bind(
+                    chat_platform=platform,
+                    chat_account=account,
+                    game_platform=GAME_TYPE,
+                    game_account=self.user.name,
+                )
                 session.add(bind)
-                message = '绑定成功'
-            elif bind.TOP_id is None:
                 message = '绑定成功'
             else:
                 message = '更新成功'
-            bind.TOP_id = self.user.name
+            bind.game_account = self.user.name
             await session.commit()
         return message
 
@@ -148,7 +148,7 @@ class Processor:
             ).decode()
         )
         dataframe = read_html(table, encoding='utf-8', header=0)[0]
-        if len(dataframe) == 0:
+        if len(dataframe) != 0:
             total = Data(
                 lpm=dataframe['lpm'].mean(),
                 apm=dataframe['apm'].mean(),

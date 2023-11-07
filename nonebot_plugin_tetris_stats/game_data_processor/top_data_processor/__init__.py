@@ -1,16 +1,16 @@
 from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
-from nonebot.adapters.onebot.v11 import GROUP
-from nonebot.adapters.onebot.v11 import Bot as OB11Bot
-from nonebot.adapters.onebot.v11 import MessageEvent as OB11MessageEvent
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import AlcMatches, At, on_alconna
 from nonebot_plugin_orm import get_session
 
+from ...db import query_bind_info
 from ...utils.exception import MessageFormatError, NeedCatchError
+from ...utils.platform import get_platform
 from ...utils.typing import Me
 from ..constant import BIND_COMMAND, QUERY_COMMAND
-from .processor import Processor, User, identify_user_info, query_bind_info
+from .constant import GAME_TYPE
+from .processor import Processor, User, identify_user_info
 
 alc = on_alconna(
     Alconna(
@@ -19,7 +19,7 @@ alc = on_alconna(
             BIND_COMMAND[0],
             Args(
                 Arg(
-                    'target',
+                    'account',
                     identify_user_info,
                     notice='TOP 用户名',
                     flags=[ArgFlag.HIDDEN],
@@ -35,10 +35,16 @@ alc = on_alconna(
             Args(
                 Arg(
                     'target',
+                    Me | At,
+                    notice='@想要查询的人 | 自己',
+                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                ),
+                Arg(
+                    'account',
                     identify_user_info | Me | At,
-                    notice='TOP 用户名 | @想要查询的人 | 自己',
-                    flags=[ArgFlag.HIDDEN],
-                )
+                    notice='TOP 用户名',
+                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                ),
             ),
             alias=QUERY_COMMAND[1:],
             compact=True,
@@ -54,41 +60,44 @@ alc = on_alconna(
     ),
     skip_for_unmatch=False,
     auto_send_output=True,
+    aliases={'TOP'},
 )
 
 
 @alc.assign('bind')
-async def _(event: OB11MessageEvent, matcher: Matcher, target: User):
+async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
     proc = Processor(
         event_id=id(event),
-        user=target,
+        user=account,
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_bind(source_id=event.get_user_id()))
+        await matcher.finish(
+            await proc.handle_bind(
+                platform=get_platform(bot), account=event.get_user_id()
+            )
+        )
     except NeedCatchError as e:
         await matcher.finish(str(e))
 
 
-@alc.assign('bind')
-async def _(bot: Bot, matcher: Matcher, target: User):
-    await matcher.finish(f'{bot.type} 适配器暂不支持绑定')
-
-
 @alc.assign('query')
-async def _(bot: OB11Bot, event: OB11MessageEvent, matcher: Matcher, target: At | Me):
-    if event.is_tome() and await GROUP(bot, event):
-        await matcher.finish('不能查询bot的信息')
-    bind = await query_bind_info(
-        session=get_session(),
-        qq_number=(target.target if isinstance(target, At) else event.get_user_id()),
-    )
-    if bind is None or bind.TOP_id is None:
+async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
+    async with get_session() as session:
+        bind = await query_bind_info(
+            session=session,
+            chat_platform=get_platform(bot),
+            chat_account=(
+                target.target if isinstance(target, At) else event.get_user_id()
+            ),
+            game_platform=GAME_TYPE,
+        )
+    if bind is None:
         await matcher.finish('未查询到绑定信息')
     message = '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
     proc = Processor(
         event_id=id(event),
-        user=User(name=bind.TOP_id),
+        user=User(name=bind.game_account),
         command_args=[],
     )
     try:
@@ -98,10 +107,10 @@ async def _(bot: OB11Bot, event: OB11MessageEvent, matcher: Matcher, target: At 
 
 
 @alc.assign('query')
-async def _(event: Event, matcher: Matcher, target: User):
+async def _(event: Event, matcher: Matcher, account: User):
     proc = Processor(
         event_id=id(event),
-        user=target,
+        user=account,
         command_args=[],
     )
     try:
@@ -110,14 +119,9 @@ async def _(event: Event, matcher: Matcher, target: User):
         await matcher.finish(str(e))
 
 
-@alc.assign('query')
-async def _(bot: Bot, matcher: Matcher, target: At | Me):
-    await matcher.finish(f'{bot.type} 适配器暂不支持绑定')
-
-
 @alc.handle()
-async def _(matcher: Matcher, target: MessageFormatError):
-    await matcher.finish(str(target))
+async def _(matcher: Matcher, account: MessageFormatError):
+    await matcher.finish(str(account))
 
 
 @alc.handle()
@@ -126,5 +130,5 @@ async def _(matcher: Matcher, matches: AlcMatches):
         await matcher.finish(
             f'{matches.error_info!r}\n'
             if matches.error_info is not None
-            else '' + '输入"io --help"查看帮助'
+            else '' + '输入"top --help"查看帮助'
         )
