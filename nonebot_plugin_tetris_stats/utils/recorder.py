@@ -1,115 +1,83 @@
-from asyncio import get_running_loop
-from datetime import datetime
-from functools import wraps
-from typing import Any, ClassVar, Type
+from datetime import datetime, timedelta, timezone
+from typing import ClassVar
 
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent
-from nonebot.log import logger
-from tortoise.timezone import now
+from nonebot import get_driver, get_plugin
+from nonebot.adapters import Bot, Event
+from nonebot.matcher import Matcher
+from nonebot.message import run_postprocessor, run_preprocessor
+from nonebot_plugin_orm import get_session
 
-from ..db.database import DataBase
-from .typing import AsyncCallable, CommandType, GameType
+from ..db.models import HistoricalData
+
+driver = get_driver()
 
 
 class Recorder:
-    class Temp:
-        receive_time: datetime | None = None
-        bot_id: str | None = None
-        source_type: str | None = None
-        source_id: str | None = None
-        message_id: int | None = None
-        message: str | None = None
-        call_time: datetime | None = None
-        game_type: GameType | None = None
-        command_type: CommandType | None = None
-        command_args: str | None = None
-        user: dict | None = None
-        response: dict | None = None
-        processed_data: dict | None = None
-        return_message: bytes | None = None
-        send_time: datetime | None = None
-        saved: bool = False
-
-        def save(self):
-            get_running_loop().create_task(DataBase.write_historical(**self.__dict__))
-            self.saved = True
-
-        def __del__(self):
-            if self.saved is False:
-                logger.warning('在保存之前就调用了 del, 如果处理过程中发生了异常, 这可能是正确的')
-                self.save()
-
-    instances: ClassVar[dict[str, Temp]] = {}
+    matchers: ClassVar[set[type[Matcher]]] = set()
+    historical_data: ClassVar[dict[int, tuple[HistoricalData, bool]]] = {}
 
     @classmethod
-    async def receive(
-        cls, func: AsyncCallable, bot: Bot, event: MessageEvent, *args, **kwargs
-    ) -> Any:
-        receive_time = now()  # 保证时间最接近 (?
-        message_id = event.message_id
-        temp = cls._create_temp_instance(cls._message_id_to_id(message_id))
-        temp.receive_time = receive_time
-        temp.bot_id = bot.self_id
-        temp.source_type = event.get_event_name()
-        temp.source_id = event.get_session_id()
-        temp.message_id = message_id
-        temp.message = event.raw_message
-        kwargs.update(bot=bot, event=event)
-        ret = await func(*args, **kwargs)
-        return ret
+    def create_historical_data(
+        cls, event_id: int, historical_data: HistoricalData
+    ) -> None:
+        cls.historical_data[event_id] = (historical_data, False)
 
     @classmethod
-    async def send(cls, func: AsyncCallable, instance: Type, *args, **kwargs) -> Any:
-        call_time = now()
-        message_id = getattr(instance, 'message_id', None)
-        temp = cls._get_temp_instance(cls._message_id_to_id(message_id))
-        temp.call_time = call_time
-        temp.game_type = getattr(instance, 'GAME_TYPE', None)
-        args = (instance,)
-        ret = await func(*args, **kwargs)
-        temp.send_time = now()
-        temp.command_type = getattr(instance, 'command_type', None)
-        temp.command_args = getattr(instance, 'command_args', None)
-        temp.user = getattr(instance, 'user', None)
-        temp.response = getattr(instance, 'response', None)
-        temp.processed_data = getattr(instance, 'processed_data', None)
-        temp.return_message = bytes(ret, 'UTF-8') if isinstance(ret, str) else ret
-        cls._save_temp_instance(cls._message_id_to_id(message_id))
-        return ret
+    def update_historical_data(
+        cls, event_id: int, historical_data: HistoricalData
+    ) -> None:
+        if event_id not in cls.historical_data:
+            raise KeyError
+        cls.historical_data[event_id] = (historical_data, True)
 
     @classmethod
-    def recorder(cls, collector: AsyncCallable):
-        def _inner(func: AsyncCallable):
-            @wraps(func)
-            async def _wrapper(*args, **kwargs):
-                ret = await collector(func, *args, **kwargs)
-                return ret
-
-            return _wrapper
-
-        return _inner
+    def get_historical_data(cls, event_id: int) -> HistoricalData:
+        return cls.historical_data[event_id][0]
 
     @classmethod
-    def _message_id_to_id(cls, message_id) -> str:
-        return str(message_id)
+    async def save_historical_data(cls, event_id: int) -> None:
+        if event_id not in cls.historical_data:
+            raise KeyError
+        historical_data, completed = cls.historical_data.pop(event_id)
+        if completed:
+            async with get_session() as session:
+                session.add(historical_data)
+                await session.commit()
 
     @classmethod
-    def _create_temp_instance(cls, id: str) -> Temp:
-        if id in cls.instances:
-            logger.warning('可能出现了撞 message_id 或者其他神秘问题')
-            del cls.instances[id]
-        cls.instances[id] = cls.Temp()
-        return cls._get_temp_instance(id)
+    def del_historical_data(cls, event_id: int) -> None:
+        cls.historical_data.pop(event_id)
 
-    @classmethod
-    def _get_temp_instance(cls, id: str) -> Temp:
-        return cls.instances[id]
 
-    @classmethod
-    def _save_temp_instance(cls, id: str) -> None:
-        cls._get_temp_instance(id).save()
-        cls.__del_temp(id)
+@driver.on_startup
+def _():
+    plugin = get_plugin('nonebot_plugin_tetris_stats')
+    if plugin is not None:
+        Recorder.matchers = plugin.matcher
+    else:
+        raise RuntimeError('获取不到自身插件对象')
 
-    @classmethod
-    def __del_temp(cls, id: str) -> None:
-        del cls.instances[id]
+
+@run_preprocessor
+def _(bot: Bot, event: Event, matcher: Matcher):
+    if isinstance(matcher, tuple(Recorder.matchers)):
+        Recorder.create_historical_data(
+            event_id=id(event),
+            historical_data=HistoricalData(
+                trigger_time=datetime.now(tz=timezone(timedelta(hours=8))),
+                bot_platform=bot.type,
+                bot_account=bot.self_id,
+                source_type=event.get_type(),
+                source_account=event.get_session_id(),
+                message=event.get_message(),
+            ),
+        )
+
+
+@run_postprocessor
+async def _(event: Event, matcher: Matcher, exception: Exception | None):
+    if isinstance(matcher, tuple(Recorder.matchers)):
+        if exception is not None:
+            Recorder.del_historical_data(id(event))
+        else:
+            await Recorder.save_historical_data(id(event))

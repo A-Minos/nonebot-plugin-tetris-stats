@@ -35,7 +35,7 @@ alc = on_alconna(
             Args(
                 Arg(
                     'target',
-                    Me | At,
+                    At | Me,
                     notice='@想要查询的人 | 自己',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
