@@ -9,26 +9,29 @@ from lxml import etree
 from nonebot_plugin_orm import get_session
 from pandas import read_html
 
-from ...db import query_bind_info
-from ...db.models import Bind
+from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
-from ...utils.typing import CommandType
+from ...utils.typing import GameType
+from .. import ProcessedData as ProcessedDataMeta
+from .. import Processor as ProcessorMeta
+from .. import RawResponse as RawResponseMeta
+from .. import User as UserMeta
 from .constant import BASE_URL, GAME_TYPE
 
 
 @dataclass
-class User:
+class User(UserMeta):
     name: str
 
 
 @dataclass
-class RawResponse:
+class RawResponse(RawResponseMeta):
     user_profile: bytes | None = None
 
 
 @dataclass
-class ProcessedData:
+class ProcessedData(ProcessedDataMeta):
     user_profile: str | None = None
 
 
@@ -50,51 +53,32 @@ def identify_user_info(info: str) -> User | MessageFormatError:
     return MessageFormatError('用户名不合法')
 
 
-class Processor:
-    event_id: int
-    command_type: CommandType
-    command_args: list[str]
+class Processor(ProcessorMeta):
     user: User
     raw_response: RawResponse
     processed_data: ProcessedData
 
-    def __init__(
-        self,
-        event_id: int,
-        user: User,
-        command_args: list[str],
-    ) -> None:
-        self.event_id = event_id
-        self.command_args = command_args
-        self.user = user
+    def __init__(self, event_id: int, user: User, command_args: list[str]) -> None:
+        super().__init__(event_id, user, command_args)
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
+
+    @property
+    def game_platform(self) -> GameType:
+        return GAME_TYPE
 
     async def handle_bind(self, platform: str, account: str) -> str:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.check_user()
         async with get_session() as session:
-            bind = await query_bind_info(
+            return await create_or_update_bind(
                 session=session,
                 chat_platform=platform,
                 chat_account=account,
                 game_platform=GAME_TYPE,
+                game_account=self.user.name,
             )
-            if bind is None:
-                bind = Bind(
-                    chat_platform=platform,
-                    chat_account=account,
-                    game_platform=GAME_TYPE,
-                    game_account=self.user.name,
-                )
-                session.add(bind)
-                message = '绑定成功'
-            else:
-                message = '更新成功'
-            bind.game_account = self.user.name
-            await session.commit()
-        return message
 
     async def handle_query(self) -> str:
         """处理查询消息"""
