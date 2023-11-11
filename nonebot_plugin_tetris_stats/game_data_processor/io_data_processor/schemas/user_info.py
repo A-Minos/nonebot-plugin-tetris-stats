@@ -4,14 +4,11 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from ..typing import Rank
+from .base import FailedModel
+from .base import SuccessModel as BaseSuccessModel
 
 
-class SuccessModel(BaseModel):
-    class Cache(BaseModel):
-        status: str
-        cached_at: datetime
-        cached_until: datetime
-
+class SuccessModel(BaseSuccessModel):
     class Data(BaseModel):
         class User(BaseModel):
             class Badge(BaseModel):
@@ -121,14 +118,7 @@ class SuccessModel(BaseModel):
 
         user: User
 
-    success: Literal[True]
-    cache: Cache
     data: Data
-
-
-class FailedModel(BaseModel):
-    success: Literal[False]
-    error: str
 
 
 NeverPlayedLeague = SuccessModel.Data.User.NeverPlayedLeague

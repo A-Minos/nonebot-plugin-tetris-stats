@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Literal
 
 from pydantic import BaseModel, Field
+
+from .base import FailedModel
+from .base import SuccessModel as BaseSuccessModel
 
 
 class EndContext(BaseModel):
@@ -96,12 +98,7 @@ class BaseModeRecord(BaseModel):
     rank: int | None
 
 
-class SuccessModel(BaseModel):
-    class Cache(BaseModel):
-        status: str
-        cached_at: datetime
-        cached_until: datetime
-
+class SuccessModel(BaseSuccessModel):
     class Data(BaseModel):
         class Records(BaseModel):
             class Sprint(BaseModeRecord):
@@ -120,14 +117,7 @@ class SuccessModel(BaseModel):
         records: Records
         zen: Zen
 
-    success: Literal[True]
-    cache: Cache
     data: Data
-
-
-class FailedModel(BaseModel):
-    success: Literal[False]
-    error: str
 
 
 SoloRecord = BaseModeRecord.SoloRecord

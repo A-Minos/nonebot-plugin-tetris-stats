@@ -1,8 +1,16 @@
-from dataclasses import dataclass
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime, timedelta
+from math import floor
 from re import match
+from statistics import mean
 
+from nonebot import get_driver
+from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
 from nonebot_plugin_orm import get_session
 from pydantic import parse_raw_as
+from sqlalchemy import select
 
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
@@ -12,7 +20,11 @@ from .. import ProcessedData as ProcessedDataMeta
 from .. import Processor as ProcessorMeta
 from .. import RawResponse as RawResponseMeta
 from .. import User as UserMeta
-from .constant import BASE_URL, GAME_TYPE
+from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
+from .model import IORank
+from .schemas.league_all import FailedModel as LeagueAllFailed
+from .schemas.league_all import LeagueAll
+from .schemas.league_all import User as LeagueAllUser
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,
@@ -23,6 +35,9 @@ from .schemas.user_info import SuccessModel as InfoSuccess
 from .schemas.user_records import FailedModel as RecordsFailed
 from .schemas.user_records import SoloRecord, UserRecords
 from .schemas.user_records import SuccessModel as RecordsSuccess
+from .typing import Rank
+
+driver = get_driver()
 
 
 @dataclass
@@ -169,3 +184,83 @@ class Processor(ProcessorMeta):
             ret_message += f'\nBlitz: {blitz.record.endcontext.score}'
             ret_message += f' ( #{blitz.rank} )' if blitz.rank is not None else ''
         return ret_message
+
+
+@scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
+async def get_io_rank_data() -> None:
+    league_all: LeagueAll = parse_raw_as(
+        LeagueAll,  # type: ignore[arg-type]
+        await Request.request(splice_url([BASE_URL, 'users/lists/league/all'])),
+    )
+    if isinstance(league_all, LeagueAllFailed):
+        raise RequestError(f'用户Solo数据请求错误:\n{league_all.error}')
+
+    def pps(user: LeagueAllUser) -> float:
+        return user.league.pps
+
+    def apm(user: LeagueAllUser) -> float:
+        return user.league.apm
+
+    def vs(user: LeagueAllUser) -> float:
+        return user.league.vs
+
+    def _min(
+        users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]
+    ) -> LeagueAllUser:
+        return min(users, key=field)
+
+    def _max(
+        users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]
+    ) -> LeagueAllUser:
+        return max(users, key=field)
+
+    def build_extremes_data(
+        users: list[LeagueAllUser],
+        field: Callable[[LeagueAllUser], float],
+        sort: Callable[
+            [list[LeagueAllUser], Callable[[LeagueAllUser], float]], LeagueAllUser
+        ],
+    ) -> tuple[dict[str, str], float]:
+        user = sort(users, field)
+        return asdict(User(ID=user.id, name=user.username)), field(user)
+
+    users = league_all.data.users
+    rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)
+    for i in users:
+        rank_to_users[i.league.rank].append(i)
+    rank_info: list[IORank] = []
+    for rank, percentile in RANK_PERCENTILE.items():
+        offset = floor((percentile / 100) * len(users)) - 1
+        tr_line = users[offset].league.rating
+        rank_users = rank_to_users[rank]
+        rank_info.append(
+            IORank(
+                rank=rank,
+                tr_line=tr_line,
+                player_count=len(rank_users),
+                low_pps=(build_extremes_data(rank_users, pps, _min)),
+                low_apm=(build_extremes_data(rank_users, apm, _min)),
+                low_vs=(build_extremes_data(rank_users, vs, _min)),
+                avg_pps=mean({i.league.pps for i in rank_users}),
+                avg_apm=mean({i.league.apm for i in rank_users}),
+                avg_vs=mean({i.league.vs for i in rank_users}),
+                high_pps=(build_extremes_data(rank_users, pps, _max)),
+                high_apm=(build_extremes_data(rank_users, apm, _max)),
+                high_vs=(build_extremes_data(rank_users, vs, _max)),
+            )
+        )
+    async with get_session() as session:
+        session.add_all(rank_info)
+        await session.commit()
+
+
+@driver.on_startup
+async def check_rank_data() -> None:
+    async with get_session() as session:
+        latest_time = await session.scalar(
+            select(IORank.create_time).order_by(IORank.id.desc()).limit(1)
+        )
+        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(
+            tzinfo=UTC
+        ) > timedelta(hours=6):
+            await get_io_rank_data()
