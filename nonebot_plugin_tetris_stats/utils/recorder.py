@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 from typing import ClassVar
 
 from nonebot import get_driver, get_plugin
@@ -64,7 +64,7 @@ def _(bot: Bot, event: Event, matcher: Matcher):
         Recorder.create_historical_data(
             event_id=id(event),
             historical_data=HistoricalData(
-                trigger_time=datetime.now(tz=timezone(timedelta(hours=8))),
+                trigger_time=datetime.now(tz=UTC),
                 bot_platform=bot.type,
                 bot_account=bot.self_id,
                 source_type=event.get_type(),

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime
 
 from ..utils.typing import CommandType, GameType
 
@@ -64,7 +64,7 @@ class Processor(ABC):
         raise NotImplementedError
 
     def __del__(self) -> None:
-        finish_time = datetime.now(tz=timezone(timedelta(hours=8)))
+        finish_time = datetime.now(tz=UTC)
         historical_data = Recorder.get_historical_data(self.event_id)
         historical_data.game_platform = self.game_platform
         historical_data.command_type = self.command_type
