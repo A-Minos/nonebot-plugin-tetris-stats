@@ -86,11 +86,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await matcher.finish(
-            await proc.handle_bind(
-                platform=get_platform(bot), account=event.get_user_id()
-            )
-        )
+        await matcher.finish(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
     except NeedCatchError as e:
         await matcher.finish(str(e))
 
@@ -101,9 +97,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         bind = await query_bind_info(
             session=session,
             chat_platform=get_platform(bot),
-            chat_account=(
-                target.target if isinstance(target, At) else event.get_user_id()
-            ),
+            chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
             game_platform=GAME_TYPE,
         )
     if bind is None:
@@ -143,12 +137,7 @@ async def _(event: Event, matcher: Matcher, rank: Rank):
         await matcher.finish(str(f'段位信息获取失败\n{e}'))
     async with get_session() as session:
         data = (
-            await session.scalars(
-                select(IORank)
-                .where(IORank.rank == rank)
-                .order_by(IORank.id.desc())
-                .limit(5)
-            )
+            await session.scalars(select(IORank).where(IORank.rank == rank).order_by(IORank.id.desc()).limit(5))
         ).all()
     latest_data = data[0]
     message = f'{rank.upper()} 段 分数线 {latest_data.tr_line:.2f} TR, {latest_data.player_count} 名玩家\n'
@@ -156,9 +145,7 @@ async def _(event: Event, matcher: Matcher, rank: Rank):
         message += f'对比 {(latest_data.create_time-data[-1].create_time).total_seconds()/3600:.2f} 小时前趋势: {f"↑{difference:.2f}" if (difference:=latest_data.tr_line-data[-1].tr_line) > 0 else f"↓{-difference:.2f}" if difference < 0 else "→"}'
     else:
         message += '暂无对比数据'
-    avg = get_metrics(
-        pps=latest_data.avg_pps, apm=latest_data.avg_apm, vs=latest_data.avg_vs
-    )
+    avg = get_metrics(pps=latest_data.avg_pps, apm=latest_data.avg_apm, vs=latest_data.avg_vs)
     low_pps = get_metrics(pps=latest_data.low_pps[1])
     low_vs = get_metrics(vs=latest_data.low_vs[1])
     max_pps = get_metrics(pps=latest_data.high_pps[1])
@@ -194,7 +181,5 @@ async def _(matcher: Matcher, account: MessageFormatError):
 async def _(matcher: Matcher, matches: AlcMatches):
     if matches.head_matched:
         await matcher.finish(
-            f'{matches.error_info!r}\n'
-            if matches.error_info is not None
-            else '' + '输入"io --help"查看帮助'
+            f'{matches.error_info!r}\n' if matches.error_info is not None else '' + '输入"io --help"查看帮助'
         )

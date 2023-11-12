@@ -89,9 +89,7 @@ class Processor(ProcessorMeta):
     async def get_user_profile(self) -> str:
         """获取用户信息"""
         if self.processed_data.user_profile is None:
-            url = splice_url(
-                [BASE_URL, 'profile.php', f'?{urlencode({"user":self.user.name})}']
-            )
+            url = splice_url([BASE_URL, 'profile.php', f'?{urlencode({"user":self.user.name})}'])
             self.raw_response.user_profile = await Request.request(url, is_json=False)
             self.processed_data.user_profile = self.raw_response.user_profile.decode()
         return self.processed_data.user_profile
@@ -103,9 +101,7 @@ class Processor(ProcessorMeta):
 
     async def get_user_name(self) -> str:
         """获取用户名"""
-        data = etree.HTML(await self.get_user_profile()).xpath(
-            '//div[@class="mycontent"]/h1/text()'
-        )
+        data = etree.HTML(await self.get_user_profile()).xpath('//div[@class="mycontent"]/h1/text()')
         return data[0].replace("'s profile", '')
 
     async def get_game_data(self) -> GameData:
@@ -114,16 +110,8 @@ class Processor(ProcessorMeta):
         day = None
         with suppress(ValueError):
             day = Data(
-                lpm=float(
-                    str(html.xpath('//div[@class="mycontent"]/text()[3]')[0])
-                    .replace('lpm:', '')
-                    .strip()
-                ),
-                apm=float(
-                    str(html.xpath('//div[@class="mycontent"]/text()[4]')[0])
-                    .replace('apm:', '')
-                    .strip()
-                ),
+                lpm=float(str(html.xpath('//div[@class="mycontent"]/text()[3]')[0]).replace('lpm:', '').strip()),
+                apm=float(str(html.xpath('//div[@class="mycontent"]/text()[4]')[0]).replace('apm:', '').strip()),
             )
         table = StringIO(
             etree.tostring(
@@ -132,13 +120,7 @@ class Processor(ProcessorMeta):
             ).decode()
         )
         dataframe = read_html(table, encoding='utf-8', header=0)[0]
-        if len(dataframe) != 0:
-            total = Data(
-                lpm=dataframe['lpm'].mean(),
-                apm=dataframe['apm'].mean(),
-            )
-        else:
-            total = None
+        total = Data(lpm=dataframe['lpm'].mean(), apm=dataframe['apm'].mean()) if len(dataframe) != 0 else None
         return GameData(day=day, total=total)
 
     async def generate_message(self) -> str:

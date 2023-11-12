@@ -158,13 +158,13 @@ class Processor(ProcessorMeta):
             elif league.rank == 'z':
                 ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
             else:
-                ret_message += f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
+                ret_message += (
+                    f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
+                )
                 ret_message += f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
             lpm = league.pps * 24
             ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
-            ret_message += (
-                f'\nAPM: {league.apm} ( x{round(league.apm/(league.pps*24),2)} )'
-            )
+            ret_message += f'\nAPM: {league.apm} ( x{round(league.apm/(league.pps*24),2)} )'
             if league.vs is not None:
                 adpm = league.vs * 0.6
                 ret_message += f'\nADPM: {round(adpm,2)} ( x{round(adpm/lpm,2)} ) ( {league.vs}vs )'
@@ -173,9 +173,7 @@ class Processor(ProcessorMeta):
         if sprint.record is not None:
             if not isinstance(sprint.record, SoloRecord):
                 raise WhatTheFuckError('40L记录不是单人记录')
-            ret_message += (
-                f'\n40L: {round(sprint.record.endcontext.final_time/1000,2)}s'
-            )
+            ret_message += f'\n40L: {round(sprint.record.endcontext.final_time/1000,2)}s'
             ret_message += f' ( #{sprint.rank} )' if sprint.rank is not None else ''
         blitz = user_records.data.records.blitz
         if blitz.record is not None:
@@ -204,22 +202,16 @@ async def get_io_rank_data() -> None:
     def vs(user: LeagueAllUser) -> float:
         return user.league.vs
 
-    def _min(
-        users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]
-    ) -> LeagueAllUser:
+    def _min(users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]) -> LeagueAllUser:
         return min(users, key=field)
 
-    def _max(
-        users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]
-    ) -> LeagueAllUser:
+    def _max(users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]) -> LeagueAllUser:
         return max(users, key=field)
 
     def build_extremes_data(
         users: list[LeagueAllUser],
         field: Callable[[LeagueAllUser], float],
-        sort: Callable[
-            [list[LeagueAllUser], Callable[[LeagueAllUser], float]], LeagueAllUser
-        ],
+        sort: Callable[[list[LeagueAllUser], Callable[[LeagueAllUser], float]], LeagueAllUser],
     ) -> tuple[dict[str, str], float]:
         user = sort(users, field)
         return asdict(User(ID=user.id, name=user.username)), field(user)
@@ -257,10 +249,6 @@ async def get_io_rank_data() -> None:
 @driver.on_startup
 async def check_rank_data() -> None:
     async with get_session() as session:
-        latest_time = await session.scalar(
-            select(IORank.create_time).order_by(IORank.id.desc()).limit(1)
-        )
-        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(
-            tzinfo=UTC
-        ) > timedelta(hours=6):
+        latest_time = await session.scalar(select(IORank.create_time).order_by(IORank.id.desc()).limit(1))
+        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
             await get_io_rank_data()

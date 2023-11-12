@@ -26,9 +26,7 @@ class HistoricalData(MappedAsDataclass, Model):
     source_account: Mapped[str | None] = mapped_column(index=True)
     message: Mapped[Message | None] = mapped_column(PickleType)
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True, init=False)
-    command_type: Mapped[CommandType] = mapped_column(
-        String(16), index=True, init=False
-    )
+    command_type: Mapped[CommandType] = mapped_column(String(16), index=True, init=False)
     command_args: Mapped[list[str]] = mapped_column(JSON, init=False)
     game_user: Mapped[User] = mapped_column(PickleType, init=False)
     processed_data: Mapped[ProcessedData] = mapped_column(PickleType, init=False)

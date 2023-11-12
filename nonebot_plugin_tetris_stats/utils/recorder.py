@@ -17,15 +17,11 @@ class Recorder:
     historical_data: ClassVar[dict[int, tuple[HistoricalData, bool]]] = {}
 
     @classmethod
-    def create_historical_data(
-        cls, event_id: int, historical_data: HistoricalData
-    ) -> None:
+    def create_historical_data(cls, event_id: int, historical_data: HistoricalData) -> None:
         cls.historical_data[event_id] = (historical_data, False)
 
     @classmethod
-    def update_historical_data(
-        cls, event_id: int, historical_data: HistoricalData
-    ) -> None:
+    def update_historical_data(cls, event_id: int, historical_data: HistoricalData) -> None:
         if event_id not in cls.historical_data:
             raise KeyError
         cls.historical_data[event_id] = (historical_data, True)

@@ -67,9 +67,7 @@ class Request:
                     raise RequestError('api请求失败')
                 cls._headers = await response.request.all_headers()
                 try:
-                    cls._cookies = {
-                        i['name']: i['value'] for i in await context.cookies()
-                    }
+                    cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
                 except KeyError:
                     cls._cookies = None
                 await page.close()
@@ -84,9 +82,7 @@ class Request:
         """初始化缓存文件"""
         if not cls._CACHE_FILE.exists():
             async with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
-                await file.write(
-                    dumps({'headers': cls._headers, 'cookies': cls._cookies})
-                )
+                await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
 
     @classmethod
     async def _read_cache(cls) -> None:
@@ -108,9 +104,7 @@ class Request:
         """写入缓存文件"""
         try:
             async with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
-                await file.write(
-                    dumps({'headers': cls._headers, 'cookies': cls._cookies})
-                )
+                await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
         except FileNotFoundError:
             await cls._init_cache()
         except (PermissionError, JSONDecodeError):
@@ -127,7 +121,7 @@ class Request:
                     loads(response.content)
                 return response.content
         except HTTPError as e:
-            raise RequestError(f'请求错误\n{e}') from e
+            raise RequestError(f'请求错误\n{e!r}') from e
         except JSONDecodeError:
             if 'tetr.io' in url:
                 return await cls._anti_cloudflare(url)

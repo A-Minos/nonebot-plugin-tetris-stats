@@ -30,13 +30,9 @@ class BrowserManager:
     @classmethod
     async def _init_playwright(cls) -> None:
         if system() == 'Windows' and getattr(global_config, 'fastapi_reload', False):
-            raise ImportError(
-                '加载失败, Windows 必须设置 FASTAPI_RELOAD=false 才能正常运行 playwright'
-            )
+            raise ImportError('加载失败, Windows 必须设置 FASTAPI_RELOAD=false 才能正常运行 playwright')
         logger.info('开始 安装/更新 playwright 浏览器')
-        environ[
-            'PLAYWRIGHT_DOWNLOAD_HOST'
-        ] = 'https://npmmirror.com/mirrors/playwright/'
+        environ['PLAYWRIGHT_DOWNLOAD_HOST'] = 'https://npmmirror.com/mirrors/playwright/'
         if cls._handle_error(cls._call_playwright(['', 'install', 'firefox'])):
             logger.success('安装/更新 playwright 浏览器成功')
         else:

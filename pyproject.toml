@@ -79,13 +79,13 @@ select = [
     'RUF',   # Ruff-specific rules
 ]
 ignore = [
-    'E501',   # 过长的行由 black 处理, 剩余的都是字符串
+    'E501',   # 过长的行由 ruff format 处理, 剩余的都是字符串
     'ANN101', # 由 type checker 自动推断
     'ANN102', # 由 type checker 自动推断
     'ANN202', # 向 NoneBot 注册的函数
     'TRY003',
 ]
-line-length = 88
+line-length = 120
 target-version = "py310"
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 

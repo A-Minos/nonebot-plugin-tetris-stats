@@ -72,11 +72,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await matcher.finish(
-            await proc.handle_bind(
-                platform=get_platform(bot), account=event.get_user_id()
-            )
-        )
+        await matcher.finish(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
     except NeedCatchError as e:
         await matcher.finish(str(e))
 
@@ -87,9 +83,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         bind = await query_bind_info(
             session=session,
             chat_platform=get_platform(bot),
-            chat_account=(
-                target.target if isinstance(target, At) else event.get_user_id()
-            ),
+            chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
             game_platform=GAME_TYPE,
         )
     if bind is None:
@@ -128,7 +122,5 @@ async def _(matcher: Matcher, account: MessageFormatError):
 async def _(matcher: Matcher, matches: AlcMatches):
     if matches.head_matched:
         await matcher.finish(
-            f'{matches.error_info!r}\n'
-            if matches.error_info is not None
-            else '' + '输入"top --help"查看帮助'
+            f'{matches.error_info!r}\n' if matches.error_info is not None else '' + '输入"top --help"查看帮助'
         )

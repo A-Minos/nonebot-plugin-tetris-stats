@@ -135,9 +135,7 @@ class Processor(ProcessorMeta):
             self.processed_data.user_info = user_info
         return self.processed_data.user_info
 
-    async def get_user_profile(
-        self, other_parameter: dict[str, Any] | None = None
-    ) -> UserProfile:
+    async def get_user_profile(self, other_parameter: dict[str, Any] | None = None) -> UserProfile:
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
@@ -152,9 +150,7 @@ class Processor(ProcessorMeta):
                     ]
                 )
             )
-            self.processed_data.user_profile[fset] = UserProfile.parse_raw(
-                self.raw_response.user_profile[fset]
-            )
+            self.processed_data.user_profile[fset] = UserProfile.parse_raw(self.raw_response.user_profile[fset])
         return self.processed_data.user_profile[fset]
 
     async def get_game_data(self) -> GameData | None:
@@ -214,20 +210,12 @@ class Processor(ProcessorMeta):
             message += f', 最近 {game_data.num} 局数据'
             message += f"\nL'PM: {game_data.lpm} ( {game_data.pps} pps )"
             message += f'\nAPM: {game_data.apm} ( x{game_data.apl} )'
-            message += (
-                f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
-            )
+            message += f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
         message += (
             f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s'
             if user_info.pb_sprint != 2147483647  # noqa: PLR2004
             else ''
         )
-        message += (
-            f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != 0 else ''
-        )
-        message += (
-            f'\nChallenge: {user_info.pb_challenge}'
-            if user_info.pb_challenge != 0
-            else ''
-        )
+        message += f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != 0 else ''
+        message += f'\nChallenge: {user_info.pb_challenge}' if user_info.pb_challenge != 0 else ''
         return message

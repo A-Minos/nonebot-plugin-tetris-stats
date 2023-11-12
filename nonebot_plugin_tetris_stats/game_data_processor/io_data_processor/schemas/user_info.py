@@ -85,9 +85,7 @@ class SuccessModel(BaseSuccessModel):
 
             id: str = Field(..., alias='_id')
             username: str
-            role: Literal[
-                'anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned'
-            ]
+            role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned']
             ts: datetime | None
             botmaster: str | None
             badges: list[Badge]
