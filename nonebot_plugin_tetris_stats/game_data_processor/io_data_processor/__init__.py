@@ -77,6 +77,8 @@ alc = on_alconna(
     aliases={'IO'},
 )
 
+alc.shortcut('fkosk', {'command': 'io查', 'args': ['我']})
+
 
 @alc.assign('bind')
 async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
