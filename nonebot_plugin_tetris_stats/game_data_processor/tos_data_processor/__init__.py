@@ -1,40 +1,34 @@
-from datetime import timedelta
-
 from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import AlcMatches, At, on_alconna
 from nonebot_plugin_orm import get_session
-from sqlalchemy import select
 
 from ...db import query_bind_info
 from ...utils.exception import MessageFormatError, NeedCatchError
-from ...utils.metrics import get_metrics
 from ...utils.platform import get_platform
 from ...utils.typing import Me
 from ..constant import BIND_COMMAND, QUERY_COMMAND
 from .constant import GAME_TYPE
-from .model import IORank
-from .processor import Processor, User, check_rank_data, identify_user_info
-from .typing import Rank
+from .processor import Processor, User, identify_user_info
 
 alc = on_alconna(
     Alconna(
-        'io',
+        '茶服',
         Option(
             BIND_COMMAND[0],
             Args(
                 Arg(
                     'account',
                     identify_user_info,
-                    notice='IO 用户名 / ID',
+                    notice='茶服 用户名 / TeaID',
                     flags=[ArgFlag.HIDDEN],
                 )
             ),
             alias=BIND_COMMAND[1:],
             compact=True,
             dest='bind',
-            help_text='绑定 IO 账号',
+            help_text='绑定 茶服 账号',
         ),
         Option(
             QUERY_COMMAND[0],
@@ -48,36 +42,51 @@ alc = on_alconna(
                 Arg(
                     'account',
                     identify_user_info,
-                    notice='IO 用户名 / ID',
+                    notice='茶服 用户名 / TeaID',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
+                # 如果放在一个 Union Args 里, 验证顺序不能保证, 可能出错
             ),
             alias=QUERY_COMMAND[1:],
             compact=True,
             dest='query',
-            help_text='查询 IO 游戏信息',
-        ),
-        Option(
-            'rank',
-            Args(Arg('rank', Rank, notice='IO 段位')),
-            alias={'Rank', 'RANK', '段位'},
-            compact=True,
-            dest='rank',
-            help_text='查询 IO 段位信息',
+            help_text='查询 茶服 游戏信息',
         ),
         meta=CommandMeta(
-            description='查询 TETR.IO 的信息',
-            example='io绑定scdhh\nio查我\niorankx',
+            description='查询 TetrisOnline茶服 的信息',
+            example='茶服查我',
             compact=True,
             fuzzy_match=True,
         ),
     ),
     skip_for_unmatch=False,
     auto_send_output=True,
-    aliases={'IO'},
+    aliases={'tos', 'TOS'},
 )
 
-alc.shortcut('fkosk', {'command': 'io查', 'args': ['我']})
+try:
+    from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
+    from nonebot.adapters.onebot.v11 import Bot as OB11Bot
+
+    @alc.assign('bind')
+    async def _(event: MessageEvent, matcher: Matcher):
+        await matcher.finish('QQ 平台无需绑定')
+
+    @alc.assign('query')
+    async def _(bot: OB11Bot, event: MessageEvent, matcher: Matcher, target: At | Me):
+        if event.is_tome() and await GROUP(bot, event):
+            await matcher.finish('不能查询bot的信息')
+        proc = Processor(
+            event_id=id(event),
+            user=User(teaid=target.target if isinstance(target, At) else event.get_user_id()),
+            command_args=[],
+        )
+        try:
+            await matcher.finish(await proc.handle_query())
+        except NeedCatchError as e:
+            await matcher.finish(str(e))
+except ImportError:
+    pass
 
 
 @alc.assign('bind')
@@ -107,7 +116,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
     message = '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
     proc = Processor(
         event_id=id(event),
-        user=User(ID=bind.game_account),
+        user=User(name=bind.game_account),
         command_args=[],
     )
     try:
@@ -129,51 +138,6 @@ async def _(event: Event, matcher: Matcher, account: User):
         await matcher.finish(str(e))
 
 
-@alc.assign('rank')
-async def _(event: Event, matcher: Matcher, rank: Rank):
-    if rank == 'z':
-        await matcher.finish('暂不支持查询未知段位')
-    try:
-        await check_rank_data()
-    except NeedCatchError as e:
-        await matcher.finish(str(f'段位信息获取失败\n{e}'))
-    async with get_session() as session:
-        data = (
-            await session.scalars(select(IORank).where(IORank.rank == rank).order_by(IORank.id.desc()).limit(5))
-        ).all()
-    latest_data = data[0]
-    message = f'{rank.upper()} 段 分数线 {latest_data.tr_line:.2f} TR, {latest_data.player_count} 名玩家\n'
-    if len(data) > 1:
-        message += f'对比 {(latest_data.create_time-data[-1].create_time).total_seconds()/3600:.2f} 小时前趋势: {f"↑{difference:.2f}" if (difference:=latest_data.tr_line-data[-1].tr_line) > 0 else f"↓{-difference:.2f}" if difference < 0 else "→"}'
-    else:
-        message += '暂无对比数据'
-    avg = get_metrics(pps=latest_data.avg_pps, apm=latest_data.avg_apm, vs=latest_data.avg_vs)
-    low_pps = get_metrics(pps=latest_data.low_pps[1])
-    low_vs = get_metrics(vs=latest_data.low_vs[1])
-    max_pps = get_metrics(pps=latest_data.high_pps[1])
-    max_vs = get_metrics(vs=latest_data.high_vs[1])
-    message += (
-        '\n'
-        '平均数据:\n'
-        f"L'PM: {avg.lpm} ( {avg.pps} pps )\n"
-        f'APM: {avg.apm} ( x{avg.apl} )\n'
-        f'ADPM: {avg.adpm} ( x{avg.adpl} ) ( {avg.vs}vs )\n'
-        '\n'
-        '最低数据:\n'
-        f"L'PM: {low_pps.lpm} ( {low_pps.pps} pps ) By: {latest_data.low_pps[0]['name'].upper()}\n"
-        f'APM: {latest_data.low_apm[1]} By: {latest_data.low_apm[0]["name"].upper()}\n'
-        f'ADPM: {low_vs.adpm} ( {low_vs.vs}vs ) By: {latest_data.low_vs[0]["name"].upper()}\n'
-        '\n'
-        '最高数据:\n'
-        f"L'PM: {max_pps.lpm} ( {max_pps.pps} pps ) By: {latest_data.high_pps[0]['name'].upper()}\n"
-        f'APM: {latest_data.high_apm[1]} By: {latest_data.high_apm[0]["name"].upper()}\n'
-        f'ADPM: {max_vs.adpm} ( {max_vs.vs}vs ) By: {latest_data.high_vs[0]["name"].upper()}\n'
-        '\n'
-        f'数据更新时间: {(latest_data.create_time+timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")}'
-    )
-    await matcher.finish(message)
-
-
 @alc.handle()
 async def _(matcher: Matcher, account: MessageFormatError):
     await matcher.finish(str(account))
@@ -183,5 +147,5 @@ async def _(matcher: Matcher, account: MessageFormatError):
 async def _(matcher: Matcher, matches: AlcMatches):
     if matches.head_matched:
         await matcher.finish(
-            f'{matches.error_info!r}\n' if matches.error_info is not None else '' + '输入"io --help"查看帮助'
+            f'{matches.error_info!r}\n' if matches.error_info is not None else '' + '输入"茶服 --help"查看帮助'
         )

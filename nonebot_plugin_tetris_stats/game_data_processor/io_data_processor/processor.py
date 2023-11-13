@@ -1,300 +1,254 @@
-import math
-from asyncio import gather
-from typing import Any
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime, timedelta
+from math import floor
+from re import match
+from statistics import mean
 
-from nonebot.log import logger
+from nonebot import get_driver
+from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
+from nonebot_plugin_orm import get_session
+from pydantic import parse_raw_as
+from sqlalchemy import select
 
-from ...utils.database import DataBase
-from ...utils.message_analyzer import (
-    handle_bind_message,
-    handle_rank_message,
-    handle_stats_query_message,
+from ...db import create_or_update_bind
+from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
+from ...utils.request import Request, splice_url
+from ...utils.typing import GameType
+from .. import ProcessedData as ProcessedDataMeta
+from .. import Processor as ProcessorMeta
+from .. import RawResponse as RawResponseMeta
+from .. import User as UserMeta
+from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
+from .model import IORank
+from .schemas.league_all import FailedModel as LeagueAllFailed
+from .schemas.league_all import LeagueAll
+from .schemas.league_all import User as LeagueAllUser
+from .schemas.user_info import FailedModel as InfoFailed
+from .schemas.user_info import (
+    NeverPlayedLeague,
+    NeverRatedLeague,
+    UserInfo,
 )
-from .request import Request
+from .schemas.user_info import SuccessModel as InfoSuccess
+from .schemas.user_records import FailedModel as RecordsFailed
+from .schemas.user_records import SoloRecord, UserRecords
+from .schemas.user_records import SuccessModel as RecordsSuccess
+from .typing import Rank
+
+driver = get_driver()
 
 
-class Processor:
-    @classmethod
-    async def handle_bind(cls, message: str, qq_number: int | None) -> str:
+@dataclass
+class User(UserMeta):
+    ID: str | None = None
+    name: str | None = None
+
+
+@dataclass
+class RawResponse(RawResponseMeta):
+    user_info: bytes | None = None
+    user_records: bytes | None = None
+
+
+@dataclass
+class ProcessedData(ProcessedDataMeta):
+    user_info: InfoSuccess | None = None
+    user_records: RecordsSuccess | None = None
+
+
+def identify_user_info(info: str) -> User | MessageFormatError:
+    if match(r'^[a-f0-9]{24}$', info):
+        return User(ID=info)
+    if match(r'^[a-zA-Z0-9_-]{3,16}$', info):
+        return User(name=info.lower())
+    return MessageFormatError('用户名/ID不合法')
+
+
+class Processor(ProcessorMeta):
+    user: User
+    raw_response: RawResponse
+    processed_data: ProcessedData
+
+    def __init__(self, event_id: int, user: User, command_args: list[str]) -> None:
+        super().__init__(event_id, user, command_args)
+        self.raw_response = RawResponse()
+        self.processed_data = ProcessedData()
+
+    @property
+    def game_platform(self) -> GameType:
+        return GAME_TYPE
+
+    async def handle_bind(self, platform: str, account: str) -> str:
         """处理绑定消息"""
-        decoded_message = await handle_bind_message(message=message, game_type='IO')
-        if decoded_message[0] is None:
-            return decoded_message[1][0]
-        if decoded_message[0] == 'ID':
-            user_id_stats = await cls.check_user_id(decoded_message[1][1])
-            if user_id_stats[0] is False:
-                return user_id_stats[1]
-            user_id = decoded_message[1][1]
-            if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是(
-                logger.error('获取QQ号失败')
-                return '获取QQ号失败'
-            return await DataBase.write_bind_info(
-                qq_number=qq_number, user=user_id, game_type='IO'
+        self.command_type = 'bind'
+        await self.get_user()
+        if self.user.ID is None:
+            raise  # FIXME: 不知道怎么才能把这类型给变过来了
+        async with get_session() as session:
+            return await create_or_update_bind(
+                session=session,
+                chat_platform=platform,
+                chat_account=account,
+                game_platform=GAME_TYPE,
+                game_account=self.user.ID,
             )
-        elif decoded_message[0] == 'Name':
-            user_data = await cls.get_user_data(user_name=decoded_message[1][1])
-            if user_data[0] is False:
-                return '用户信息请求失败'
-            if user_data[1] is False:
-                return f'用户信息请求错误:\n{user_data[2]["error"]}'
-            user_id = await cls.get_user_id(user_data[2])
-            if qq_number is None:  # 理论上是不会有None出现的, ide快乐行属于是(
-                logger.error('获取QQ号失败')
-                return '获取QQ号失败'
-            return await DataBase.write_bind_info(
-                qq_number=qq_number, user=user_id, game_type='IO'
-            )
-        logger.error('预期外行为, 请上报GitHub')
-        return '出现预期外行为, 请查看后台信息'
 
-    @classmethod
-    async def handle_rank(cls, message: str):
-        query_rank = await handle_rank_message(message)
-        rank_info = await DataBase.query_rank_info_today(rank=query_rank.lower())
-
-        if rank_info is None:
-            ranks_percentiles = {
-                'x': 1,
-                'u': 5,
-                'ss': 11,
-                's+': 17,
-                's': 23,
-                's-': 30,
-                'a+': 38,
-                'a': 46,
-                'a-': 54,
-                'b+': 62,
-                'b': 70,
-                'b-': 78,
-                'c+': 84,
-                'c': 90,
-                'c-': 95,
-                'd+': 97.5,
-                'd': 100,
-            }
-
-            if query_rank.lower() not in (i for i in ranks_percentiles.keys()):
-                return '未知段位'
-
-            result = await Request.request(
-                'https://ch.tetr.io/api/users/lists/league/all'
-            )
-            users: list = result[2]['data']['users']
-
-            def avg(
-                rank_users: list, column: str, playercount: int | None = None
-            ) -> float:
-                return sum(i['league'][column] for i in rank_users) / (
-                    playercount or len(rank_users)
-                )
-
-            for rank, percentile in ranks_percentiles.items():
-                offset = math.floor((percentile / 100) * len(users)) - 1
-                tr = users[offset]['league']['rating']
-
-                rank_users = list(filter(lambda x: x['league']['rank'] == rank, users))
-                playercount = len(rank_users)
-
-                avg_apm = avg(rank_users, 'apm', playercount)
-                avg_pps = avg(rank_users, 'pps', playercount)
-                avg_vs = avg(rank_users, 'vs', playercount)
-
-                await DataBase.write_rank_info_today(
-                    rank=rank,
-                    trline=tr,
-                    playercount=playercount,
-                    avgapm=avg_apm,
-                    avgpps=avg_pps,
-                    avgvs=avg_vs,
-                )
-
-            return await Processor.handle_rank(message=message)
-        else:
-            avg_apm = round(rank_info[3], 2)
-            avg_pps = round(rank_info[4], 2)
-            avg_vs = round(rank_info[5], 2)
-            avg_lpm = round((avg_pps * 24), 2)
-            avg_apl = round((avg_apm / avg_lpm), 2)
-            avg_adpm = round((avg_vs * 0.6), 2)
-            avg_adpl = round((avg_adpm / avg_lpm), 2)
-
-            message = f'{query_rank.upper()} 段, 分数线 {round(rank_info[1], 2)} TR, {rank_info[2]} 名玩家'
-            message += f'\n对比昨日趋势: {rank_info[0]}'
-            message += '\n平均数据: '
-            message += f"\nL'PM: {avg_lpm} ( {avg_pps} pps )"
-            message += f'\nAPM: {avg_apm} ( x{avg_apl} )'
-            message += f'\nADPM: {avg_adpm} ( x{avg_adpl} ) ( {avg_vs}vs )'
-            message += '\n'
-            message += f'\n数据更新时间: {rank_info[6]}'
-
-        return message
-
-    @classmethod
-    async def handle_query(cls, message: str, qq_number: int | None):
+    async def handle_query(self) -> str:
         """处理查询消息"""
-        decoded_message = await handle_stats_query_message(
-            message=message, game_type='IO'
-        )
-        if decoded_message[0] is None:
-            return decoded_message[1][0]
-        if decoded_message[0] == 'AT':  # 在入口处判断是否@bot本身
-            bind_info = await DataBase.query_bind_info(
-                qq_number=decoded_message[1][1], game_type='IO'
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
-        if decoded_message[0] == 'ME':
-            if qq_number is None:
-                logger.error('获取QQ号失败')
-                return '获取QQ号失败, 请联系bot主人'
-            bind_info = await DataBase.query_bind_info(
-                qq_number=qq_number, game_type='IO'
-            )
-            if bind_info is None:
-                return '未查询到绑定信息'
-            return f'* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n{await Processor.generate_message(user_id=bind_info)}'
-        if decoded_message[0] == 'ID':
-            return await Processor.generate_message(user_id=decoded_message[1][1])
-        if decoded_message[0] == 'Name':
-            return await Processor.generate_message(user_name=decoded_message[1][1])
+        self.command_type = 'query'
+        await self.get_user()
+        return await self.generate_message()
 
-    @classmethod
-    async def get_user_data(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> tuple[bool, bool, dict[str, Any]]:
+    async def get_user(self) -> None:
+        """
+        用于获取 UserName 和 UserID 的函数
+        """
+        if self.user.name is None:
+            self.user.name = (await self.get_user_info()).data.user.username
+        if self.user.ID is None:
+            self.user.ID = (await self.get_user_info()).data.user.id
+
+    async def get_user_info(self) -> InfoSuccess:
         """获取用户数据"""
-        if user_name is not None and user_id is None:
-            user_data_url = f'https://ch.tetr.io/api/users/{user_name}'
-        elif user_name is None and user_id is not None:
-            user_data_url = f'https://ch.tetr.io/api/users/{user_id}'
-        else:
-            raise ValueError('预期外行为, 请上报GitHub')
-        return await Request.request(user_data_url)
+        if self.processed_data.user_info is None:
+            self.raw_response.user_info = await Request.request(
+                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
+            )
+            user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
+            if isinstance(user_info, InfoFailed):
+                raise RequestError(f'用户信息请求错误:\n{user_info.error}')
+            self.processed_data.user_info = user_info
+        return self.processed_data.user_info
 
-    @classmethod
-    async def get_solo_data(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> tuple[bool, bool, dict[str, Any]]:
+    async def get_user_records(self) -> RecordsSuccess:
         """获取Solo数据"""
-        if user_name is not None and user_id is None:
-            user_solo_url = f'https://ch.tetr.io/api/users/{user_name}/records'
-        elif user_name is None and user_id is not None:
-            user_solo_url = f'https://ch.tetr.io/api/users/{user_id}/records'
-        else:
-            raise ValueError('预期外行为, 请上报GitHub')
-        return await Request.request(user_solo_url)
-
-    @classmethod
-    async def get_user_id(cls, user_data: dict) -> str:
-        """获取用户ID"""
-        return user_data['data']['user']['_id']
-
-    @classmethod
-    async def check_user_id(cls, user_id: str) -> tuple[bool, str]:
-        """检查用户ID是否有效 返回值为tuple[bool, message]"""
-        user_data = await cls.get_user_data(user_id=user_id)
-        if user_data[0] is False:
-            return False, '用户信息请求失败'
-        if user_data[1] is False:
-            return False, f'用户信息请求错误:\n{user_data[2]["error"]}'
-        if user_id == user_data[2]['data']['user']['_id']:
-            return True, ''
-        raise ValueError('服务器返回的userID和用户提供的不一致, 这种情况理论上不应该发生, 以防万一还是写一下(x')
-
-    @classmethod
-    async def get_league_stats(cls, user_data: dict) -> dict[str, Any]:
-        """获取排位统计数据"""
-        league = user_data['data']['user']['league']
-        league_stats: dict[str, Any] = {}
-        if league['gamesplayed'] != 0:
-            league_stats['PPS'] = league['pps']
-            league_stats['APM'] = league['apm']
-            league_stats['VS'] = 0 if league['vs'] is None else league['vs']
-            league_stats['Rank'] = (
-                'Z' if league['rank'] == 'z' else league['rank'].upper()
-            )
-            if league['rating'] == -1:
-                league_stats['Rank'] = None
-            else:
-                league_stats['Rating'] = round(league['rating'], 2)
-                league_stats['Glicko'] = round(league['glicko'], 2)
-                league_stats['RD'] = round(league['rd'], 2)
-            league_stats['Standing'] = league['standing']
-            league_stats['LPM'] = round((league['pps'] * 24), 2)
-            league_stats['APL'] = round((league_stats['APM'] / league_stats['LPM']), 2)
-            league_stats['ADPM'] = round((league_stats['VS'] * 0.6), 2)
-            league_stats['ADPL'] = round(
-                (league_stats['ADPM'] / league_stats['LPM']), 2
-            )
-        return league_stats
-
-    @classmethod
-    async def get_sprint_stats(cls, solo_data: dict) -> dict[str, Any]:
-        """获取40L统计数据"""
-        sprint_stats = {}
-        solo = solo_data['data']['records']['40l']
-        if solo['record'] is not None:
-            sprint_stats['Time'] = round(
-                solo['record']['endcontext']['finalTime'] / 1000, 2
-            )
-            if solo['rank'] is not None:
-                sprint_stats['Rank'] = solo['rank']
-        return sprint_stats
-
-    @classmethod
-    async def get_blitz_stats(cls, solo_data: dict) -> dict[str, Any]:
-        """获取Blitz统计数据"""
-        blitz_stats = {}
-        blitz = solo_data['data']['records']['blitz']
-        if blitz['record'] is not None:
-            blitz_stats['Score'] = blitz['record']['endcontext']['score']
-            if blitz['rank'] is not None:
-                blitz_stats['Rank'] = blitz['rank']
-        return blitz_stats
-
-    @classmethod
-    async def generate_message(
-        cls, user_name: str | None = None, user_id: str | None = None
-    ) -> str:
-        """生成消息"""
-        user_data, solo_data = await gather(
-            cls.get_user_data(user_name=user_name, user_id=user_id),
-            cls.get_solo_data(user_name=user_name, user_id=user_id),
-        )
-        if user_data[0] is False:
-            return '用户信息请求失败'
-        if user_data[1] is False:
-            return f'用户信息请求错误:\n{user_data[2]["error"]}'
-        user_name = user_data[2]['data']['user']['username'].upper()
-        league_stats = await cls.get_league_stats(user_data[2])
-        message = ''
-        if not league_stats:
-            message += f'用户 {user_name} 没有排位统计数据'
-        else:
-            if league_stats['Rank'] is None:
-                message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
-            else:
-                if league_stats['Rank'] == 'Z':
-                    message += f'用户 {user_name} 暂无段位, {league_stats["Rating"]} TR'
-                else:
-                    message += f'{league_stats["Rank"]} 段用户 {user_name} {league_stats["Rating"]} TR (#{league_stats["Standing"]})'
-                message += (
-                    f', 段位分 {league_stats["Glicko"]}±{league_stats["RD"]}, 最近十场的数据:'
+        if self.processed_data.user_records is None:
+            self.raw_response.user_records = await Request.request(
+                splice_url(
+                    [
+                        BASE_URL,
+                        'users/',
+                        f'{self.user.ID or self.user.name}/',
+                        'records',
+                    ]
                 )
-            message += f'\nL\'PM: {league_stats["LPM"]} ( {league_stats["PPS"]} pps )'
-            message += f'\nAPM: {league_stats["APM"]} ( x{league_stats["APL"]} )'
-            if league_stats['VS'] != 0:
-                message += f'\nADPM: {league_stats["ADPM"]} ( x{league_stats["ADPL"]} ) ( {league_stats["VS"]}vs )'
-        if solo_data[0] is False:
-            return f'{message}\nSolo统计数据请求失败'
-        if solo_data[1] is False:
-            return f'{message}\nSolo统计数据请求错误:\n{solo_data[2]["error"]}'
-        sprint_stats, blitz_stats = await gather(
-            cls.get_sprint_stats(solo_data[2]), cls.get_blitz_stats(solo_data[2])
+            )
+            user_records: UserRecords = parse_raw_as(
+                UserRecords,  # type: ignore[arg-type]
+                self.raw_response.user_records,
+            )
+            if isinstance(user_records, RecordsFailed):
+                raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
+            self.processed_data.user_records = user_records
+        return self.processed_data.user_records
+
+    async def generate_message(self) -> str:
+        """生成消息"""
+        user_info = await self.get_user_info()
+        user_name = user_info.data.user.username.upper()
+        league = user_info.data.user.league
+        ret_message = ''
+        if isinstance(league, NeverPlayedLeague):
+            ret_message += f'用户 {user_name} 没有排位统计数据'
+        else:
+            if isinstance(league, NeverRatedLeague):
+                ret_message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
+            elif league.rank == 'z':
+                ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
+            else:
+                ret_message += (
+                    f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
+                )
+                ret_message += f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
+            lpm = league.pps * 24
+            ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
+            ret_message += f'\nAPM: {league.apm} ( x{round(league.apm/(league.pps*24),2)} )'
+            if league.vs is not None:
+                adpm = league.vs * 0.6
+                ret_message += f'\nADPM: {round(adpm,2)} ( x{round(adpm/lpm,2)} ) ( {league.vs}vs )'
+        user_records = await self.get_user_records()
+        sprint = user_records.data.records.sprint
+        if sprint.record is not None:
+            if not isinstance(sprint.record, SoloRecord):
+                raise WhatTheFuckError('40L记录不是单人记录')
+            ret_message += f'\n40L: {round(sprint.record.endcontext.final_time/1000,2)}s'
+            ret_message += f' ( #{sprint.rank} )' if sprint.rank is not None else ''
+        blitz = user_records.data.records.blitz
+        if blitz.record is not None:
+            if not isinstance(blitz.record, SoloRecord):
+                raise WhatTheFuckError('Blitz记录不是单人记录')
+            ret_message += f'\nBlitz: {blitz.record.endcontext.score}'
+            ret_message += f' ( #{blitz.rank} )' if blitz.rank is not None else ''
+        return ret_message
+
+
+@scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
+async def get_io_rank_data() -> None:
+    league_all: LeagueAll = parse_raw_as(
+        LeagueAll,  # type: ignore[arg-type]
+        await Request.request(splice_url([BASE_URL, 'users/lists/league/all'])),
+    )
+    if isinstance(league_all, LeagueAllFailed):
+        raise RequestError(f'用户Solo数据请求错误:\n{league_all.error}')
+
+    def pps(user: LeagueAllUser) -> float:
+        return user.league.pps
+
+    def apm(user: LeagueAllUser) -> float:
+        return user.league.apm
+
+    def vs(user: LeagueAllUser) -> float:
+        return user.league.vs
+
+    def _min(users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]) -> LeagueAllUser:
+        return min(users, key=field)
+
+    def _max(users: list[LeagueAllUser], field: Callable[[LeagueAllUser], float]) -> LeagueAllUser:
+        return max(users, key=field)
+
+    def build_extremes_data(
+        users: list[LeagueAllUser],
+        field: Callable[[LeagueAllUser], float],
+        sort: Callable[[list[LeagueAllUser], Callable[[LeagueAllUser], float]], LeagueAllUser],
+    ) -> tuple[dict[str, str], float]:
+        user = sort(users, field)
+        return asdict(User(ID=user.id, name=user.username)), field(user)
+
+    users = league_all.data.users
+    rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)
+    for i in users:
+        rank_to_users[i.league.rank].append(i)
+    rank_info: list[IORank] = []
+    for rank, percentile in RANK_PERCENTILE.items():
+        offset = floor((percentile / 100) * len(users)) - 1
+        tr_line = users[offset].league.rating
+        rank_users = rank_to_users[rank]
+        rank_info.append(
+            IORank(
+                rank=rank,
+                tr_line=tr_line,
+                player_count=len(rank_users),
+                low_pps=(build_extremes_data(rank_users, pps, _min)),
+                low_apm=(build_extremes_data(rank_users, apm, _min)),
+                low_vs=(build_extremes_data(rank_users, vs, _min)),
+                avg_pps=mean({i.league.pps for i in rank_users}),
+                avg_apm=mean({i.league.apm for i in rank_users}),
+                avg_vs=mean({i.league.vs for i in rank_users}),
+                high_pps=(build_extremes_data(rank_users, pps, _max)),
+                high_apm=(build_extremes_data(rank_users, apm, _max)),
+                high_vs=(build_extremes_data(rank_users, vs, _max)),
+            )
         )
-        message += f'\n40L: {sprint_stats["Time"]}s' if 'Time' in sprint_stats else ''
-        message += f' ( #{sprint_stats["Rank"]} )' if 'Rank' in sprint_stats else ''
-        message += f'\nBlitz: {blitz_stats["Score"]}' if 'Score' in blitz_stats else ''
-        message += f' ( #{blitz_stats["Rank"]} )' if 'Rank' in blitz_stats else ''
-        return message
+    async with get_session() as session:
+        session.add_all(rank_info)
+        await session.commit()
+
+
+@driver.on_startup
+async def check_rank_data() -> None:
+    async with get_session() as session:
+        latest_time = await session.scalar(select(IORank.create_time).order_by(IORank.id.desc()).limit(1))
+        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
+            await get_io_rank_data()

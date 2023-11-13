@@ -1,34 +1,100 @@
 [tool.poetry]
-name = "nonebot-plugin-tetris-stats"
-version = "0.4.4"
-description = "一个基于nonebot2的用于查询TETRIS相关游戏玩家数据的插件"
-authors = ["scdhh <wallfjjd@gmail.com>"]
-readme = "README.md"
-homepage = "https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats"
-repository = "https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats"
-license = "MIT"
+name = 'nonebot-plugin-tetris-stats'
+version = '1.0.0.a1'
+description = '一款基于 NoneBot2 的用于查询 Tetris 相关游戏数据的插件'
+authors = ['scdhh <wallfjjd@gmail.com>']
+readme = 'README.md'
+homepage = 'https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats'
+repository = 'https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats'
+license = 'AGPL-3.0'
 
 [tool.poetry.dependencies]
-python = "^3.10,<3.12"
-nonebot-adapter-onebot = "^2.0.0-beta.1"
-aiohttp = "^3.8.1"
-asyncio = "^3.4.3"
-nonebot2 = "^2.0.0-beta.3"
-lxml = "^4.9.1"
-pandas = "^1.4.3"
-playwright = "^1.24.1"
-ujson = "^5.4.0"
-Brotli = "^1.0.9"
+python = '^3.10'
+nonebot2 = '^2.0.0-beta.3'
+lxml = '^4.9.1'
+pandas = '>=1.4.3,<3.0.0'
+playwright = '^1.24.1'
+ujson = '^5.4.0'
+aiofiles = "^23.2.1"
+nonebot-plugin-orm = ">=0.1.1,<0.6.0"
+nonebot-plugin-localstore = "^0.5.1"
 httpx = "^0.25.0"
+nonebot-plugin-alconna = ">=0.30,<0.33"
+nonebot-plugin-apscheduler = "^0.3.0"
 
-[tool.poetry.dev-dependencies]
-mypy = "^0.991"
-autopep8 = "^2.0.0"
-pylint = "^2.15.9"
-types-ujson = "^5.5.0"
-lxml-stubs = "^0.4.0"
-pandas-stubs = "^1.5.2"
+[tool.poetry.group.dev.dependencies]
+mypy = '>=0.991,<1.8'
+types-ujson = '^5.7.0'
+pandas-stubs = '>=1.5.2,<3.0.0'
+ruff = '>=0.0.239,<0.1.6'
+types-aiofiles = "^23.2.0.0"
+nonebot2 = { extras = ["fastapi"], version = "^2.1.1" }
+types-lxml = "^2023.3.28"
+nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.6" }
+nonebot-adapter-onebot = "^2.3.1"
+nonebot-adapter-satori = "^0.7.0"
+
+[tool.poetry.group.debug.dependencies]
+objprint = '^0.2.2'
+viztracer = "^0.16.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ['poetry-core>=1.0.0']
+build-backend = 'poetry.core.masonry.api'
+
+[tool.ruff]
+select = [
+    'F',     # pyflakes
+    'E',     # pycodestyle errors
+    'W',     # pycodestyle warnings
+    'I',     # isort
+    'N',     # PEP8-naming
+    'UP',    # pyupgrade
+    'YTT',   # flake8-2020
+    'ANN',   # flake8-annotations
+    'ASYNC', # flake8-async
+    'S',     # flake8-bandit
+    'BLE',   # flake8-blind-except
+    'FBT',   # flake8-boolean-trap
+    'B',     # flake8-bugbear
+    'A',     # flake8-builtins
+    'C4',    # flake8-comprehensions
+    'DTZ',   # flake8-datetimez
+    'FA',    # flake8-future-annotations
+    'ISC',   # flake8-implicit-str-concat
+    'PIE',   # flake8-pie
+    'T20',   # flake8-print
+    'Q',     # flake8-quotes
+    'RSE',   # flake8-raise
+    'RET',   # flake8-return
+    'SIM',   # flake8-simplify
+    'PTH',   # flake8-use-pathlib
+    'PD',    # pandas-vet
+    'PL',    # pylint
+    'TRY',   # tryceratops
+    'FLY',   # flynt
+    'PERF',  # Perflint
+    'RUF',   # Ruff-specific rules
+]
+ignore = [
+    'E501',   # 过长的行由 ruff format 处理, 剩余的都是字符串
+    'ANN101', # 由 type checker 自动推断
+    'ANN102', # 由 type checker 自动推断
+    'ANN202', # 向 NoneBot 注册的函数
+    'TRY003',
+]
+line-length = 120
+target-version = "py310"
+flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
+
+[tool.ruff.flake8-annotations]
+mypy-init-return = true
+
+[tool.ruff.flake8-builtins]
+builtins-ignorelist = ["id"]
+
+[tool.ruff.format]
+quote-style = 'single'
+
+[tool.nonebot]
+plugins = ['nonebot_plugin_tetris_stats']
