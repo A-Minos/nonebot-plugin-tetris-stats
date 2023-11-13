@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nonebot_plugin_localstore import get_cache_dir
+from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
 from pydantic import BaseModel
 
 from . import migrations  # noqa: F401
