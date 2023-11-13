@@ -123,6 +123,6 @@ class Request:
         except HTTPError as e:
             raise RequestError(f'请求错误\n{e!r}') from e
         except JSONDecodeError:
-            if 'tetr.io' in urlparse(url).netloc.lower():
+            if urlparse(url).netloc.lower().endswith('tetr.io'):
                 return await cls._anti_cloudflare(url)
             raise
