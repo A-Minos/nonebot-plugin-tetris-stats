@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'nonebot-plugin-tetris-stats'
-version = '1.0.0.a1.post1'
+version = '1.0.0.a2'
 description = '一款基于 NoneBot2 的用于查询 Tetris 相关游戏数据的插件'
 authors = ['scdhh <wallfjjd@gmail.com>']
 readme = 'README.md'
@@ -19,7 +19,7 @@ aiofiles = "^23.2.1"
 nonebot-plugin-orm = ">=0.1.1,<0.6.0"
 nonebot-plugin-localstore = "^0.5.1"
 httpx = "^0.25.0"
-nonebot-plugin-alconna = ">=0.30,<0.33"
+nonebot-plugin-alconna = ">=0.30,<0.34"
 nonebot-plugin-apscheduler = "^0.3.0"
 
 [tool.poetry.group.dev.dependencies]

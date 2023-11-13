@@ -52,11 +52,11 @@ class EndContext(BaseModel):
     zenprogress: int
     level: int
     combo: int
-    currentcombopower: int  # WTF
+    currentcombopower: int | None  # WTF
     topcombo: int
     btb: int
     topbtb: int
-    currentbtbchainpower: int | None  # WTF * 2 40l 里有 但是 blitz 没有
+    currentbtbchainpower: int | None  # WTF * 2
     tspins: int
     piecesplaced: int
     clears: Clears
