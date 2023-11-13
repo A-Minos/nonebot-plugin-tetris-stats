@@ -1,3 +1,4 @@
+.idea
 dist
 test_*
 Untitled*
@@ -6,3 +7,4 @@ Untitled*
 *dev*
 *cache*
 *backup*
+*.pyc
