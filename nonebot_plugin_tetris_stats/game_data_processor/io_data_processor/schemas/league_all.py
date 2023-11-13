@@ -7,7 +7,7 @@ from .base import SuccessModel as BaseSuccessModel
 
 class SuccessModel(BaseSuccessModel):
     class Data(BaseModel):
-        class User(BaseModel):
+        class ValidUser(BaseModel):
             class League(BaseModel):
                 gamesplayed: int
                 gameswon: int
@@ -30,10 +30,34 @@ class SuccessModel(BaseSuccessModel):
             verified: bool
             country: str | None
 
-        users: list[User]
+        class InvalidUser(BaseModel):
+            class League(BaseModel):
+                gamesplayed: int
+                gameswon: int
+                rating: float
+                glicko: float | None
+                rd: float | None
+                rank: Rank
+                bestrank: Rank
+                apm: float | None
+                pps: float | None
+                vs: float | None
+                decaying: bool
+
+            id: str = Field(..., alias='_id')
+            username: str
+            role: str
+            xp: float
+            league: League
+            supporter: bool
+            verified: bool
+            country: str | None
+
+        users: list[ValidUser | InvalidUser]
 
     data: Data
 
 
 LeagueAll = SuccessModel | FailedModel
-User = SuccessModel.Data.User
+ValidUser = SuccessModel.Data.ValidUser
+InvalidUser = SuccessModel.Data.InvalidUser

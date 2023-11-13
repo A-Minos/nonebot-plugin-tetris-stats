@@ -24,7 +24,7 @@ from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
 from .model import IORank
 from .schemas.league_all import FailedModel as LeagueAllFailed
 from .schemas.league_all import LeagueAll
-from .schemas.league_all import User as LeagueAllUser
+from .schemas.league_all import ValidUser as LeagueAllUser
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,
@@ -216,7 +216,7 @@ async def get_io_rank_data() -> None:
         user = sort(users, field)
         return asdict(User(ID=user.id, name=user.username)), field(user)
 
-    users = league_all.data.users
+    users = [i for i in league_all.data.users if isinstance(i, LeagueAllUser)]
     rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)
     for i in users:
         rank_to_users[i.league.rank].append(i)
