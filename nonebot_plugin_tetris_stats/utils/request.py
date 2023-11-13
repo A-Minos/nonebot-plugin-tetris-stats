@@ -1,4 +1,4 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from aiofiles import open
 from httpx import AsyncClient, HTTPError
@@ -123,6 +123,6 @@ class Request:
         except HTTPError as e:
             raise RequestError(f'请求错误\n{e!r}') from e
         except JSONDecodeError:
-            if 'tetr.io' in url:
+            if 'tetr.io' in urlparse(url).netloc.lower():
                 return await cls._anti_cloudflare(url)
             raise
