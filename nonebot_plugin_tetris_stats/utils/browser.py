@@ -1,6 +1,7 @@
 import sys
 from os import environ
 from platform import system
+from re import sub
 
 from nonebot import get_driver
 from nonebot.log import logger
@@ -33,12 +34,12 @@ class BrowserManager:
             raise ImportError('加载失败, Windows 必须设置 FASTAPI_RELOAD=false 才能正常运行 playwright')
         logger.info('开始 安装/更新 playwright 浏览器')
         environ['PLAYWRIGHT_DOWNLOAD_HOST'] = 'https://npmmirror.com/mirrors/playwright/'
-        if cls._handle_error(cls._call_playwright(['', 'install', 'firefox'])):
+        if cls._call_playwright(['', 'install', 'firefox']):
             logger.success('安装/更新 playwright 浏览器成功')
         else:
             logger.warning('playwright 浏览器 安装/更新 失败, 尝试使用原始仓库下载')
             del environ['PLAYWRIGHT_DOWNLOAD_HOST']
-            if cls._handle_error(cls._call_playwright(['', 'install', 'firefox'])):
+            if cls._call_playwright(['', 'install', 'firefox']):
                 logger.success('安装/更新 playwright 浏览器成功')
             else:
                 logger.error('安装/更新 playwright 浏览器失败')
@@ -52,26 +53,20 @@ class BrowserManager:
             logger.success('playwright 启动成功')
 
     @classmethod
-    def _call_playwright(cls, argv: list[str]) -> BaseException:
+    def _call_playwright(cls, argv: list[str]) -> bool:
         """等价于调用 playwright 的命令行程序"""
         argv_backup = sys.argv.copy()
-        from re import sub
-
         sys.argv[0] = sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
         sys.argv = argv
         try:
             main()
-        except BaseException as e:  # noqa: BLE001 不在这里处理 playwright 的异常
-            return e
+        except SystemExit as e:
+            return e.code == 0
+        except BaseException:  # noqa: BLE001
+            return False
         finally:
             sys.argv = argv_backup
-        return SystemExit(0)
-
-    @classmethod
-    def _handle_error(cls, error: BaseException) -> bool:
-        if isinstance(error, SystemExit) and error.code == 0:
-            return True
-        return False
+        return True
 
     @classmethod
     async def _start_browser(cls) -> Browser:
