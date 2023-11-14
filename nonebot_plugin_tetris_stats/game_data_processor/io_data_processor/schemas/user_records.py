@@ -46,7 +46,7 @@ class EndContext(BaseModel):
     level_lines: int
     level_lines_needed: int
     inputs: int
-    holds: int
+    holds: int | None
     time: Time
     score: int
     zenlevel: int
