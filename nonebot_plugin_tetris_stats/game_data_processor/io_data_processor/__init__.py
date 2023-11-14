@@ -3,7 +3,7 @@ from datetime import timedelta
 from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
-from nonebot_plugin_alconna import AlcMatches, At, on_alconna
+from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 
@@ -177,11 +177,3 @@ async def _(event: Event, matcher: Matcher, rank: Rank):
 @alc.handle()
 async def _(matcher: Matcher, account: MessageFormatError):
     await matcher.finish(str(account))
-
-
-@alc.handle()
-async def _(matcher: Matcher, matches: AlcMatches):
-    if matches.head_matched:
-        await matcher.finish(
-            f'{matches.error_info!r}\n' if matches.error_info is not None else '' + '输入"io --help"查看帮助'
-        )
