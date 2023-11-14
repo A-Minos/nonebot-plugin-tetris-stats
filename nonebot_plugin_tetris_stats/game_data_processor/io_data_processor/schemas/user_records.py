@@ -19,6 +19,7 @@ class EndContext(BaseModel):
         doubles: int
         triples: int
         quads: int
+        pentas: int | None
         realtspins: int
         minitspins: int
         minitspinsingles: int
