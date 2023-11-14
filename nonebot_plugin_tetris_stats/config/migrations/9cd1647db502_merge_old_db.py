@@ -84,7 +84,7 @@ def upgrade(name: str = '') -> None:
             raise RuntimeError('nonebot_plugin_tetris_stats: 请先安装 0.4.4 版本完成迁移之后再升级')
         logger.info('nonebot_plugin_tetris_stats: 发现来自老版本的数据, 正在迁移...')
         migrate_old_data(connection)
-        db_path.unlink()
+    db_path.unlink()
 
 
 def downgrade(name: str = '') -> None:
