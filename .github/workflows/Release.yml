@@ -14,16 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install poetry
+        run: pipx install poetry
+        shell: bash
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
           cache: "poetry"
 
-      - name: Install Poetry
+      - run: poetry install
         shell: bash
-        run: |
-          pip install poetry
-          poetry install
 
       - name: Get Version
         id: version
