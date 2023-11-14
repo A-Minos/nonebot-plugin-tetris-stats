@@ -32,7 +32,7 @@ class EndContext(BaseModel):
     class Garbage(BaseModel):
         sent: int
         received: int
-        attack: int
+        attack: int | None
         cleared: int
 
     class Finesse(BaseModel):
