@@ -29,9 +29,9 @@ class SuccessModel(BaseSuccessModel):
                 prev_at: Literal[-1]
                 percentile: Literal[-1]
                 percentile_rank: Literal['z']
-                apm: None
-                pps: None
-                vs: None
+                apm: None = Field(None)
+                pps: None = Field(None)
+                vs: None = Field(None)
                 decaying: bool
 
             class NeverRatedLeague(BaseModel):
@@ -111,7 +111,7 @@ class SuccessModel(BaseSuccessModel):
             Ignore this field if the user is not a supporter."""
             bio: str | None
             connections: Connections
-            friend_count: int
+            friend_count: int | None
             distinguishment: Distinguishment | None
 
         user: User
