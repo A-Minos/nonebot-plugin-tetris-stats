@@ -7,11 +7,12 @@ from nonebot.log import logger
 from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
 
-from ..config.config import CACHE_PATH
+from ..config.config import CACHE_PATH, Config
 from .browser import BrowserManager
 from .exception import RequestError
 
 driver = get_driver()
+config = Config.parse_obj(driver.config)
 
 
 @driver.on_startup
@@ -115,7 +116,7 @@ class Request:
     async def request(cls, url: str, *, is_json: bool = True) -> bytes:
         """请求api"""
         try:
-            async with AsyncClient(cookies=cls._cookies) as session:
+            async with AsyncClient(cookies=cls._cookies, timeout=config.tetris_req_timeout) as session:
                 response = await session.get(url, headers=cls._headers)
                 if is_json:
                     loads(response.content)
