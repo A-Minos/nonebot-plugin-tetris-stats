@@ -64,7 +64,7 @@ def upgrade(name: str = '') -> None:
     if name:
         return
     try:
-        db_path = Path(config.db_path)
+        db_path = Path(config.db_url)
     except AttributeError:
         db_path = Path('data/nonebot_plugin_tetris_stats/data.db')
     if db_path.exists() is False:
