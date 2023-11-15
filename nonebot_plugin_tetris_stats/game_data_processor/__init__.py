@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Any
 
+from nonebot.matcher import Matcher
+from nonebot_plugin_alconna import AlcMatches, AlconnaMatcher
+
+from ..utils.exception import MessageFormatError
 from ..utils.typing import CommandType, GameType
 
 
@@ -73,6 +78,24 @@ class Processor(ABC):
         historical_data.processed_data = self.processed_data
         historical_data.finish_time = finish_time
         Recorder.update_historical_data(self.event_id, historical_data)
+
+
+def add_default_handlers(matcher: type[AlconnaMatcher]) -> None:
+    @matcher.handle()
+    async def _(matcher: Matcher, account: MessageFormatError):
+        await matcher.finish(str(account))
+
+    @matcher.handle()
+    async def _(matcher: Matcher, matches: AlcMatches):
+        if matches.head_matched and matches.options != {}:
+            await matcher.finish(
+                (f'{matches.error_info!r}\n' if matches.error_info is not None else '')
+                + f'输入"{matches.header_result} --help"查看帮助'
+            )
+
+    @matcher.handle()
+    async def _(matcher: Matcher, other: Any):  # noqa: ANN401
+        await matcher.finish()
 
 
 from . import (  # noqa: F401, E402

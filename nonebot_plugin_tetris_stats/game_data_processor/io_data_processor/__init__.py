@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Any
 
 from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
@@ -8,10 +9,11 @@ from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 
 from ...db import query_bind_info
-from ...utils.exception import MessageFormatError, NeedCatchError
+from ...utils.exception import NeedCatchError
 from ...utils.metrics import get_metrics
 from ...utils.platform import get_platform
 from ...utils.typing import Me
+from .. import add_default_handlers
 from ..constant import BIND_COMMAND, QUERY_COMMAND
 from .constant import GAME_TYPE
 from .model import IORank
@@ -65,6 +67,7 @@ alc = on_alconna(
             dest='rank',
             help_text='查询 IO 段位信息',
         ),
+        Arg('other', Any, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
         meta=CommandMeta(
             description='查询 TETR.IO 的信息',
             example='io绑定scdhh\nio查我\niorankx',
@@ -174,6 +177,4 @@ async def _(event: Event, matcher: Matcher, rank: Rank):
     await matcher.finish(message)
 
 
-@alc.handle()
-async def _(matcher: Matcher, account: MessageFormatError):
-    await matcher.finish(str(account))
+add_default_handlers(alc)

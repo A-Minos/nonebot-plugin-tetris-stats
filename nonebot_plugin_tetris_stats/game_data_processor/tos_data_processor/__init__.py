@@ -1,3 +1,5 @@
+from typing import Any
+
 from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
@@ -5,9 +7,10 @@ from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
 
 from ...db import query_bind_info
-from ...utils.exception import MessageFormatError, NeedCatchError
+from ...utils.exception import NeedCatchError
 from ...utils.platform import get_platform
 from ...utils.typing import Me
+from .. import add_default_handlers
 from ..constant import BIND_COMMAND, QUERY_COMMAND
 from .constant import GAME_TYPE
 from .processor import Processor, User, identify_user_info
@@ -52,6 +55,7 @@ alc = on_alconna(
             dest='query',
             help_text='查询 茶服 游戏信息',
         ),
+        Arg('other', Any),
         meta=CommandMeta(
             description='查询 TetrisOnline茶服 的信息',
             example='茶服查我',
@@ -138,6 +142,4 @@ async def _(event: Event, matcher: Matcher, account: User):
         await matcher.finish(str(e))
 
 
-@alc.handle()
-async def _(matcher: Matcher, account: MessageFormatError):
-    await matcher.finish(str(account))
+add_default_handlers(alc)
