@@ -55,7 +55,7 @@ alc = on_alconna(
             dest='query',
             help_text='查询 茶服 游戏信息',
         ),
-        Arg('other', Any),
+        Arg('other', Any, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
         meta=CommandMeta(
             description='查询 TetrisOnline茶服 的信息',
             example='茶服查我',
