@@ -70,6 +70,9 @@ class Processor(ABC):
 
     def __del__(self) -> None:
         finish_time = datetime.now(tz=UTC)
+        if Recorder.is_error_event(self.event_id):
+            Recorder.del_error_event(self.event_id)
+            return
         historical_data = Recorder.get_historical_data(self.event_id)
         historical_data.game_platform = self.game_platform
         historical_data.command_type = self.command_type

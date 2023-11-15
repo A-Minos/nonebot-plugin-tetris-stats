@@ -15,6 +15,7 @@ driver = get_driver()
 class Recorder:
     matchers: ClassVar[set[type[Matcher]]] = set()
     historical_data: ClassVar[dict[int, tuple[HistoricalData, bool]]] = {}
+    error_event: ClassVar[set[int]] = set()
 
     @classmethod
     def create_historical_data(cls, event_id: int, historical_data: HistoricalData) -> None:
@@ -32,17 +33,27 @@ class Recorder:
 
     @classmethod
     async def save_historical_data(cls, event_id: int) -> None:
-        if event_id not in cls.historical_data:
-            raise KeyError
-        historical_data, completed = cls.historical_data.pop(event_id)
+        historical_data, completed = cls.del_historical_data(event_id)
         if completed:
             async with get_session() as session:
                 session.add(historical_data)
                 await session.commit()
 
     @classmethod
-    def del_historical_data(cls, event_id: int) -> None:
-        cls.historical_data.pop(event_id)
+    def del_historical_data(cls, event_id: int) -> tuple[HistoricalData, bool]:
+        return cls.historical_data.pop(event_id)
+
+    @classmethod
+    def add_error_event(cls, event_id: int) -> None:
+        cls.error_event.add(event_id)
+
+    @classmethod
+    def del_error_event(cls, event_id: int) -> None:
+        cls.error_event.remove(event_id)
+
+    @classmethod
+    def is_error_event(cls, event_id: int) -> bool:
+        return event_id in cls.error_event
 
 
 @driver.on_startup
@@ -73,7 +84,9 @@ def _(bot: Bot, event: Event, matcher: Matcher):
 @run_postprocessor
 async def _(event: Event, matcher: Matcher, exception: Exception | None):
     if isinstance(matcher, tuple(Recorder.matchers)):
+        event_id = id(event)
         if exception is not None:
-            Recorder.del_historical_data(id(event))
+            Recorder.add_error_event(event_id)
+            Recorder.del_historical_data(event_id)
         else:
-            await Recorder.save_historical_data(id(event))
+            await Recorder.save_historical_data(event_id)
