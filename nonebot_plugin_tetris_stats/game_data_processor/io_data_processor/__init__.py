@@ -1,8 +1,7 @@
 from datetime import timedelta
-from typing import Any
 from zoneinfo import ZoneInfo
 
-from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
+from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
@@ -68,7 +67,7 @@ alc = on_alconna(
             dest='rank',
             help_text='查询 IO 段位信息',
         ),
-        Arg('other', Any, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
+        Arg('other', AllParam, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
         meta=CommandMeta(
             description='查询 TETR.IO 的信息',
             example='io绑定scdhh\nio查我\niorankx',

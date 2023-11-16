@@ -1,6 +1,4 @@
-from typing import Any
-
-from arclet.alconna import Alconna, Arg, ArgFlag, Args, CommandMeta, Option
+from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
@@ -55,7 +53,7 @@ alc = on_alconna(
             dest='query',
             help_text='查询 茶服 游戏信息',
         ),
-        Arg('other', Any, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
+        Arg('other', AllParam, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
         meta=CommandMeta(
             description='查询 TetrisOnline茶服 的信息',
             example='茶服查我',
