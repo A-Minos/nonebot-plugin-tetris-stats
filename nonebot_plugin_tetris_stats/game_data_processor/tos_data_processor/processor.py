@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from re import match
-from typing import Any
 from urllib.parse import urlencode
 
 from nonebot_plugin_orm import get_session
@@ -10,32 +9,24 @@ from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
 from ...utils.typing import GameType
-from .. import ProcessedData as ProcessedDataMeta
 from .. import Processor as ProcessorMeta
-from .. import RawResponse as RawResponseMeta
-from .. import User as UserMeta
+from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE
+from .schemas.response import ProcessedData, RawResponse
 from .schemas.user_info import SuccessModel as InfoSuccess
 from .schemas.user_info import UserInfo
 from .schemas.user_profile import UserProfile
 
 
-@dataclass
-class User(UserMeta):
+class User(BaseUser):
     teaid: str | None = None
     name: str | None = None
 
-
-@dataclass
-class RawResponse(RawResponseMeta):
-    user_profile: dict[frozenset[tuple[str, Any]], bytes]
-    user_info: bytes | None = None
-
-
-@dataclass
-class ProcessedData(ProcessedDataMeta):
-    user_profile: dict[frozenset[tuple[str, Any]], UserProfile]
-    user_info: InfoSuccess | None = None
+    @property
+    def unique_identifier(self) -> str:
+        if self.teaid is None:
+            raise ValueError('不完整的User!')
+        return self.teaid
 
 
 @dataclass
@@ -135,18 +126,18 @@ class Processor(ProcessorMeta):
             self.processed_data.user_info = user_info
         return self.processed_data.user_info
 
-    async def get_user_profile(self, other_parameter: dict[str, Any] | None = None) -> UserProfile:
+    async def get_user_profile(self, other_parameter: dict[str, str | bytes] | None = None) -> UserProfile:
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
-        fset = frozenset(other_parameter.items())
+        fset: frozenset[tuple[str, str | bytes]] = frozenset(other_parameter.items())
         if self.processed_data.user_profile.get(fset) is None:
             self.raw_response.user_profile[fset] = await Request.request(
                 splice_url(
                     [
                         BASE_URL,
                         'getProfile',
-                        f'?{urlencode({"id":self.user.teaid or self.user.name},**other_parameter)}',
+                        f'?{urlencode({"id":self.user.teaid or self.user.name,**other_parameter})}',
                     ]
                 )
             )

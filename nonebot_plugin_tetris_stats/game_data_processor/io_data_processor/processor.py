@@ -1,6 +1,5 @@
 from collections import defaultdict
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from math import floor
 from re import match
@@ -16,15 +15,14 @@ from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.request import Request, splice_url
 from ...utils.typing import GameType
-from .. import ProcessedData as ProcessedDataMeta
 from .. import Processor as ProcessorMeta
-from .. import RawResponse as RawResponseMeta
-from .. import User as UserMeta
+from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
 from .model import IORank
 from .schemas.league_all import FailedModel as LeagueAllFailed
 from .schemas.league_all import LeagueAll
 from .schemas.league_all import ValidUser as LeagueAllUser
+from .schemas.response import ProcessedData, RawResponse
 from .schemas.user_info import FailedModel as InfoFailed
 from .schemas.user_info import (
     NeverPlayedLeague,
@@ -40,22 +38,15 @@ from .typing import Rank
 driver = get_driver()
 
 
-@dataclass
-class User(UserMeta):
+class User(BaseUser):
     ID: str | None = None
     name: str | None = None
 
-
-@dataclass
-class RawResponse(RawResponseMeta):
-    user_info: bytes | None = None
-    user_records: bytes | None = None
-
-
-@dataclass
-class ProcessedData(ProcessedDataMeta):
-    user_info: InfoSuccess | None = None
-    user_records: RecordsSuccess | None = None
+    @property
+    def unique_identifier(self) -> str:
+        if self.ID is None:
+            raise ValueError('不完整的User!')
+        return self.ID
 
 
 def identify_user_info(info: str) -> User | MessageFormatError:
@@ -214,7 +205,7 @@ async def get_io_rank_data() -> None:
         sort: Callable[[list[LeagueAllUser], Callable[[LeagueAllUser], float]], LeagueAllUser],
     ) -> tuple[dict[str, str], float]:
         user = sort(users, field)
-        return asdict(User(ID=user.id, name=user.username)), field(user)
+        return User(ID=user.id, name=user.username).dict(), field(user)
 
     users = [i for i in league_all.data.users if isinstance(i, LeagueAllUser)]
     rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)

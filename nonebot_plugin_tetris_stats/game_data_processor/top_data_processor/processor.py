@@ -13,26 +13,18 @@ from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
 from ...utils.typing import GameType
-from .. import ProcessedData as ProcessedDataMeta
 from .. import Processor as ProcessorMeta
-from .. import RawResponse as RawResponseMeta
-from .. import User as UserMeta
+from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE
+from .schemas.response import ProcessedData, RawResponse
 
 
-@dataclass
-class User(UserMeta):
+class User(BaseUser):
     name: str
 
-
-@dataclass
-class RawResponse(RawResponseMeta):
-    user_profile: bytes | None = None
-
-
-@dataclass
-class ProcessedData(ProcessedDataMeta):
-    user_profile: str | None = None
+    @property
+    def unique_identifier(self) -> str:
+        return self.name
 
 
 @dataclass

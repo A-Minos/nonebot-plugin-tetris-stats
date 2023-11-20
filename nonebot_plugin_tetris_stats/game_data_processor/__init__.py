@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
 
@@ -7,25 +6,11 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import AlcMatches, AlconnaMatcher
 
 from ..utils.exception import MessageFormatError
+from ..utils.recorder import Recorder
 from ..utils.typing import CommandType, GameType
-
-
-@dataclass
-class User:
-    """游戏用户"""
-
-
-@dataclass
-class RawResponse:
-    """原始请求数据"""
-
-
-@dataclass
-class ProcessedData:
-    """处理/验证后的数据"""
-
-
-from ..utils.recorder import Recorder  # noqa: E402 避免循环导入
+from .schemas import BaseProcessedData as ProcessedData
+from .schemas import BaseRawResponse as RawResponse
+from .schemas import BaseUser as User
 
 
 class Processor(ABC):
