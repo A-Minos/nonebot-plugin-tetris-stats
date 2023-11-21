@@ -2,11 +2,24 @@ from datetime import datetime
 
 from nonebot.adapters import Message
 from nonebot_plugin_orm import Model
-from sqlalchemy import JSON, DateTime, PickleType, String
+from pydantic import BaseModel
+from sqlalchemy import JSON, DateTime, Dialect, PickleType, String, TypeDecorator
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from ..game_data_processor.schemas import BaseProcessedData, BaseUser
 from ..utils.typing import CommandType, GameType
+
+
+class PydanticType(TypeDecorator):
+    impl = JSON
+
+    def process_bind_param(self, value: BaseModel, dialect: Dialect) -> str:
+        # 将 Pydantic 模型实例转换为 JSON
+        return value.json()
+
+    def process_result_value(self, value: str, dialect: Dialect) -> BaseModel:
+        # 将 JSON 转换回 Pydantic 模型实例
+        return BaseModel.parse_raw(value)
 
 
 class Bind(MappedAsDataclass, Model):
@@ -28,6 +41,6 @@ class HistoricalData(MappedAsDataclass, Model):
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True, init=False)
     command_type: Mapped[CommandType] = mapped_column(String(16), index=True, init=False)
     command_args: Mapped[list[str]] = mapped_column(JSON, init=False)
-    game_user: Mapped[BaseUser] = mapped_column(PickleType, init=False)
-    processed_data: Mapped[BaseProcessedData] = mapped_column(PickleType, init=False)
+    game_user: Mapped[BaseUser] = mapped_column(PydanticType, init=False)
+    processed_data: Mapped[BaseProcessedData] = mapped_column(PydanticType, init=False)
     finish_time: Mapped[datetime] = mapped_column(DateTime, init=False)

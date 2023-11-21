@@ -130,9 +130,9 @@ class Processor(ProcessorMeta):
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
-        fset: frozenset[tuple[str, str | bytes]] = frozenset(other_parameter.items())
-        if self.processed_data.user_profile.get(fset) is None:
-            self.raw_response.user_profile[fset] = await Request.request(
+        params = urlencode(dict(sorted(other_parameter.items())))
+        if self.processed_data.user_profile.get(params) is None:
+            self.raw_response.user_profile[params] = await Request.request(
                 splice_url(
                     [
                         BASE_URL,
@@ -141,8 +141,8 @@ class Processor(ProcessorMeta):
                     ]
                 )
             )
-            self.processed_data.user_profile[fset] = UserProfile.parse_raw(self.raw_response.user_profile[fset])
-        return self.processed_data.user_profile[fset]
+            self.processed_data.user_profile[params] = UserProfile.parse_raw(self.raw_response.user_profile[params])
+        return self.processed_data.user_profile[params]
 
     async def get_game_data(self) -> GameData | None:
         """获取游戏数据"""
