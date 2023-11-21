@@ -146,12 +146,13 @@ class Processor(ProcessorMeta):
         else:
             if isinstance(league, NeverRatedLeague):
                 ret_message += f'用户 {user_name} 暂未完成定级赛, 最近十场的数据:'
-            elif league.rank == 'z':
-                ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
             else:
-                ret_message += (
-                    f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
-                )
+                if league.rank == 'z':
+                    ret_message += f'用户 {user_name} 暂无段位, {round(league.rating,2)} TR'
+                else:
+                    ret_message += (
+                        f'{league.rank.upper()} 段用户 {user_name} {round(league.rating,2)} TR (#{league.standing})'
+                    )
                 ret_message += f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
             lpm = league.pps * 24
             ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
