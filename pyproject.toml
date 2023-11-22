@@ -21,6 +21,7 @@ nonebot-plugin-localstore = "^0.5.1"
 httpx = "^0.25.0"
 nonebot-plugin-alconna = ">=0.30,<0.34"
 nonebot-plugin-apscheduler = "^0.3.0"
+aiocache = "^0.12.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = '>=0.991,<1.8'
