@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
@@ -17,7 +17,7 @@ from .. import add_default_handlers
 from ..constant import BIND_COMMAND, QUERY_COMMAND
 from .constant import GAME_TYPE
 from .model import IORank
-from .processor import Processor, User, check_rank_data, identify_user_info
+from .processor import Processor, User, identify_user_info
 from .typing import Rank
 
 alc = on_alconna(
@@ -136,10 +136,6 @@ async def _(event: Event, matcher: Matcher, account: User):
 async def _(matcher: Matcher, rank: Rank):
     if rank == 'z':
         await matcher.finish('暂不支持查询未知段位')
-    try:
-        await check_rank_data()
-    except NeedCatchError as e:
-        await matcher.finish(str(f'段位信息获取失败\n{e}'))
     async with get_session() as session:
         latest_data = (
             await session.scalars(select(IORank).where(IORank.rank == rank).order_by(IORank.id.desc()).limit(1))
@@ -157,7 +153,10 @@ async def _(matcher: Matcher, rank: Rank):
                 .limit(1)
             )
         ).one()
-    message = f'{rank.upper()} 段 分数线 {latest_data.tr_line:.2f} TR, {latest_data.player_count} 名玩家\n'
+    message = ''
+    if (datetime.now(UTC) - latest_data.create_time) > timedelta(hours=7):
+        message += 'Warning: 数据超过7小时未更新, 请联系Bot主人查看后台\n'
+    message += f'{rank.upper()} 段 分数线 {latest_data.tr_line:.2f} TR, {latest_data.player_count} 名玩家\n'
     if compare_data.id != latest_data.id:
         message += f'对比 {(latest_data.create_time-compare_data.create_time).total_seconds()/3600:.2f} 小时前趋势: {f"↑{difference:.2f}" if (difference:=latest_data.tr_line-compare_data.tr_line) > 0 else f"↓{-difference:.2f}" if difference < 0 else "→"}'
     else:
