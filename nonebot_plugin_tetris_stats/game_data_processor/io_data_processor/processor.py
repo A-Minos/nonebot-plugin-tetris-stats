@@ -13,22 +13,19 @@ from sqlalchemy import select
 
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
-from ...utils.request import Request, splice_url
+from ...utils.request import splice_url
 from ...utils.typing import GameType
 from .. import Processor as ProcessorMeta
-from ..schemas import BaseUser
+from .cache import Cache
 from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
 from .model import IORank
 from .schemas.league_all import FailedModel as LeagueAllFailed
 from .schemas.league_all import LeagueAll
 from .schemas.league_all import ValidUser as LeagueAllUser
 from .schemas.response import ProcessedData, RawResponse
+from .schemas.user import User
 from .schemas.user_info import FailedModel as InfoFailed
-from .schemas.user_info import (
-    NeverPlayedLeague,
-    NeverRatedLeague,
-    UserInfo,
-)
+from .schemas.user_info import NeverPlayedLeague, NeverRatedLeague, UserInfo
 from .schemas.user_info import SuccessModel as InfoSuccess
 from .schemas.user_records import FailedModel as RecordsFailed
 from .schemas.user_records import SoloRecord, UserRecords
@@ -36,17 +33,6 @@ from .schemas.user_records import SuccessModel as RecordsSuccess
 from .typing import Rank
 
 driver = get_driver()
-
-
-class User(BaseUser):
-    ID: str | None = None
-    name: str | None = None
-
-    @property
-    def unique_identifier(self) -> str:
-        if self.ID is None:
-            raise ValueError('不完整的User!')
-        return self.ID
 
 
 def identify_user_info(info: str) -> User | MessageFormatError:
@@ -104,7 +90,7 @@ class Processor(ProcessorMeta):
     async def get_user_info(self) -> InfoSuccess:
         """获取用户数据"""
         if self.processed_data.user_info is None:
-            self.raw_response.user_info = await Request.request(
+            self.raw_response.user_info = await Cache.get(
                 splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
             )
             user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
@@ -116,20 +102,10 @@ class Processor(ProcessorMeta):
     async def get_user_records(self) -> RecordsSuccess:
         """获取Solo数据"""
         if self.processed_data.user_records is None:
-            self.raw_response.user_records = await Request.request(
-                splice_url(
-                    [
-                        BASE_URL,
-                        'users/',
-                        f'{self.user.ID or self.user.name}/',
-                        'records',
-                    ]
-                )
+            self.raw_response.user_records = await Cache.get(
+                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}/', 'records'])
             )
-            user_records: UserRecords = parse_raw_as(
-                UserRecords,  # type: ignore[arg-type]
-                self.raw_response.user_records,
-            )
+            user_records: UserRecords = parse_raw_as(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
             if isinstance(user_records, RecordsFailed):
                 raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
             self.processed_data.user_records = user_records
@@ -178,10 +154,7 @@ class Processor(ProcessorMeta):
 
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
 async def get_io_rank_data() -> None:
-    league_all: LeagueAll = parse_raw_as(
-        LeagueAll,  # type: ignore[arg-type]
-        await Request.request(splice_url([BASE_URL, 'users/lists/league/all'])),
-    )
+    league_all: LeagueAll = parse_raw_as(LeagueAll, await Cache.get(splice_url([BASE_URL, 'users/lists/league/all'])))  # type: ignore[arg-type]
     if isinstance(league_all, LeagueAllFailed):
         raise RequestError(f'用户Solo数据请求错误:\n{league_all.error}')
 
