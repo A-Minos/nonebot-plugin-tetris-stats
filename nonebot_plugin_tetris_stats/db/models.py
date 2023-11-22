@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from nonebot.adapters import Message
 from nonebot_plugin_orm import Model
@@ -13,13 +14,17 @@ from ..utils.typing import CommandType, GameType
 class PydanticType(TypeDecorator):
     impl = JSON
 
-    def process_bind_param(self, value: BaseModel, dialect: Dialect) -> str:
+    def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:  # noqa: ANN401
         # 将 Pydantic 模型实例转换为 JSON
-        return value.json()
+        if isinstance(value, BaseModel):
+            return value.json()
+        raise TypeError
 
-    def process_result_value(self, value: str, dialect: Dialect) -> BaseModel:
+    def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:  # noqa: ANN401
         # 将 JSON 转换回 Pydantic 模型实例
-        return BaseModel.parse_raw(value)
+        if isinstance(value, str | bytes):
+            return BaseModel.parse_raw(value)
+        raise TypeError
 
 
 class Bind(MappedAsDataclass, Model):

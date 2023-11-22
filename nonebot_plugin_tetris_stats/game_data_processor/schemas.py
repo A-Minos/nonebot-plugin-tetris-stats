@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Self
 
 from pydantic import BaseModel
 
@@ -7,8 +6,10 @@ from pydantic import BaseModel
 class BaseUser(ABC, BaseModel):
     """游戏用户"""
 
-    def __eq__(self, __value: Self) -> bool:
-        return self.unique_identifier == __value.unique_identifier
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, BaseUser):
+            return self.unique_identifier == __value.unique_identifier
+        return False
 
     @property
     @abstractmethod
