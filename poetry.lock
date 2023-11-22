@@ -942,13 +942,13 @@ typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "nonebot-plugin-orm"
-version = "0.5.1"
+version = "0.6.0"
 description = "SQLAlchemy ORM support for nonebot"
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "nonebot_plugin_orm-0.5.1-py3-none-any.whl", hash = "sha256:5f1f74aed93a56ea3743b40b9a6b4ffb1d53e6359928f51ef7ffad1ae3d83181"},
-    {file = "nonebot_plugin_orm-0.5.1.tar.gz", hash = "sha256:7e3f84fcc932f28f4c235bf2f1bd26da11988f4245bc499dfb781d379816b2d9"},
+    {file = "nonebot_plugin_orm-0.6.0-py3-none-any.whl", hash = "sha256:482f35d102749eda93cd635608ec79e81718d080a80fa325c24d8fa7316f7d83"},
+    {file = "nonebot_plugin_orm-0.6.0.tar.gz", hash = "sha256:e1b4db52da60b53f33eac95bb4b9875d7000d71f47ec6a034aa908adde41c33e"},
 ]
 
 [package.dependencies]
@@ -959,7 +959,7 @@ importlib-resources = {version = ">=6.1,<7.0", markers = "python_version < \"3.1
 nonebot-plugin-localstore = ">=0.5,<1.0"
 nonebot2 = ">=2.1,<3.0"
 sqlalchemy = ">=2.0,<3.0"
-typing-extensions = {version = ">=4.8,<5.0", markers = "python_version < \"3.12\""}
+typing-extensions = {version = ">=4.8,<5.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 aiomysql = ["aiomysql (>=0.2,<1.0)"]
@@ -2124,4 +2124,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "08c974a16f1cfec13a1b9aae2807447a4ff4c5032943cc2167fc254980c4dfe8"
+content-hash = "e523f1239c9c0373499c2ee7a9c04a7400334ea94bec5105a8497bdb7da29f98"
