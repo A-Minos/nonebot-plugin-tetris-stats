@@ -14,6 +14,7 @@ from sqlalchemy import select
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.request import splice_url
+from ...utils.retry import retry
 from ...utils.typing import GameType
 from .. import Processor as ProcessorMeta
 from .cache import Cache
@@ -153,10 +154,11 @@ class Processor(ProcessorMeta):
 
 
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
+@retry(exception_type=RequestError, delay=timedelta(minutes=15))
 async def get_io_rank_data() -> None:
     league_all: LeagueAll = parse_raw_as(LeagueAll, await Cache.get(splice_url([BASE_URL, 'users/lists/league/all'])))  # type: ignore[arg-type]
     if isinstance(league_all, LeagueAllFailed):
-        raise RequestError(f'用户Solo数据请求错误:\n{league_all.error}')
+        raise RequestError(f'排行榜数据请求错误:\n{league_all.error}')
 
     def pps(user: LeagueAllUser) -> float:
         return user.league.pps
@@ -212,8 +214,8 @@ async def get_io_rank_data() -> None:
 
 
 @driver.on_startup
-async def check_rank_data() -> None:
+async def _() -> None:
     async with get_session() as session:
         latest_time = await session.scalar(select(IORank.create_time).order_by(IORank.id.desc()).limit(1))
-        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
-            await get_io_rank_data()
+    if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
+        await get_io_rank_data()
