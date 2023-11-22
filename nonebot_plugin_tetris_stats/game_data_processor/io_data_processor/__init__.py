@@ -154,7 +154,7 @@ async def _(matcher: Matcher, rank: Rank):
             )
         ).one()
     message = ''
-    if (datetime.now(UTC) - latest_data.create_time) > timedelta(hours=7):
+    if (datetime.now(UTC) - latest_data.create_time.replace(tzinfo=UTC)) > timedelta(hours=7):
         message += 'Warning: 数据超过7小时未更新, 请联系Bot主人查看后台\n'
     message += f'{rank.upper()} 段 分数线 {latest_data.tr_line:.2f} TR, {latest_data.player_count} 名玩家\n'
     if compare_data.id != latest_data.id:
@@ -183,7 +183,7 @@ async def _(matcher: Matcher, rank: Rank):
         f'APM: {latest_data.high_apm[1]} By: {latest_data.high_apm[0]["name"].upper()}\n'
         f'ADPM: {max_vs.adpm} ( {max_vs.vs}vs ) By: {latest_data.high_vs[0]["name"].upper()}\n'
         '\n'
-        f'数据更新时间: {latest_data.create_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S")}'
+        f'数据更新时间: {latest_data.create_time.replace(tzinfo=UTC).astimezone(ZoneInfo("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S")}'
     )
     await matcher.finish(message)
 
