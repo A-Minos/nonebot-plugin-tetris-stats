@@ -12,7 +12,7 @@ class EndContext(BaseModel):
         zero: bool
         locked: bool
         prev: int
-        frameoffset: int
+        frameoffset: int | None
 
     class Clears(BaseModel):
         singles: int
@@ -49,8 +49,8 @@ class EndContext(BaseModel):
     holds: int | None
     time: Time
     score: int
-    zenlevel: int
-    zenprogress: int
+    zenlevel: int | None
+    zenprogress: int | None
     level: int
     combo: int
     currentcombopower: int | None  # WTF
