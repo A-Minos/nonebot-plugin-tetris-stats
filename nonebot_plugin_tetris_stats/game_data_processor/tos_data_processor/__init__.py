@@ -5,7 +5,7 @@ from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
 
 from ...db import query_bind_info
-from ...utils.exception import NeedCatchError
+from ...utils.exception import HandleNotFinishedError, NeedCatchError
 from ...utils.platform import get_platform
 from ...utils.typing import Me
 from .. import add_default_handlers
@@ -87,7 +87,7 @@ try:
             await matcher.send(await proc.handle_query())
         except NeedCatchError as e:
             await matcher.send(str(e))
-            raise
+            raise HandleNotFinishedError from e
 except ImportError:
     pass
 
@@ -103,7 +103,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
         await matcher.send(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
     except NeedCatchError as e:
         await matcher.send(str(e))
-        raise
+        raise HandleNotFinishedError from e
 
 
 @alc.assign('query')
@@ -127,7 +127,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         await matcher.send(message + await proc.handle_query())
     except NeedCatchError as e:
         await matcher.send(str(e))
-        raise
+        raise HandleNotFinishedError from e
 
 
 @alc.assign('query')
@@ -141,7 +141,7 @@ async def _(event: Event, matcher: Matcher, account: User):
         await matcher.send(await proc.handle_query())
     except NeedCatchError as e:
         await matcher.send(str(e))
-        raise
+        raise HandleNotFinishedError from e
 
 
 add_default_handlers(alc)

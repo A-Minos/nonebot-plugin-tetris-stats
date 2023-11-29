@@ -15,10 +15,6 @@ class NeedCatchError(TetrisStatsError):
     """需要被捕获的异常基类"""
 
 
-class DoNotCatchError(TetrisStatsError):
-    """不应该被捕获的异常基类"""
-
-
 class RequestError(NeedCatchError):
     """请求错误"""
 
@@ -27,9 +23,13 @@ class MessageFormatError(NeedCatchError):
     """用户发送的消息格式不正确"""
 
 
-class DatabaseVersionError(DoNotCatchError):
-    """数据库版本错误"""
+class DoNotCatchError(TetrisStatsError):
+    """不应该被捕获的异常基类"""
 
 
 class WhatTheFuckError(DoNotCatchError):
     """用于表示不应该出现的情况 ("""
+
+
+class HandleNotFinishedError(DoNotCatchError):
+    """任务没有正常完成处理的错误"""
