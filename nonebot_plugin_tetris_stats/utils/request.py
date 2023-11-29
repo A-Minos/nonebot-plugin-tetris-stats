@@ -38,7 +38,7 @@ def splice_url(url_list: list[str]) -> str:
 class Request:
     """网络请求相关类"""
 
-    _CACHE_FILE = CACHE_PATH.joinpath('cloudflare_cache.json')
+    _CACHE_FILE = CACHE_PATH / 'cloudflare_cache.json'
     _headers: dict | None = None
     _cookies: dict | None = None
 
@@ -46,36 +46,31 @@ class Request:
     async def _anti_cloudflare(cls, url: str) -> bytes:
         """用firefox硬穿五秒盾"""
         browser = await BrowserManager.get_browser()
-        context = await browser.new_context()
-        page = await context.new_page()
-        response = await page.goto(url)
-        attempts = 0
-        while attempts < 60:  # noqa: PLR2004
-            attempts += 1
-            text = await page.locator('body').text_content()
-            if text is None:
-                await page.wait_for_timeout(1000)
-                continue
-            if await page.title() == 'Please Wait... | Cloudflare':
-                logger.warning('疑似触发了 Cloudflare 的验证码')
-                break
-            try:
-                loads(text)
-            except JSONDecodeError:
-                await page.wait_for_timeout(1000)
-            else:
-                if not isinstance(response, Response):
-                    raise RequestError('api请求失败')
-                cls._headers = await response.request.all_headers()
+        async with await browser.new_context() as context, await context.new_page() as page:
+            response = await page.goto(url)
+            attempts = 0
+            while attempts < 60:  # noqa: PLR2004
+                attempts += 1
+                text = await page.locator('body').text_content()
+                if text is None:
+                    await page.wait_for_timeout(1000)
+                    continue
+                if await page.title() == 'Please Wait... | Cloudflare':
+                    logger.warning('疑似触发了 Cloudflare 的验证码')
+                    break
                 try:
-                    cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
-                except KeyError:
-                    cls._cookies = None
-                await page.close()
-                await context.close()
-                return await response.body()
-        await page.close()
-        await context.close()
+                    loads(text)
+                except JSONDecodeError:
+                    await page.wait_for_timeout(1000)
+                else:
+                    if not isinstance(response, Response):
+                        raise RequestError('api请求失败')
+                    cls._headers = await response.request.all_headers()
+                    try:
+                        cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                    except KeyError:
+                        cls._cookies = None
+                    return await response.body()
         raise RequestError('绕过五秒盾失败')
 
     @classmethod
