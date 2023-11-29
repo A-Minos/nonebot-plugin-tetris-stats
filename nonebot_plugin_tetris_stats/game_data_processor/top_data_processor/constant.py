@@ -1,4 +1,4 @@
-from ...utils.typing import GameType
+from typing import Literal
 
-GAME_TYPE: GameType = 'TOP'
+GAME_TYPE: Literal['TOP'] = 'TOP'
 BASE_URL = 'http://tetrisonline.pl/top/'

@@ -1,7 +1,8 @@
-from ...utils.typing import GameType
+from typing import Literal
+
 from .typing import Rank
 
-GAME_TYPE: GameType = 'IO'
+GAME_TYPE: Literal['IO'] = 'IO'
 BASE_URL = 'https://ch.tetr.io/api/'
 RANK_PERCENTILE: dict[Rank, float] = {
     'x': 1,

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from re import match
+from typing import Literal
 from urllib.parse import urlencode
 
 from nonebot_plugin_orm import get_session
@@ -8,7 +9,6 @@ from pydantic import parse_raw_as
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
-from ...utils.typing import GameType
 from .. import Processor as ProcessorMeta
 from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE
@@ -19,6 +19,8 @@ from .schemas.user_profile import UserProfile
 
 
 class User(BaseUser):
+    platform: Literal['TOS'] = GAME_TYPE
+
     teaid: str | None = None
     name: str | None = None
 
@@ -67,7 +69,7 @@ class Processor(ProcessorMeta):
         self.processed_data = ProcessedData(user_profile={})
 
     @property
-    def game_platform(self) -> GameType:
+    def game_platform(self) -> Literal['TOS']:
         return GAME_TYPE
 
     async def handle_bind(self, platform: str, account: str) -> str:

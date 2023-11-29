@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from math import floor
 from re import match
 from statistics import mean
+from typing import Literal
 
 from nonebot import get_driver
 from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
@@ -15,7 +16,6 @@ from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.request import splice_url
 from ...utils.retry import retry
-from ...utils.typing import GameType
 from .. import Processor as ProcessorMeta
 from .cache import Cache
 from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
@@ -55,7 +55,7 @@ class Processor(ProcessorMeta):
         self.processed_data = ProcessedData()
 
     @property
-    def game_platform(self) -> GameType:
+    def game_platform(self) -> Literal['IO']:
         return GAME_TYPE
 
     async def handle_bind(self, platform: str, account: str) -> str:

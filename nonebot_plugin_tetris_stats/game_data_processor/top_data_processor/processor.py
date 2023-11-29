@@ -2,7 +2,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from io import StringIO
 from re import match
-from typing import NoReturn
+from typing import Literal, NoReturn
 from urllib.parse import urlencode
 
 from lxml import etree
@@ -12,7 +12,6 @@ from pandas import read_html
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.request import Request, splice_url
-from ...utils.typing import GameType
 from .. import Processor as ProcessorMeta
 from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE
@@ -20,6 +19,8 @@ from .schemas.response import ProcessedData, RawResponse
 
 
 class User(BaseUser):
+    platform: Literal['TOP'] = GAME_TYPE
+
     name: str
 
     @property
@@ -56,7 +57,7 @@ class Processor(ProcessorMeta):
         self.processed_data = ProcessedData()
 
     @property
-    def game_platform(self) -> GameType:
+    def game_platform(self) -> Literal['TOP']:
         return GAME_TYPE
 
     async def handle_bind(self, platform: str, account: str) -> str:

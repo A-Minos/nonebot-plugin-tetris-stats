@@ -2,8 +2,14 @@ from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 
+from ..utils.typing import GameType
 
-class BaseUser(ABC, BaseModel):
+
+class Base(BaseModel):
+    platform: GameType
+
+
+class BaseUser(ABC, Base):
     """游戏用户"""
 
     def __eq__(self, __value: object) -> bool:
@@ -17,9 +23,9 @@ class BaseUser(ABC, BaseModel):
         raise NotImplementedError
 
 
-class BaseRawResponse(BaseModel):
+class BaseRawResponse(Base):
     """原始请求数据"""
 
 
-class BaseProcessedData(BaseModel):
+class BaseProcessedData(Base):
     """处理/验证后的数据"""
