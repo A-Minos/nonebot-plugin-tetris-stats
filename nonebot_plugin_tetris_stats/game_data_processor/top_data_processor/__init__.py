@@ -74,9 +74,10 @@ async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
+        await matcher.send(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
     except NeedCatchError as e:
-        await matcher.finish(str(e))
+        await matcher.send(str(e))
+        raise
 
 
 @alc.assign('query')
@@ -97,9 +98,10 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         command_args=[],
     )
     try:
-        await matcher.finish(message + await proc.handle_query())
+        await matcher.send(message + await proc.handle_query())
     except NeedCatchError as e:
-        await matcher.finish(str(e))
+        await matcher.send(str(e))
+        raise
 
 
 @alc.assign('query')
@@ -110,9 +112,10 @@ async def _(event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_query())
+        await matcher.send(await proc.handle_query())
     except NeedCatchError as e:
-        await matcher.finish(str(e))
+        await matcher.send(str(e))
+        raise
 
 
 add_default_handlers(alc)
