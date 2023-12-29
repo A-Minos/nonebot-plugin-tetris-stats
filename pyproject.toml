@@ -19,7 +19,7 @@ aiofiles = "^23.2.1"
 nonebot-plugin-orm = ">=0.1.1,<0.7.0"
 nonebot-plugin-localstore = "^0.5.1"
 httpx = "^0.25.0"
-nonebot-plugin-alconna = ">=0.30,<0.34"
+nonebot-plugin-alconna = ">=0.30,<0.35"
 nonebot-plugin-apscheduler = "^0.3.0"
 aiocache = "^0.12.2"
 
@@ -34,6 +34,7 @@ types-lxml = "^2023.3.28"
 nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.7" }
 nonebot-adapter-onebot = "^2.3.1"
 nonebot-adapter-satori = "^0.8.0"
+nonebot-adapter-kaiheila = "^0.3.0"
 
 [tool.poetry.group.debug.dependencies]
 objprint = '^0.2.2'
