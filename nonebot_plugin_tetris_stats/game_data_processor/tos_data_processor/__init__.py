@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
@@ -66,6 +68,17 @@ alc = on_alconna(
     aliases={'tos', 'TOS'},
 )
 
+
+async def finish_special_query(matcher: Matcher, proc: Processor) -> NoReturn:
+    try:
+        await matcher.finish(await proc.handle_query())
+    except NeedCatchError as e:
+        if isinstance(e, RequestError) and '未找到此用户' in e.message:
+            matcher.skip()
+        await matcher.send(str(e))
+        raise HandleNotFinishedError from e
+
+
 try:
     from nonebot.adapters.onebot.v11 import GROUP as OB11GROUP
     from nonebot.adapters.onebot.v11 import Bot as OB11Bot
@@ -80,14 +93,7 @@ try:
             user=User(teaid=f'onebot-{target.target}' if isinstance(target, At) else f'onebot-{event.get_user_id()}'),
             command_args=[],
         )
-        try:
-            await matcher.send(await proc.handle_query())
-        except RequestError as e:
-            if '未找到此用户' in e.message:
-                matcher.skip()
-        except NeedCatchError as e:
-            await matcher.send(str(e))
-            raise HandleNotFinishedError from e
+        await finish_special_query(matcher, proc)
 except ImportError:
     pass
 
@@ -101,14 +107,21 @@ try:
             user=User(teaid=f'kook-{target.target}' if isinstance(target, At) else f'kook-{event.get_user_id()}'),
             command_args=[],
         )
-        try:
-            await matcher.finish(await proc.handle_query())
-        except RequestError as e:
-            if '未找到此用户' in e.message:
-                matcher.skip()
-        except NeedCatchError as e:
-            await matcher.send(str(e))
-            raise HandleNotFinishedError from e
+        await finish_special_query(matcher, proc)
+except ImportError:
+    pass
+
+try:
+    from nonebot.adapters.discord import MessageEvent as DiscordMessageEvent
+
+    @alc.assign('query')
+    async def _(event: DiscordMessageEvent, matcher: Matcher, target: At | Me):
+        proc = Processor(
+            event_id=id(event),
+            user=User(teaid=f'discord-{target.target}' if isinstance(target, At) else f'discord-{event.get_user_id()}'),
+            command_args=[],
+        )
+        await finish_special_query(matcher, proc)
 except ImportError:
     pass
 
