@@ -138,7 +138,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
     message = '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
     proc = Processor(
         event_id=id(event),
-        user=User(name=bind.game_account),
+        user=User(teaid=bind.game_account),
         command_args=[],
     )
     try:
