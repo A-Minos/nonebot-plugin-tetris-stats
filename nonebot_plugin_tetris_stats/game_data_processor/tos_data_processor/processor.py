@@ -53,7 +53,7 @@ def identify_user_info(info: str) -> User | MessageFormatError:
         and 2 <= len(info) <= 18  # noqa: PLR2004
     ):
         return User(name=info)
-    if info.startswith(('onebot-', 'qqguild', 'kook-', 'discord-')) and info.split('-', maxsplit=1)[1].isdigit():
+    if info.startswith(('onebot-', 'qqguild-', 'kook-', 'discord-')) and info.split('-', maxsplit=1)[1].isdigit():
         return User(teaid=info)
     return MessageFormatError('用户名/QQ号不合法')
 
