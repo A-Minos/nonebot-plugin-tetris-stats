@@ -77,7 +77,7 @@ try:
             await matcher.finish('不能查询bot的信息')
         proc = Processor(
             event_id=id(event),
-            user=User(teaid=f'onebot-{target.target}' if isinstance(target, At) else event.get_user_id()),
+            user=User(teaid=f'onebot-{target.target}' if isinstance(target, At) else f'onebot-{event.get_user_id()}'),
             command_args=[],
         )
         try:
