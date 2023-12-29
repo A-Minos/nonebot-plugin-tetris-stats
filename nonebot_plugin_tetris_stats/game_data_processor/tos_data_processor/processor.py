@@ -53,7 +53,7 @@ def identify_user_info(info: str) -> User | MessageFormatError:
         and 2 <= len(info) <= 18  # noqa: PLR2004
     ):
         return User(name=info)
-    if info.isdigit():
+    if info.startswith(('onebot-', 'qqguild-', 'kook-', 'discord-')) and info.split('-', maxsplit=1)[1].isdigit():
         return User(teaid=info)
     return MessageFormatError('用户名/QQ号不合法')
 
@@ -76,15 +76,13 @@ class Processor(ProcessorMeta):
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.get_user()
-        if self.user.name is None:
-            raise  # FIXME: 不知道怎么才能把这类型给变过来了
         async with get_session() as session:
             return await create_or_update_bind(
                 session=session,
                 chat_platform=platform,
                 chat_account=account,
                 game_platform=GAME_TYPE,
-                game_account=self.user.name,
+                game_account=self.user.unique_identifier,
             )
 
     async def handle_query(self) -> str:
