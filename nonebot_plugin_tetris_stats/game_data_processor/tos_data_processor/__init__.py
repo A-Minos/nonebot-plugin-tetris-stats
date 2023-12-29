@@ -103,6 +103,9 @@ try:
         )
         try:
             await matcher.finish(await proc.handle_query())
+        except RequestError as e:
+            if '未找到此用户' in e.message:
+                matcher.skip()
         except NeedCatchError as e:
             await matcher.send(str(e))
             raise HandleNotFinishedError from e
