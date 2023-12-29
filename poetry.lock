@@ -863,6 +863,20 @@ tarina = ">=0.3.3"
 typing-extensions = ">=4.5.0"
 
 [[package]]
+name = "nonebot-adapter-discord"
+version = "0.1.2"
+description = "Discord adapter for nonebot2"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "nonebot_adapter_discord-0.1.2-py3-none-any.whl", hash = "sha256:2495c2e4678206e3e609afd5ed91bd45679f7e7b6e53d6084d3b23fc76e63a4d"},
+    {file = "nonebot_adapter_discord-0.1.2.tar.gz", hash = "sha256:88cadc1aefe7a479f1f916e002689cf496ad986f3bb6fd32d98a34f9b3632a8c"},
+]
+
+[package.dependencies]
+nonebot2 = ">=2.0.0,<3.0.0"
+
+[[package]]
 name = "nonebot-adapter-kaiheila"
 version = "0.3.0"
 description = "kaiheila adapter for nonebot2"
@@ -2139,4 +2153,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cd6db49bf3c6a3160a90c26e1ca706a252c108573ef32fea2909fb2b883e4f40"
+content-hash = "2107a0af7834f17c5091eb88dcb0f4d30cf571f6e4fe0beabaaac7f4ddb78d87"
