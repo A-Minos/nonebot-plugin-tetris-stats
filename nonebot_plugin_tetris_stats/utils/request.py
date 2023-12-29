@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from urllib.parse import urljoin, urlparse
 
 from aiofiles import open
@@ -113,11 +114,15 @@ class Request:
         try:
             async with AsyncClient(cookies=cls._cookies, timeout=config.tetris_req_timeout) as session:
                 response = await session.get(url, headers=cls._headers)
+                if response.status_code != HTTPStatus.OK:
+                    raise RequestError(
+                        f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
+                    )
                 if is_json:
                     loads(response.content)
                 return response.content
         except HTTPError as e:
-            raise RequestError(f'请求错误\n{e!r}') from e
+            raise RequestError(f'请求错误 \n{e!r}') from e
         except JSONDecodeError:
             if urlparse(url).netloc.lower().endswith('tetr.io'):
                 return await cls._anti_cloudflare(url)
