@@ -5,7 +5,7 @@ from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
 
 from ...db import query_bind_info
-from ...utils.exception import HandleNotFinishedError, NeedCatchError
+from ...utils.exception import HandleNotFinishedError, NeedCatchError, RequestError
 from ...utils.platform import get_platform
 from ...utils.typing import Me
 from .. import add_default_handlers
@@ -70,21 +70,20 @@ try:
     from nonebot.adapters.onebot.v11 import GROUP, MessageEvent
     from nonebot.adapters.onebot.v11 import Bot as OB11Bot
 
-    @alc.assign('bind')
-    async def _(event: MessageEvent, matcher: Matcher):
-        await matcher.finish('QQ 平台无需绑定')
-
     @alc.assign('query')
     async def _(bot: OB11Bot, event: MessageEvent, matcher: Matcher, target: At | Me):
         if event.is_tome() and await GROUP(bot, event):
             await matcher.finish('不能查询bot的信息')
         proc = Processor(
             event_id=id(event),
-            user=User(teaid=target.target if isinstance(target, At) else event.get_user_id()),
+            user=User(teaid=f'onebot-{target.target}' if isinstance(target, At) else event.get_user_id()),
             command_args=[],
         )
         try:
             await matcher.send(await proc.handle_query())
+        except RequestError as e:
+            if '未找到此用户' in e.message:
+                matcher.skip()
         except NeedCatchError as e:
             await matcher.send(str(e))
             raise HandleNotFinishedError from e
