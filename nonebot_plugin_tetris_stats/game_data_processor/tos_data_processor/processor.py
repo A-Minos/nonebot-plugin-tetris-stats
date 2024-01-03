@@ -202,11 +202,7 @@ class Processor(ProcessorMeta):
             message += f"\nL'PM: {game_data.lpm} ( {game_data.pps} pps )"
             message += f'\nAPM: {game_data.apm} ( x{game_data.apl} )'
             message += f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
-        message += (
-            f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s'
-            if user_info.pb_sprint != 2147483647  # noqa: PLR2004
-            else ''
-        )
-        message += f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != 0 else ''
-        message += f'\nChallenge: {user_info.pb_challenge}' if user_info.pb_challenge != 0 else ''
+        message += f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s' if user_info.pb_sprint != '2147483647' else ''
+        message += f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != '0' else ''
+        message += f'\nChallenge: {user_info.pb_challenge}' if user_info.pb_challenge != '0' else ''
         return message
