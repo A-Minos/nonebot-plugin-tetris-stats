@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import ClassVar
 
 from nonebot import get_driver, get_plugin
@@ -8,6 +8,8 @@ from nonebot.message import run_postprocessor, run_preprocessor
 from nonebot_plugin_orm import get_session
 
 from ..db.models import HistoricalData
+
+UTC = timezone.utc
 
 driver = get_driver()
 

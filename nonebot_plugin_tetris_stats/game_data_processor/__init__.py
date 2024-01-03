@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from nonebot.matcher import Matcher
@@ -11,6 +11,8 @@ from ..utils.typing import CommandType, GameType
 from .schemas import BaseProcessedData as ProcessedData
 from .schemas import BaseRawResponse as RawResponse
 from .schemas import BaseUser as User
+
+UTC = timezone.utc
 
 
 class Processor(ABC):

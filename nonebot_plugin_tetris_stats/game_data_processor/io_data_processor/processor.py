@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from math import floor
 from re import match
 from statistics import mean
@@ -32,6 +32,8 @@ from .schemas.user_records import FailedModel as RecordsFailed
 from .schemas.user_records import SoloRecord, UserRecords
 from .schemas.user_records import SuccessModel as RecordsSuccess
 from .typing import Rank
+
+UTC = timezone.utc
 
 driver = get_driver()
 

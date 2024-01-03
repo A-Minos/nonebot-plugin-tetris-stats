@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from aiocache import Cache as ACache  # type: ignore[import-untyped]
 from nonebot.log import logger
@@ -6,6 +6,8 @@ from pydantic import parse_raw_as
 
 from ...utils.request import Request
 from .schemas.base import FailedModel, SuccessModel
+
+UTC = timezone.utc
 
 
 class Cache:

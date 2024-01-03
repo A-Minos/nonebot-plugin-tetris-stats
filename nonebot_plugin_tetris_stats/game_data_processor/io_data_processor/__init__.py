@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
@@ -19,6 +19,8 @@ from .constant import GAME_TYPE
 from .model import IORank
 from .processor import Processor, User, identify_user_info
 from .typing import Rank
+
+UTC = timezone.utc
 
 alc = on_alconna(
     Alconna(
