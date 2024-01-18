@@ -904,13 +904,13 @@ nonebot2 = ">=2.1.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.35.1"
+version = "0.36.0"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.35.1-py3-none-any.whl", hash = "sha256:70dd86b477642dc1d154aef1ceb142e5350475852f87f4b3413dfc0c7d929d87"},
-    {file = "nonebot_plugin_alconna-0.35.1.tar.gz", hash = "sha256:0940af2ddfd8cedde59123b2e3dc77aacb4efab1751d9744091d6baa69920e94"},
+    {file = "nonebot_plugin_alconna-0.36.0-py3-none-any.whl", hash = "sha256:37f8afc272924802fe75146df5f68b44e8e5537420cbb983d2d9d65195e625e7"},
+    {file = "nonebot_plugin_alconna-0.36.0.tar.gz", hash = "sha256:e524fac76ee0f1a08817007e649c2b491b44094e0262a3d36fcef3e1259edfa2"},
 ]
 
 [package.dependencies]
@@ -2138,4 +2138,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5abcbf443bdd0d7fc6d31ecc40f39b9d89ab42fb9ef25e35c4dc97be4549d5f0"
+content-hash = "94adbd74c4805c705cc488bbcb217144a8555c2ff987784dbfd7ad1f79d823a4"
