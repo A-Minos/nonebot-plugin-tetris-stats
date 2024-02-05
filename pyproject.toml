@@ -13,7 +13,7 @@ python = '^3.10'
 nonebot2 = '^2.1.3'
 lxml = '^5.1.0'
 pandas = '>=1.4.3,<3.0.0'
-playwright = '^1.40.0'
+playwright = '^1.41.1'
 ujson = '^5.9.0'
 aiofiles = "^23.2.1"
 nonebot-plugin-orm = ">=0.1.1,<0.7.0"
