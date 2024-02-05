@@ -214,16 +214,6 @@ typing-extensions = ">=4.8.0"
 all = ["email-validator (>=2.0.0)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "pydantic-extra-types (>=2.0.0)", "pydantic-settings (>=2.0.0)", "python-multipart (>=0.0.7)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 
 [[package]]
-name = "fleep"
-version = "1.0.1"
-description = "File format determination library"
-optional = false
-python-versions = ">=3.1"
-files = [
-    {file = "fleep-1.0.1.tar.gz", hash = "sha256:c8f62b258ee5364d7f6c1ed1f3f278e99020fc3f0a60a24ad1e10846e31d104c"},
-]
-
-[[package]]
 name = "greenlet"
 version = "3.0.1"
 description = "Lightweight in-process concurrent programming"
@@ -904,19 +894,18 @@ nonebot2 = ">=2.1.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.35.1"
+version = "0.36.2"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_plugin_alconna-0.35.1-py3-none-any.whl", hash = "sha256:70dd86b477642dc1d154aef1ceb142e5350475852f87f4b3413dfc0c7d929d87"},
-    {file = "nonebot_plugin_alconna-0.35.1.tar.gz", hash = "sha256:0940af2ddfd8cedde59123b2e3dc77aacb4efab1751d9744091d6baa69920e94"},
+    {file = "nonebot_plugin_alconna-0.36.2-py3-none-any.whl", hash = "sha256:8c7590a72cb05e5a194364436116bf4a3e0f6920bb39796367de8cc92aedb334"},
+    {file = "nonebot_plugin_alconna-0.36.2.tar.gz", hash = "sha256:b706eb26ecb67ae4a46e03ff840eaa804fb12fd25eb6bf3ab1dce5277567395b"},
 ]
 
 [package.dependencies]
 arclet-alconna = ">=1.7.38,<2.0.0"
 arclet-alconna-tools = ">=0.6.7,<0.7.0"
-fleep = ">=1.0.1"
 nepattern = ">=0.5.14,<0.6.0"
 nonebot2 = ">=2.1.0"
 
@@ -2139,4 +2128,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4e2470d62a5f9b11e750f3d1083fa199e1f323148d8c8d5f3e4909c11d00e96f"
+content-hash = "10dfc8128822e17622df76c6c0edc5967600fa4193145151d820998a572a0b2c"
