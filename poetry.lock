@@ -927,13 +927,13 @@ nonebot2 = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "nonebot-plugin-localstore"
-version = "0.5.1"
+version = "0.5.2"
 description = "Local Storage Support for NoneBot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_plugin_localstore-0.5.1-py3-none-any.whl", hash = "sha256:520c4dd42f00495ec8fc458c40c5877bc604556f58147c34c4051860df34575b"},
-    {file = "nonebot_plugin_localstore-0.5.1.tar.gz", hash = "sha256:97491d213d419de3f76f941a8d80ab190aa9828950289ec83402028e0f0892eb"},
+    {file = "nonebot_plugin_localstore-0.5.2-py3-none-any.whl", hash = "sha256:6cd3ee2120918e9fd2af572730aa0612f29d69da22c67bf7297bbdc86b489b57"},
+    {file = "nonebot_plugin_localstore-0.5.2.tar.gz", hash = "sha256:66ac53f954c7f9c4117c3bc472580c018bc83ec0c08bc12c4fd96ce875f8a1e3"},
 ]
 
 [package.dependencies]
@@ -2133,4 +2133,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2cc66dd0c8d5d465f21fa8ead1cbd398b5a1d5ab97c72b8cab4c60d9c59e3bfc"
+content-hash = "7c22d119112f9fdd0f45a4a09b3056a32a58769252c687cb6b4ff89928cd8224"
