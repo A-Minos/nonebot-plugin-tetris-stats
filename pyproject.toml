@@ -17,7 +17,7 @@ playwright = '^1.41.2'
 ujson = '^5.9.0'
 aiofiles = "^23.2.1"
 nonebot-plugin-orm = ">=0.1.1,<0.7.0"
-nonebot-plugin-localstore = "^0.5.1"
+nonebot-plugin-localstore = "^0.6.0"
 httpx = "^0.26.0"
 nonebot-plugin-alconna = ">=0.30,<0.37"
 nonebot-plugin-apscheduler = "^0.3.0"
