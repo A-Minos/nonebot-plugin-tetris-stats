@@ -1596,13 +1596,13 @@ files = [
 
 [[package]]
 name = "types-lxml"
-version = "2023.10.21"
+version = "2024.2.9"
 description = "Complete lxml external type annotation"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-lxml-2023.10.21.tar.gz", hash = "sha256:daf1458b7d9b2fb421354137b97c6029c4fe75cef2cbab0d8e144d8c548d9b98"},
-    {file = "types_lxml-2023.10.21-py3-none-any.whl", hash = "sha256:545097ca5f69d568827416d671285cae203a5b3d99937294e155c4cc0e46e712"},
+    {file = "types-lxml-2024.2.9.tar.gz", hash = "sha256:f584856fe84cc05f7f5fd0da00308101f75a94a1d4e48ca6e6ab9eade0052d49"},
+    {file = "types_lxml-2024.2.9-py3-none-any.whl", hash = "sha256:740e3f09ba8e264c81fe0e1ea79171157f42489fab235c92b0d03ca00963b238"},
 ]
 
 [package.dependencies]
@@ -1610,7 +1610,7 @@ types-beautifulsoup4 = "*"
 typing-extensions = ">=4.5,<5.0"
 
 [package.extras]
-dev = ["black", "isort (>=5)", "lxml (==4.9.*)", "mypy (>=1.1,<1.4)", "pyright (>=1.1.289,<1.1.332)", "pytest (>=7)", "pytest-mypy-plugins (>=1.10.1,<2.0)", "typeguard (==3.0.*)"]
+dev = ["tox (>=4.0,<5.0)"]
 
 [[package]]
 name = "types-pytz"
@@ -2138,4 +2138,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d225fddf0958b2ec5c40672637a9b2733476f37e04a90e89dd42138ebf4a113f"
+content-hash = "038e6745fbc0ebe3e791cec9e2c2b0f514a63b094ed9bfbd71b158647f236f47"
