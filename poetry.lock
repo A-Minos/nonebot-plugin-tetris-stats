@@ -865,18 +865,19 @@ typing-extensions = ">=4.8.0,<5.0.0"
 
 [[package]]
 name = "nonebot-adapter-onebot"
-version = "2.3.1"
+version = "2.4.0"
 description = "OneBot(CQHTTP) adapter for nonebot2"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "nonebot_adapter_onebot-2.3.1-py3-none-any.whl", hash = "sha256:c4085f1fc1a62e46c737452b9ce3d6eb374812c78a419bb4fa378f48bd8e4088"},
-    {file = "nonebot_adapter_onebot-2.3.1.tar.gz", hash = "sha256:10cec3aee454700e6d2144748bd898772db7bd95247d51d3ccd3b31919e24689"},
+    {file = "nonebot_adapter_onebot-2.4.0-py3-none-any.whl", hash = "sha256:4a51da1913c8ab6008e8ef8a2877af7acc32eac82d6773ff443f743dda380e14"},
+    {file = "nonebot_adapter_onebot-2.4.0.tar.gz", hash = "sha256:27a29de8137ce60f0ea328c6fac63571ba7efef7619d0cc74c0dff42c3034b12"},
 ]
 
 [package.dependencies]
 msgpack = ">=1.0.3,<2.0.0"
-nonebot2 = ">=2.1.0,<3.0.0"
+nonebot2 = ">=2.2.0,<3.0.0"
+pydantic = ">=1.10.0,<2.5.0 || >2.5.0,<2.5.1 || >2.5.1,<3.0.0"
 typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
@@ -2137,4 +2138,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ac3d038440c60c3051f929ea8797625572ec34ec155ba50b9b371658def8d62d"
+content-hash = "d225fddf0958b2ec5c40672637a9b2733476f37e04a90e89dd42138ebf4a113f"
