@@ -882,13 +882,13 @@ typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
 name = "nonebot-adapter-satori"
-version = "0.9.1"
+version = "0.9.3"
 description = "Satori Protocol Adapter for Nonebot2"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "nonebot_adapter_satori-0.9.1-py3-none-any.whl", hash = "sha256:a1b08758d463e1e3b03a29a5382ec65179b2ccc2315f7648a82a6a71de8a0c98"},
-    {file = "nonebot_adapter_satori-0.9.1.tar.gz", hash = "sha256:8183f44640f329c5e5807cc81042141a8e4d25c0df7d6d4ce88e27f565e18a30"},
+    {file = "nonebot_adapter_satori-0.9.3-py3-none-any.whl", hash = "sha256:742e904f8ef4ad6a0795836cb1b46b90c0454c1c884311ce458e56923d7517c0"},
+    {file = "nonebot_adapter_satori-0.9.3.tar.gz", hash = "sha256:27acda6f64e2545d5373c926b9ecfcf8c13b720581ee5461808bd7cf1e00b8a2"},
 ]
 
 [package.dependencies]
@@ -2139,4 +2139,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "004d9b22f3e214805b360dd43e75d75cb8dcef8b7a5888bf6198876edd0dc65a"
+content-hash = "a984566bfb387ee46efa150ef4a7cdf29fdca86d736905b04072238dac49fd9b"
