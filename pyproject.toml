@@ -33,7 +33,7 @@ nonebot2 = { extras = ["fastapi"], version = "^2.2.0" }
 types-lxml = "^2024.2.9"
 nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.8" }
 nonebot-adapter-onebot = "^2.4.1"
-nonebot-adapter-satori = "^0.9.3"
+nonebot-adapter-satori = "^0.10.2"
 nonebot-adapter-kaiheila = "^0.3.1"
 nonebot-adapter-discord = "^0.1.3"
 
