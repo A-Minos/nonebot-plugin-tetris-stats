@@ -208,6 +208,7 @@ async def get_io_rank_data() -> None:
                 high_pps=(build_extremes_data(rank_users, pps, _max)),
                 high_apm=(build_extremes_data(rank_users, apm, _max)),
                 high_vs=(build_extremes_data(rank_users, vs, _max)),
+                update_time=league_all.cache.cached_at,
             )
         )
     async with get_session() as session:
@@ -218,6 +219,6 @@ async def get_io_rank_data() -> None:
 @driver.on_startup
 async def _() -> None:
     async with get_session() as session:
-        latest_time = await session.scalar(select(IORank.create_time).order_by(IORank.id.desc()).limit(1))
+        latest_time = await session.scalar(select(IORank.update_time).order_by(IORank.id.desc()).limit(1))
     if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
         await get_io_rank_data()

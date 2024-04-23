@@ -23,9 +23,7 @@ class IORank(MappedAsDataclass, Model):
     high_pps: Mapped[tuple[dict[str, str], float]] = mapped_column(JSON)
     high_apm: Mapped[tuple[dict[str, str], float]] = mapped_column(JSON)
     high_vs: Mapped[tuple[dict[str, str], float]] = mapped_column(JSON)
-    create_time: Mapped[datetime] = mapped_column(
+    update_time: Mapped[datetime] = mapped_column(
         DateTime,
-        default=lambda: datetime.now(tz=UTC),
         index=True,
-        init=False,
     )
