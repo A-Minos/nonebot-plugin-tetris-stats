@@ -30,7 +30,7 @@ class PydanticType(TypeDecorator):
         if isinstance(value, str | bytes):
             for i in self.get_model():
                 try:
-                    return i.parse_raw(value)
+                    return i.model_validate_json(value)
                 except ValidationError:  # noqa: PERF203
                     ...
         raise TypeError

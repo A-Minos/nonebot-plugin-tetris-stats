@@ -3,8 +3,8 @@ from re import match
 from typing import Literal
 from urllib.parse import urlencode
 
+from nonebot.compat import type_validate_json
 from nonebot_plugin_orm import get_session
-from pydantic import parse_raw_as
 
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError
@@ -120,7 +120,7 @@ class Processor(ProcessorMeta):
                     ]
                 )
             self.raw_response.user_info = await Request.request(url)
-            user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
+            user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
             if not isinstance(user_info, InfoSuccess):
                 raise RequestError(f'用户信息请求错误:\n{user_info.error}')
             self.processed_data.user_info = user_info
@@ -141,7 +141,9 @@ class Processor(ProcessorMeta):
                     ]
                 )
             )
-            self.processed_data.user_profile[params] = UserProfile.parse_raw(self.raw_response.user_profile[params])
+            self.processed_data.user_profile[params] = UserProfile.model_validate_json(
+                self.raw_response.user_profile[params]
+            )
         return self.processed_data.user_profile[params]
 
     async def get_game_data(self) -> GameData | None:

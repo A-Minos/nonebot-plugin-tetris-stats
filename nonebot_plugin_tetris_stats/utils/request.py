@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse
 
 from aiofiles import open
 from httpx import AsyncClient, HTTPError
-from nonebot import get_driver
+from nonebot import get_driver, get_plugin_config
 from nonebot.log import logger
 from playwright.async_api import Response
 from ujson import JSONDecodeError, dumps, loads
@@ -13,7 +13,7 @@ from .browser import BrowserManager
 from .exception import RequestError
 
 driver = get_driver()
-config = Config.parse_obj(driver.config)
+config = get_plugin_config(Config)
 
 
 @driver.on_startup

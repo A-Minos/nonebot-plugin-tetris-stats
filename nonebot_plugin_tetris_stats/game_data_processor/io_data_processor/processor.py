@@ -7,9 +7,9 @@ from statistics import mean
 from typing import Literal
 
 from nonebot import get_driver
+from nonebot.compat import type_validate_json
 from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
 from nonebot_plugin_orm import get_session
-from pydantic import parse_raw_as
 from sqlalchemy import select
 
 from ...db import create_or_update_bind
@@ -96,7 +96,7 @@ class Processor(ProcessorMeta):
             self.raw_response.user_info = await Cache.get(
                 splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
             )
-            user_info: UserInfo = parse_raw_as(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
+            user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
             if isinstance(user_info, InfoFailed):
                 raise RequestError(f'用户信息请求错误:\n{user_info.error}')
             self.processed_data.user_info = user_info
@@ -108,7 +108,7 @@ class Processor(ProcessorMeta):
             self.raw_response.user_records = await Cache.get(
                 splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}/', 'records'])
             )
-            user_records: UserRecords = parse_raw_as(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
+            user_records: UserRecords = type_validate_json(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
             if isinstance(user_records, RecordsFailed):
                 raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
             self.processed_data.user_records = user_records
@@ -158,7 +158,10 @@ class Processor(ProcessorMeta):
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
 @retry(exception_type=RequestError, delay=timedelta(minutes=15))
 async def get_io_rank_data() -> None:
-    league_all: LeagueAll = parse_raw_as(LeagueAll, await Cache.get(splice_url([BASE_URL, 'users/lists/league/all'])))  # type: ignore[arg-type]
+    league_all: LeagueAll = type_validate_json(
+        LeagueAll,  # type: ignore[arg-type]
+        await Cache.get(splice_url([BASE_URL, 'users/lists/league/all'])),
+    )
     if isinstance(league_all, LeagueAllFailed):
         raise RequestError(f'排行榜数据请求错误:\n{league_all.error}')
 
