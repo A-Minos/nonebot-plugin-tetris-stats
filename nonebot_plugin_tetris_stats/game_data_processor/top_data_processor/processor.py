@@ -2,7 +2,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from io import StringIO
 from re import match
-from typing import Literal, NoReturn
+from typing import Literal
 from urllib.parse import urlencode
 
 from lxml import etree
@@ -87,10 +87,9 @@ class Processor(ProcessorMeta):
             self.processed_data.user_profile = self.raw_response.user_profile.decode()
         return self.processed_data.user_profile
 
-    async def check_user(self) -> None | NoReturn:
+    async def check_user(self) -> None:
         if 'user not found!' in await self.get_user_profile():
             raise RequestError('用户不存在!')
-        return None
 
     async def get_user_name(self) -> str:
         """获取用户名"""

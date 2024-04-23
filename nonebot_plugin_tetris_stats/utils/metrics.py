@@ -144,7 +144,7 @@ class TetrisMetricsProWithLPMADPM(TetrisMetricsBasicWithLPM, TetrisMetricsBaseWi
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: Number,
     lpm: None = None,
@@ -157,7 +157,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: Number,
@@ -170,7 +170,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: None = None,
@@ -183,7 +183,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: None = None,
@@ -196,7 +196,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: Number,
     lpm: None = None,
@@ -209,7 +209,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: Number,
@@ -222,7 +222,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: Number,
     lpm: None = None,
@@ -235,7 +235,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: Number,
     lpm: None = None,
@@ -248,7 +248,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: Number,
@@ -261,7 +261,7 @@ def get_metrics(  # noqa: PLR0913
 
 
 @overload
-def get_metrics(  # noqa: PLR0913
+def get_metrics(
     *,
     pps: None = None,
     lpm: Number,
