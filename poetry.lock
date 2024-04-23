@@ -1016,19 +1016,19 @@ nonebot2 = ">=2.2.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.42.5"
+version = "0.43.0"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "nonebot_plugin_alconna-0.42.5-py3-none-any.whl", hash = "sha256:3d1e035f2e17b0a53bfc7c1cb7c56407f41fcd88c288db89343f0094d1f2532b"},
-    {file = "nonebot_plugin_alconna-0.42.5.tar.gz", hash = "sha256:ae820275e77496cc3356c469d2fac3cf5dcbf93271539d2150ce9b88a34627ee"},
+    {file = "nonebot_plugin_alconna-0.43.0-py3-none-any.whl", hash = "sha256:8f9203e8b20315dec108612e27d6a7ba62516b4f775041ae57779425dc0aafa9"},
+    {file = "nonebot_plugin_alconna-0.43.0.tar.gz", hash = "sha256:860798ff9e22da09fd57a08a0730b5ba29164c6fbdd4abc2e903e0229ff02937"},
 ]
 
 [package.dependencies]
 arclet-alconna = ">=1.8.10"
 arclet-alconna-tools = ">=0.7.3"
-nepattern = ">=0.7.0,<0.8.0"
+nepattern = ">=0.7.0"
 nonebot2 = ">=2.2.1"
 
 [[package]]
