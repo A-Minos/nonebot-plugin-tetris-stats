@@ -53,6 +53,7 @@ template = env.get_template('data-v2.j2.html')
 
 
 output = template.render(
+    user_id='5eb270aaeb7d4250d3f2fc47',
     user_name='C1ystal',
     user_sgin='I am not in danger, Skyler. I am the danger. A guy opens his door and gets shot...',
     game_name='TETR.IO',
