@@ -27,3 +27,4 @@ class IORank(MappedAsDataclass, Model):
         DateTime,
         index=True,
     )
+    file_hash: Mapped[str | None] = mapped_column(String(128), index=True)

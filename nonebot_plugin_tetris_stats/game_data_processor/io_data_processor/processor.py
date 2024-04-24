@@ -1,16 +1,21 @@
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
+from hashlib import sha512
 from math import floor
 from re import match
 from statistics import mean
 from typing import Literal
 
+from aiofiles import open
 from nonebot import get_driver
 from nonebot.compat import type_validate_json
+from nonebot.utils import run_sync
 from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
+from nonebot_plugin_localstore import get_data_file
 from nonebot_plugin_orm import get_session
 from sqlalchemy import select
+from zstandard import ZstdCompressor
 
 from ...db import create_or_update_bind
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
@@ -160,7 +165,7 @@ class Processor(ProcessorMeta):
 async def get_io_rank_data() -> None:
     league_all: LeagueAll = type_validate_json(
         LeagueAll,  # type: ignore[arg-type]
-        await Cache.get(splice_url([BASE_URL, 'users/lists/league/all'])),
+        (data := await Cache.get(splice_url([BASE_URL, 'users/lists/league/all']))),
     )
     if isinstance(league_all, LeagueAllFailed):
         raise RequestError(f'排行榜数据请求错误:\n{league_all.error}')
@@ -188,6 +193,13 @@ async def get_io_rank_data() -> None:
         user = sort(users, field)
         return User(ID=user.id, name=user.username).dict(), field(user)
 
+    data_hash: str | None = await run_sync((await run_sync(sha512)(data)).hexdigest)()
+    try:
+        async with open(get_data_file('nonebot_plugin_tetris_stats', f'{data_hash}.json.zst'), mode='rb') as file:
+            await file.write(await run_sync(ZstdCompressor(level=12, threads=-1).compress)(data))
+    except:  # noqa: E722 FIXME: 确定错误类型
+        data_hash = None
+
     users = [i for i in league_all.data.users if isinstance(i, LeagueAllUser)]
     rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)
     for i in users:
@@ -212,6 +224,7 @@ async def get_io_rank_data() -> None:
                 high_apm=(build_extremes_data(rank_users, apm, _max)),
                 high_vs=(build_extremes_data(rank_users, vs, _max)),
                 update_time=league_all.cache.cached_at,
+                file_hash=data_hash,
             )
         )
     async with get_session() as session:
