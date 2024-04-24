@@ -12,14 +12,14 @@ class EndContext(BaseModel):
         zero: bool
         locked: bool
         prev: int
-        frameoffset: int | None
+        frameoffset: int | None = None
 
     class Clears(BaseModel):
         singles: int
         doubles: int
         triples: int
         quads: int
-        pentas: int | None
+        pentas: int | None = None
         realtspins: int
         minitspins: int
         minitspinsingles: int
@@ -33,7 +33,7 @@ class EndContext(BaseModel):
     class Garbage(BaseModel):
         sent: int
         received: int
-        attack: int | None
+        attack: int | None = None
         cleared: int
 
     class Finesse(BaseModel):
@@ -46,18 +46,18 @@ class EndContext(BaseModel):
     level_lines: int
     level_lines_needed: int
     inputs: int
-    holds: int | None
+    holds: int | None = None
     time: Time
     score: int
-    zenlevel: int | None
-    zenprogress: int | None
+    zenlevel: int | None = None
+    zenprogress: int | None = None
     level: int
     combo: int
-    currentcombopower: int | None  # WTF
+    currentcombopower: int | None = None  # WTF
     topcombo: int
     btb: int
     topbtb: int
-    currentbtbchainpower: int | None  # WTF * 2
+    currentbtbchainpower: int | None = None  # WTF * 2
     tspins: int
     piecesplaced: int
     clears: Clears
@@ -79,7 +79,7 @@ class BaseModeRecord(BaseModel):
         replayid: str
         user: User
         ts: datetime
-        ismulti: bool | None
+        ismulti: bool | None = None
         endcontext: EndContext
 
     class MultiRecord(BaseModel):
@@ -92,21 +92,19 @@ class BaseModeRecord(BaseModel):
         replayid: str
         user: User
         ts: datetime
-        ismulti: bool | None
+        ismulti: bool | None = None
         endcontext: list[EndContext]
 
-    record: SoloRecord | MultiRecord | None
-    rank: int | None
+    record: SoloRecord | MultiRecord | None = None
+    rank: int | None = None
 
 
 class SuccessModel(BaseSuccessModel):
     class Data(BaseModel):
         class Records(BaseModel):
-            class Sprint(BaseModeRecord):
-                ...
+            class Sprint(BaseModeRecord): ...
 
-            class Blitz(BaseModeRecord):
-                ...
+            class Blitz(BaseModeRecord): ...
 
             sprint: Sprint = Field(..., alias='40l')
             blitz: Blitz

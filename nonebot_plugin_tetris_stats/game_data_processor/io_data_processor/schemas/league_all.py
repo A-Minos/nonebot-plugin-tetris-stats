@@ -28,20 +28,20 @@ class SuccessModel(BaseSuccessModel):
             league: League
             supporter: bool
             verified: bool
-            country: str | None
+            country: str | None = None
 
         class InvalidUser(BaseModel):
             class League(BaseModel):
                 gamesplayed: int
                 gameswon: int
                 rating: float
-                glicko: float | None
-                rd: float | None
+                glicko: float | None = None
+                rd: float | None = None
                 rank: Rank
                 bestrank: Rank
-                apm: float | None
-                pps: float | None
-                vs: float | None
+                apm: float | None = None
+                pps: float | None = None
+                vs: float | None = None
                 decaying: bool
 
             id: str = Field(..., alias='_id')

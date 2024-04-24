@@ -14,7 +14,7 @@ class SuccessModel(BaseSuccessModel):
             class Badge(BaseModel):
                 id: str
                 label: str
-                ts: datetime | None
+                ts: datetime | None = None
 
             class NeverPlayedLeague(BaseModel):
                 gamesplayed: Literal[0]
@@ -60,8 +60,8 @@ class SuccessModel(BaseSuccessModel):
                 bestrank: Rank
                 standing: int
                 standing_local: int
-                next_rank: Rank | None
-                prev_rank: Rank | None
+                next_rank: Rank | None = None
+                prev_rank: Rank | None = None
                 next_at: int
                 prev_at: int
                 percentile: float
@@ -70,7 +70,7 @@ class SuccessModel(BaseSuccessModel):
                 rd: float
                 apm: float
                 pps: float
-                vs: float | None
+                vs: float | None = None
                 decaying: bool
 
             class Connections(BaseModel):
@@ -78,7 +78,7 @@ class SuccessModel(BaseSuccessModel):
                     id: str
                     username: str
 
-                discord: Discord | None
+                discord: Discord | None = None
 
             class Distinguishment(BaseModel):
                 type: str
@@ -86,33 +86,33 @@ class SuccessModel(BaseSuccessModel):
             id: str = Field(..., alias='_id')
             username: str
             role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned']
-            ts: datetime | None
-            botmaster: str | None
+            ts: datetime | None = None
+            botmaster: str | None = None
             badges: list[Badge]
             xp: float
             gamesplayed: int
             gameswon: int
             gametime: float
-            country: str | None
-            badstanding: bool | None
-            supporter: bool | None  # osk说是必有, 但实际上不是 fk osk
+            country: str | None = None
+            badstanding: bool | None = None
+            supporter: bool | None = None  # osk说是必有, 但实际上不是 fk osk
             supporter_tier: int
             verified: bool
             league: NeverPlayedLeague | NeverRatedLeague | RatedLeague
-            avatar_revision: int | None
+            avatar_revision: int | None = None
             """This user's avatar ID. Get their avatar at
 
             https://tetr.io/user-content/avatars/{ USERID }.jpg?rv={ AVATAR_REVISION }"""
-            banner_revision: int | None
+            banner_revision: int | None = None
             """This user's banner ID. Get their banner at
 
             https://tetr.io/user-content/banners/{ USERID }.jpg?rv={ BANNER_REVISION }
 
             Ignore this field if the user is not a supporter."""
-            bio: str | None
+            bio: str | None = None
             connections: Connections
-            friend_count: int | None
-            distinguishment: Distinguishment | None
+            friend_count: int | None = None
+            distinguishment: Distinguishment | None = None
 
         user: User
 
