@@ -12,7 +12,7 @@ from nonebot import get_driver
 from nonebot.compat import type_validate_json
 from nonebot.utils import run_sync
 from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
-from nonebot_plugin_localstore import get_data_file
+from nonebot_plugin_localstore import get_data_file  # type: ignore[import-untyped]
 from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 from zstandard import ZstdCompressor
