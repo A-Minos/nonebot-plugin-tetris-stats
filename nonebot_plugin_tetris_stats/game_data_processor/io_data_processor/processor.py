@@ -194,11 +194,8 @@ async def get_io_rank_data() -> None:
         return User(ID=user.id, name=user.username).dict(), field(user)
 
     data_hash: str | None = await run_sync((await run_sync(sha512)(data)).hexdigest)()
-    try:
-        async with open(get_data_file('nonebot_plugin_tetris_stats', f'{data_hash}.json.zst'), mode='rb') as file:
-            await file.write(await run_sync(ZstdCompressor(level=12, threads=-1).compress)(data))
-    except:  # noqa: E722 FIXME: 确定错误类型
-        data_hash = None
+    async with open(get_data_file('nonebot_plugin_tetris_stats', f'{data_hash}.json.zst'), mode='wb') as file:
+        await file.write(await run_sync(ZstdCompressor(level=12, threads=-1).compress)(data))
 
     users = [i for i in league_all.data.users if isinstance(i, LeagueAllUser)]
     rank_to_users: defaultdict[Rank, list[LeagueAllUser]] = defaultdict(list)
