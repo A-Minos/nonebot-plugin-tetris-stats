@@ -10,7 +10,7 @@ license = 'AGPL-3.0'
 
 [tool.poetry.dependencies]
 python = '^3.10'
-nonebot2 = '^2.2.0'
+nonebot2 = { extras = ["fastapi"], version = "^2.2.1" }
 lxml = '^5.1.0'
 pandas = '>=1.4.3,<3.0.0'
 playwright = '^1.41.2'
@@ -30,7 +30,6 @@ types-ujson = '^5.9.0'
 pandas-stubs = '>=1.5.2,<3.0.0'
 ruff = '>=0.3.0'
 types-aiofiles = "^23.2.0.20240106"
-nonebot2 = { extras = ["fastapi"], version = "^2.2.0" }
 types-lxml = "^2024.2.9"
 nonebot-plugin-orm = { extras = ["default"], version = ">=0.3,<0.8" }
 nonebot-adapter-onebot = "^2.4.1"
