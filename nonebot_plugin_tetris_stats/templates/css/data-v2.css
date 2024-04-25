@@ -491,6 +491,8 @@
     text-align: right;
 
     color: #4779c6;
+
+    white-space: nowrap;
 }
 
 .radar-map {
