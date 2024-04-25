@@ -6,16 +6,12 @@ TR_MIN = 0
 TR_MAX = 25000
 
 data = [
-    [1687363200000, 24510],
-    [1687449600000, 24560],
-    [1687536000000, 24520],
-    [1687622400000, 24550],
-    [1687708800000, 25000],
-    [1687795200000, 24450],
-    [1687881600000, 24530],
-    [1687968000000, 24520],
-    [1688054400000, 24550],
-    [1688140800001, 25000],
+    [1713283200000, 24844],
+    [1713456000000, 24845],
+    [1713628800000, 24846],
+    [1713801600000, 24847],
+    [1713974400000, 24848],
+    [1714147200000, 25000],
 ]
 
 
@@ -51,33 +47,45 @@ env = Environment(loader=FileSystemLoader('nonebot_plugin_tetris_stats/templates
 
 template = env.get_template('data-v2.j2.html')
 
+apm = 120.73
+pps = 3.07
+vs = 234.49
+
+dsps = float(format(vs / 100 - apm / 60, '.2f'))
+app = float(format(apm / (60 * pps), '.2f'))
+dspp = float(format(dsps / pps, '.2f'))
+lpm = float(format(pps * 24, '.2f'))
+adpm = float(format(vs * 0.6, '.2f'))
 
 output = template.render(
-    user_id='5eb270aaeb7d4250d3f2fc47',
-    user_name='C1ystal',
-    user_sgin='I am not in danger, Skyler. I am the danger. A guy opens his door and gets shot...',
+    user_id='5eb3a6530b29196c155074e8',
+    user_name='WOSHIZHAZHA120',
+    user_sgin='zhazha120.cn',
     game_name='TETR.IO',
-    ranking=2429.21,
-    rd=62.29,
-    rank='U',
-    TR='24,165.82',
-    global_rank=743,
-    lpm=48.72,
-    pps=2.03,
-    apm=76.87,
-    apl=1.58,
-    adpm=102.31,
-    adpl=2.1,
-    vs=170.51,
-    spm=1,
-    dpm=3,
-    sprint='1m 10.2s',
-    blitz='289,085',
+    ranking=2834.29,
+    rd=60.93,
+    rank='X',
+    TR='24,847.98',
+    global_rank=282,
+    lpm=lpm,
+    pps=pps,
+    apm=apm,
+    apl=format(apm / pps / 24, '.2f'),
+    adpm=adpm,
+    adpl=format(adpm / lpm, '.2f'),
+    vs=vs,
+    sprint='22.3s',
+    blitz='389,548',
     split_value=split_value,
     offset=offset,
     value_max=value_max,
     value_min=value_min,
     data=data,
+    app=app,
+    dspp=dspp,
+    OR=0,
+    ci=format(150 * dspp + 125 * app + 50 * (vs / apm) - 25, '.2f'),
+    ge=format(2 * (app * dsps / pps), '.2f'),
 )
 
 with open(
