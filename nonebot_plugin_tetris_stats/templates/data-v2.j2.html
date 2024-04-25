@@ -79,6 +79,8 @@
     <script src="./js/echarts.js"></script>
 
     <script>
+        var data = {{data}}
+
         // 曲线图
         var lineChartDom = document.getElementById('TR-curve-chart');
         var lineChart = echarts.init(lineChartDom, null, { renderer: 'svg' });
@@ -223,14 +225,14 @@
             series: [
                 {
                     // 10天的数据，最后一天只要第一条 (时间戳最少要多1ms)
-                    data:{{data}},
+                    data:data,
                     type: 'line',
                     smooth: true,
                     symbol: function (value, params) {
                         console.log(value);
                         console.log(params);
                         // 模板化时传入 index
-                        if (9 === params.dataIndex) {
+                        if (params.dataIndex === data.length - 1) {
                             return 'image://static/data/point.svg';
                         }
                         return 'none';
