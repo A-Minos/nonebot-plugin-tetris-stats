@@ -14,3 +14,4 @@ package.json
 pnpm-lock.yaml
 *.drawio.svg
 package-lock.json
+*Zone.Identifier

@@ -12,6 +12,7 @@ data = [
     [1687622400000, 24550],
     [1687708800000, 25000],
     [1687795200000, 24450],
+    [1687821600000, 24210],
     [1687881600000, 24530],
     [1687968000000, 24520],
     [1688054400000, 24550],
@@ -51,33 +52,47 @@ env = Environment(loader=FileSystemLoader('nonebot_plugin_tetris_stats/templates
 
 template = env.get_template('data-v2.j2.html')
 
+apm = 120.73
+pps = 3.07
+vs = 234.49
+
+dsps = float(format(vs / 100 - apm / 60, '.2f'))
+app = float(format(apm / (60 * pps), '.2f'))
+dspp = float(format(dsps / pps, '.2f'))
+lpm = float(format(pps * 24, '.2f'))
+adpm = float(format(vs * 0.6, '.2f'))
 
 output = template.render(
-    user_name='C1ystal',
-    user_sgin='I am not in danger, Skyler. I am the danger. A guy opens his door and gets shot...',
+    user_avatar='',
+    md5='3fc6335e221a03dc65d4b0939575535e',
+    user_name='WOSHIZHAZHA120',
+    user_sign='zhazha120.cn',
     game_name='TETR.IO',
-    ranking=2429.21,
-    rd=62.29,
-    rank='U',
-    TR='24,165.82',
-    global_rank=743,
-    lpm=48.72,
-    pps=2.03,
-    apm=76.87,
-    apl=1.58,
-    adpm=102.31,
-    adpl=2.1,
-    vs=170.51,
-    sprint='1m 10.2s',
-    blitz='289,085',
+    ranking=2834.29,
+    rd=60.93,
+    rank='X',
+    TR='24,847.98',
+    global_rank=282,
+    lpm=lpm,
+    pps=pps,
+    apm=apm,
+    apl=format(apm / pps / 24, '.2f'),
+    adpm=adpm,
+    adpl=format(adpm / lpm, '.2f'),
+    vs=vs,
+    sprint='22.3s',
+    blitz='389,548',
     split_value=split_value,
     offset=offset,
     value_max=value_max,
     value_min=value_min,
     data=data,
+    app=app,
+    dspp=dspp,
+    OR=0,
+    ci=format(150 * dspp + 125 * app + 50 * (vs / apm) - 25, '.2f'),
+    ge=format(2 * (app * dsps / pps), '.2f'),
 )
 
-with open(
-    './nonebot_plugin_tetris_stats/templates/test.html', 'w+', encoding='UTF-8'
-) as file:
+with open('./nonebot_plugin_tetris_stats/templates/test.html', 'w+', encoding='UTF-8') as file:
     file.write(output)
