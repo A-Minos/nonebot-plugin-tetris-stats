@@ -6,12 +6,17 @@ TR_MIN = 0
 TR_MAX = 25000
 
 data = [
-    [1713283200000, 24844],
-    [1713456000000, 24845],
-    [1713628800000, 24846],
-    [1713801600000, 24847],
-    [1713974400000, 24848],
-    [1714147200000, 25000],
+    [1687363200000, 24510],
+    [1687449600000, 24560],
+    [1687536000000, 24520],
+    [1687622400000, 24550],
+    [1687708800000, 25000],
+    [1687795200000, 24450],
+    [1687821600000, 24210],
+    [1687881600000, 24530],
+    [1687968000000, 24520],
+    [1688054400000, 24550],
+    [1688140800001, 25000],
 ]
 
 
@@ -58,7 +63,8 @@ lpm = float(format(pps * 24, '.2f'))
 adpm = float(format(vs * 0.6, '.2f'))
 
 output = template.render(
-    user_id='5eb3a6530b29196c155074e8',
+    user_avatar='',
+    md5='3fc6335e221a03dc65d4b0939575535e',
     user_name='WOSHIZHAZHA120',
     user_sign='zhazha120.cn',
     game_name='TETR.IO',
@@ -88,7 +94,5 @@ output = template.render(
     ge=format(2 * (app * dsps / pps), '.2f'),
 )
 
-with open(
-    './nonebot_plugin_tetris_stats/templates/test.html', 'w+', encoding='UTF-8'
-) as file:
+with open('./nonebot_plugin_tetris_stats/templates/test.html', 'w+', encoding='UTF-8') as file:
     file.write(output)

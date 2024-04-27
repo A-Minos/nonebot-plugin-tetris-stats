@@ -8,71 +8,75 @@
     </head>
 
     <body>
-        <div class="main-content">
-            <span class="account-title">Account&Rankings</span>
-            <div class="user-info-box">
-                <img class="user-avatar" src="https://tetr.io/user-content/avatars/{{user_id}}.jpg" />
-                <div class="user-name">{{user_name}}</div>
-                <div class="user-sign">“{{user_sign}}”</div>
-            </div>
-            <div class="game-info-box">
-                <div class="game-type-box">
-                    <img
-                        class="game-logo"
-                        src="./static/logo/{{game_name}}.svg"
-                    />
-                    <span class="game-name">{{game_name}}</span>
+        <div id="main-content">
+            <span class="big-title">Account&Rankings</span>
+            <div id="account-box">
+                <div id="info-box">
+                    <div class="flex-gap"></div>
+                    <div class="box-shadow box-rounded-corners" id="user-info-box">
+                        <img id="user-avatar" src="{{user_avatar}}" md5="{{md5}}" />
+                        <div id="user-name">{{user_name}}</div>
+                        <div id="user-sign">“{{user_sign}}”</div>
+                    </div>
+                    <div class="flex-gap"></div>
+                    <div class="box-shadow box-rounded-corners" id="game-info-box">
+                        <div id="game-type-box">
+                            <img id="game-logo" src="./static/logo/{{game_name}}.svg" />
+                            <span id="game-name">{{game_name}}</span>
+                        </div>
+                        <div id="game-info-dividing-line"></div>
+                        <div id="ranking-info-box">
+                            <span id="ranking-title">Ranking</span>
+                            <span id="ranking">{{ranking}}</span>
+                            <span id="rd">±{{rd}}</span>
+                        </div>
+                    </div>
+                    <div class="flex-gap"></div>
                 </div>
-                <div class="game-info-dividing-line"></div>
-                <div class="ranking-info-box">
-                    <span class="ranking-title">Ranking</span>
-                    <span class="ranking">{{ranking}}</span>
-                    <span class="rd">±{{rd}}</span>
+                <div class="chart-shadow box-rounded-corners" id="TR-curve-chart">
+                    <span id="TR-title">Tetra Rating (TR)</span>
+                    <img id="rank-icon" src="./static/rank/{{rank}}.svg" />
+                    <span id="TR" style="display: flex; align-items: flex-end"
+                        >{{TR}}&nbsp;
+                        <p style="font-size: 30px; font-weight: 400; line-height: 47px">(#{{global_rank}})</p>
+                    </span>
                 </div>
             </div>
-            <div class="TR-curve-chart" id="TR-curve-chart">
-                <span class="TR-title">Tetra Rating (TR)</span>
-                <img class="rank-icon" src="./static/rank/{{rank}}.svg" />
-                <span class="TR" style="display: flex; align-items: flex-end"
-                    >{{TR}}&nbsp;
-                    <p
-                        style="
-                            font-size: 30px;
-                            font-weight: 400;
-                            line-height: 47px;
-                        "
-                    >
-                        (#{{global_rank}})
-                    </p>
-                </span>
+            <span class="big-title">Multiplayer Stats</span>
+            <div id="multiplayer-box">
+                <div class="flex-gap"></div>
+                <div id="multiplayer-data-box">
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="lpm-box">
+                        <span class="big-data-value" id="lpm-value">{{lpm}}</span>
+                        <span class="small-data-value" id="pps-value">{{pps}} pps</span>
+                    </div>
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="apm-box">
+                        <span class="big-data-value" id="apm-value">{{apm}}</span>
+                        <span class="small-data-value" id="apl-value">x{{apl}}</span>
+                    </div>
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="adpm-box">
+                        <span class="big-data-value" id="adpm-value">{{adpm}}</span>
+                        <span class="small-data-value" id="adpl-value">x{{adpl}}</span>
+                        <span class="small-data-value" id="vs-value">{{vs}} vs</span>
+                    </div>
+                </div>
+                <div class="flex-gap"></div>
+                <div class="chart-shadow box-rounded-corners" id="radar-chart"></div>
+                <div class="flex-gap"></div>
             </div>
-            <span class="multiplayer-title">Multiplayer Stats</span>
-            <div class="lpm-table">
-                <img src="./static/data/LPM.svg" />
-                <span class="lpm-value">{{lpm}}</span>
-                <span class="pps-value">{{pps}} pps</span>
+            <span class="big-title">Singleplayer Stats</span>
+            <div id="singleplayer-box">
+                <div class="flex-gap"></div>
+                <div class="small-data-box box-shadow box-rounded-corners" id="sprint-box">
+                    <span class="big-data-value" id="sprint-value">{{sprint}}</span>
+                </div>
+                <div class="flex-gap"></div>
+                <div class="small-data-box box-shadow box-rounded-corners" id="blitz-box">
+                    <span class="big-data-value" id="blitz-value">{{blitz}}</span>
+                </div>
+                <div class="flex-gap"></div>
             </div>
-            <div class="apm-table">
-                <img src="./static/data/APM.svg" />
-                <span class="apm-value">{{apm}}</span>
-                <span class="apl-value">x{{apl}}</span>
-            </div>
-            <div class="adpm-table">
-                <img src="./static/data/ADPM.svg" />
-                <span class="adpm-value">{{adpm}}</span>
-                <span class="adpl-value">x{{adpl}}</span>
-                <span class="vs-value">{{vs}} vs</span>
-            </div>
-            <div class="radar-map" id="radar-map"></div>
-            <span class="singleplayer-title">Singleplayer Stats</span>
-            <div class="sprint-table">
-                <img src="./static/data/40L.svg" />
-                <span class="sprint-value">{{sprint}}</span>
-            </div>
-            <div class="blitz-table">
-                <img src="./static/data/Blitz.svg" />
-                <span class="blitz-value">{{blitz}}</span>
-            </div>
+            <div id="footer">Powered by<br />Nonebot2 x nonebot-plugin-tetris-stats</div>
         </div>
     </body>
 
@@ -104,14 +108,8 @@
                 },
                 axisLine: {
                     show: false,
-                    lineStyle: {
-                        color: '#FFFFFF',
-                    },
                 },
                 axisLabel: {
-                    fontFamily: 'CabinetGrotesk-Variable',
-                    fontSize: 15,
-                    align: 'center',
                     formatter: function (value, index) {
                         console.log(value, index);
                         var date = new Date(value);
@@ -156,15 +154,13 @@
                             fontFamily: 'CabinetGrotesk-Variable',
                             fontSize: 13,
                             fontWeight: '400',
-                            color: '#FFFFFF',
-                            opacity: 0.6,
+                            color: 'rgba(255, 255, 255, 0.6)',
                         },
                         day: {
                             fontFamily: 'CabinetGrotesk-Variable',
                             fontSize: 20,
                             fontWeight: '800',
-                            color: '#FFFFFF',
-                            opacity: 0.6,
+                            color: 'rgba(255, 255, 255, 0.6)',
                         },
                         last_month: {
                             fontFamily: 'CabinetGrotesk-Variable',
@@ -200,9 +196,6 @@
                 },
                 axisLine: {
                     show: false,
-                    lineStyle: {
-                        color: '#FFFFFF',
-                    },
                 },
                 axisLabel: {
                     align: 'right',
@@ -214,8 +207,7 @@
                             fontFamily: 'CabinetGrotesk-Variable',
                             fontSize: 15,
                             fontWeight: '500',
-                            color: '#FFFFFF',
-                            opacity: 0.6,
+                            color: 'rgba(255, 255, 255, 0.6)',
                         },
                     },
                 },
@@ -226,7 +218,7 @@
             series: [
                 {
                     // 10天的数据，最后一天只要第一条 (时间戳最少要多1ms)
-                    data:data,
+                    data: data,
                     type: 'line',
                     smooth: true,
                     symbol: function (value, params) {
@@ -239,7 +231,25 @@
                         return 'none';
                     },
                     symbolSize: 75,
-                    color: ['#FAFAFA99'],
+                    symbolOffset: [0.79, 0],
+                    lineStyle:{
+                        color: "#FAFAFA99",
+                    },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0, color: 'rgba(250, 250, 250, 0.3)'
+                            }, {
+                                offset: 1, color: 'rgba(250, 250, 250, 0)'
+                            }],
+                            global: false
+                            },
+                    },
                     markLine: {
                         data: [
                             {
@@ -269,29 +279,33 @@
 
     <script>
         // 雷达图
-        var radarChartDom = document.getElementById('radar-map');
+        var radarChartDom = document.getElementById('radar-chart');
         var radarChart = echarts.init(radarChartDom, null, { renderer: 'svg' });
         var option;
 
         option = {
-            animation:false,
+            animation: false,
             radar: [
                 {
                     indicator: [
-                        { text: 'PPS' },
-                        { text: 'APP', nameRotate: 60 },
-                        { text: 'DSPP', nameRotate: -60 },
-                        { text: "OR" },
-                        { text: 'CI', nameRotate: 60 },
-                        { text: "GE", nameRotate: -60 },
+                        { name: 'PPS' },
+                        { name: 'APP', nameRotate: 60 },
+                        { name: 'DSPP', nameRotate: -60 },
+                        { name: "OR" },
+                        { name: 'CI', nameRotate: 60 },
+                        { name: "GE", nameRotate: -60 },
                     ],
                     center: ['50%', '50%'],
                     radius: '65%',
                     startAngle: 90,
                     splitNumber: 4,
                     shape: 'circle',
+                    silent: true,
                     axisName: {
                         color: '#FAFAFA',
+                        fontFamily: 'CabinetGrotesk-Variable',
+                        fontSize: 15,
+                        fontWeight: '800',
                     },
                     splitArea: {
                         show: false,
@@ -300,6 +314,15 @@
                         lineStyle: {
                             color: 'rgba(250, 250, 250, 0.3)',
                         },
+                    },
+                    axisLabel: {
+                        show: true,
+                        rotate: 0,
+                        margin: -1,
+                        fontFamily: 'CabinetGrotesk-Variable',
+                        fontSize: 7,
+                        fontWeight: '800',
+                        color: '#FFFFFF',
                     },
                     splitLine: {
                         lineStyle: {
@@ -311,6 +334,7 @@
             series: [
                 {
                     type: 'radar',
+                    symbol: 'none',
                     label: {
                         show: true,
                     },
@@ -318,21 +342,44 @@
                         disabled: true,
                     },
                     lineStyle: {
-                        color: 'rgba(250, 250, 250, 1)',
-                        shadowBlur: 12,
-                        shadowColor: 'rgba(250, 250, 250, 1.5)',
+                        color: '#FAFAFA',
+                        width: 2.5,
+                        shadowBlur: 20,
+                        shadowColor: 'rgba(250, 250, 250, 1)',
                     },
                     areaStyle: {
                         color: 'rgba(250, 250, 250, 0.45)',
                     },
                     data: [
                         {
-                            value: [{{pps}}, {{app}}, {{dspp}}, {{OR}}, {{ci}}, {{ge}}]
+                            value: [{{pps}}, {{app}}, {{dspp}}, {{OR}}, {{ci}}, {{ge}}],
                         },
                     ],
                 },
             ],
         };
         option && radarChart.setOption(option);
+    </script>
+    <script>
+        var userAvatar = document.getElementById('user-avatar');
+        var md5 = userAvatar.getAttribute('md5');
+        if (md5 != '') {
+            var script = document.createElement('script');
+            script.src = './js/identicon.js';
+            script.onload = function () {
+                userAvatar.setAttribute(
+                    'src',
+                    `data:image/svg+xml;base64,${new Identicon(md5, {
+                        background: [0x08, 0x0a, 0x06, 255],
+                        margin: 0.15,
+                        size: 300,
+                        brightness: 0.48,
+                        saturation: 0.65,
+                        format: 'svg',
+                    }).toString()}`
+                );
+            };
+        }
+        document.head.appendChild(script);
     </script>
 </html>
