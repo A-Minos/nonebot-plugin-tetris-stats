@@ -64,4 +64,6 @@ async def render(
 
 
 async def render(template: Bind | Data, **kwargs: Any) -> str:
+    if kwargs['game_type'] == 'IO':
+        kwargs['game_type'] = 'TETR.IO'
     return await env.get_template(template).render_async(**kwargs)
