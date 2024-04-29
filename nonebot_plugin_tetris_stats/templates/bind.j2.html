@@ -17,7 +17,7 @@
                         <img id="bot-avatar" src="{{ bot_avatar }}" />
                     </div>
                     <div id="command-result">
-                        已将你在
+                        已将您在
                         <p id="game-type">{{ game_type }}</p>
                         上的账号
                         <br />
@@ -28,13 +28,15 @@
                         {% elif state == 'unverified'%} 绑定至
                         <p id="bot-name">{{ bot_name }}</p>
                         , 但尚未通过验证. {% elif state == 'unknown' %} 绑定至
-                        <p id="bot-name">{{ bot_name }}.</p>
-                        {% elif state == 'unlink' %} 成功从
+                        <p id="bot-name">{{ bot_name }}</p>
+                        ,<br />但是
+                        <p id="bot-name">{{ bot_name }}</p>
+                        暂时无法验证您的身份. {% elif state == 'unlink' %} 成功从
                         <p id="bot-name">{{ bot_name }}</p>
                         解绑. {% endif %}
                     </div>
                 </div>
-                <div id="extra-info">你可以输入 “{{ command }}” 命令来查找你在该平台上的统计数据.</div>
+                <div id="extra-info">您可以输入 “{{ command }}” 命令来查找您在该平台上的统计数据.</div>
             </div>
         </div>
     </body>
