@@ -1,16 +1,22 @@
 from base64 import b64decode
 from hashlib import sha256
+from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
 from fastapi import FastAPI, Query, Response, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from nonebot import get_app
+from nonebot import get_app, get_driver
+from pydantic import IPvAnyAddress
 
 from ..templates import path
 from .browser import BrowserManager
 
 app = get_app()
+
+driver = get_driver()
+
+global_config = driver.config
 
 if not isinstance(app, FastAPI):
     raise RuntimeError('本插件需要 FastAPI 驱动器才能运行')  # noqa: TRY004
@@ -64,3 +70,16 @@ async def _(md5: str = Query(regex=r'^[a-fA-F0-9]{32}$')):
             """)
         )
         return Response(result, media_type='image/svg+xml')
+
+
+def get_self_netloc() -> str:
+    host: IPv4Address | IPv6Address | IPvAnyAddress = global_config.host
+    if isinstance(host, IPv4Address):
+        if host == IPv4Address('0.0.0.0'):  # noqa: S104
+            host = IPv4Address('127.0.0.1')
+        netloc = f'{host}:{global_config.port}'
+    else:
+        if host == IPv6Address('::'):
+            host = IPv6Address('::1')
+        netloc = f'[{host}]:{global_config.port}'
+    return netloc
