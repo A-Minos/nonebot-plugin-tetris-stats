@@ -18,6 +18,10 @@ class NeedCatchError(TetrisStatsError):
 class RequestError(NeedCatchError):
     """请求错误"""
 
+    def __init__(self, message: str = '', *, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
+
 
 class MessageFormatError(NeedCatchError):
     """用户发送的消息格式不正确"""
