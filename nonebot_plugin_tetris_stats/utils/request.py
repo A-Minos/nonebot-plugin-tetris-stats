@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from http import HTTPStatus
 from urllib.parse import urljoin, urlparse
 
@@ -116,7 +117,8 @@ class Request:
                 response = await session.get(url, headers=cls._headers)
                 if response.status_code != HTTPStatus.OK:
                     raise RequestError(
-                        f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
+                        f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}',
+                        status_code=response.status_code,
                     )
                 if is_json:
                     loads(response.content)
@@ -127,3 +129,33 @@ class Request:
             if urlparse(url).netloc.lower().endswith('tetr.io'):
                 return await cls._anti_cloudflare(url)
             raise
+
+    @classmethod
+    async def failover_request(
+        cls,
+        urls: Sequence[str],
+        *,
+        failover_code: Sequence[int],
+        failover_exc: tuple[type[BaseException], ...],
+        is_json: bool = True,
+    ) -> bytes:
+        error_list: list[RequestError] = []
+        for i in urls:
+            logger.debug(f'尝试请求 {i}')
+            try:
+                return await cls.request(i, is_json=is_json)
+            except RequestError as e:
+                if e.status_code in failover_code:  # 如果状态码在 failover_code 中, 则继续尝试下一个URL
+                    error_list.append(e)
+                    continue
+                # 如果状态码不在故障转移列表中, 则查找异常栈, 如果异常栈内有 failover_exc 内的异常类型, 则继续尝试下一个URL
+                tb = e.__traceback__
+                while tb is not None:
+                    if isinstance(tb.tb_frame.f_locals.get('exc_value'), failover_exc):
+                        error_list.append(e)
+                        break
+                    tb = tb.tb_next
+                else:
+                    raise
+                continue
+        raise RequestError(f'所有地址皆不可用\n{error_list!r}')
