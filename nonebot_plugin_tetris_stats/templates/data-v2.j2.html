@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link href="../static/css/data-v2.css" rel="stylesheet" />
+        <link href="../../static/css/data-v2.css" rel="stylesheet" />
     </head>
 
     <body>
@@ -21,7 +21,7 @@
                     <div class="flex-gap"></div>
                     <div class="box-shadow box-rounded-corners" id="game-info-box">
                         <div id="game-type-box">
-                            <img id="game-logo" src="../static/static/logo/{{game_type}}.svg" />
+                            <img id="game-logo" src="../../static/static/logo/{{game_type}}.svg" />
                             <span id="game-name">{{game_type}}</span>
                         </div>
                         <div id="game-info-dividing-line"></div>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="chart-shadow box-rounded-corners" id="TR-curve-chart">
                     <span id="TR-title">Tetra Rating (TR)</span>
-                    <img id="rank-icon" src="../static/static/rank/{{rank}}.svg" />
+                    <img id="rank-icon" src="../../static/static/rank/{{rank}}.svg" />
                     <span id="TR" style="display: flex; align-items: flex-end"
                         >{{TR}}&nbsp;
                         <p style="font-size: 30px; font-weight: 400; line-height: 47px">(#{{global_rank}})</p>
@@ -80,7 +80,7 @@
         </div>
     </body>
 
-    <script src="../static/js/echarts.js"></script>
+    <script src="../../static/js/echarts.js"></script>
 
     <script>
         var data = {{data}}
@@ -211,7 +211,7 @@
                     smooth: true,
                     symbol: function (value, params) {
                         if (params.dataIndex === data.length - 1) {
-                            return 'image://../static/static/data/point.svg';
+                            return 'image://../../static/static/data/point.svg';
                         }
                         return 'none';
                     },

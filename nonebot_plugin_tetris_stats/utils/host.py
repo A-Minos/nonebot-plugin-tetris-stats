@@ -15,6 +15,8 @@ app = get_app()
 if not isinstance(app, FastAPI):
     raise RuntimeError('本插件需要 FastAPI 驱动器才能运行')  # noqa: TRY004
 
+NOT_FOUND = HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
+
 
 class HostPage:
     pages: ClassVar[dict[str, str]] = {}
@@ -37,11 +39,11 @@ app.mount(
 )
 
 
-@app.get('/host/{page_hash}.html', status_code=status.HTTP_200_OK)
+@app.get('/host/page/{page_hash}.html', status_code=status.HTTP_200_OK)
 async def _(page_hash: str) -> HTMLResponse:
     if page_hash in HostPage.pages:
         return HTMLResponse(HostPage.pages[page_hash])
-    return HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
+    return NOT_FOUND
 
 
 @app.get('/identicon')
