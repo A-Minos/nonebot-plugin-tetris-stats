@@ -155,8 +155,8 @@ class Processor(ProcessorMeta):
                 failover_code=[502],
                 failover_exc=(TimeoutException,),
             )
-            self.processed_data.user_profile[params] = UserProfile.model_validate_json(
-                self.raw_response.user_profile[params]
+            self.processed_data.user_profile[params] = type_validate_json(
+                UserProfile, self.raw_response.user_profile[params]
             )
         return self.processed_data.user_profile[params]
 

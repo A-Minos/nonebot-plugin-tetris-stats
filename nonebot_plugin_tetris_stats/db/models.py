@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from nonebot.adapters import Message
+from nonebot.compat import type_validate_json
 from nonebot_plugin_orm import Model
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import JSON, DateTime, Dialect, PickleType, String, TypeDecorator
@@ -30,7 +31,7 @@ class PydanticType(TypeDecorator):
         if isinstance(value, str | bytes):
             for i in self.get_model():
                 try:
-                    return i.model_validate_json(value)
+                    return type_validate_json(i, value)
                 except ValidationError:  # noqa: PERF203
                     ...
         raise TypeError
