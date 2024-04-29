@@ -1,8 +1,15 @@
+from enum import StrEnum, auto
+
 from nonebot_plugin_orm import AsyncSession
 from sqlalchemy import select
 
 from ..utils.typing import GameType
 from .models import Bind
+
+
+class BindStatus(StrEnum):
+    SUCCESS = auto()
+    UPDATE = auto()
 
 
 async def query_bind_info(
@@ -27,7 +34,7 @@ async def create_or_update_bind(
     chat_account: str,
     game_platform: GameType,
     game_account: str,
-) -> str:
+) -> BindStatus:
     bind = await query_bind_info(
         session=session,
         chat_platform=chat_platform,
@@ -42,9 +49,9 @@ async def create_or_update_bind(
             game_account=game_account,
         )
         session.add(bind)
-        message = '绑定成功'
+        message = BindStatus.SUCCESS
     else:
         bind.game_account = game_account
-        message = '更新绑定成功'
+        message = BindStatus.UPDATE
     await session.commit()
     return message

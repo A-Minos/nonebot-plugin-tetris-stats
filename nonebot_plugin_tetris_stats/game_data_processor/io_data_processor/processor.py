@@ -1,26 +1,33 @@
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
-from hashlib import sha512
+from hashlib import md5, sha512
 from math import floor
 from re import match
 from statistics import mean
 from typing import Literal
+from urllib.parse import urlunparse
 
 from aiofiles import open
 from nonebot import get_driver
 from nonebot.compat import type_validate_json
 from nonebot.utils import run_sync
+from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_apscheduler import scheduler  # type: ignore[import-untyped]
 from nonebot_plugin_localstore import get_data_file  # type: ignore[import-untyped]
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_userinfo import UserInfo as NBUserInfo  # type: ignore[import-untyped]
 from sqlalchemy import select
 from zstandard import ZstdCompressor
 
-from ...db import create_or_update_bind
+from ...db import BindStatus, create_or_update_bind
+from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
+from ...utils.host import HostPage, get_self_netloc
+from ...utils.render import render
 from ...utils.request import splice_url
 from ...utils.retry import retry
+from ...utils.screenshot import screenshot
 from .. import Processor as ProcessorMeta
 from .cache import Cache
 from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
@@ -65,20 +72,43 @@ class Processor(ProcessorMeta):
     def game_platform(self) -> Literal['IO']:
         return GAME_TYPE
 
-    async def handle_bind(self, platform: str, account: str) -> str:
+    async def handle_bind(self, platform: str, account: str, bot_info: NBUserInfo) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.get_user()
         if self.user.ID is None:
             raise  # FIXME: 不知道怎么才能把这类型给变过来了
         async with get_session() as session:
-            return await create_or_update_bind(
+            bind_status = await create_or_update_bind(
                 session=session,
                 chat_platform=platform,
                 chat_account=account,
                 game_platform=GAME_TYPE,
                 game_account=self.user.ID,
             )
+        bot_avatar = await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg')
+        user_info = await self.get_user_info()
+        if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
+            async with HostPage(
+                await render(
+                    'bind.j2.html',
+                    user_avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                    if user_info.data.user.avatar_revision is not None
+                    else f'../../identicon?md5={md5(user_info.data.user.id.encode()).hexdigest()}',  # noqa: S324
+                    state='unknown',
+                    bot_avatar=bot_avatar,
+                    game_type=self.game_platform,
+                    user_name=user_info.data.user.username.upper(),
+                    bot_name=bot_info.user_name,
+                    command='io查我',
+                )
+            ) as page_hash:
+                message = UniMessage.image(
+                    raw=await screenshot(
+                        urlunparse(('http', get_self_netloc(), f'/host/page/{page_hash}.html', '', '', ''))
+                    )
+                )
+        return message
 
     async def handle_query(self) -> str:
         """处理查询消息"""
