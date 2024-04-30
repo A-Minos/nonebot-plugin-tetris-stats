@@ -1,22 +1,26 @@
-from base64 import b64decode
 from hashlib import sha256
 from ipaddress import IPv4Address, IPv6Address
 from typing import ClassVar
 
+from aiofiles import open
 from fastapi import FastAPI, Query, Response, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from nonebot import get_app, get_driver
+from nonebot.log import logger
+from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
 from pydantic import IPvAnyAddress
 
 from ..templates import path
-from .browser import BrowserManager
+from .avatar import generate_identicon
 
 app = get_app()
 
 driver = get_driver()
 
 global_config = driver.config
+
+cache_dir = get_cache_dir('nonebot_plugin_tetris_stats')
 
 if not isinstance(app, FastAPI):
     raise RuntimeError('本插件需要 FastAPI 驱动器才能运行')  # noqa: TRY004
@@ -54,22 +58,15 @@ async def _(page_hash: str) -> HTMLResponse:
 
 @app.get('/identicon')
 async def _(md5: str = Query(regex=r'^[a-fA-F0-9]{32}$')):
-    browser = await BrowserManager.get_browser()
-    async with await browser.new_page() as page:
-        await page.add_script_tag(path=path / 'js/identicon.js')
-        result = b64decode(
-            await page.evaluate(rf"""
-            new Identicon('{md5}', {{
-                background: [0x08, 0x0a, 0x06, 255],
-                margin: 0.15,
-                size: 300,
-                brightness: 0.48,
-                saturation: 0.65,
-                format: 'svg',
-            }}).toString();
-            """)
-        )
+    identicon_path = cache_dir / 'identicon' / f'{md5}.svg'
+    if identicon_path.exists() is False:
+        identicon_path.parent.mkdir(parents=True, exist_ok=True)
+        result = await generate_identicon(md5)
+        async with open(identicon_path, mode='xb') as file:
+            await file.write(result)
         return Response(result, media_type='image/svg+xml')
+    logger.debug('Identicon Cache hit!')
+    return FileResponse(identicon_path, media_type='image/svg+xml')
 
 
 def get_self_netloc() -> str:
