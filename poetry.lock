@@ -1162,13 +1162,13 @@ sqlite = ["sqlalchemy[aiosqlite]"]
 
 [[package]]
 name = "nonebot2"
-version = "2.2.1"
+version = "2.3.0"
 description = "An asynchronous python bot framework."
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot2-2.2.1-py3-none-any.whl", hash = "sha256:88f2bb456bf90922925bbe489a9effe3b09300f3aa50bfa75ee50d8a83d7330f"},
-    {file = "nonebot2-2.2.1.tar.gz", hash = "sha256:fe57692300571b00724999238545d8d894523460e6835a11b326a2e1cdf98fc4"},
+    {file = "nonebot2-2.3.0-py3-none-any.whl", hash = "sha256:ecde620a96197189f9f9b719ab8493b5115e5973cba0bd07ed3d737ce7418462"},
+    {file = "nonebot2-2.3.0.tar.gz", hash = "sha256:0e4ebdb0eaab96008619aa4890171ea6e7e7af25eb9d1a4e753e58544c46681e"},
 ]
 
 [package.dependencies]
@@ -2483,4 +2483,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "9f77ce06a92e8304985bca5b03608f5b14502e049ef10608dd35e7ed2b18b6b7"
+content-hash = "78b446052e80cf2d35175fbd319184c1911abeda7924f3e51bfc8d7520308950"
