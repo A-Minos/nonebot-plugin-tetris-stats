@@ -3,6 +3,7 @@ from re import match
 from typing import Literal
 from urllib.parse import urlencode, urlunparse
 
+from httpx import TimeoutException
 from nonebot.compat import type_validate_json
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
@@ -131,22 +132,30 @@ class Processor(ProcessorMeta):
         """获取用户信息"""
         if self.processed_data.user_info is None:
             if self.user.teaid is not None:
-                url = splice_url(
-                    [
-                        BASE_URL,
-                        'getTeaIdInfo',
-                        f'?{urlencode({"teaId":self.user.teaid})}',
-                    ]
-                )
+                url = [
+                    splice_url(
+                        [
+                            i,
+                            'getTeaIdInfo',
+                            f'?{urlencode({"teaId":self.user.teaid})}',
+                        ]
+                    )
+                    for i in BASE_URL
+                ]
             else:
-                url = splice_url(
-                    [
-                        BASE_URL,
-                        'getUsernameInfo',
-                        f'?{urlencode({"username":self.user.name})}',
-                    ]
-                )
-            self.raw_response.user_info = await Request.request(url)
+                url = [
+                    splice_url(
+                        [
+                            i,
+                            'getUsernameInfo',
+                            f'?{urlencode({"username":self.user.name})}',
+                        ]
+                    )
+                    for i in BASE_URL
+                ]
+            self.raw_response.user_info = await Request.failover_request(
+                url, failover_code=[502], failover_exc=(TimeoutException,)
+            )
             user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
             if not isinstance(user_info, InfoSuccess):
                 raise RequestError(f'用户信息请求错误:\n{user_info.error}')
@@ -159,17 +168,22 @@ class Processor(ProcessorMeta):
             other_parameter = {}
         params = urlencode(dict(sorted(other_parameter.items())))
         if self.processed_data.user_profile.get(params) is None:
-            self.raw_response.user_profile[params] = await Request.request(
-                splice_url(
-                    [
-                        BASE_URL,
-                        'getProfile',
-                        f'?{urlencode({"id":self.user.teaid or self.user.name,**other_parameter})}',
-                    ]
-                )
+            self.raw_response.user_profile[params] = await Request.failover_request(
+                [
+                    splice_url(
+                        [
+                            i,
+                            'getProfile',
+                            f'?{urlencode({"id":self.user.teaid or self.user.name,**other_parameter})}',
+                        ]
+                    )
+                    for i in BASE_URL
+                ],
+                failover_code=[502],
+                failover_exc=(TimeoutException,),
             )
-            self.processed_data.user_profile[params] = UserProfile.model_validate_json(
-                self.raw_response.user_profile[params]
+            self.processed_data.user_profile[params] = type_validate_json(
+                UserProfile, self.raw_response.user_profile[params]
             )
         return self.processed_data.user_profile[params]
 
