@@ -8,3 +8,14 @@ Untitled*
 *_cache*
 *backup*
 *.pyc
+node_modules
+.prettier*
+package.json
+pnpm-lock.yaml
+*.drawio.svg
+package-lock.json
+*Zone.Identifier
+.env*
+bot.py
+TODO
+*.fish

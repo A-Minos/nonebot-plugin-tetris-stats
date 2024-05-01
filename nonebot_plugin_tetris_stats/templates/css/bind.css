@@ -1,0 +1,118 @@
+@font-face {
+    font-family: 'SourceHanSansSC-VF';
+    src: url('../static/fonts/SourceHanSans/SourceHanSansSC-VF.otf.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CabinetGrotesk-Variable';
+    src: url('../static/fonts/CabinetGrotesk/CabinetGrotesk-Variable.woff2') format('woff2');
+    font-display: swap;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#background {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 30px;
+    gap: 10px;
+
+    width: 444px;
+
+    background: #f1f1f1;
+    font-family: 'CabinetGrotesk-Variable', 'SourceHanSansSC-VF';
+}
+
+#main-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 0px;
+    gap: 15px;
+}
+
+#bind-subject {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+    gap: 30px;
+}
+
+#bind-icons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    gap: 32px;
+}
+
+#user-avatar {
+    width: 96px;
+    height: 96px;
+
+    filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
+    border-radius: 20px;
+}
+
+#state {
+    width: 128px;
+    height: 56px;
+}
+
+#bot-avatar {
+    width: 96px;
+    height: 96px;
+
+    filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
+    border-radius: 20px;
+}
+
+#command-result {
+    font-weight: 350;
+    font-size: 25px;
+    line-height: 36.2px;
+    text-align: center;
+
+    color: #000000;
+}
+
+#game-type {
+    display: inline;
+    font-weight: 800;
+    line-height: 31px;
+}
+
+#user-name {
+    display: inline;
+    font-weight: 800;
+    line-height: 31px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#bot-name {
+    display: inline;
+    font-weight: 400;
+    line-height: 31px;
+}
+
+#extra-info {
+    width: 324px;
+
+    margin: 0 auto;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 23px;
+    text-align: center;
+
+    color: #52525c;
+}

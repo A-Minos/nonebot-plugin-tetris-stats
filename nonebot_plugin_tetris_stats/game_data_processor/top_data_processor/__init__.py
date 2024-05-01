@@ -3,6 +3,7 @@ from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_userinfo import BotUserInfo, EventUserInfo, UserInfo  # type: ignore[import-untyped]
 
 from ...db import query_bind_info
 from ...utils.exception import HandleNotFinishedError, NeedCatchError
@@ -67,17 +68,29 @@ alc = on_alconna(
 
 
 @alc.assign('bind')
-async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
+async def _(  # noqa: PLR0913
+    bot: Bot,
+    event: Event,
+    matcher: Matcher,
+    account: User,
+    bot_info: UserInfo = BotUserInfo(),  # noqa: B008
+    user_info: UserInfo = EventUserInfo(),  # noqa: B008
+):
     proc = Processor(
         event_id=id(event),
         user=account,
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
+        await (
+            await proc.handle_bind(
+                platform=get_platform(bot), account=event.get_user_id(), bot_info=bot_info, user_info=user_info
+            )
+        ).send()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
+    await matcher.finish()
 
 
 @alc.assign('query')

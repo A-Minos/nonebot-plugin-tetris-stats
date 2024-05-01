@@ -4,6 +4,8 @@ from typing import Any
 
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import AlcMatches, AlconnaMatcher
+from nonebot_plugin_alconna.uniseg import UniMessage
+from nonebot_plugin_userinfo import UserInfo  # type: ignore[import-untyped]
 
 from ..utils.exception import MessageFormatError
 from ..utils.recorder import Recorder
@@ -41,7 +43,14 @@ class Processor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def handle_bind(self, platform: str, account: str) -> str:
+    async def handle_bind(
+        self,
+        platform: str,
+        account: str,
+        bot_info: UserInfo,
+        *args: Any,  # noqa: ANN401
+        **kwargs: Any,  # noqa: ANN401
+    ) -> UniMessage:
         """处理绑定消息"""
         raise NotImplementedError
 

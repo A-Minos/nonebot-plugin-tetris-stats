@@ -1,15 +1,21 @@
 from dataclasses import dataclass
 from re import match
 from typing import Literal
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlunparse
 
 from httpx import TimeoutException
 from nonebot.compat import type_validate_json
+from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_userinfo import UserInfo as NBUserInfo  # type: ignore[import-untyped]
 
-from ...db import create_or_update_bind
+from ...db import BindStatus, create_or_update_bind
+from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError
+from ...utils.host import HostPage, get_self_netloc
+from ...utils.render import render
 from ...utils.request import Request, splice_url
+from ...utils.screenshot import screenshot
 from .. import Processor as ProcessorMeta
 from ..schemas import BaseUser
 from .constant import BASE_URL, GAME_TYPE
@@ -73,18 +79,39 @@ class Processor(ProcessorMeta):
     def game_platform(self) -> Literal['TOS']:
         return GAME_TYPE
 
-    async def handle_bind(self, platform: str, account: str) -> str:
+    async def handle_bind(self, platform: str, account: str, bot_info: NBUserInfo) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.get_user()
         async with get_session() as session:
-            return await create_or_update_bind(
+            bind_status = await create_or_update_bind(
                 session=session,
                 chat_platform=platform,
                 chat_account=account,
                 game_platform=GAME_TYPE,
                 game_account=self.user.unique_identifier,
             )
+        bot_avatar = await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg')
+        user_info = await self.get_user_info()
+        if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
+            async with HostPage(
+                await render(
+                    'bind.j2.html',
+                    user_avatar='../../static/static/logo/tos.ico',
+                    state='unknown',
+                    bot_avatar=bot_avatar,
+                    game_type=self.game_platform,
+                    user_name=user_info.data.name.upper(),
+                    bot_name=bot_info.user_name,
+                    command='茶服查我',
+                )
+            ) as page_hash:
+                message = UniMessage.image(
+                    raw=await screenshot(
+                        urlunparse(('http', get_self_netloc(), f'/host/page/{page_hash}.html', '', '', ''))
+                    )
+                )
+        return message
 
     async def handle_query(self) -> str:
         """处理查询消息"""

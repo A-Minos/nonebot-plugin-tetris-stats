@@ -6,6 +6,7 @@ from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_userinfo import BotUserInfo, UserInfo  # type: ignore[import-untyped]
 from sqlalchemy import func, select
 
 from ...db import query_bind_info
@@ -86,17 +87,16 @@ alc.shortcut('fkosk', {'command': 'io查', 'args': ['我']})
 
 
 @alc.assign('bind')
-async def _(bot: Bot, event: Event, matcher: Matcher, account: User):
-    proc = Processor(
-        event_id=id(event),
-        user=account,
-        command_args=[],
-    )
+async def _(bot: Bot, event: Event, matcher: Matcher, account: User, bot_info: UserInfo = BotUserInfo()):  # noqa: B008
+    proc = Processor(event_id=id(event), user=account, command_args=[])
     try:
-        await matcher.finish(await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id()))
+        await (
+            await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id(), bot_info=bot_info)
+        ).send()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
+    await matcher.finish()
 
 
 @alc.assign('query')
