@@ -7,7 +7,7 @@ from ..templates import path
 from .typing import GameType
 
 Bind = Literal['bind.j2.html']
-Data = Literal['data-v2.j2.html']
+Data = Literal['data.j2.html']
 
 env = Environment(
     loader=FileSystemLoader(path), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
