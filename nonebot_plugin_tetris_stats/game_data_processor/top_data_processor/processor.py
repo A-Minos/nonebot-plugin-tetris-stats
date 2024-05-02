@@ -10,6 +10,7 @@ from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_userinfo import UserInfo  # type: ignore[import-untyped]
 from pandas import read_html
+from typing_extensions import override
 
 from ...db import BindStatus, create_or_update_bind
 from ...utils.avatar import get_avatar
@@ -30,6 +31,7 @@ class User(BaseUser):
     name: str
 
     @property
+    @override
     def unique_identifier(self) -> str:
         return self.name
 
@@ -57,15 +59,18 @@ class Processor(ProcessorMeta):
     raw_response: RawResponse
     processed_data: ProcessedData
 
+    @override
     def __init__(self, event_id: int, user: User, command_args: list[str]) -> None:
         super().__init__(event_id, user, command_args)
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
     @property
+    @override
     def game_platform(self) -> Literal['TOP']:
         return GAME_TYPE
 
+    @override
     async def handle_bind(self, platform: str, account: str, bot_info: UserInfo, user_info: UserInfo) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
@@ -99,6 +104,7 @@ class Processor(ProcessorMeta):
                 )
         return message
 
+    @override
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
@@ -141,6 +147,7 @@ class Processor(ProcessorMeta):
         total = Data(lpm=dataframe['lpm'].mean(), apm=dataframe['apm'].mean()) if len(dataframe) != 0 else None
         return GameData(day=day, total=total)
 
+    @override
     async def generate_message(self) -> str:
         """生成消息"""
         game_data = await self.get_game_data()

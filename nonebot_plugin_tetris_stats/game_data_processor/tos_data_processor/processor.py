@@ -8,6 +8,7 @@ from nonebot.compat import type_validate_json
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_userinfo import UserInfo as NBUserInfo  # type: ignore[import-untyped]
+from typing_extensions import override
 
 from ...db import BindStatus, create_or_update_bind
 from ...utils.avatar import get_avatar
@@ -32,6 +33,7 @@ class User(BaseUser):
     name: str | None = None
 
     @property
+    @override
     def unique_identifier(self) -> str:
         if self.teaid is None:
             raise ValueError('不完整的User!')
@@ -70,15 +72,18 @@ class Processor(ProcessorMeta):
     raw_response: RawResponse
     processed_data: ProcessedData
 
+    @override
     def __init__(self, event_id: int, user: User, command_args: list[str]) -> None:
         super().__init__(event_id, user, command_args)
         self.raw_response = RawResponse(user_profile={})
         self.processed_data = ProcessedData(user_profile={})
 
     @property
+    @override
     def game_platform(self) -> Literal['TOS']:
         return GAME_TYPE
 
+    @override
     async def handle_bind(self, platform: str, account: str, bot_info: NBUserInfo) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
@@ -113,6 +118,7 @@ class Processor(ProcessorMeta):
                 )
         return message
 
+    @override
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
@@ -229,6 +235,7 @@ class Processor(ProcessorMeta):
             vs=round((adpm / 60 * 100), 2),
         )
 
+    @override
     async def generate_message(self) -> str:
         """生成消息"""
         user_info = (await self.get_user_info()).data

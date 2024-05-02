@@ -8,6 +8,7 @@ from nonebot_plugin_orm import Model
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import JSON, DateTime, Dialect, PickleType, String, TypeDecorator
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
+from typing_extensions import override
 
 from ..game_data_processor.schemas import BaseProcessedData, BaseUser
 from ..utils.typing import CommandType, GameType
@@ -16,17 +17,20 @@ from ..utils.typing import CommandType, GameType
 class PydanticType(TypeDecorator):
     impl = JSON
 
-    def __init__(self, get_model: Callable[[], Sequence[type[BaseModel]]], *args: Any, **kwargs: Any):  # noqa: ANN401
+    @override
+    def __init__(self, get_model: Callable[[], Sequence[type[BaseModel]]], *args: Any, **kwargs: Any):
         self.get_model = get_model
         super().__init__(*args, **kwargs)
 
-    def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:  # noqa: ANN401
+    @override
+    def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
         # 将 Pydantic 模型实例转换为 JSON
         if isinstance(value, tuple(self.get_model())):
             return value.json()  # type: ignore[union-attr]
         raise TypeError
 
-    def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:  # noqa: ANN401
+    @override
+    def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:
         # 将 JSON 转换回 Pydantic 模型实例
         if isinstance(value, str | bytes):
             for i in self.get_model():

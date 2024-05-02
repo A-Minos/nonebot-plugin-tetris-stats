@@ -18,6 +18,7 @@ from nonebot_plugin_localstore import get_data_file  # type: ignore[import-untyp
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_userinfo import UserInfo as NBUserInfo  # type: ignore[import-untyped]
 from sqlalchemy import select
+from typing_extensions import override
 from zstandard import ZstdCompressor
 
 from ...db import BindStatus, create_or_update_bind
@@ -63,15 +64,18 @@ class Processor(ProcessorMeta):
     raw_response: RawResponse
     processed_data: ProcessedData
 
+    @override
     def __init__(self, event_id: int, user: User, command_args: list[str]) -> None:
         super().__init__(event_id, user, command_args)
         self.raw_response = RawResponse()
         self.processed_data = ProcessedData()
 
     @property
+    @override
     def game_platform(self) -> Literal['IO']:
         return GAME_TYPE
 
+    @override
     async def handle_bind(self, platform: str, account: str, bot_info: NBUserInfo) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
@@ -110,6 +114,7 @@ class Processor(ProcessorMeta):
                 )
         return message
 
+    @override
     async def handle_query(self) -> str:
         """处理查询消息"""
         self.command_type = 'query'
@@ -149,6 +154,7 @@ class Processor(ProcessorMeta):
             self.processed_data.user_records = user_records
         return self.processed_data.user_records
 
+    @override
     async def generate_message(self) -> str:
         """生成消息"""
         user_info = await self.get_user_info()
