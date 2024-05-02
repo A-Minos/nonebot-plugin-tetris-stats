@@ -115,7 +115,7 @@ class Processor(ProcessorMeta):
         return message
 
     @override
-    async def handle_query(self) -> str:
+    async def handle_query(self) -> UniMessage:
         """处理查询消息"""
         self.command_type = 'query'
         await self.get_user()
@@ -156,7 +156,7 @@ class Processor(ProcessorMeta):
                 raise WhatTheFuckError('Blitz记录不是单人记录')
             ret_message += f'\nBlitz: {blitz.record.endcontext.score}'
             ret_message += f' ( #{blitz.rank} )' if blitz.rank is not None else ''
-        return ret_message
+        return UniMessage(ret_message)
 
     async def get_user(self) -> None:
         """

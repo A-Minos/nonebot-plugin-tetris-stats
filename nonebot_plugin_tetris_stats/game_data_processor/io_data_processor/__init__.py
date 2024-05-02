@@ -5,6 +5,7 @@ from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, O
 from nonebot.adapters import Bot, Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
+from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_userinfo import BotUserInfo, UserInfo  # type: ignore[import-untyped]
 from sqlalchemy import func, select
@@ -117,10 +118,11 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         command_args=[],
     )
     try:
-        await matcher.finish(message + await proc.handle_query())
+        await (UniMessage(message) + await proc.handle_query()).send()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
+    await matcher.finish()
 
 
 @alc.assign('query')
@@ -131,10 +133,11 @@ async def _(event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await matcher.finish(await proc.handle_query())
+        await (await proc.handle_query()).send()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
+    await matcher.finish()
 
 
 @alc.assign('rank')

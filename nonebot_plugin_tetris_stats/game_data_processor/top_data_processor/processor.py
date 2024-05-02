@@ -105,7 +105,7 @@ class Processor(ProcessorMeta):
         return message
 
     @override
-    async def handle_query(self) -> str:
+    async def handle_query(self) -> UniMessage:
         """处理查询消息"""
         self.command_type = 'query'
         await self.check_user()
@@ -123,7 +123,7 @@ class Processor(ProcessorMeta):
             message += f'\nAPM: {round(game_data.total.apm,2)} ( x{round(game_data.total.apm/game_data.total.lpm,2)} )'
         else:
             message += '\n暂无历史统计数据'
-        return message
+        return UniMessage(message)
 
     async def get_user_profile(self) -> str:
         """获取用户信息"""

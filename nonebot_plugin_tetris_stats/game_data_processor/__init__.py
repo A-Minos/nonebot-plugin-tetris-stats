@@ -55,7 +55,7 @@ class Processor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def handle_query(self) -> str:
+    async def handle_query(self) -> UniMessage:
         """处理查询消息"""
         raise NotImplementedError
 
