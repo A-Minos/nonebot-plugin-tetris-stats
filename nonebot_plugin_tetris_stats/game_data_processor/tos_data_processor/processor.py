@@ -123,7 +123,24 @@ class Processor(ProcessorMeta):
         """处理查询消息"""
         self.command_type = 'query'
         await self.get_user()
-        return await self.generate_message()
+        user_info = (await self.get_user_info()).data
+        message = f'用户 {user_info.name} ({user_info.teaid}) '
+        if user_info.ranked_games == '0':
+            message += '暂无段位统计数据'
+        else:
+            message += f', 段位分 {round(float(user_info.rating_now),2)}±{round(float(user_info.rd_now),2)} ({round(float(user_info.vol_now),2)}) '
+        game_data = await self.get_game_data()
+        if game_data is None:
+            message += ', 暂无游戏数据'
+        else:
+            message += f', 最近 {game_data.num} 局数据'
+            message += f"\nL'PM: {game_data.lpm} ( {game_data.pps} pps )"
+            message += f'\nAPM: {game_data.apm} ( x{game_data.apl} )'
+            message += f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
+        message += f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s' if user_info.pb_sprint != '2147483647' else ''
+        message += f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != '0' else ''
+        message += f'\nChallenge: {user_info.pb_challenge}' if user_info.pb_challenge != '0' else ''
+        return message
 
     async def get_user(self) -> None:
         """
@@ -234,25 +251,3 @@ class Processor(ProcessorMeta):
             adpl=round((adpm / lpm), 2),
             vs=round((adpm / 60 * 100), 2),
         )
-
-    @override
-    async def generate_message(self) -> str:
-        """生成消息"""
-        user_info = (await self.get_user_info()).data
-        message = f'用户 {user_info.name} ({user_info.teaid}) '
-        if user_info.ranked_games == '0':
-            message += '暂无段位统计数据'
-        else:
-            message += f', 段位分 {round(float(user_info.rating_now),2)}±{round(float(user_info.rd_now),2)} ({round(float(user_info.vol_now),2)}) '
-        game_data = await self.get_game_data()
-        if game_data is None:
-            message += ', 暂无游戏数据'
-        else:
-            message += f', 最近 {game_data.num} 局数据'
-            message += f"\nL'PM: {game_data.lpm} ( {game_data.pps} pps )"
-            message += f'\nAPM: {game_data.apm} ( x{game_data.apl} )'
-            message += f'\nADPM: {game_data.adpm} ( x{game_data.adpl} ) ( {game_data.vs}vs )'
-        message += f'\n40L: {float(user_info.pb_sprint)/1000:.2f}s' if user_info.pb_sprint != '2147483647' else ''
-        message += f'\nMarathon: {user_info.pb_marathon}' if user_info.pb_marathon != '0' else ''
-        message += f'\nChallenge: {user_info.pb_challenge}' if user_info.pb_challenge != '0' else ''
-        return message

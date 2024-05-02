@@ -59,11 +59,6 @@ class Processor(ABC):
         """处理查询消息"""
         raise NotImplementedError
 
-    @abstractmethod
-    async def generate_message(self) -> str:
-        """生成消息"""
-        raise NotImplementedError
-
     def __del__(self) -> None:
         finish_time = datetime.now(tz=UTC)
         if Recorder.is_error_event(self.event_id):

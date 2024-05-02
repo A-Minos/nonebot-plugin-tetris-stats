@@ -119,47 +119,10 @@ class Processor(ProcessorMeta):
         """处理查询消息"""
         self.command_type = 'query'
         await self.get_user()
-        return await self.generate_message()
-
-    async def get_user(self) -> None:
-        """
-        用于获取 UserName 和 UserID 的函数
-        """
-        if self.user.name is None:
-            self.user.name = (await self.get_user_info()).data.user.username
-        if self.user.ID is None:
-            self.user.ID = (await self.get_user_info()).data.user.id
-
-    async def get_user_info(self) -> InfoSuccess:
-        """获取用户数据"""
-        if self.processed_data.user_info is None:
-            self.raw_response.user_info = await Cache.get(
-                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
-            )
-            user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
-            if isinstance(user_info, InfoFailed):
-                raise RequestError(f'用户信息请求错误:\n{user_info.error}')
-            self.processed_data.user_info = user_info
-        return self.processed_data.user_info
-
-    async def get_user_records(self) -> RecordsSuccess:
-        """获取Solo数据"""
-        if self.processed_data.user_records is None:
-            self.raw_response.user_records = await Cache.get(
-                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}/', 'records'])
-            )
-            user_records: UserRecords = type_validate_json(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
-            if isinstance(user_records, RecordsFailed):
-                raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
-            self.processed_data.user_records = user_records
-        return self.processed_data.user_records
-
-    @override
-    async def generate_message(self) -> str:
-        """生成消息"""
         user_info = await self.get_user_info()
         user_name = user_info.data.user.username.upper()
         league = user_info.data.user.league
+
         ret_message = ''
         if isinstance(league, NeverPlayedLeague):
             ret_message += f'用户 {user_name} 没有排位统计数据'
@@ -194,6 +157,39 @@ class Processor(ProcessorMeta):
             ret_message += f'\nBlitz: {blitz.record.endcontext.score}'
             ret_message += f' ( #{blitz.rank} )' if blitz.rank is not None else ''
         return ret_message
+
+    async def get_user(self) -> None:
+        """
+        用于获取 UserName 和 UserID 的函数
+        """
+        if self.user.name is None:
+            self.user.name = (await self.get_user_info()).data.user.username
+        if self.user.ID is None:
+            self.user.ID = (await self.get_user_info()).data.user.id
+
+    async def get_user_info(self) -> InfoSuccess:
+        """获取用户数据"""
+        if self.processed_data.user_info is None:
+            self.raw_response.user_info = await Cache.get(
+                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
+            )
+            user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
+            if isinstance(user_info, InfoFailed):
+                raise RequestError(f'用户信息请求错误:\n{user_info.error}')
+            self.processed_data.user_info = user_info
+        return self.processed_data.user_info
+
+    async def get_user_records(self) -> RecordsSuccess:
+        """获取Solo数据"""
+        if self.processed_data.user_records is None:
+            self.raw_response.user_records = await Cache.get(
+                splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}/', 'records'])
+            )
+            user_records: UserRecords = type_validate_json(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
+            if isinstance(user_records, RecordsFailed):
+                raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
+            self.processed_data.user_records = user_records
+        return self.processed_data.user_records
 
 
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)

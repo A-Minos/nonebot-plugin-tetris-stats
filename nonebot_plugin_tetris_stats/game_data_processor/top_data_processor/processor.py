@@ -109,7 +109,21 @@ class Processor(ProcessorMeta):
         """处理查询消息"""
         self.command_type = 'query'
         await self.check_user()
-        return await self.generate_message()
+        game_data = await self.get_game_data()
+        message = ''
+        if game_data.day is not None:
+            message += f'用户 {self.user.name} 24小时内统计数据为: '
+            message += f"\nL'PM: {round(game_data.day.lpm,2)} ( {round(game_data.day.lpm/24,2)} pps )"
+            message += f'\nAPM: {round(game_data.day.apm,2)} ( x{round(game_data.day.apm/game_data.day.lpm,2)} )'
+        else:
+            message += f'用户 {self.user.name} 暂无24小时内统计数据'
+        if game_data.total is not None:
+            message += '\n历史统计数据为: '
+            message += f"\nL'PM: {round(game_data.total.lpm,2)} ( {round(game_data.total.lpm/24,2)} pps )"
+            message += f'\nAPM: {round(game_data.total.apm,2)} ( x{round(game_data.total.apm/game_data.total.lpm,2)} )'
+        else:
+            message += '\n暂无历史统计数据'
+        return message
 
     async def get_user_profile(self) -> str:
         """获取用户信息"""
@@ -146,22 +160,3 @@ class Processor(ProcessorMeta):
         dataframe = read_html(table, encoding='utf-8', header=0)[0]
         total = Data(lpm=dataframe['lpm'].mean(), apm=dataframe['apm'].mean()) if len(dataframe) != 0 else None
         return GameData(day=day, total=total)
-
-    @override
-    async def generate_message(self) -> str:
-        """生成消息"""
-        game_data = await self.get_game_data()
-        message = ''
-        if game_data.day is not None:
-            message += f'用户 {self.user.name} 24小时内统计数据为: '
-            message += f"\nL'PM: {round(game_data.day.lpm,2)} ( {round(game_data.day.lpm/24,2)} pps )"
-            message += f'\nAPM: {round(game_data.day.apm,2)} ( x{round(game_data.day.apm/game_data.day.lpm,2)} )'
-        else:
-            message += f'用户 {self.user.name} 暂无24小时内统计数据'
-        if game_data.total is not None:
-            message += '\n历史统计数据为: '
-            message += f"\nL'PM: {round(game_data.total.lpm,2)} ( {round(game_data.total.lpm/24,2)} pps )"
-            message += f'\nAPM: {round(game_data.total.apm,2)} ( x{round(game_data.total.apm/game_data.total.lpm,2)} )'
-        else:
-            message += '\n暂无历史统计数据'
-        return message
