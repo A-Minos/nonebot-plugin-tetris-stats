@@ -67,7 +67,7 @@
     text-align: right;
 }
 
-#main-content {
+.main-content {
     display: flex;
     flex-direction: column;
 
@@ -77,18 +77,18 @@
     font-family: 'CabinetGrotesk-Variable';
 }
 
-#account-box {
+.account-box {
     display: flex;
     flex-direction: column;
 }
 
-#info-box {
+.info-box {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
 }
 
-#user-info-box {
+.user-info-box {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,14 +103,14 @@
     box-sizing: border-box;
 }
 
-#user-avatar {
+.user-avatar {
     width: 125px;
     height: 125px;
     filter: drop-shadow(0px 11px 23px rgba(0, 0, 0, 0.22));
     border-radius: 65px;
 }
 
-#user-name {
+.user-name {
     font-weight: 800;
     font-size: 25px;
     line-height: 31px;
@@ -118,7 +118,7 @@
     color: #000000;
 }
 
-#user-sign {
+.user-sign {
     width: 225px;
     height: 66px;
 
@@ -132,7 +132,7 @@
     color: #000000;
 }
 
-#game-info-box {
+.game-info-box {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -147,19 +147,19 @@
     box-sizing: border-box;
 }
 
-#game-type-box {
+.game-type-box {
     display: flex;
     flex-direction: column;
 }
 
-#game-logo {
+.game-logo {
     width: 60px;
     height: 60px;
 
     border-radius: 10px;
 }
 
-#game-name {
+.game-name {
     font-weight: 800;
     font-size: 30px;
     line-height: 37px;
@@ -167,18 +167,18 @@
     color: #000000;
 }
 
-#game-info-dividing-line {
+.game-info-dividing-line {
     width: 225px;
     border: 1px solid #bababa;
     transform: rotate(0.25deg);
 }
 
-#ranking-info-box {
+.ranking-info-box {
     display: flex;
     flex-direction: column;
 }
 
-#ranking-title {
+.ranking-title {
     font-weight: 800;
     font-size: 25px;
     line-height: 31px;
@@ -186,7 +186,7 @@
     color: #000000;
 }
 
-#ranking {
+.ranking {
     font-weight: 400;
     font-size: 50px;
     line-height: 120%;
@@ -194,7 +194,7 @@
     color: #000000;
 }
 
-#rd {
+.rd {
     margin-top: -16px;
 
     font-weight: 300;
@@ -214,7 +214,7 @@
     background: linear-gradient(222.34deg, #525252 11.97%, #1d1916 89.73%);
 }
 
-#TR-title {
+.TR-title {
     position: absolute;
     margin-left: 24px;
     margin-top: 19px;
@@ -227,7 +227,7 @@
     color: #fafafa;
 }
 
-#rank-icon {
+.rank-icon {
     position: absolute;
     margin-left: 27px;
     margin-top: 90px;
@@ -236,7 +236,7 @@
     height: 50px;
 }
 
-#TR {
+.TR {
     position: absolute;
     margin-left: 24px;
     margin-top: 143px;
@@ -248,14 +248,14 @@
     color: #fafafa;
 }
 
-#multiplayer-box {
+.multiplayer-box {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin-top: 14px;
 }
 
-#multiplayer-data-box {
+.multiplayer-data-box {
     display: flex;
     flex-direction: column;
 }
@@ -268,44 +268,44 @@
     margin-top: 0px;
 }
 
-#lpm-box {
+.lpm-box {
     background-image: url('../static/data/LPM.svg');
 }
 
-#lpm-value {
+.lpm-value {
     color: #4d7d0f;
 }
 
-#pps-value {
+.pps-value {
     color: #4d7d0f;
 }
 
-#apm-box {
+.apm-box {
     background-image: url('../static/data/APM.svg');
 }
 
-#apm-value {
+.apm-value {
     color: #b5530a;
 }
 
-#apl-value {
+.apl-value {
     color: #b5530a;
 }
 
-#adpm-box {
+.adpm-box {
     background-image: url('../static/data/ADPM.svg');
 }
 
-#adpm-value {
+.adpm-value {
     color: #235db4;
 }
 
-#vs-value {
+.vs-value {
     top: 62px;
     color: #4779c6;
 }
 
-#adpl-value {
+.adpl-value {
     color: #4779c6;
 }
 
@@ -316,30 +316,30 @@
         linear-gradient(222.34deg, #4f9dff 11.97%, #2563ea 89.73%);
 }
 
-#singleplayer-box {
+.singleplayer-box {
     display: flex;
     flex-direction: row;
     align-content: space-between;
     margin-top: 14px;
 }
 
-#sprint-box {
+.sprint-box {
     background-image: url('../static/data/40L.svg');
 }
 
-#blitz-box {
+.blitz-box {
     background-image: url('../static/data/Blitz.svg');
 }
 
-#sprint-value {
+.sprint-value {
     color: #b42323;
 }
 
-#blitz-value {
+.blitz-value {
     color: #8e23b4;
 }
 
-#footer {
+.footer {
     display: flex;
     justify-content: center;
     margin-top: 20px;

@@ -8,56 +8,56 @@
     </head>
 
     <body>
-        <div id="main-content">
+        <div class="main-content">
             <span class="big-title">Account&Rankings</span>
-            <div id="account-box">
-                <div id="info-box">
+            <div class="account-box">
+                <div class="info-box">
                     <div class="flex-gap"></div>
-                    <div class="box-shadow box-rounded-corners" id="user-info-box">
-                        <img id="user-avatar" src="{{user_avatar}}" />
-                        <div id="user-name">{{user_name}}</div>
-                        <div id="user-sign">“{{user_sign}}”</div>
+                    <div class="box-shadow box-rounded-corners user-info-box">
+                        <img class="user-avatar" src="{{user_avatar}}" />
+                        <div class="user-name">{{user_name}}</div>
+                        <div class="user-sign">“{{user_sign}}”</div>
                     </div>
                     <div class="flex-gap"></div>
-                    <div class="box-shadow box-rounded-corners" id="game-info-box">
-                        <div id="game-type-box">
-                            <img id="game-logo" src="../../static/static/logo/{{game_type}}.svg" />
-                            <span id="game-name">{{game_type}}</span>
+                    <div class="box-shadow box-rounded-corners game-info-box">
+                        <div class="game-type-box">
+                            <img class="game-logo" src="../../static/static/logo/{{game_type}}.svg" />
+                            <span class="game-name">{{game_type}}</span>
                         </div>
-                        <div id="game-info-dividing-line"></div>
-                        <div id="ranking-info-box">
-                            <span id="ranking-title">Ranking</span>
-                            <span id="ranking">{{ranking}}</span>
-                            <span id="rd">±{{rd}}</span>
+                        <div class="game-info-dividing-line"></div>
+                        <div class="ranking-info-box">
+                            <span class="ranking-title">Ranking</span>
+                            <span class="ranking">{{ranking}}</span>
+                            <span class="rd">±{{rd}}</span>
                         </div>
                     </div>
                     <div class="flex-gap"></div>
                 </div>
                 <div class="chart-shadow box-rounded-corners" id="TR-curve-chart">
-                    <span id="TR-title">Tetra Rating (TR)</span>
-                    <img id="rank-icon" src="../../static/static/rank/{{rank}}.svg" />
-                    <span id="TR" style="display: flex; align-items: flex-end"
+                    <span class="TR-title">Tetra Rating (TR)</span>
+                    <img class="rank-icon" src="../../static/static/rank/{{rank}}.svg" />
+                    <span class="TR" style="display: flex; align-items: flex-end"
                         >{{TR}}&nbsp;
                         <p style="font-size: 30px; font-weight: 400; line-height: 47px">(#{{global_rank}})</p>
                     </span>
                 </div>
             </div>
             <span class="big-title">Multiplayer Stats</span>
-            <div id="multiplayer-box">
+            <div class="multiplayer-box">
                 <div class="flex-gap"></div>
-                <div id="multiplayer-data-box">
-                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="lpm-box">
-                        <span class="big-data-value" id="lpm-value">{{lpm}}</span>
-                        <span class="small-data-value" id="pps-value">{{pps}} pps</span>
+                <div class="multiplayer-data-box">
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners lpm-box">
+                        <span class="big-data-value lpm-value">{{lpm}}</span>
+                        <span class="small-data-value pps-value">{{pps}} pps</span>
                     </div>
-                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="apm-box">
-                        <span class="big-data-value" id="apm-value">{{apm}}</span>
-                        <span class="small-data-value" id="apl-value">x{{apl}}</span>
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners apm-box">
+                        <span class="big-data-value apm-value">{{apm}}</span>
+                        <span class="small-data-value apl-value">x{{apl}}</span>
                     </div>
-                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners" id="adpm-box">
-                        <span class="big-data-value" id="adpm-value">{{adpm}}</span>
-                        <span class="small-data-value" id="adpl-value">x{{adpl}}</span>
-                        <span class="small-data-value" id="vs-value">{{vs}} vs</span>
+                    <div class="multiplayer-data small-data-box box-shadow box-rounded-corners adpm-box">
+                        <span class="big-data-value adpm-value">{{adpm}}</span>
+                        <span class="small-data-value adpl-value">x{{adpl}}</span>
+                        <span class="small-data-value vs-value">{{vs}} vs</span>
                     </div>
                 </div>
                 <div class="flex-gap"></div>
@@ -65,18 +65,18 @@
                 <div class="flex-gap"></div>
             </div>
             <span class="big-title">Singleplayer Stats</span>
-            <div id="singleplayer-box">
+            <div class="singleplayer-box">
                 <div class="flex-gap"></div>
-                <div class="small-data-box box-shadow box-rounded-corners" id="sprint-box">
-                    <span class="big-data-value" id="sprint-value">{{sprint}}</span>
+                <div class="small-data-box box-shadow box-rounded-corners sprint-box">
+                    <span class="big-data-value sprint-value">{{sprint}}</span>
                 </div>
                 <div class="flex-gap"></div>
-                <div class="small-data-box box-shadow box-rounded-corners" id="blitz-box">
-                    <span class="big-data-value" id="blitz-value">{{blitz}}</span>
+                <div class="small-data-box box-shadow box-rounded-corners blitz-box">
+                    <span class="big-data-value blitz-value">{{blitz}}</span>
                 </div>
                 <div class="flex-gap"></div>
             </div>
-            <div id="footer">Powered by<br />Nonebot2 x nonebot-plugin-tetris-stats</div>
+            <div class="footer">Powered by<br />Nonebot2 x nonebot-plugin-tetris-stats</div>
         </div>
     </body>
 
