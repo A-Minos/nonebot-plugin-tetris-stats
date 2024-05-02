@@ -49,6 +49,10 @@ requires = ['poetry-core>=1.0.0']
 build-backend = 'poetry.core.masonry.api'
 
 [tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
 select = [
     'F',     # pyflakes
     'E',     # pycodestyle errors
@@ -89,14 +93,12 @@ ignore = [
     'ANN202', # 向 NoneBot 注册的函数
     'TRY003',
 ]
-line-length = 120
-target-version = "py310"
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 mypy-init-return = true
 
-[tool.ruff.flake8-builtins]
+[tool.ruff.lint.flake8-builtins]
 builtins-ignorelist = ["id"]
 
 [tool.ruff.format]
