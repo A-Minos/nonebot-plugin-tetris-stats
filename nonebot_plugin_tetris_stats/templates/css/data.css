@@ -310,11 +310,28 @@
     color: #4779c6;
 }
 
+.radar-chart-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.radar-background {
+    background: linear-gradient(222.34deg, #525252 11.97%, #1d1916 89.73%),
+        linear-gradient(222.34deg, #4f9dff 11.97%, #2563ea 89.73%);
+}
+
 #radar-chart {
     width: 275px;
     height: 275px;
-    background: linear-gradient(222.34deg, #525252 11.97%, #1d1916 89.73%),
-        linear-gradient(222.34deg, #4f9dff 11.97%, #2563ea 89.73%);
+}
+
+.radar-description {
+    text-align: left;
+    padding-left: 20px;
+    padding-top: 15px;
+    font-size: 12px;
+    color: #fafafa;
+    box-sizing: border-box;
 }
 
 .singleplayer-box {
