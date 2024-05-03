@@ -14,9 +14,14 @@
                 <div class="info-box">
                     <div class="flex-gap"></div>
                     <div class="box-shadow box-rounded-corners user-info-box">
+                        <div class="flex-gap"></div>
                         <img class="user-avatar" src="{{user_avatar}}" />
+                        <div class="flex-gap"></div>
                         <div class="user-name">{{user_name}}</div>
+                        <div class="flex-gap"></div>
+                        {% if user_sign is not none %}
                         <div class="user-sign">“{{user_sign}}”</div>
+                        {% endif %}
                     </div>
                     <div class="flex-gap"></div>
                     <div class="box-shadow box-rounded-corners game-info-box">

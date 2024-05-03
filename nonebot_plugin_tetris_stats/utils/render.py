@@ -34,7 +34,7 @@ async def render(
     *,
     user_avatar: str,
     user_name: str,
-    user_sign: str,
+    user_sign: str | None,
     game_type: Literal['TETR.IO'],
     ranking: str | float,
     rd: str | float,
