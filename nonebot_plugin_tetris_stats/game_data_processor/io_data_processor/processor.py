@@ -1,3 +1,4 @@
+from asyncio import gather
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
@@ -33,15 +34,13 @@ from .. import Processor as ProcessorMeta
 from .cache import Cache
 from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
 from .model import IORank
-from .schemas.league_all import FailedModel as LeagueAllFailed
+from .schemas.base import FailedModel
 from .schemas.league_all import LeagueAll
 from .schemas.league_all import ValidUser as LeagueAllUser
 from .schemas.response import ProcessedData, RawResponse
 from .schemas.user import User
-from .schemas.user_info import FailedModel as InfoFailed
-from .schemas.user_info import NeverPlayedLeague, NeverRatedLeague, UserInfo
+from .schemas.user_info import NeverPlayedLeague, NeverRatedLeague, RatedLeague, UserInfo
 from .schemas.user_info import SuccessModel as InfoSuccess
-from .schemas.user_records import FailedModel as RecordsFailed
 from .schemas.user_records import SoloRecord, UserRecords
 from .schemas.user_records import SuccessModel as RecordsSuccess
 from .typing import Rank
@@ -119,10 +118,66 @@ class Processor(ProcessorMeta):
         """处理查询消息"""
         self.command_type = 'query'
         await self.get_user()
-        user_info = await self.get_user_info()
+        user_info, user_records = await gather(self.get_user_info(), self.get_user_records())
         user_name = user_info.data.user.username.upper()
         league = user_info.data.user.league
-
+        sprint = user_records.data.records.sprint
+        blitz = user_records.data.records.blitz
+        if isinstance(league, RatedLeague) and league.vs is not None:
+            if sprint.record is None:
+                sprint_value = 'N/A'
+            else:
+                if not isinstance(sprint.record, SoloRecord):
+                    raise WhatTheFuckError('40L记录不是单人记录')
+                duration = timedelta(milliseconds=sprint.record.endcontext.final_time).total_seconds()
+                sprint_value = f'{duration:.1f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.1f}s'  # noqa: PLR2004
+            if blitz.record is None:
+                blitz_value = 'N/A'
+            else:
+                if not isinstance(blitz.record, SoloRecord):
+                    raise WhatTheFuckError('Blitz记录不是单人记录')
+                blitz_value = f'{blitz.record.endcontext.score:,}'
+            async with HostPage(
+                await render(
+                    'data.j2.html',
+                    user_avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                    if user_info.data.user.avatar_revision is not None
+                    else f'../../identicon?md5={md5(user_info.data.user.id.encode()).hexdigest()}',  # noqa: S324
+                    user_name=user_name,
+                    user_sign=user_info.data.user.bio,
+                    game_type='TETR.IO',
+                    ranking=round(league.glicko, 2),
+                    rd=round(league.rd, 2),
+                    rank=league.rank,
+                    TR=round(league.rating, 2),
+                    global_rank=league.standing,
+                    lpm=round(lpm := (league.pps * 24), 2),
+                    pps=league.pps,
+                    apm=league.apm,
+                    apl=round(league.apm / lpm, 2),
+                    adpm=round(adpm := (league.vs * 0.6), 2),
+                    adpl=round(adpm / lpm, 2),
+                    vs=league.vs,
+                    sprint=sprint_value,
+                    blitz=blitz_value,
+                    data=[[0, 0]],
+                    split_value=0,
+                    value_max=0,
+                    value_min=0,
+                    offset=0,
+                    app=(app := (league.apm / (60 * league.pps))),
+                    dsps=(dsps := ((league.vs / 100) - (league.apm / 60))),
+                    dspp=(dspp := (dsps / league.pps)),
+                    ci=150 * dspp - 125 * app + 50 * (league.vs / league.apm) - 25,
+                    ge=2 * ((app * dsps) / league.pps),
+                )
+            ) as page_hash:
+                return UniMessage.image(
+                    raw=await screenshot(
+                        urlunparse(('http', get_self_netloc(), f'/host/page/{page_hash}.html', '', '', ''))
+                    )
+                )
+        # call back
         ret_message = ''
         if isinstance(league, NeverPlayedLeague):
             ret_message += f'用户 {user_name} 没有排位统计数据'
@@ -139,7 +194,7 @@ class Processor(ProcessorMeta):
                 ret_message += f', 段位分 {round(league.glicko,2)}±{round(league.rd,2)}, 最近十场的数据:'
             lpm = league.pps * 24
             ret_message += f"\nL'PM: {round(lpm, 2)} ( {league.pps} pps )"
-            ret_message += f'\nAPM: {league.apm} ( x{round(league.apm/(league.pps*24),2)} )'
+            ret_message += f'\nAPM: {league.apm} ( x{round(league.apm/lpm,2)} )'
             if league.vs is not None:
                 adpm = league.vs * 0.6
                 ret_message += f'\nADPM: {round(adpm,2)} ( x{round(adpm/lpm,2)} ) ( {league.vs}vs )'
@@ -174,7 +229,7 @@ class Processor(ProcessorMeta):
                 splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}'])
             )
             user_info: UserInfo = type_validate_json(UserInfo, self.raw_response.user_info)  # type: ignore[arg-type]
-            if isinstance(user_info, InfoFailed):
+            if isinstance(user_info, FailedModel):
                 raise RequestError(f'用户信息请求错误:\n{user_info.error}')
             self.processed_data.user_info = user_info
         return self.processed_data.user_info
@@ -186,7 +241,7 @@ class Processor(ProcessorMeta):
                 splice_url([BASE_URL, 'users/', f'{self.user.ID or self.user.name}/', 'records'])
             )
             user_records: UserRecords = type_validate_json(UserRecords, self.raw_response.user_records)  # type: ignore[arg-type]
-            if isinstance(user_records, RecordsFailed):
+            if isinstance(user_records, FailedModel):
                 raise RequestError(f'用户Solo数据请求错误:\n{user_records.error}')
             self.processed_data.user_records = user_records
         return self.processed_data.user_records
@@ -199,7 +254,7 @@ async def get_io_rank_data() -> None:
         LeagueAll,  # type: ignore[arg-type]
         (data := await Cache.get(splice_url([BASE_URL, 'users/lists/league/all']))),
     )
-    if isinstance(league_all, LeagueAllFailed):
+    if isinstance(league_all, FailedModel):
         raise RequestError(f'排行榜数据请求错误:\n{league_all.error}')
 
     def pps(user: LeagueAllUser) -> float:
