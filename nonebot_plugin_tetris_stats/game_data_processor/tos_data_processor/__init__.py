@@ -73,13 +73,12 @@ alc = on_alconna(
 
 async def finish_special_query(matcher: Matcher, proc: Processor) -> NoReturn:
     try:
-        await (await proc.handle_query()).send()
+        await (await proc.handle_query()).finish()
     except NeedCatchError as e:
         if isinstance(e, RequestError) and '未找到此用户' in e.message:
             matcher.skip()
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 try:
@@ -142,11 +141,10 @@ async def _(bot: Bot, event: Event, matcher: Matcher, account: User, bot_info: U
     try:
         await (
             await proc.handle_bind(platform=get_platform(bot), account=event.get_user_id(), bot_info=bot_info)
-        ).send()
+        ).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 @alc.assign('query')
@@ -167,11 +165,10 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         command_args=[],
     )
     try:
-        await (UniMessage(message) + await proc.handle_query()).send()
+        await (UniMessage(message) + await proc.handle_query()).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 @alc.assign('query')
@@ -182,11 +179,10 @@ async def _(event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await (await proc.handle_query()).send()
+        await (await proc.handle_query()).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 add_default_handlers(alc)

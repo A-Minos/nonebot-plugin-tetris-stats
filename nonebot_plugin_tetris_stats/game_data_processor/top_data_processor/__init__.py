@@ -87,11 +87,10 @@ async def _(  # noqa: PLR0913
             await proc.handle_bind(
                 platform=get_platform(bot), account=event.get_user_id(), bot_info=bot_info, user_info=user_info
             )
-        ).send()
+        ).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 @alc.assign('query')
@@ -112,11 +111,10 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
         command_args=[],
     )
     try:
-        await (UniMessage(message) + await proc.handle_query()).send()
+        await (UniMessage(message) + await proc.handle_query()).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 @alc.assign('query')
@@ -127,11 +125,10 @@ async def _(event: Event, matcher: Matcher, account: User):
         command_args=[],
     )
     try:
-        await (await proc.handle_query()).send()
+        await (await proc.handle_query()).finish()
     except NeedCatchError as e:
         await matcher.send(str(e))
         raise HandleNotFinishedError from e
-    await matcher.finish()
 
 
 add_default_handlers(alc)
