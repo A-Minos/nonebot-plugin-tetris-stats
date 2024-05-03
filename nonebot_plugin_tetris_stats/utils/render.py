@@ -56,8 +56,8 @@ async def render(
     value_min: int,
     offset: int,
     app: str | float,
+    dsps: str | float,
     dspp: str | float,
-    OR: str | float,  # noqa: N803
     ci: str | float,
     ge: str | float,
 ) -> str: ...
