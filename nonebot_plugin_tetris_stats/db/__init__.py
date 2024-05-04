@@ -1,4 +1,4 @@
-from enum import StrEnum, auto
+from enum import Enum, auto
 
 from nonebot_plugin_orm import AsyncSession
 from sqlalchemy import select
@@ -7,7 +7,7 @@ from ..utils.typing import GameType
 from .models import Bind
 
 
-class BindStatus(StrEnum):
+class BindStatus(Enum):
     SUCCESS = auto()
     UPDATE = auto()
 
