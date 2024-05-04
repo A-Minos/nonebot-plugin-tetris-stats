@@ -4,8 +4,8 @@
 }
 
 @font-face {
-    font-family: '26FGalaxySans-ObliqueVF';
-    src: url('../static/fonts/26FGalaxySans/26FGalaxySans-ObliqueVF.woff2') format('woff2');
+    font-family: 'SourceHanSansSC-VF';
+    src: url('../static/fonts/SourceHanSans/SourceHanSansSC-VF.otf.woff2') format('woff2');
 }
 
 * {
@@ -74,7 +74,7 @@
     width: 625px;
 
     background: #f1f1f1;
-    font-family: 'CabinetGrotesk-Variable';
+    font-family: 'CabinetGrotesk-Variable', 'SourceHanSansSC-VF';
 }
 
 .account-box {
@@ -358,13 +358,11 @@
 }
 
 .footer {
-    display: flex;
-    justify-content: center;
     margin-top: 20px;
     margin-bottom: 20px;
-    font-family: '26FGalaxySans-ObliqueVF';
+
     font-size: 30px;
-    font-weight: 257;
+    font-weight: 750;
     line-height: 120%;
     text-align: center;
 }
