@@ -5,9 +5,19 @@ from .base import FailedModel
 from .base import SuccessModel as BaseSuccessModel
 
 
+class _User(BaseModel):
+    id: str = Field(..., alias='_id')
+    username: str
+    role: str
+    xp: float
+    supporter: bool
+    verified: bool
+    country: str | None = None
+
+
 class SuccessModel(BaseSuccessModel):
     class Data(BaseModel):
-        class ValidUser(BaseModel):
+        class ValidUser(_User):
             class League(BaseModel):
                 gamesplayed: int
                 gameswon: int
@@ -21,16 +31,9 @@ class SuccessModel(BaseSuccessModel):
                 vs: float
                 decaying: bool
 
-            id: str = Field(..., alias='_id')
-            username: str
-            role: str
-            xp: float
             league: League
-            supporter: bool
-            verified: bool
-            country: str | None = None
 
-        class InvalidUser(BaseModel):
+        class InvalidUser(_User):
             class League(BaseModel):
                 gamesplayed: int
                 gameswon: int
@@ -44,14 +47,7 @@ class SuccessModel(BaseSuccessModel):
                 vs: float | None = None
                 decaying: bool
 
-            id: str = Field(..., alias='_id')
-            username: str
-            role: str
-            xp: float
             league: League
-            supporter: bool
-            verified: bool
-            country: str | None
 
         users: list[ValidUser | InvalidUser]
 

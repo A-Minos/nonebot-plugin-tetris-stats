@@ -68,31 +68,25 @@ class EndContext(BaseModel):
     gametype: str
 
 
-class BaseModeRecord(BaseModel):
-    class SoloRecord(BaseModel):
-        class User(BaseModel):
-            id: str = Field(..., alias='_id')
-            username: str
+class _User(BaseModel):
+    id: str = Field(..., alias='_id')
+    username: str
 
-        id: str = Field(..., alias='_id')
-        stream: str
-        replayid: str
-        user: User
-        ts: datetime
-        ismulti: bool | None = None
+
+class _Record(BaseModel):
+    id: str = Field(..., alias='_id')
+    stream: str
+    replayid: str
+    user: _User
+    ts: datetime
+    ismulti: bool | None = None
+
+
+class BaseModeRecord(BaseModel):
+    class SoloRecord(_Record):
         endcontext: EndContext
 
-    class MultiRecord(BaseModel):
-        class User(BaseModel):
-            id: str = Field(..., alias='_id')
-            username: str
-
-        id: str = Field(..., alias='_id')
-        stream: str
-        replayid: str
-        user: User
-        ts: datetime
-        ismulti: bool | None = None
+    class MultiRecord(_Record):
         endcontext: list[EndContext]
 
     record: SoloRecord | MultiRecord | None = None
