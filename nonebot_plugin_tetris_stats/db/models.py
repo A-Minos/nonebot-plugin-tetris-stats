@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from nonebot.adapters import Message
-from nonebot.compat import type_validate_json
+from nonebot.compat import PYDANTIC_V2, type_validate_json
 from nonebot_plugin_orm import Model
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import JSON, DateTime, Dialect, PickleType, String, TypeDecorator
@@ -22,12 +22,22 @@ class PydanticType(TypeDecorator):
         self.get_model = get_model
         super().__init__(*args, **kwargs)
 
-    @override
-    def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
-        # 将 Pydantic 模型实例转换为 JSON
-        if isinstance(value, tuple(self.get_model())):
-            return value.json(by_alias=True)  # type: ignore[union-attr]
-        raise TypeError
+    if PYDANTIC_V2:
+
+        @override
+        def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
+            # 将 Pydantic 模型实例转换为 JSON
+            if isinstance(value, tuple(self.get_model())):
+                return value.model_dump_json(by_alias=True)  # type: ignore[union-attr]
+            raise TypeError
+    else:
+
+        @override
+        def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
+            # 将 Pydantic 模型实例转换为 JSON
+            if isinstance(value, tuple(self.get_model())):
+                return value.json(by_alias=True)  # type: ignore[union-attr]
+            raise TypeError
 
     @override
     def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:
