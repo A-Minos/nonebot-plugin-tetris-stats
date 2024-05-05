@@ -26,7 +26,7 @@ class PydanticType(TypeDecorator):
     def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
         # 将 Pydantic 模型实例转换为 JSON
         if isinstance(value, tuple(self.get_model())):
-            return value.json()  # type: ignore[union-attr]
+            return value.json(by_alias=True)  # type: ignore[union-attr]
         raise TypeError
 
     @override
