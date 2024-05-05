@@ -13,7 +13,7 @@ __plugin_meta__ = PluginMetadata(
     description='一个用于查询 Tetris 相关游戏玩家数据的插件',
     usage='发送 {游戏名} --help 查询使用方法',
     type='application',
-    homepage='https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats',
+    homepage='https://github.com/A-minos/nonebot-plugin-tetris-stats',
     extra={
         'orm_version_location': migrations,
     },
