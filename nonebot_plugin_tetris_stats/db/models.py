@@ -48,7 +48,7 @@ class PydanticType(TypeDecorator):
                     return type_validate_json(i, value)
                 except ValidationError:  # noqa: PERF203
                     ...
-        raise TypeError
+        raise ValueError
 
 
 class Bind(MappedAsDataclass, Model):
