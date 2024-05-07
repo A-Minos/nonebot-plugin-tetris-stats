@@ -68,6 +68,7 @@ class Processor(ABC):
         historical_data.game_platform = self.game_platform
         historical_data.command_type = self.command_type
         historical_data.command_args = self.command_args
+        historical_data.user_unique_identifier = self.user.unique_identifier
         historical_data.game_user = self.user
         historical_data.processed_data = self.processed_data
         historical_data.finish_time = finish_time

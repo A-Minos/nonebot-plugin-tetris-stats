@@ -70,6 +70,7 @@ class HistoricalData(MappedAsDataclass, Model):
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True, init=False)
     command_type: Mapped[CommandType] = mapped_column(String(16), index=True, init=False)
     command_args: Mapped[list[str]] = mapped_column(JSON, init=False)
+    user_unique_identifier: Mapped[str] = mapped_column(String(32), index=True, init=False)
     game_user: Mapped[BaseUser] = mapped_column(PydanticType(get_model=BaseUser.__subclasses__), init=False)
     processed_data: Mapped[BaseProcessedData] = mapped_column(
         PydanticType(get_model=BaseProcessedData.__subclasses__), init=False
