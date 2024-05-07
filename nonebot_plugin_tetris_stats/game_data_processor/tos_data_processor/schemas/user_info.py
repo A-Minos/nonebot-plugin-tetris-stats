@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from nonebot.compat import PYDANTIC_V2
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SuccessModel(BaseModel):
@@ -16,6 +17,12 @@ class SuccessModel(BaseModel):
             win: str
             lose: str
             score: str
+            if PYDANTIC_V2:
+                model_config = ConfigDict(populate_by_name=True)
+            else:
+
+                class Config:
+                    allow_population_by_field_name = True
 
         class UserDataTotalItem(BaseModel):
             time_map: str = Field(..., alias='timeMap')
@@ -48,6 +55,12 @@ class SuccessModel(BaseModel):
             tspin_no_map: str = Field(..., alias='tspinNoMap')
             b2b_no_map: str = Field(..., alias='b2bNoMap')
             perfect_clear_no_map: str = Field(..., alias='perfectClearNoMap')
+            if PYDANTIC_V2:
+                model_config = ConfigDict(populate_by_name=True)
+            else:
+
+                class Config:
+                    allow_population_by_field_name = True
 
         teaid: str = Field(..., alias='teaId')
         name: str
@@ -71,6 +84,13 @@ class SuccessModel(BaseModel):
         pb_challenge: str = Field(..., alias='PBChallenge')
         register_date: datetime = Field(..., alias='registerDate')
         last_login_date: datetime = Field(..., alias='lastLoginDate')
+
+        if PYDANTIC_V2:
+            model_config = ConfigDict(populate_by_name=True)
+        else:
+
+            class Config:
+                allow_population_by_field_name = True
 
     code: int
     success: Literal[True]

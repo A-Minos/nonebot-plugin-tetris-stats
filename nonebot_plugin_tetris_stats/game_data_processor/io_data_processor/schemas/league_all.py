@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from nonebot.compat import PYDANTIC_V2
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..typing import Rank
 from .base import FailedModel
@@ -13,6 +14,12 @@ class _User(BaseModel):
     supporter: bool
     verified: bool
     country: str | None = None
+    if PYDANTIC_V2:
+        model_config = ConfigDict(populate_by_name=True)
+    else:
+
+        class Config:
+            allow_population_by_field_name = True
 
 
 class SuccessModel(BaseSuccessModel):

@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from nonebot.compat import PYDANTIC_V2
+from pydantic import BaseModel, ConfigDict, Field
 
 from .base import FailedModel
 from .base import SuccessModel as BaseSuccessModel
@@ -66,11 +67,23 @@ class EndContext(BaseModel):
     finesse: Finesse
     final_time: float = Field(..., alias='finalTime')
     gametype: str
+    if PYDANTIC_V2:
+        model_config = ConfigDict(populate_by_name=True)
+    else:
+
+        class Config:
+            allow_population_by_field_name = True
 
 
 class _User(BaseModel):
     id: str = Field(..., alias='_id')
     username: str
+    if PYDANTIC_V2:
+        model_config = ConfigDict(populate_by_name=True)
+    else:
+
+        class Config:
+            allow_population_by_field_name = True
 
 
 class _Record(BaseModel):
@@ -80,6 +93,12 @@ class _Record(BaseModel):
     user: _User
     ts: datetime
     ismulti: bool | None = None
+    if PYDANTIC_V2:
+        model_config = ConfigDict(populate_by_name=True)
+    else:
+
+        class Config:
+            allow_population_by_field_name = True
 
 
 class BaseModeRecord(BaseModel):
@@ -102,6 +121,12 @@ class SuccessModel(BaseSuccessModel):
 
             sprint: Sprint = Field(..., alias='40l')
             blitz: Blitz
+            if PYDANTIC_V2:
+                model_config = ConfigDict(populate_by_name=True)
+            else:
+
+                class Config:
+                    allow_population_by_field_name = True
 
         class Zen(BaseModel):
             level: int

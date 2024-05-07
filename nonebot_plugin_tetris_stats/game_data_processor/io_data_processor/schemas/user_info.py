@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from nonebot.compat import PYDANTIC_V2
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..typing import Rank
 from .base import FailedModel
@@ -113,6 +114,12 @@ class SuccessModel(BaseSuccessModel):
             connections: Connections
             friend_count: int | None = None
             distinguishment: Distinguishment | None = None
+            if PYDANTIC_V2:
+                model_config = ConfigDict(populate_by_name=True)
+            else:
+
+                class Config:
+                    allow_population_by_field_name = True
 
         user: User
 
