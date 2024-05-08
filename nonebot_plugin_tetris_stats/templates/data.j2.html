@@ -38,14 +38,14 @@
                     </div>
                     <div class="flex-gap"></div>
                 </div>
-                {# <div class="chart-shadow box-rounded-corners" id="TR-curve-chart">
+                <div class="chart-shadow box-rounded-corners" id="TR-curve-chart">
                     <span class="TR-title">Tetra Rating (TR)</span>
                     <img class="rank-icon" src="../../static/static/rank/{{rank}}.svg" />
                     <span class="TR" style="display: flex; align-items: flex-end"
                         >{{TR}}&nbsp;
                         <p style="font-size: 30px; font-weight: 400; line-height: 47px">(#{{global_rank}})</p>
                     </span>
-                </div> #}
+                </div>
             </div>
             <span class="big-title">Multiplayer Stats</span>
             <div class="multiplayer-box">
@@ -111,7 +111,8 @@
 
             xAxis: {
                 type: 'time',
-                minInterval: 3600 * 48 * 1000,
+                minInterval: 3600 * 24 * 1000,
+                maxInterval: 3600 * 24 * 1000,
                 axisTick: {
                     show: false,
                 },
@@ -133,12 +134,17 @@
                         }
                         switch (index) {
                             case 0:
-                            case 6:
+                            case 1:
+                            case 3:
+                            case 5:
+                            case 7:
+                            case 9:
+                            case 11:
                                 ret = '';
                                 break;
                             default:
                                 lst = format_date();
-                                if (index === 5) {
+                                if (index === 10) {
                                     ret = '{last_month|' + lst[0] + '}\n{last_day|' + lst[1] + '}';
                                     break;
                                 }

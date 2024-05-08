@@ -3,11 +3,12 @@ from collections import defaultdict
 from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from hashlib import md5, sha512
-from math import floor
+from math import ceil, floor
 from re import match
 from statistics import mean
-from typing import Literal
+from typing import Literal, NamedTuple
 from urllib.parse import urlunparse
+from zoneinfo import ZoneInfo
 
 from aiofiles import open
 from nonebot import get_driver
@@ -23,6 +24,7 @@ from typing_extensions import override
 from zstandard import ZstdCompressor
 
 from ...db import BindStatus, create_or_update_bind
+from ...db.models import HistoricalData
 from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.host import HostPage, get_self_netloc
@@ -32,7 +34,7 @@ from ...utils.retry import retry
 from ...utils.screenshot import screenshot
 from .. import Processor as ProcessorMeta
 from .cache import Cache
-from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE
+from .constant import BASE_URL, GAME_TYPE, RANK_PERCENTILE, TR_MAX, TR_MIN
 from .model import IORank
 from .schemas.base import FailedModel
 from .schemas.league_all import LeagueAll
@@ -124,6 +126,122 @@ class Processor(ProcessorMeta):
         sprint = user_records.data.records.sprint
         blitz = user_records.data.records.blitz
         if isinstance(league, RatedLeague) and league.vs is not None:
+            today = datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
+            forward = timedelta(days=9)
+            start_time = (today - forward).astimezone(UTC)
+            async with get_session() as session:
+                historical_data = (
+                    await session.scalars(
+                        select(HistoricalData)
+                        .where(HistoricalData.trigger_time >= start_time)
+                        .where(HistoricalData.game_platform == GAME_TYPE)
+                        .where(HistoricalData.user_unique_identifier == self.user.unique_identifier)
+                    )
+                ).all()
+                extra = (
+                    await session.scalars(
+                        select(HistoricalData)
+                        .where(HistoricalData.game_platform == GAME_TYPE)
+                        .where(HistoricalData.user_unique_identifier == self.user.unique_identifier)
+                        .order_by(HistoricalData.id.desc())
+                        .where(HistoricalData.id < min([i.id for i in historical_data]))
+                        .limit(1)
+                    )
+                ).one_or_none()
+                if extra is not None:
+                    historical_data = list(historical_data)
+                    historical_data.append(extra)
+
+            class HistoricalTr(NamedTuple):
+                time: datetime
+                tr: float
+
+            histories = [
+                HistoricalTr(
+                    time=i.processed_data.user_info.cache.cached_at.astimezone(ZoneInfo('Asia/Shanghai')),
+                    tr=i.processed_data.user_info.data.user.league.rating,
+                )
+                for i in historical_data
+                if isinstance(i.processed_data, ProcessedData)
+                and i.processed_data.user_info is not None
+                and isinstance(i.processed_data.user_info.data.user.league, RatedLeague)
+            ]
+
+            def get_specified_point(
+                previous_point: HistoricalTr, behind_point: HistoricalTr, point_time: datetime
+            ) -> HistoricalTr:
+                """根据给出的 previous_point 和 behind_point, 推算 point_time 点处的数据
+
+                Args:
+                    previous_point (HistoricalTr): 前面的数据点
+                    behind_point (HistoricalTr): 后面的数据点
+                    point_time (datetime): 要推算的点的位置
+
+                Returns:
+                    HistoricalTr: 要推算的点的数据
+                """
+                # 求两个点的斜率
+                slope = (behind_point.tr - previous_point.tr) / (
+                    datetime.timestamp(behind_point.time) - datetime.timestamp(previous_point.time)
+                )
+                return HistoricalTr(
+                    time=point_time,
+                    tr=previous_point.tr
+                    + slope * (datetime.timestamp(point_time) - datetime.timestamp(previous_point.time)),
+                )
+
+            # 按照时间排序
+            histories = sorted(histories, key=lambda x: x.time)
+            for index, value in enumerate(histories):
+                # 在历史记录里找有没有今天0点后的数据
+                if value.time > today:
+                    histories = histories[:index] + [
+                        get_specified_point(histories[index - 1], histories[index], today.replace(microsecond=1000))
+                    ]
+                    break
+            else:
+                histories.append(
+                    get_specified_point(
+                        histories[-1],
+                        HistoricalTr(user_info.cache.cached_at, league.rating),
+                        today.replace(microsecond=1000),
+                    )
+                )
+            if histories[0].time < (today - forward):
+                histories[0] = get_specified_point(
+                    histories[0],
+                    histories[1],
+                    today - forward,
+                )
+
+            else:
+                histories.insert(0, HistoricalTr((today - forward), histories[0].tr))
+
+            def get_value_bounds(values: list[int | float]) -> tuple[int, int]:
+                value_max = 10 * ceil(max(values) / 10)
+                value_min = 10 * floor(min(values) / 10)
+                return value_max, value_min
+
+            def get_split(value_max: int, value_min: int) -> tuple[int, int]:
+                offset = 0
+                overflow = 0
+
+                while True:
+                    if (new_max_value := value_max + offset + overflow) > TR_MAX:
+                        overflow -= 1
+                        continue
+                    if (new_min_value := value_min - offset + overflow) < TR_MIN:
+                        overflow += 1
+                        continue
+                    if ((new_max_value - new_min_value) / 40).is_integer():
+                        split_value = int((value_max + offset - (value_min - offset)) / 4)
+                        break
+                    offset += 1
+                return split_value, offset + overflow
+
+            value_max, value_min = get_value_bounds([i.tr for i in histories])
+            split_value, offset = get_split(value_max, value_min)
+
             if sprint.record is None:
                 sprint_value = 'N/A'
             else:
@@ -160,11 +278,11 @@ class Processor(ProcessorMeta):
                     vs=league.vs,
                     sprint=sprint_value,
                     blitz=blitz_value,
-                    data=[[0, 0]],
-                    split_value=0,
-                    value_max=0,
-                    value_min=0,
-                    offset=0,
+                    data=[[int(datetime.timestamp(time) * 1000), tr] for time, tr in histories],
+                    split_value=split_value,
+                    offset=offset,
+                    value_max=value_max,
+                    value_min=value_min,
                     app=(app := (league.apm / (60 * league.pps))),
                     dsps=(dsps := ((league.vs / 100) - (league.apm / 60))),
                     dspp=(dspp := (dsps / league.pps)),
@@ -177,7 +295,7 @@ class Processor(ProcessorMeta):
                         urlunparse(('http', get_self_netloc(), f'/host/page/{page_hash}.html', '', '', ''))
                     )
                 )
-        # call back
+        # fallback
         ret_message = ''
         if isinstance(league, NeverPlayedLeague):
             ret_message += f'用户 {user_name} 没有排位统计数据'
