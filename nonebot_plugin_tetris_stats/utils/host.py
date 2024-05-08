@@ -9,7 +9,7 @@ from nonebot import get_app, get_driver
 from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
 from pydantic import IPvAnyAddress
 
-from ..templates import path
+from .templates import templates_dir
 
 app = get_app()
 
@@ -40,9 +40,9 @@ class HostPage:
 
 
 app.mount(
-    '/static',
-    StaticFiles(directory=path),
-    name='static',
+    '/assets',
+    StaticFiles(directory=templates_dir / 'assets'),
+    name='assets',
 )
 
 
