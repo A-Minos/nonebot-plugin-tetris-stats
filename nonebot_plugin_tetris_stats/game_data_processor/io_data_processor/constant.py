@@ -23,3 +23,5 @@ RANK_PERCENTILE: dict[Rank, float] = {
     'd+': 97.5,
     'd': 100,
 }
+TR_MIN = 0
+TR_MAX = 25000
