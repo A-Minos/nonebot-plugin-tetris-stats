@@ -28,7 +28,7 @@ from ...db.models import HistoricalData
 from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.host import HostPage, get_self_netloc
-from ...utils.render import render
+from ...utils.render import Bind, render
 from ...utils.request import splice_url
 from ...utils.retry import retry
 from ...utils.screenshot import screenshot
@@ -96,16 +96,22 @@ class Processor(ProcessorMeta):
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
             async with HostPage(
                 await render(
-                    'bind.j2.html',
-                    user_avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
-                    if user_info.data.user.avatar_revision is not None
-                    else f'../../identicon?md5={md5(user_info.data.user.id.encode()).hexdigest()}',  # noqa: S324
-                    state='unknown',
-                    bot_avatar=bot_avatar,
-                    game_type=self.game_platform,
-                    user_name=user_info.data.user.username.upper(),
-                    bot_name=bot_info.user_name,
-                    command='io查我',
+                    'binding',
+                    Bind(
+                        platform='TETR.IO',
+                        status='unknown',
+                        user=Bind.People(
+                            avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                            if user_info.data.user.avatar_revision is not None
+                            else f'{{"type":"identicon","hash":"{md5(user_info.data.user.id.encode()).hexdigest()}"}}',  # noqa: S324
+                            name=user_info.data.user.username.upper(),
+                        ),
+                        bot=Bind.People(
+                            avatar=bot_avatar,
+                            name=bot_info.user_name,
+                        ),
+                        command='io查我',
+                    ),
                 )
             ) as page_hash:
                 message = UniMessage.image(
