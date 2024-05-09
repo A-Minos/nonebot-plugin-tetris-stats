@@ -1,7 +1,7 @@
 from collections.abc import Awaitable, Callable
 from typing import Any, Literal
 
-Number = int | float
+Number = float | int
 GameType = Literal['IO', 'TOP', 'TOS']
 CommandType = Literal['bind', 'query']
 AsyncCallable = Callable[..., Awaitable[Any]]
