@@ -14,7 +14,7 @@ from ...db import BindStatus, create_or_update_bind
 from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.host import HostPage, get_self_netloc
-from ...utils.render import render
+from ...utils.render import Bind, render
 from ...utils.request import Request, splice_url
 from ...utils.screenshot import screenshot
 from .. import Processor as ProcessorMeta
@@ -84,7 +84,9 @@ class Processor(ProcessorMeta):
         return GAME_TYPE
 
     @override
-    async def handle_bind(self, platform: str, account: str, bot_info: NBUserInfo) -> UniMessage:
+    async def handle_bind(
+        self, platform: str, account: str, bot_info: NBUserInfo, nb_user_info: NBUserInfo
+    ) -> UniMessage:
         """处理绑定消息"""
         self.command_type = 'bind'
         await self.get_user()
@@ -96,19 +98,23 @@ class Processor(ProcessorMeta):
                 game_platform=GAME_TYPE,
                 game_account=self.user.unique_identifier,
             )
-        bot_avatar = await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg')
         user_info = await self.get_user_info()
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
             async with HostPage(
                 await render(
-                    'bind.j2.html',
-                    user_avatar='../../static/static/logo/tos.ico',
-                    state='unknown',
-                    bot_avatar=bot_avatar,
-                    game_type=self.game_platform,
-                    user_name=user_info.data.name.upper(),
-                    bot_name=bot_info.user_name,
-                    command='茶服查我',
+                    'binding',
+                    Bind(
+                        platform=self.game_platform,
+                        status='unknown',
+                        user=Bind.People(
+                            avatar=await get_avatar(nb_user_info, 'Data URI', None), name=user_info.data.name
+                        ),
+                        bot=Bind.People(
+                            avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
+                            name=bot_info.user_name,
+                        ),
+                        command='茶服查我',
+                    ),
                 )
             ) as page_hash:
                 message = UniMessage.image(
