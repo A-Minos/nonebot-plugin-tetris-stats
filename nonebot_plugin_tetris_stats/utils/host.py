@@ -40,13 +40,13 @@ class HostPage:
 
 
 app.mount(
-    '/assets',
+    '/host/assets',
     StaticFiles(directory=templates_dir / 'assets'),
     name='assets',
 )
 
 
-@app.get('/host/page/{page_hash}.html', status_code=status.HTTP_200_OK)
+@app.get('/host/{page_hash}.html', status_code=status.HTTP_200_OK)
 async def _(page_hash: str) -> HTMLResponse:
     if page_hash in HostPage.pages:
         return HTMLResponse(HostPage.pages[page_hash])

@@ -98,9 +98,7 @@ class Processor(ProcessorMeta):
                 )
             ) as page_hash:
                 message = UniMessage.image(
-                    raw=await screenshot(
-                        urlunparse(('http', get_self_netloc(), f'/host/page/{page_hash}.html', '', '', ''))
-                    )
+                    raw=await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
                 )
         return message
 
