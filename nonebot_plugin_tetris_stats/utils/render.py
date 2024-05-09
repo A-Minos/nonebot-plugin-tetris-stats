@@ -14,9 +14,9 @@ if PYDANTIC_V2:
 else:
     from pydantic import validator as field_validator  # type: ignore[no-redef]
 
-template = Environment(
+env = Environment(
     loader=FileSystemLoader(templates_dir), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
-).get_template('index.html')
+)
 
 
 class TimestampDatetime(datetime):
@@ -107,4 +107,4 @@ async def render(render_type: Literal['tetrio/info'], data: TETRIOInfo) -> str: 
 
 
 async def render(render_type: Literal['binding', 'tetrio/info'], data: Bind | TETRIOInfo) -> str:
-    return await template.render_async(path=render_type, data=model_dump(data))
+    return await env.get_template('index.html').render_async(path=render_type, data=data.model_dump_json())
