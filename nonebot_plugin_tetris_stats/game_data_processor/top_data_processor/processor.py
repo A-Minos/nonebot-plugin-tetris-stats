@@ -16,7 +16,7 @@ from ...db import BindStatus, create_or_update_bind
 from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError
 from ...utils.host import HostPage, get_self_netloc
-from ...utils.render import render
+from ...utils.render import Bind, render
 from ...utils.request import Request, splice_url
 from ...utils.screenshot import screenshot
 from .. import Processor as ProcessorMeta
@@ -83,18 +83,23 @@ class Processor(ProcessorMeta):
                 game_platform=GAME_TYPE,
                 game_account=self.user.name,
             )
-        bot_avatar = await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg')
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
             async with HostPage(
                 await render(
-                    'bind.j2.html',
-                    user_avatar='../../static/static/logo/top.ico',
-                    state='unknown',
-                    bot_avatar=bot_avatar,
-                    game_type=self.game_platform,
-                    user_name=(await self.get_user_name()).upper(),
-                    bot_name=bot_info.user_name,
-                    command='top查我',
+                    'binding',
+                    Bind(
+                        platform=self.game_platform,
+                        status='unknown',
+                        user=Bind.People(
+                            avatar=await get_avatar(user_info, 'Data URI', None),
+                            name=(await self.get_user_name()).upper(),
+                        ),
+                        bot=Bind.People(
+                            avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
+                            name=bot_info.user_name,
+                        ),
+                        command='top查我',
+                    ),
                 )
             ) as page_hash:
                 message = UniMessage.image(
