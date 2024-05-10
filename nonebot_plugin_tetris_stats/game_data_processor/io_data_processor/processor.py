@@ -142,19 +142,20 @@ class Processor(ProcessorMeta):
                         .where(HistoricalData.user_unique_identifier == self.user.unique_identifier)
                     )
                 ).all()
-                extra = (
-                    await session.scalars(
-                        select(HistoricalData)
-                        .where(HistoricalData.game_platform == GAME_TYPE)
-                        .where(HistoricalData.user_unique_identifier == self.user.unique_identifier)
-                        .order_by(HistoricalData.id.desc())
-                        .where(HistoricalData.id < min([i.id for i in historical_data]))
-                        .limit(1)
-                    )
-                ).one_or_none()
-                if extra is not None:
-                    historical_data = list(historical_data)
-                    historical_data.append(extra)
+                if historical_data:
+                    extra = (
+                        await session.scalars(
+                            select(HistoricalData)
+                            .where(HistoricalData.game_platform == GAME_TYPE)
+                            .where(HistoricalData.user_unique_identifier == self.user.unique_identifier)
+                            .order_by(HistoricalData.id.desc())
+                            .where(HistoricalData.id < min([i.id for i in historical_data]))
+                            .limit(1)
+                        )
+                    ).one_or_none()
+                    if extra is not None:
+                        historical_data = list(historical_data)
+                        historical_data.append(extra)
 
             class HistoricalTr(NamedTuple):
                 time: datetime
@@ -217,7 +218,6 @@ class Processor(ProcessorMeta):
                     histories[1],
                     today - forward,
                 )
-
             else:
                 histories.insert(0, HistoricalTr((today - forward), histories[0].tr))
 
