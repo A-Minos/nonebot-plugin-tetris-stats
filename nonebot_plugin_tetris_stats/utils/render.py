@@ -35,7 +35,11 @@ class Bind(BaseModel):
 
 class TETRIOInfo(BaseModel):
     class User(BaseModel):
-        avatar: str
+        class Avatar(BaseModel):
+            type: Literal['identicon']
+            hash: str
+
+        avatar: str | Avatar
         name: str
         bio: str | None
 

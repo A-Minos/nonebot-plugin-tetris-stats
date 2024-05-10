@@ -312,7 +312,10 @@ class Processor(ProcessorMeta):
                     user=TETRIOInfo.User(
                         avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
                         if user_info.data.user.avatar_revision is not None
-                        else f'{{"type":"identicon","hash":"{md5(user_info.data.user.id.encode()).hexdigest()}"}}',  # noqa: S324
+                        else TETRIOInfo.User.Avatar(
+                            type='identicon',
+                            hash=md5(user_info.data.user.id.encode()).hexdigest(),  # noqa: S324
+                        ),
                         name=user_name,
                         bio=user_info.data.user.bio,
                     ),
