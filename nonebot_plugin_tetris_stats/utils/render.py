@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Literal, Self, overload
+from typing import Annotated, ClassVar, Literal, overload
 
 from jinja2 import Environment, FileSystemLoader
-from nonebot.compat import PYDANTIC_V2, model_dump
+from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel
 
 from ..game_data_processor.io_data_processor.typing import Rank
@@ -10,25 +10,15 @@ from .templates import templates_dir
 from .typing import Number
 
 if PYDANTIC_V2:
-    from pydantic import field_validator
-else:
-    from pydantic import validator as field_validator  # type: ignore[no-redef]
+    from pydantic import PlainSerializer
 
 env = Environment(
     loader=FileSystemLoader(templates_dir), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
 )
 
 
-class TimestampDatetime(datetime):
-    def __str__(self) -> str:
-        return str(int(self.timestamp() * 1000))
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    @classmethod
-    def from_datetime(cls, dt: datetime) -> Self:
-        return cls(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, dt.microsecond, dt.tzinfo, fold=dt.fold)
+def format_datetime_to_timestamp(dt: datetime) -> int:
+    return int(dt.timestamp() * 1000)
 
 
 class Bind(BaseModel):
@@ -67,13 +57,11 @@ class TETRIOInfo(BaseModel):
 
     class TetraLeagueHistory(BaseModel):
         class Data(BaseModel):
-            record_at: datetime
+            if PYDANTIC_V2:
+                record_at: Annotated[datetime, PlainSerializer(format_datetime_to_timestamp, return_type=int)]
+            else:
+                record_at: datetime  # type: ignore[no-redef]
             tr: Number
-
-            @field_validator('record_at')
-            @classmethod
-            def _(cls, value: datetime) -> TimestampDatetime:
-                return TimestampDatetime.from_datetime(value)
 
         data: list[Data]
         split_interval: Number
@@ -96,6 +84,11 @@ class TETRIOInfo(BaseModel):
     sprint: str
     blitz: str
 
+    if not PYDANTIC_V2:
+
+        class Config:
+            json_encoders: ClassVar[dict] = {datetime: format_datetime_to_timestamp}
+
 
 @overload
 async def render(render_type: Literal['binding'], data: Bind) -> str: ...
@@ -106,4 +99,6 @@ async def render(render_type: Literal['tetrio/info'], data: TETRIOInfo) -> str: 
 
 
 async def render(render_type: Literal['binding', 'tetrio/info'], data: Bind | TETRIOInfo) -> str:
-    return await env.get_template('index.html').render_async(path=render_type, data=data.model_dump_json())
+    if PYDANTIC_V2:
+        return await env.get_template('index.html').render_async(path=render_type, data=data.model_dump_json())
+    return await env.get_template('index.html').render_async(path=render_type, data=data.json())
