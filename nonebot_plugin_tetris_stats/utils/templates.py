@@ -3,11 +3,15 @@ from shutil import rmtree
 
 from nonebot import get_driver
 from nonebot.log import logger
+from nonebot.permission import SUPERUSER
+from nonebot_plugin_alconna import on_alconna
 from nonebot_plugin_localstore import get_data_dir  # type: ignore[import-untyped]
 
 driver = get_driver()
 
 templates_dir = get_data_dir('nonebot_plugin_tetris_stats') / 'templates'
+
+alc = on_alconna('更新模板', permission=SUPERUSER)
 
 
 @driver.on_startup
@@ -58,3 +62,9 @@ async def init_templates() -> None:
             logger.error(i)
         raise RuntimeError('更新模板仓库失败')
     logger.success('模板仓库更新成功')
+
+
+@alc.handle()
+async def _():
+    await init_templates()
+    await alc.finish('模板仓库更新成功')
