@@ -47,8 +47,7 @@ class TETRIOInfo(BaseModel):
     class User(BaseModel):
         avatar: str
         name: str
-        id: str
-        sign: str | None
+        bio: str | None
 
     class Ranking(BaseModel):
         rating: Number
