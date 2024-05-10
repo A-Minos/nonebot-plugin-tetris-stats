@@ -14,7 +14,8 @@ class SuccessModel(BaseSuccessModel):
             class Badge(BaseModel):
                 id: str
                 label: str
-                ts: datetime | None = None
+                group: str | None = None
+                ts: datetime | Literal[False] | None = None
 
             class NeverPlayedLeague(BaseModel):
                 gamesplayed: Literal[0]
