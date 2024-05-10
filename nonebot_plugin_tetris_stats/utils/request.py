@@ -69,7 +69,11 @@ class Request:
                         raise RequestError('api请求失败')
                     cls._headers = await response.request.all_headers()
                     try:
-                        cls._cookies = {i['name']: i['value'] for i in await context.cookies()}
+                        cls._cookies = {
+                            name: value
+                            for i in await context.cookies()
+                            if (name := i.get('name')) is not None and (value := i.get('value')) is not None
+                        }
                     except KeyError:
                         cls._cookies = None
                     return await response.body()
