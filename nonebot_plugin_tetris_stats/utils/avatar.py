@@ -1,12 +1,9 @@
-from base64 import b64decode, b64encode
+from base64 import b64encode
 from io import BytesIO
 from typing import Literal, overload
 
 from nonebot_plugin_userinfo import UserInfo  # type: ignore[import-untyped]
 from PIL import Image
-
-from ..templates import path
-from .browser import BrowserManager
 
 
 @overload
@@ -53,29 +50,3 @@ async def get_avatar(user: UserInfo, scheme: Literal['Data URI', 'bytes'], defau
             raise TypeError("Can't get avatar format")
         return f'data:{Image.MIME[avatar_format]};base64,{b64encode(bot_avatar).decode()}'
     return bot_avatar
-
-
-async def generate_identicon(hash: str) -> bytes:  # noqa: A002
-    """使用 identicon 生成头像
-
-    Args:
-        hash (str): 提交给 identicon 的 hash 值
-
-    Returns:
-        bytes: identicon 生成的 svg 的二进制数据
-    """
-    browser = await BrowserManager.get_browser()
-    async with await browser.new_page() as page:
-        await page.add_script_tag(path=path / 'js/identicon.js')
-        return b64decode(
-            await page.evaluate(rf"""
-                new Identicon('{hash}', {{
-                    background: [0x08, 0x0a, 0x06, 255],
-                    margin: 0.15,
-                    size: 300,
-                    brightness: 0.48,
-                    saturation: 0.65,
-                    format: 'svg',
-                }}).toString();
-                """)
-        )
