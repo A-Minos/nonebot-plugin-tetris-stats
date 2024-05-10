@@ -6,6 +6,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from nonebot import get_app, get_driver
+from nonebot.log import logger
 from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
 from pydantic import IPvAnyAddress
 
@@ -39,11 +40,14 @@ class HostPage:
         self.pages.pop(self.page_hash, None)
 
 
-app.mount(
-    '/host/assets',
-    StaticFiles(directory=templates_dir / 'assets'),
-    name='assets',
-)
+@driver.on_startup
+def _():
+    app.mount(
+        '/host/assets',
+        StaticFiles(directory=templates_dir / 'assets'),
+        name='assets',
+    )
+    logger.success('assets mounted')
 
 
 @app.get('/host/{page_hash}.html', status_code=status.HTTP_200_OK)
