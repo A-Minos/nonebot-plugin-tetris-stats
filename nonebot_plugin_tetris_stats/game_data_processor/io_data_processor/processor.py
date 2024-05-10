@@ -28,7 +28,7 @@ from ...db.models import HistoricalData
 from ...utils.avatar import get_avatar
 from ...utils.exception import MessageFormatError, RequestError, WhatTheFuckError
 from ...utils.host import HostPage, get_self_netloc
-from ...utils.render import Bind, render
+from ...utils.render import Bind, TETRIOInfo, render
 from ...utils.request import splice_url
 from ...utils.retry import retry
 from ...utils.screenshot import screenshot
@@ -261,37 +261,48 @@ class Processor(ProcessorMeta):
                 blitz_value = f'{blitz.record.endcontext.score:,}'
             async with HostPage(
                 await render(
-                    'data.j2.html',
-                    user_avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
-                    if user_info.data.user.avatar_revision is not None
-                    else f'../../identicon?md5={md5(user_info.data.user.id.encode()).hexdigest()}',  # noqa: S324
-                    user_name=user_name,
-                    user_sign=user_info.data.user.bio,
-                    game_type='TETR.IO',
-                    ranking=round(league.glicko, 2),
-                    rd=round(league.rd, 2),
-                    rank=league.rank,
-                    TR=round(league.rating, 2),
-                    global_rank=league.standing,
-                    lpm=round(lpm := (league.pps * 24), 2),
-                    pps=league.pps,
-                    apm=league.apm,
-                    apl=round(league.apm / lpm, 2),
-                    adpm=round(adpm := (league.vs * 0.6), 2),
-                    adpl=round(adpm / lpm, 2),
-                    vs=league.vs,
-                    sprint=sprint_value,
-                    blitz=blitz_value,
-                    data=[[int(datetime.timestamp(time) * 1000), tr] for time, tr in histories],
-                    split_value=split_value,
-                    offset=offset,
-                    value_max=value_max,
-                    value_min=value_min,
-                    app=(app := (league.apm / (60 * league.pps))),
-                    dsps=(dsps := ((league.vs / 100) - (league.apm / 60))),
-                    dspp=(dspp := (dsps / league.pps)),
-                    ci=150 * dspp - 125 * app + 50 * (league.vs / league.apm) - 25,
-                    ge=2 * ((app * dsps) / league.pps),
+                    'tetrio/info',
+                    TETRIOInfo(
+                        user=TETRIOInfo.User(
+                            avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                            if user_info.data.user.avatar_revision is not None
+                            else f'{{"type":"identicon","hash":"{md5(user_info.data.user.id.encode()).hexdigest()}"}}',  # noqa: S324
+                            name=user_name,
+                            bio=user_info.data.user.bio,
+                        ),
+                        ranking=TETRIOInfo.Ranking(
+                            rating=round(league.glicko, 2),
+                            rd=round(league.rd, 2),
+                        ),
+                        tetra_league=TETRIOInfo.TetraLeague(
+                            rank=league.rank,
+                            tr=round(league.rating, 2),
+                            global_rank=league.standing,
+                            pps=league.pps,
+                            lpm=round(lpm := (league.pps * 24), 2),
+                            apm=league.apm,
+                            apl=round(league.apm / lpm, 2),
+                            vs=league.vs,
+                            adpm=round(adpm := (league.vs * 0.6), 2),
+                            adpl=round(adpm / lpm, 2),
+                        ),
+                        tetra_league_history=TETRIOInfo.TetraLeagueHistory(
+                            data=[TETRIOInfo.TetraLeagueHistory.Data(record_at=time, tr=tr) for time, tr in histories],
+                            split_interval=split_value,
+                            min_tr=value_min,
+                            max_tr=value_max,
+                            offset=offset,
+                        ),
+                        radar=TETRIOInfo.Radar(
+                            app=(app := (league.apm / (60 * league.pps))),
+                            dsps=(dsps := ((league.vs / 100) - (league.apm / 60))),
+                            dspp=(dspp := (dsps / league.pps)),
+                            ci=150 * dspp - 125 * app + 50 * (league.vs / league.apm) - 25,
+                            ge=2 * ((app * dsps) / league.pps),
+                        ),
+                        sprint=sprint_value,
+                        blitz=blitz_value,
+                    ),
                 )
             ) as page_hash:
                 return UniMessage.image(
