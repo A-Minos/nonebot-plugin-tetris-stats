@@ -241,7 +241,13 @@ class Processor(ProcessorMeta):
                 if extra is not None:
                     historical_data = list(historical_data)
                     historical_data.append(extra)
-
+        if not historical_data:
+            return [
+                TETRIOInfo.TetraLeagueHistory.Data(record_at=today - forward, tr=user_info.data.user.league.rating),
+                TETRIOInfo.TetraLeagueHistory.Data(
+                    record_at=today.replace(microsecond=1000), tr=user_info.data.user.league.rating
+                ),
+            ]
         histories = [
             TETRIOInfo.TetraLeagueHistory.Data(
                 record_at=i.processed_data.user_info.cache.cached_at.astimezone(ZoneInfo('Asia/Shanghai')),
