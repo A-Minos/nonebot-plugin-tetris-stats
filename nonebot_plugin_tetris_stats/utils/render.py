@@ -44,7 +44,7 @@ class TETRIOInfo(BaseModel):
         bio: str | None
 
     class Ranking(BaseModel):
-        rating: Number
+        rating: str
         rd: Number
 
     class TetraLeague(BaseModel):

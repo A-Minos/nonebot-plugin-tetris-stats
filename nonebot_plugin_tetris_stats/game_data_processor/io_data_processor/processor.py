@@ -320,7 +320,7 @@ class Processor(ProcessorMeta):
                         bio=user_info.data.user.bio,
                     ),
                     ranking=TETRIOInfo.Ranking(
-                        rating=round(league.glicko, 2),
+                        rating=f'{round(league.glicko, 2):,}',
                         rd=round(league.rd, 2),
                     ),
                     tetra_league=TETRIOInfo.TetraLeague(
