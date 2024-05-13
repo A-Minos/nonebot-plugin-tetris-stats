@@ -59,6 +59,7 @@ select = [
     'F',     # pyflakes
     'E',     # pycodestyle errors
     'W',     # pycodestyle warnings
+    'C90',   # mccabe
     'I',     # isort
     'N',     # PEP8-naming
     'UP',    # pyupgrade
@@ -70,22 +71,33 @@ select = [
     'FBT',   # flake8-boolean-trap
     'B',     # flake8-bugbear
     'A',     # flake8-builtins
+    'COM',   # flake8-commas
     'C4',    # flake8-comprehensions
     'DTZ',   # flake8-datetimez
+    'T10',   # flake8-debugger
+    'EM',    # flake8-errmsg
     'FA',    # flake8-future-annotations
     'ISC',   # flake8-implicit-str-concat
+    'ICN',   # flake8-import-conventions
     'PIE',   # flake8-pie
     'T20',   # flake8-print
     'Q',     # flake8-quotes
     'RSE',   # flake8-raise
     'RET',   # flake8-return
+    'SLF',   # flake8-self
     'SIM',   # flake8-simplify
+    'TID',   # flake8-tidy-imports
+    'TCH',   # flake8-type-checking
+    'ARG',   # flake8-unused-arguments
     'PTH',   # flake8-use-pathlib
+    'ERA',   # eradicate
     'PD',    # pandas-vet
+    'PGH',   # pygrep-hooks
     'PL',    # pylint
     'TRY',   # tryceratops
     'FLY',   # flynt
     'PERF',  # Perflint
+    'FURB',  # refurb
     'RUF',   # Ruff-specific rules
 ]
 ignore = [
@@ -94,6 +106,8 @@ ignore = [
     'ANN102', # 由 type checker 自动推断
     'ANN202', # 向 NoneBot 注册的函数
     'TRY003',
+    'COM812', # 强制尾随逗号
+    'TID252', # 相对导入
 ]
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
