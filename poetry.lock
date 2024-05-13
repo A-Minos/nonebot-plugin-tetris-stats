@@ -1276,6 +1276,21 @@ psycopg = ["sqlalchemy[postgresql-psycopgbinary]"]
 sqlite = ["sqlalchemy[aiosqlite]"]
 
 [[package]]
+name = "nonebot-plugin-session"
+version = "0.3.1"
+description = "Nonebot2 会话信息提取与会话id定义"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "nonebot_plugin_session-0.3.1-py3-none-any.whl", hash = "sha256:7d21ed11a7d2a3bc9466be11f9653270ff0951585bd8e6fdd8034274e883ffb0"},
+    {file = "nonebot_plugin_session-0.3.1.tar.gz", hash = "sha256:ba93b4b8e86394aa06ae099cd17c191e131f0d123a97e0c040578c08614fe306"},
+]
+
+[package.dependencies]
+nonebot2 = ">=2.0.0,<3.0.0"
+strenum = ">=0.4.8,<0.5.0"
+
+[[package]]
 name = "nonebot-plugin-userinfo"
 version = "0.2.4"
 description = "Nonebot2 用户信息获取插件"
@@ -2774,4 +2789,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ac45bc41a49075f8a5b485b61fe5dfdd725c8518b422f2abe7bca4d67d75250f"
+content-hash = "b2c7569b4c755b061a6a260dd0b7b71fd8e4c39fceb35895c49da65eaa15de7e"
