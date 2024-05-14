@@ -1,3 +1,4 @@
+from asyncio import Lock
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -72,9 +73,11 @@ async def create_or_update_bind(
 
 T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
 
+lock = Lock()
+
 
 async def anti_duplicate_add(cls: type[T], model: T) -> None:
-    async with get_session() as session:
+    async with lock, get_session() as session:
         result = (
             await session.scalars(
                 select(cls)
@@ -88,8 +91,8 @@ async def anti_duplicate_add(cls: type[T], model: T) -> None:
                 if i.data == model.data:
                     logger.debug('Anti duplicate successfully')
                     return
-            session.add(model)
-            await session.commit()
+        session.add(model)
+        await session.commit()
 
 
 @asynccontextmanager
