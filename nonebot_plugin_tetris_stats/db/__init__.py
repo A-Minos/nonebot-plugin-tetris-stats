@@ -1,12 +1,18 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from enum import Enum, auto
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Literal, TypeVar, overload
 
+from nonebot.exception import FinishedException
 from nonebot.log import logger
 from nonebot_plugin_orm import AsyncSession, get_session
 from sqlalchemy import select
 
-from ..utils.typing import GameType
-from .models import Bind
+from ..utils.typing import CommandType, GameType
+from .models import Bind, TriggerHistoricalData
+
+UTC = timezone.utc
 
 if TYPE_CHECKING:
     from ..game_data_processor.io_data_processor.api.models import TETRIOHistoricalData
@@ -77,9 +83,60 @@ async def anti_duplicate_add(cls: type[T], model: T) -> None:
                 .where(cls.api_type == model.api_type)
             )
         ).all()
-    if result:
-        for i in result:
-            if i.data == model.data:
-                logger.debug('Anti duplicate successfully')
-                return
-    session.add(model)
+        if result:
+            for i in result:
+                if i.data == model.data:
+                    logger.debug('Anti duplicate successfully')
+                    return
+            session.add(model)
+            await session.commit()
+
+
+@asynccontextmanager
+@overload
+async def trigger(
+    session_persist_id: int,
+    game_platform: Literal['IO'],
+    command_type: CommandType | Literal['rank'],
+    command_args: list[str],
+) -> AsyncGenerator:
+    yield
+
+
+@asynccontextmanager
+@overload
+async def trigger(
+    session_persist_id: int,
+    game_platform: GameType,
+    command_type: CommandType,
+    command_args: list[str],
+) -> AsyncGenerator:
+    yield
+
+
+@asynccontextmanager
+async def trigger(
+    session_persist_id: int,
+    game_platform: GameType,
+    command_type: CommandType | Literal['rank'],
+    command_args: list[str],
+) -> AsyncGenerator:
+    logger.debug('running')
+    trigger_time = datetime.now(UTC)
+    try:
+        yield
+    except FinishedException:
+        logger.debug('yield')
+        async with get_session() as session:
+            session.add(
+                TriggerHistoricalData(
+                    trigger_time=trigger_time,
+                    session_persist_id=session_persist_id,
+                    game_platform=game_platform,
+                    command_type=command_type,
+                    command_args=command_args,
+                    finish_time=datetime.now(UTC),
+                )
+            )
+            await session.commit()
+        raise

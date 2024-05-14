@@ -7,8 +7,10 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 
-from ...db import query_bind_info
+from ...db import query_bind_info, trigger
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
 from ...utils.platform import get_platform
 from ...utils.typing import Me
@@ -22,18 +24,24 @@ def add_special_handlers(
     teaid_prefix: Literal['onebot-', 'kook-', 'discord-', 'qqguild-'], match_event: type[Event]
 ) -> None:
     @alc.assign('query')
-    async def _(event: Event, target: At | Me):
+    async def _(event: Event, target: At | Me, event_session: EventSession):
         if isinstance(event, match_event):
-            await (
-                await make_query_text(
-                    Player(
-                        teaid=f'{teaid_prefix}{target.target}'
-                        if isinstance(target, At)
-                        else f'{teaid_prefix}{event.get_user_id()}',
-                        trust=True,
+            async with trigger(
+                session_persist_id=await get_session_persist_id(event_session),
+                game_platform=GAME_TYPE,
+                command_type='query',
+                command_args=[],
+            ):
+                await (
+                    await make_query_text(
+                        Player(
+                            teaid=f'{teaid_prefix}{target.target}'
+                            if isinstance(target, At)
+                            else f'{teaid_prefix}{event.get_user_id()}',
+                            trust=True,
+                        )
                     )
-                )
-            ).finish()
+                ).finish()
 
 
 try:
@@ -68,23 +76,35 @@ except ImportError:
 
 
 @alc.assign('query')
-async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
-    async with get_session() as session:
-        bind = await query_bind_info(
-            session=session,
-            chat_platform=get_platform(bot),
-            chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
-            game_platform=GAME_TYPE,
-        )
-    if bind is None:
-        await matcher.finish('未查询到绑定信息')
-    message = CANT_VERIFY_MESSAGE
-    await (message + await make_query_text(Player(teaid=bind.game_account, trust=True))).finish()
+async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='query',
+        command_args=[],
+    ):
+        async with get_session() as session:
+            bind = await query_bind_info(
+                session=session,
+                chat_platform=get_platform(bot),
+                chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
+                game_platform=GAME_TYPE,
+            )
+        if bind is None:
+            await matcher.finish('未查询到绑定信息')
+        message = CANT_VERIFY_MESSAGE
+        await (message + await make_query_text(Player(teaid=bind.game_account, trust=True))).finish()
 
 
 @alc.assign('query')
-async def _(account: Player):
-    await (await make_query_text(account)).finish()
+async def _(account: Player, event_session: EventSession):
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='query',
+        command_args=[],
+    ):
+        await (await make_query_text(account)).finish()
 
 
 @dataclass

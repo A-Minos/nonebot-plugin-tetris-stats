@@ -11,9 +11,11 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
+from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 from sqlalchemy import select
 
-from ...db import query_bind_info
+from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.platform import get_platform
 from ...utils.render import TETRIOInfo, render
@@ -34,36 +36,48 @@ UTC = timezone.utc
 
 
 @alc.assign('query')
-async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
-    async with get_session() as session:
-        bind = await query_bind_info(
-            session=session,
-            chat_platform=get_platform(bot),
-            chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
-            game_platform=GAME_TYPE,
-        )
-    if bind is None:
-        await matcher.finish('未查询到绑定信息')
-    message = UniMessage(CANT_VERIFY_MESSAGE)
-    player = Player(user_id=bind.game_account, trust=True)
-    user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
-    sprint = user_records.data.records.sprint
-    blitz = user_records.data.records.blitz
-    with contextlib.suppress(TypeError):
-        message += UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record))
+async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='query',
+        command_args=[],
+    ):
+        async with get_session() as session:
+            bind = await query_bind_info(
+                session=session,
+                chat_platform=get_platform(bot),
+                chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
+                game_platform=GAME_TYPE,
+            )
+        if bind is None:
+            await matcher.finish('未查询到绑定信息')
+        message = UniMessage(CANT_VERIFY_MESSAGE)
+        player = Player(user_id=bind.game_account, trust=True)
+        user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
+        sprint = user_records.data.records.sprint
+        blitz = user_records.data.records.blitz
+        with contextlib.suppress(TypeError):
+            message += UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record))
+            await message.finish()
+        message += make_query_text(user_info, sprint, blitz)
         await message.finish()
-    message += make_query_text(user_info, sprint, blitz)
-    await message.finish()
 
 
 @alc.assign('query')
-async def _(account: Player):
-    user, user_info, user_records = await gather(account.user, account.get_info(), account.get_records())
-    sprint = user_records.data.records.sprint
-    blitz = user_records.data.records.blitz
-    with contextlib.suppress(TypeError):
-        await UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record)).finish()
-    await make_query_text(user_info, sprint, blitz).finish()
+async def _(account: Player, event_session: EventSession):
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='query',
+        command_args=[],
+    ):
+        user, user_info, user_records = await gather(account.user, account.get_info(), account.get_records())
+        sprint = user_records.data.records.sprint
+        blitz = user_records.data.records.blitz
+        with contextlib.suppress(TypeError):
+            await UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record)).finish()
+        await make_query_text(user_info, sprint, blitz).finish()
 
 
 def get_value_bounds(values: list[int | float]) -> tuple[int, int]:

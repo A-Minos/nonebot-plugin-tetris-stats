@@ -1,10 +1,12 @@
 from nonebot import require
 from nonebot.plugin import PluginMetadata
 
-require('nonebot_plugin_localstore')
-require('nonebot_plugin_orm')
 require('nonebot_plugin_alconna')
 require('nonebot_plugin_apscheduler')
+require('nonebot_plugin_localstore')
+require('nonebot_plugin_orm')
+require('nonebot_plugin_session')
+require('nonebot_plugin_session_orm')
 
 from .config.config import migrations  # noqa: E402
 
