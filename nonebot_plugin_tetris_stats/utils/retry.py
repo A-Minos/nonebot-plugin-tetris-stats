@@ -30,7 +30,8 @@ def retry(
                         logger.debug(f'Retrying: {func.__name__} ({attempts}/{max_attempts})')
                         continue
                     raise
-            raise RuntimeError('Unexpectedly reached the end of the retry loop')
+            msg = 'Unexpectedly reached the end of the retry loop'
+            raise RuntimeError(msg)
 
         return cast(Callable[..., Awaitable[T]], wrapper)
 

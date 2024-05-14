@@ -8,11 +8,14 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
 from nonebot.log import logger
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = 'b7fbdafc339a'
 down_revision: str | Sequence[str] | None = '8a91210ce14d'
@@ -26,8 +29,9 @@ def upgrade(name: str = '') -> None:
     from nonebot_plugin_tetris_stats.version import __version__
 
     if __version__ != '1.0.4':
-        logger.critical('本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移')
-        raise RuntimeError('本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移')
+        msg = '本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移'
+        logger.critical(msg)
+        raise RuntimeError(msg)
     from nonebot.compat import type_validate_json
     from pydantic import ValidationError
     from rich.progress import (

@@ -41,12 +41,14 @@ async def get_avatar(user: UserInfo, scheme: Literal['bytes'], default: str | No
 async def get_avatar(user: UserInfo, scheme: Literal['Data URI', 'bytes'], default: str | None) -> str | bytes:
     if user.user_avatar is None:
         if default is None:
-            raise TypeError("Can't get avatar")
+            msg = "Can't get avatar"
+            raise TypeError(msg)
         return default
     bot_avatar = await user.user_avatar.get_image()
     if scheme == 'Data URI':
         avatar_format = Image.open(BytesIO(bot_avatar)).format
         if avatar_format is None:
-            raise TypeError("Can't get avatar format")
+            msg = "Can't get avatar format"
+            raise TypeError(msg)
         return f'data:{Image.MIME[avatar_format]};base64,{b64encode(bot_avatar).decode()}'
     return bot_avatar

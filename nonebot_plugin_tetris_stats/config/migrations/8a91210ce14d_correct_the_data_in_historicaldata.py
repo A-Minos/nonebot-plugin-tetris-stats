@@ -8,7 +8,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from alembic import op
 from nonebot.log import logger
@@ -16,20 +16,24 @@ from sqlalchemy import select
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
 revision: str = '8a91210ce14d'
 down_revision: str | Sequence[str] | None = '0d50142b780f'
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
-def upgrade(name: str = '') -> None:
+def upgrade(name: str = '') -> None:  # noqa: C901
     if name:
         return
     from nonebot_plugin_tetris_stats.version import __version__
 
     if __version__ != '1.0.3':
-        logger.critical('本迁移需要1.0.3版本, 请先锁定版本至1.0.3版本再执行本迁移')
-        raise RuntimeError('本迁移需要1.0.3版本, 请先锁定版本至1.0.3版本再执行本迁移')
+        msg = '本迁移需要1.0.3版本, 请先锁定版本至1.0.3版本再执行本迁移'
+        logger.critical(msg)
+        raise RuntimeError(msg)
 
     from nonebot.compat import PYDANTIC_V2, type_validate_json
     from pydantic import BaseModel, ValidationError
@@ -42,7 +46,7 @@ def upgrade(name: str = '') -> None:
         TimeRemainingColumn,
     )
 
-    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseProcessedData
+    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseProcessedData  # type: ignore[attr-defined]
 
     Base = automap_base()  # noqa: N806
     Base.prepare(autoload_with=op.get_bind())

@@ -19,13 +19,13 @@ config = get_plugin_config(Config)
 
 @driver.on_startup
 async def _():
-    await Request._init_cache()
-    await Request._read_cache()
+    await Request.init_cache()
+    await Request.read_cache()
 
 
 @driver.on_shutdown
 async def _():
-    await Request._write_cache()
+    await Request.write_cache()
 
 
 def splice_url(url_list: list[str]) -> str:
@@ -66,7 +66,8 @@ class Request:
                     await page.wait_for_timeout(1000)
                 else:
                     if not isinstance(response, Response):
-                        raise RequestError('api请求失败')
+                        msg = 'api请求失败'
+                        raise RequestError(msg)
                     cls._headers = await response.request.all_headers()
                     try:
                         cls._cookies = {
@@ -77,41 +78,42 @@ class Request:
                     except KeyError:
                         cls._cookies = None
                     return await response.body()
-        raise RequestError('绕过五秒盾失败')
+        msg = '绕过五秒盾失败'
+        raise RequestError(msg)
 
     @classmethod
-    async def _init_cache(cls) -> None:
+    async def init_cache(cls) -> None:
         """初始化缓存文件"""
         if not cls._CACHE_FILE.exists():
             async with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
                 await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
 
     @classmethod
-    async def _read_cache(cls) -> None:
+    async def read_cache(cls) -> None:
         """读取缓存文件"""
         try:
             async with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
                 json = loads(await file.read())
         except FileNotFoundError:
-            await cls._init_cache()
+            await cls.init_cache()
         except (PermissionError, JSONDecodeError):
             cls._CACHE_FILE.unlink()
-            await cls._init_cache()
+            await cls.init_cache()
         else:
             cls._headers = json['headers']
             cls._cookies = json['cookies']
 
     @classmethod
-    async def _write_cache(cls) -> None:
+    async def write_cache(cls) -> None:
         """写入缓存文件"""
         try:
             async with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
                 await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
         except FileNotFoundError:
-            await cls._init_cache()
+            await cls.init_cache()
         except (PermissionError, JSONDecodeError):
             cls._CACHE_FILE.unlink()
-            await cls._init_cache()
+            await cls.init_cache()
 
     @classmethod
     async def request(cls, url: str, *, is_json: bool = True) -> bytes:
@@ -120,15 +122,14 @@ class Request:
             async with AsyncClient(cookies=cls._cookies, timeout=config.tetris_req_timeout) as session:
                 response = await session.get(url, headers=cls._headers)
                 if response.status_code != HTTPStatus.OK:
-                    raise RequestError(
-                        f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}',
-                        status_code=response.status_code,
-                    )
+                    msg = f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
+                    raise RequestError(msg, status_code=response.status_code)
                 if is_json:
                     loads(response.content)
                 return response.content
         except HTTPError as e:
-            raise RequestError(f'请求错误 \n{e!r}') from e
+            msg = f'请求错误 \n{e!r}'
+            raise RequestError(msg) from e
         except JSONDecodeError:
             if urlparse(url).netloc.lower().endswith('tetr.io'):
                 return await cls._anti_cloudflare(url)
@@ -162,4 +163,5 @@ class Request:
                 else:
                     raise
                 continue
-        raise RequestError(f'所有地址皆不可用\n{error_list!r}')
+        msg = f'所有地址皆不可用\n{error_list!r}'
+        raise RequestError(msg)

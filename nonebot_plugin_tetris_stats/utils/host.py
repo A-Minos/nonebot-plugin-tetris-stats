@@ -1,6 +1,6 @@
 from hashlib import sha256
 from ipaddress import IPv4Address, IPv6Address
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse
@@ -8,9 +8,11 @@ from fastapi.staticfiles import StaticFiles
 from nonebot import get_app, get_driver
 from nonebot.log import logger
 from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
-from pydantic import IPvAnyAddress
 
 from .templates import templates_dir
+
+if TYPE_CHECKING:
+    from pydantic import IPvAnyAddress
 
 app = get_app()
 
@@ -21,7 +23,8 @@ global_config = driver.config
 cache_dir = get_cache_dir('nonebot_plugin_tetris_stats')
 
 if not isinstance(app, FastAPI):
-    raise RuntimeError('本插件需要 FastAPI 驱动器才能运行')  # noqa: TRY004
+    msg = '本插件需要 FastAPI 驱动器才能运行'
+    raise RuntimeError(msg)  # noqa: TRY004
 
 NOT_FOUND = HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
 

@@ -5,13 +5,17 @@
 创建时间: 2023-12-30 00:27:40.991704
 
 """
+
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from alembic import op
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = 'b9d65badc713'
 down_revision: str | Sequence[str] | None = '6c3206f90cc3'

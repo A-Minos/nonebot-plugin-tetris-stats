@@ -19,9 +19,8 @@ async def init_templates() -> None:
     try:
         await create_subprocess_exec('git', '--version', stdout=PIPE)
     except FileNotFoundError as e:
-        raise RuntimeError(
-            '未找到 git, 请确保 git 已安装并在环境变量中\n安装步骤请参阅: https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git'
-        ) from e
+        msg = '未找到 git, 请确保 git 已安装并在环境变量中\n安装步骤请参阅: https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git'
+        raise RuntimeError(msg) from e
     if not templates_dir.exists():
         logger.info('模板仓库不存在, 正在尝试初始化...')
         proc = await create_subprocess_exec(
@@ -39,7 +38,8 @@ async def init_templates() -> None:
         if proc.returncode != 0:
             for i in stderr.decode().splitlines():
                 logger.error(i)
-            raise RuntimeError('初始化模板仓库失败')
+            msg = '初始化模板仓库失败'
+            raise RuntimeError(msg)
         logger.success('模板仓库初始化成功')
         return
     proc = await create_subprocess_exec(
@@ -60,7 +60,8 @@ async def init_templates() -> None:
     if proc.returncode != 0:
         for i in stderr.decode().splitlines():
             logger.error(i)
-        raise RuntimeError('更新模板仓库失败')
+        msg = '更新模板仓库失败'
+        raise RuntimeError(msg)
     logger.success('模板仓库更新成功')
 
 

@@ -5,11 +5,12 @@
 创建时间: 2023-11-11 16:51:30.718277
 
 """
+
 from __future__ import annotations
 
-from collections.abc import Sequence
 from pathlib import Path
 from shutil import copyfile
+from typing import TYPE_CHECKING
 
 from alembic import op
 from nonebot import get_driver
@@ -17,6 +18,9 @@ from nonebot.log import logger
 from sqlalchemy import Connection, create_engine, inspect, text
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = '9cd1647db502'
 down_revision: str | Sequence[str] | None = '9866f53ce44f'
@@ -80,8 +84,9 @@ def upgrade(name: str = '') -> None:
             logger.success('nonebot_plugin_tetris_stats: 跳过迁移')
             return
         if 'IORANK' not in tables:
-            logger.warning('nonebot_plugin_tetris_stats: 发现过早版本的数据, 请先更新到 0.4.4 版本')
-            raise RuntimeError('nonebot_plugin_tetris_stats: 请先安装 0.4.4 版本完成迁移之后再升级')
+            msg = 'nonebot_plugin_tetris_stats: 请先安装 0.4.4 版本完成迁移之后再升级'
+            logger.warning(msg)
+            raise RuntimeError(msg)
         logger.info('nonebot_plugin_tetris_stats: 发现来自老版本的数据, 正在迁移...')
         migrate_old_data(connection)
     db_path.unlink()
