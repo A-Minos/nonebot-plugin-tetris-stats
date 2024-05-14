@@ -1,19 +1,19 @@
 from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
-from nonebot.adapters import Bot, Event
-from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At, on_alconna
-from nonebot_plugin_alconna.uniseg import UniMessage
-from nonebot_plugin_orm import get_session
-from nonebot_plugin_userinfo import BotUserInfo, EventUserInfo, UserInfo  # type: ignore[import-untyped]
 
-from ...db import query_bind_info
-from ...utils.exception import HandleNotFinishedError, NeedCatchError
-from ...utils.platform import get_platform
+from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
 from .. import add_default_handlers
 from ..constant import BIND_COMMAND, QUERY_COMMAND
-from .constant import GAME_TYPE
-from .processor import Processor, User, identify_user_info
+from .api import Player
+from .constant import USER_NAME
+
+
+def get_player(name: str) -> Player | MessageFormatError:
+    if USER_NAME.match(name):
+        return Player(user_name=name, trust=True)
+    return MessageFormatError('用户名/ID不合法')
+
 
 alc = on_alconna(
     Alconna(
@@ -23,7 +23,7 @@ alc = on_alconna(
             Args(
                 Arg(
                     'account',
-                    identify_user_info,
+                    get_player,
                     notice='TOP 用户名',
                     flags=[ArgFlag.HIDDEN],
                 )
@@ -44,7 +44,7 @@ alc = on_alconna(
                 ),
                 Arg(
                     'account',
-                    identify_user_info | Me | At,
+                    get_player,
                     notice='TOP 用户名',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
@@ -67,68 +67,6 @@ alc = on_alconna(
     aliases={'TOP'},
 )
 
-
-@alc.assign('bind')
-async def _(  # noqa: PLR0913
-    bot: Bot,
-    event: Event,
-    matcher: Matcher,
-    account: User,
-    bot_info: UserInfo = BotUserInfo(),  # noqa: B008
-    user_info: UserInfo = EventUserInfo(),  # noqa: B008
-):
-    proc = Processor(
-        event_id=id(event),
-        user=account,
-        command_args=[],
-    )
-    try:
-        await (
-            await proc.handle_bind(
-                platform=get_platform(bot), account=event.get_user_id(), bot_info=bot_info, user_info=user_info
-            )
-        ).finish()
-    except NeedCatchError as e:
-        await matcher.send(str(e))
-        raise HandleNotFinishedError from e
-
-
-@alc.assign('query')
-async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me):
-    async with get_session() as session:
-        bind = await query_bind_info(
-            session=session,
-            chat_platform=get_platform(bot),
-            chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
-            game_platform=GAME_TYPE,
-        )
-    if bind is None:
-        await matcher.finish('未查询到绑定信息')
-    message = '* 由于无法验证绑定信息, 不能保证查询到的用户为本人\n'
-    proc = Processor(
-        event_id=id(event),
-        user=User(name=bind.game_account),
-        command_args=[],
-    )
-    try:
-        await (UniMessage(message) + await proc.handle_query()).finish()
-    except NeedCatchError as e:
-        await matcher.send(str(e))
-        raise HandleNotFinishedError from e
-
-
-@alc.assign('query')
-async def _(event: Event, matcher: Matcher, account: User):
-    proc = Processor(
-        event_id=id(event),
-        user=account,
-        command_args=[],
-    )
-    try:
-        await (await proc.handle_query()).finish()
-    except NeedCatchError as e:
-        await matcher.send(str(e))
-        raise HandleNotFinishedError from e
-
+from . import bind, query  # noqa: E402, F401
 
 add_default_handlers(alc)

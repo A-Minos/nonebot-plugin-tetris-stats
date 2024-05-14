@@ -1,10 +1,17 @@
 from enum import Enum, auto
+from typing import TYPE_CHECKING, TypeVar
 
-from nonebot_plugin_orm import AsyncSession
+from nonebot.log import logger
+from nonebot_plugin_orm import AsyncSession, get_session
 from sqlalchemy import select
 
 from ..utils.typing import GameType
 from .models import Bind
+
+if TYPE_CHECKING:
+    from ..game_data_processor.io_data_processor.api.models import TETRIOHistoricalData
+    from ..game_data_processor.top_data_processor.api.models import TOPHistoricalData
+    from ..game_data_processor.tos_data_processor.api.models import TOSHistoricalData
 
 
 class BindStatus(Enum):
@@ -55,3 +62,24 @@ async def create_or_update_bind(
         message = BindStatus.UPDATE
     await session.commit()
     return message
+
+
+T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
+
+
+async def anti_duplicate_add(cls: type[T], model: T) -> None:
+    async with get_session() as session:
+        result = (
+            await session.scalars(
+                select(cls)
+                .where(cls.update_time == model.update_time)
+                .where(cls.user_unique_identifier == model.user_unique_identifier)
+                .where(cls.api_type == model.api_type)
+            )
+        ).all()
+    if result:
+        for i in result:
+            if i.data == model.data:
+                logger.debug('Anti duplicate successfully')
+                return
+    session.add(model)

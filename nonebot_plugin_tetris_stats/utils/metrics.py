@@ -147,133 +147,93 @@ class TetrisMetricsProWithLPMADPM(TetrisMetricsBasicWithLPM, TetrisMetricsBaseWi
 def get_metrics(
     *,
     pps: Number,
-    lpm: None = None,
-    apm: None = None,
-    vs: None = None,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsBaseWithPPS:
-    ...
+) -> TetrisMetricsBaseWithPPS: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
     lpm: Number,
-    apm: None = None,
-    vs: None = None,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsBaseWithLPM:
-    ...
+) -> TetrisMetricsBaseWithLPM: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
-    lpm: None = None,
-    apm: None = None,
     vs: Number,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsBaseWithVS:
-    ...
+) -> TetrisMetricsBaseWithVS: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
-    lpm: None = None,
-    apm: None = None,
-    vs: None = None,
     adpm: Number,
     precision: int = 2,
-) -> TetrisMetricsBaseWithADPM:
-    ...
+) -> TetrisMetricsBaseWithADPM: ...
 
 
 @overload
 def get_metrics(
     *,
     pps: Number,
-    lpm: None = None,
     apm: Number,
-    vs: None = None,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsBasicWithPPS:
-    ...
+) -> TetrisMetricsBasicWithPPS: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
     lpm: Number,
     apm: Number,
-    vs: None = None,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsBasicWithLPM:
-    ...
+) -> TetrisMetricsBasicWithLPM: ...
 
 
 @overload
 def get_metrics(
     *,
     pps: Number,
-    lpm: None = None,
     apm: Number,
     vs: Number,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsProWithPPSVS:
-    ...
+) -> TetrisMetricsProWithPPSVS: ...
 
 
 @overload
 def get_metrics(
     *,
     pps: Number,
-    lpm: None = None,
     apm: Number,
-    vs: None = None,
     adpm: Number,
     precision: int = 2,
-) -> TetrisMetricsProWithPPSADPM:
-    ...
+) -> TetrisMetricsProWithPPSADPM: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
     lpm: Number,
     apm: Number,
     vs: Number,
-    adpm: None = None,
     precision: int = 2,
-) -> TetrisMetricsProWithLPMVS:
-    ...
+) -> TetrisMetricsProWithLPMVS: ...
 
 
 @overload
 def get_metrics(
     *,
-    pps: None = None,
     lpm: Number,
     apm: Number,
-    vs: None = None,
     adpm: Number,
     precision: int = 2,
-) -> TetrisMetricsProWithLPMADPM:
-    ...
+) -> TetrisMetricsProWithLPMADPM: ...
 
 
-def get_metrics(  # noqa: PLR0911, PLR0912, PLR0913
+def get_metrics(  # noqa: PLR0911, PLR0912, PLR0913, C901
     *,
     pps: Number | None = None,
     lpm: Number | None = None,

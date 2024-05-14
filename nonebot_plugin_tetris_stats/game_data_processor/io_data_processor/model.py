@@ -1,12 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 from nonebot_plugin_orm import Model
 from sqlalchemy import JSON, DateTime, String
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
-from .typing import Rank
-
-UTC = timezone.utc
+from .api.typing import Rank
 
 
 class IORank(MappedAsDataclass, Model):

@@ -1,9 +1,12 @@
+from re import compile
 from typing import Literal
 
-from .typing import Rank
+from .api.typing import Rank
 
 GAME_TYPE: Literal['IO'] = 'IO'
+
 BASE_URL = 'https://ch.tetr.io/api/'
+
 RANK_PERCENTILE: dict[Rank, float] = {
     'x': 1,
     'u': 5,
@@ -23,5 +26,9 @@ RANK_PERCENTILE: dict[Rank, float] = {
     'd+': 97.5,
     'd': 100,
 }
+
 TR_MIN = 0
 TR_MAX = 25000
+
+USER_ID = compile(r'^[a-f0-9]{24}$')
+USER_NAME = compile(r'^[a-zA-Z0-9_-]{3,16}$')

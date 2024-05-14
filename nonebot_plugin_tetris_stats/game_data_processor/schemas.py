@@ -21,11 +21,3 @@ class BaseUser(ABC, Base):
     @abstractmethod
     def unique_identifier(self) -> str:
         raise NotImplementedError
-
-
-class BaseRawResponse(Base):
-    """原始请求数据"""
-
-
-class BaseProcessedData(Base):
-    """处理/验证后的数据"""
