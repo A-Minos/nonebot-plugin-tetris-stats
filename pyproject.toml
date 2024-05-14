@@ -111,6 +111,7 @@ ignore = [
     'TRY003',
     'COM812', # 强制尾随逗号
     'TID252', # 相对导入
+    'ISC001', # format warning
 ]
 flake8-quotes = { inline-quotes = 'single', multiline-quotes = 'double' }
 
