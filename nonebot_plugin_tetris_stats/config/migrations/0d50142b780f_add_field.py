@@ -8,10 +8,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = '0d50142b780f'
 down_revision: str | Sequence[str] | None = '09d4bb60160d'

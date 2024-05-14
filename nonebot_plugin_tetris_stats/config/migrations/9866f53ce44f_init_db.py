@@ -5,12 +5,16 @@
 创建时间: 2023-11-11 16:24:11.826667
 
 """
+
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = '9866f53ce44f'
 down_revision: str | Sequence[str] | None = None

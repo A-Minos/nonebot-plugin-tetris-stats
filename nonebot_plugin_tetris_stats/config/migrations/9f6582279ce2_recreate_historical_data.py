@@ -5,15 +5,17 @@
 创建时间: 2023-11-21 08:35:50.393246
 
 """
+
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import sqlite
 
-from nonebot_plugin_tetris_stats.db.models import PydanticType
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 revision: str = '9f6582279ce2'
 down_revision: str | Sequence[str] | None = '9cd1647db502'
@@ -45,8 +47,8 @@ def upgrade(name: str = '') -> None:
         sa.Column('game_platform', sa.String(length=32), nullable=False),
         sa.Column('command_type', sa.String(length=16), nullable=False),
         sa.Column('command_args', sa.JSON(), nullable=False),
-        sa.Column('game_user', PydanticType(list), nullable=False),
-        sa.Column('processed_data', PydanticType(list), nullable=False),
+        sa.Column('game_user', sa.JSON(), nullable=False),
+        sa.Column('processed_data', sa.JSON(), nullable=False),
         sa.Column('finish_time', sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint('id', name=op.f('pk_nonebot_plugin_tetris_stats_historicaldata')),
     )
