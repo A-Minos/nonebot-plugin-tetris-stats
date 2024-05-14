@@ -43,7 +43,7 @@ class Player:
         if self.user_id is not None:
             return self.user_id
         if self.user_name is not None:
-            return self.user_name
+            return self.user_name.lower()
         msg = 'Invalid user'
         raise ValueError(msg)
 
