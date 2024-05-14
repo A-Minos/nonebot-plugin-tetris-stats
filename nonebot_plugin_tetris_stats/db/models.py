@@ -33,7 +33,7 @@ class PydanticType(TypeDecorator):
         @override
         def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
             # 将 Pydantic 模型实例转换为 JSON
-            if isinstance(value, tuple(self.pydantic_models)):
+            if isinstance(value, tuple(self.models)):
                 return value.model_dump_json(by_alias=True)  # type: ignore[union-attr]
             raise TypeError
     else:
@@ -41,7 +41,7 @@ class PydanticType(TypeDecorator):
         @override
         def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
             # 将 Pydantic 模型实例转换为 JSON
-            if isinstance(value, tuple(self.pydantic_models)):
+            if isinstance(value, tuple(self.models)):
                 return value.json(by_alias=True)  # type: ignore[union-attr]
             raise TypeError
 
@@ -49,7 +49,7 @@ class PydanticType(TypeDecorator):
     def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:
         # 将 JSON 转换回 Pydantic 模型实例
         if isinstance(value, str | bytes):
-            for i in self.pydantic_models:
+            for i in self.models:
                 try:
                     return type_validate_json(i, value)
                 except ValidationError:  # noqa: PERF203
