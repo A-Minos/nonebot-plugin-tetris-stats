@@ -121,12 +121,10 @@ async def trigger(
     command_type: CommandType | Literal['rank'],
     command_args: list[str],
 ) -> AsyncGenerator:
-    logger.debug('running')
     trigger_time = datetime.now(UTC)
     try:
         yield
     except FinishedException:
-        logger.debug('yield')
         async with get_session() as session:
             session.add(
                 TriggerHistoricalData(
