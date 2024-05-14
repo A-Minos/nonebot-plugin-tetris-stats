@@ -23,9 +23,8 @@ class PydanticType(TypeDecorator):
         *args: Any,
         **kwargs: Any,
     ):
-        for i in get_model:
-            models.update(i())
-        self.models = models
+        self.get_model = get_model
+        self._models = models
         super().__init__(*args, **kwargs)
 
     if PYDANTIC_V2:
@@ -55,6 +54,14 @@ class PydanticType(TypeDecorator):
                 except ValidationError:  # noqa: PERF203
                     ...
         raise ValueError
+
+    @property
+    def models(self) -> tuple[type[BaseModel], ...]:
+        models: set[type[BaseModel]] = set()
+        for i in self.get_model:
+            models.update(i())
+        models.update(self._models)
+        return tuple(models)
 
 
 class Bind(MappedAsDataclass, Model):
