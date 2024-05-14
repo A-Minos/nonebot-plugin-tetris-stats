@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from .....utils.typing import Number
 from .base import FailedModel
 from .base import SuccessModel as BaseSuccessModel
 
@@ -45,7 +46,7 @@ class Finesse(BaseModel):
 
 
 class EndContext(BaseModel):
-    seed: int
+    seed: Number
     lines: int
     level_lines: int
     level_lines_needed: int
