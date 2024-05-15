@@ -69,9 +69,9 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_ses
         user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
         sprint = user_records.data.records.sprint
         blitz = user_records.data.records.blitz
-        # with contextlib.suppress(TypeError):
-        message += UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record))
-        await message.finish()
+        with contextlib.suppress(TypeError):
+            message += UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record))
+            await message.finish()
         message += make_query_text(user_info, sprint, blitz)
         await message.finish()
 
