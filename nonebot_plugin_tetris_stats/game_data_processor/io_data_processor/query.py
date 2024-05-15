@@ -172,7 +172,6 @@ async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[
 
     # 按照时间排序
     histories = sorted(histories, key=lambda x: x.record_at)
-    print(histories)
     for index, value in enumerate(histories):
         # 在历史记录里找有没有今天0点后的数据, 并且至少要有两个数据点
         if value.record_at > today and len(histories) >= 2:  # noqa: PLR2004
