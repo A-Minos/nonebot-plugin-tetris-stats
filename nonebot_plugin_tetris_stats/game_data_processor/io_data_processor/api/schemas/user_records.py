@@ -36,7 +36,7 @@ class Garbage(BaseModel):
     sent: int
     received: int
     attack: int | None = None
-    cleared: int
+    cleared: int | None = None
 
 
 class Finesse(BaseModel):
