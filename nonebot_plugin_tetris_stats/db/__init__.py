@@ -16,9 +16,9 @@ from .models import Bind, TriggerHistoricalData
 UTC = timezone.utc
 
 if TYPE_CHECKING:
-    from ..game_data_processor.io_data_processor.api.models import TETRIOHistoricalData
-    from ..game_data_processor.top_data_processor.api.models import TOPHistoricalData
-    from ..game_data_processor.tos_data_processor.api.models import TOSHistoricalData
+    from ..games.tetrio.api.models import TETRIOHistoricalData
+    from ..games.top.api.models import TOPHistoricalData
+    from ..games.tos.api.models import TOSHistoricalData
 
 
 class BindStatus(Enum):

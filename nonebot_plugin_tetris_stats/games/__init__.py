@@ -32,11 +32,7 @@ def add_default_handlers(matcher: type[AlconnaMatcher]) -> None:
         raise FinishedException
 
 
-from . import (  # noqa: F401, E402
-    io_data_processor,
-    top_data_processor,
-    tos_data_processor,
-)
+from . import tetrio, top, tos  # noqa: F401, E402
 
 
 @run_postprocessor

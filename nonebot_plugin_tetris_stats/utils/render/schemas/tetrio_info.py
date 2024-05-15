@@ -4,7 +4,7 @@ from typing import Annotated, ClassVar
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel
 
-from ....game_data_processor.io_data_processor.api.typing import Rank
+from ....games.tetrio.api.typing import Rank
 from ...typing import Number
 from .base import People
 
