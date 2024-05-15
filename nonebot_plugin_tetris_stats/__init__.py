@@ -22,4 +22,3 @@ __plugin_meta__ = PluginMetadata(
 )
 
 from . import games  # noqa: F401, E402
-from .utils import host  # noqa: F401, E402
