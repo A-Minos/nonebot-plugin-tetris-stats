@@ -96,7 +96,7 @@ class MultiRecord(_Record):
 
 
 class SoloModeRecord(BaseModel):
-    record: SoloRecord
+    record: SoloRecord | None = None
     rank: int | None = None
 
 
