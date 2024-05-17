@@ -5,7 +5,7 @@ from nonebot.compat import PYDANTIC_V2
 
 from ..templates import templates_dir
 from .schemas.bind import Bind
-from .schemas.tetrio_info import TETRIOInfo
+from .schemas.tetrio_info import Info as TETRIOInfo
 
 env = Environment(
     loader=FileSystemLoader(templates_dir), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
@@ -26,4 +26,4 @@ async def render(render_type: Literal['binding', 'tetrio/info'], data: Bind | TE
     return await env.get_template('index.html').render_async(path=render_type, data=data.json())
 
 
-__all__ = ['render', 'Bind', 'TETRIOInfo']
+__all__ = ['render', 'Bind']

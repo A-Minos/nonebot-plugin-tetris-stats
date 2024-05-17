@@ -62,7 +62,7 @@ class Radar(BaseModel):
     ge: Number
 
 
-class TETRIOInfo(BaseModel):
+class Info(BaseModel):
     user: User
     ranking: Ranking
     tetra_league: TetraLeague

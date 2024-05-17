@@ -26,9 +26,9 @@ from zstandard import ZstdDecompressor
 from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.platform import get_platform
-from ...utils.render import TETRIOInfo, render
+from ...utils.render import render
 from ...utils.render.schemas.base import Avatar
-from ...utils.render.schemas.tetrio_info import Data, Radar, Ranking, TetraLeague, TetraLeagueHistory
+from ...utils.render.schemas.tetrio_info import Data, Info, Radar, Ranking, TetraLeague, TetraLeagueHistory
 from ...utils.render.schemas.tetrio_info import User as TemplateUser
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me, Number
@@ -230,7 +230,7 @@ async def make_query_image(
     async with HostPage(
         await render(
             'tetrio/info',
-            TETRIOInfo(
+            Info(
                 user=TemplateUser(
                     avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
                     if user_info.data.user.avatar_revision is not None
