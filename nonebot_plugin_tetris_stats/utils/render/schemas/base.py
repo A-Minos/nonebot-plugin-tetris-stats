@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from ...typing import Number
+
 
 class Avatar(BaseModel):
     type: Literal['identicon']
@@ -11,3 +13,8 @@ class Avatar(BaseModel):
 class People(BaseModel):
     avatar: str | Avatar
     name: str
+
+
+class Ranking(BaseModel):
+    rating: Number
+    rd: Number

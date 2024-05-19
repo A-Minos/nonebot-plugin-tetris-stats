@@ -27,8 +27,8 @@ from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.platform import get_platform
 from ...utils.render import render
-from ...utils.render.schemas.base import Avatar
-from ...utils.render.schemas.tetrio_info import Data, Info, Radar, Ranking, TetraLeague, TetraLeagueHistory
+from ...utils.render.schemas.base import Avatar, Ranking
+from ...utils.render.schemas.tetrio_info import Data, Info, Radar, TetraLeague, TetraLeagueHistory
 from ...utils.render.schemas.tetrio_info import User as TemplateUser
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me, Number

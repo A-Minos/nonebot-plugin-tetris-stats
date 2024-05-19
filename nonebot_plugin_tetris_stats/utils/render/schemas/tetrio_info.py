@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from ....games.tetrio.api.typing import Rank
 from ...typing import Number
-from .base import People
+from .base import People, Ranking
 
 if PYDANTIC_V2:
     from pydantic import PlainSerializer
@@ -18,11 +18,6 @@ def format_datetime_to_timestamp(dt: datetime) -> int:
 
 class User(People):
     bio: str | None
-
-
-class Ranking(BaseModel):
-    rating: Number
-    rd: Number
 
 
 class TetraLeague(BaseModel):
