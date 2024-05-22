@@ -8,6 +8,11 @@ require('nonebot_plugin_orm')
 require('nonebot_plugin_session')
 require('nonebot_plugin_session_orm')
 
+from nonebot_plugin_alconna import namespace  # noqa: E402
+
+with namespace('tetris_stats') as ns:
+    ns.enable_message_cache = False
+
 from .config.config import migrations  # noqa: E402
 
 __plugin_meta__ = PluginMetadata(

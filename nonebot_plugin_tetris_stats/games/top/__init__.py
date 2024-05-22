@@ -1,6 +1,7 @@
 from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
 from nonebot_plugin_alconna import At, on_alconna
 
+from ... import ns
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
 from .. import add_default_handlers
@@ -61,6 +62,7 @@ alc = on_alconna(
             compact=True,
             fuzzy_match=True,
         ),
+        namespace=ns,
     ),
     skip_for_unmatch=False,
     auto_send_output=True,
