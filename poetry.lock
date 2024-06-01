@@ -1734,13 +1734,13 @@ nonebot2 = ">=2.2.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.46.1"
+version = "0.46.3"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "nonebot_plugin_alconna-0.46.1-py3-none-any.whl", hash = "sha256:4737e2036929f012181c832823a9d6d8e9992b939a0116ab5a81b49763565292"},
-    {file = "nonebot_plugin_alconna-0.46.1.tar.gz", hash = "sha256:e5e7b8b61cb472e51546c72a29a254a5152b55ddbf1e1b8a249382b9d2db13a1"},
+    {file = "nonebot_plugin_alconna-0.46.3-py3-none-any.whl", hash = "sha256:a6be8aca1c63ca26c4675844f90dd5503bb26057a87036352b037156a21fd979"},
+    {file = "nonebot_plugin_alconna-0.46.3.tar.gz", hash = "sha256:f0fb9ea0169979d95cb1033ee7d54139887e585fe81b818055b68cc3d0626867"},
 ]
 
 [package.dependencies]
@@ -1748,6 +1748,7 @@ arclet-alconna = ">=1.8.12"
 arclet-alconna-tools = ">=0.7.4"
 importlib-metadata = ">=4.13.0"
 nepattern = ">=0.7.4"
+nonebot-plugin-waiter = ">=0.6.0"
 nonebot2 = ">=2.3.0"
 
 [[package]]
@@ -1864,6 +1865,20 @@ emoji = ">=2.0.0,<3.0.0"
 httpx = ">=0.20.0,<1.0.0"
 nonebot2 = ">=2.0.0,<3.0.0"
 strenum = ">=0.4.8,<0.5.0"
+
+[[package]]
+name = "nonebot-plugin-waiter"
+version = "0.6.1"
+description = "An alternative for got-and-reject in Nonebot"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "nonebot_plugin_waiter-0.6.1-py3-none-any.whl", hash = "sha256:0abd678ff7671a2f5cee53b8c96fdbb700a78bbff921e8f37ab1e9388bdc8649"},
+    {file = "nonebot_plugin_waiter-0.6.1.tar.gz", hash = "sha256:ba4da15694ef4eeb23329e7ecde7e9e56df5cbf8e0dc03b8f98747658bbc138f"},
+]
+
+[package.dependencies]
+nonebot2 = ">=2.3.0"
 
 [[package]]
 name = "nonebot2"
