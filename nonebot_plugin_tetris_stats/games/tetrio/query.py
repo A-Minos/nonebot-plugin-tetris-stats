@@ -223,7 +223,7 @@ async def make_query_image(
     split_value, offset = get_split(value_max, value_min)
     if sprint is not None:
         duration = timedelta(milliseconds=sprint.endcontext.final_time).total_seconds()
-        sprint_value = f'{duration:.1f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.1f}s'  # noqa: PLR2004
+        sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
     else:
         sprint_value = 'N/A'
     blitz_value = f'{blitz.endcontext.score:,}' if blitz is not None else 'N/A'
