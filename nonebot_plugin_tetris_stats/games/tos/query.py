@@ -60,7 +60,7 @@ def add_special_handlers(
                         await UniMessage.image(
                             raw=await make_query_image(user_info, game_data, event_user_info)
                         ).finish()
-                    await (await make_query_text(user_info, game_data)).finish()
+                    await make_query_text(user_info, game_data).finish()
                 except RequestError as e:
                     if e.status_code == HTTPStatus.BAD_REQUEST and '未找到此用户' in e.message:
                         return
@@ -129,7 +129,7 @@ async def _(  # noqa: PLR0913
             await (
                 message + UniMessage.image(raw=await make_query_image(user_info, game_data, event_user_info))
             ).finish()
-        await (message + await make_query_text(user_info, game_data)).finish()
+        await (message + make_query_text(user_info, game_data)).finish()
 
 
 @alc.assign('query')
@@ -143,7 +143,7 @@ async def _(account: Player, event_session: EventSession, event_user_info: UserI
         user_info, game_data = await gather(account.get_info(), get_game_data(account))
         if game_data is not None:
             await UniMessage.image(raw=await make_query_image(user_info, game_data, event_user_info)).finish()
-        await (await make_query_text(user_info, game_data)).finish()
+        await make_query_text(user_info, game_data).finish()
 
 
 class GameData(NamedTuple):
@@ -233,7 +233,7 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
         return await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
 
 
-async def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> UniMessage:
+def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> UniMessage:
     user_data = user_info.data
     message = f'用户 {user_data.name} ({user_data.teaid}) '
     if user_data.ranked_games == '0':
