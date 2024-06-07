@@ -41,7 +41,7 @@ async def _(bot: Bot, event: Event, account: Player, event_session: EventSession
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
             async with HostPage(
                 await render(
-                    'binding',
+                    'v1/binding',
                     Bind(
                         platform='TETR.IO',
                         status='unknown',

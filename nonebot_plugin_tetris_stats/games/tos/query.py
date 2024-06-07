@@ -204,7 +204,7 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
     sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
     async with HostPage(
         await render(
-            'tos/info',
+            'v1/tos/info',
             Info(
                 user=People(avatar=await get_avatar(event_user_info, 'Data URI', None), name=user_info.data.name),
                 ranking=Ranking(rating=float(user_info.data.ranking), rd=round(float(user_info.data.rd_now), 2)),

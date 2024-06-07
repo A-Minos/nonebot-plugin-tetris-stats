@@ -229,7 +229,7 @@ async def make_query_image(
     blitz_value = f'{blitz.endcontext.score:,}' if blitz is not None else 'N/A'
     async with HostPage(
         await render(
-            'tetrio/info',
+            'v1/tetrio/info',
             Info(
                 user=TemplateUser(
                     avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'

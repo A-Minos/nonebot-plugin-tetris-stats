@@ -45,7 +45,7 @@ async def _(
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
             async with HostPage(
                 await render(
-                    'binding',
+                    'v1/binding',
                     Bind(
                         platform=GAME_TYPE,
                         status='unknown',
