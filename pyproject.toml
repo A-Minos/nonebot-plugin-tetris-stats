@@ -1,6 +1,6 @@
 [tool.poetry]
 name = 'nonebot-plugin-tetris-stats'
-version = '1.2.10'
+version = '1.2.11'
 description = '一款基于 NoneBot2 的用于查询 Tetris 相关游戏数据的插件'
 authors = ['scdhh <wallfjjd@gmail.com>']
 readme = 'README.md'
@@ -129,3 +129,4 @@ quote-style = 'single'
 
 [tool.nonebot]
 plugins = ['nonebot_plugin_tetris_stats']
+# plugins = ['test_user']
