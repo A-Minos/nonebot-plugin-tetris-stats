@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Literal, TypeVar, overload
 from nonebot.exception import FinishedException
 from nonebot.log import logger
 from nonebot_plugin_orm import AsyncSession, get_session
+from nonebot_plugin_user import User  # type: ignore[import-untyped]
 from sqlalchemy import select
 
 from ..utils.typing import CommandType, GameType
@@ -28,37 +29,28 @@ class BindStatus(Enum):
 
 async def query_bind_info(
     session: AsyncSession,
-    chat_platform: str,
-    chat_account: str,
+    user: User,
     game_platform: GameType,
 ) -> Bind | None:
     return (
-        await session.scalars(
-            select(Bind)
-            .where(Bind.chat_platform == chat_platform)
-            .where(Bind.chat_account == chat_account)
-            .where(Bind.game_platform == game_platform)
-        )
+        await session.scalars(select(Bind).where(Bind.user_id == user.id).where(Bind.game_platform == game_platform))
     ).one_or_none()
 
 
 async def create_or_update_bind(
     session: AsyncSession,
-    chat_platform: str,
-    chat_account: str,
+    user: User,
     game_platform: GameType,
     game_account: str,
 ) -> BindStatus:
     bind = await query_bind_info(
         session=session,
-        chat_platform=chat_platform,
-        chat_account=chat_account,
+        user=user,
         game_platform=game_platform,
     )
     if bind is None:
         bind = Bind(
-            chat_platform=chat_platform,
-            chat_account=chat_account,
+            user_id=user.id,
             game_platform=game_platform,
             game_account=game_account,
         )

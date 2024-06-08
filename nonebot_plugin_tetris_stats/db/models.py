@@ -66,8 +66,7 @@ class PydanticType(TypeDecorator):
 
 class Bind(MappedAsDataclass, Model):
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    chat_platform: Mapped[str] = mapped_column(String(32), index=True)
-    chat_account: Mapped[str] = mapped_column(index=True)
+    user_id: Mapped[int] = mapped_column(index=True)
     game_platform: Mapped[GameType] = mapped_column(String(32))
     game_account: Mapped[str]
 

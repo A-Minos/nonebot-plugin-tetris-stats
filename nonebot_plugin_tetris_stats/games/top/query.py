@@ -1,14 +1,14 @@
-from nonebot.adapters import Bot, Event
+from nonebot.adapters import Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 
 from ...db import query_bind_info, trigger
 from ...utils.metrics import get_metrics
-from ...utils.platform import get_platform
 from ...utils.typing import Me
 from ..constant import CANT_VERIFY_MESSAGE
 from . import alc
@@ -18,7 +18,7 @@ from .constant import GAME_TYPE
 
 
 @alc.assign('query')
-async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
+async def _(event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -28,8 +28,9 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_ses
         async with get_session() as session:
             bind = await query_bind_info(
                 session=session,
-                chat_platform=get_platform(bot),
-                chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
+                user=await get_user(
+                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                ),
                 game_platform=GAME_TYPE,
             )
         if bind is None:

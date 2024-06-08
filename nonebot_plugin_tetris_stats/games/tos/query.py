@@ -4,13 +4,14 @@ from http import HTTPStatus
 from typing import Literal, NamedTuple
 from urllib.parse import urlunparse
 
-from nonebot.adapters import Bot, Event
+from nonebot.adapters import Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]  # type: ignore[import-untyped]
+from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 from nonebot_plugin_userinfo import EventUserInfo, UserInfo  # type: ignore[import-untyped]
 
 from ...db import query_bind_info, trigger
@@ -18,7 +19,6 @@ from ...utils.avatar import get_avatar
 from ...utils.exception import RequestError
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
-from ...utils.platform import get_platform
 from ...utils.render import render
 from ...utils.render.schemas.base import People, Ranking
 from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
@@ -99,8 +99,7 @@ except ImportError:
 
 
 @alc.assign('query')
-async def _(  # noqa: PLR0913
-    bot: Bot,
+async def _(
     event: Event,
     matcher: Matcher,
     target: At | Me,
@@ -116,8 +115,9 @@ async def _(  # noqa: PLR0913
         async with get_session() as session:
             bind = await query_bind_info(
                 session=session,
-                chat_platform=get_platform(bot),
-                chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
+                user=await get_user(
+                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                ),
                 game_platform=GAME_TYPE,
             )
         if bind is None:

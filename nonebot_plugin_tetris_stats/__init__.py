@@ -5,8 +5,9 @@ require('nonebot_plugin_alconna')
 require('nonebot_plugin_apscheduler')
 require('nonebot_plugin_localstore')
 require('nonebot_plugin_orm')
-require('nonebot_plugin_session')
 require('nonebot_plugin_session_orm')
+require('nonebot_plugin_session')
+require('nonebot_plugin_user')
 
 from nonebot_plugin_alconna import namespace  # noqa: E402
 

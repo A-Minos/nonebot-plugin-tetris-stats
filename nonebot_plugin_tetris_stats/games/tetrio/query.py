@@ -1,6 +1,6 @@
-import contextlib
 from asyncio import gather
 from collections import defaultdict
+from contextlib import suppress
 from datetime import date, datetime, timedelta, timezone
 from hashlib import md5
 from math import ceil, floor
@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from aiofiles import open
 from nonebot import get_driver
-from nonebot.adapters import Bot, Event
+from nonebot.adapters import Event
 from nonebot.compat import type_validate_json
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
@@ -20,12 +20,12 @@ from nonebot_plugin_localstore import get_data_file  # type: ignore[import-untyp
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 from sqlalchemy import select
 from zstandard import ZstdDecompressor
 
 from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
-from ...utils.platform import get_platform
 from ...utils.render import render
 from ...utils.render.schemas.base import Avatar, Ranking
 from ...utils.render.schemas.tetrio_info import Data, Info, Radar, TetraLeague, TetraLeagueHistory
@@ -48,7 +48,7 @@ driver = get_driver()
 
 
 @alc.assign('query')
-async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
+async def _(event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -58,8 +58,9 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_ses
         async with get_session() as session:
             bind = await query_bind_info(
                 session=session,
-                chat_platform=get_platform(bot),
-                chat_account=(target.target if isinstance(target, At) else event.get_user_id()),
+                user=await get_user(
+                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                ),
                 game_platform=GAME_TYPE,
             )
         if bind is None:
@@ -69,7 +70,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, target: At | Me, event_ses
         user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
         sprint = user_records.data.records.sprint
         blitz = user_records.data.records.blitz
-        with contextlib.suppress(TypeError):
+        with suppress(TypeError):
             message.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record))
             await message.finish()
         message += make_query_text(user_info, sprint, blitz)
@@ -87,7 +88,7 @@ async def _(account: Player, event_session: EventSession):
         user, user_info, user_records = await gather(account.user, account.get_info(), account.get_records())
         sprint = user_records.data.records.sprint
         blitz = user_records.data.records.blitz
-        with contextlib.suppress(TypeError):
+        with suppress(TypeError):
             await UniMessage.image(raw=await make_query_image(user, user_info, sprint.record, blitz.record)).finish()
         await make_query_text(user_info, sprint, blitz).finish()
 
