@@ -46,7 +46,7 @@ def upgrade(name: str = '') -> None:
     from sqlalchemy.ext.automap import automap_base
     from sqlalchemy.orm import Session
 
-    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseUser
+    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseUser  # type: ignore[import-untyped]
 
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:
         batch_op.add_column(sa.Column('user_unique_identifier', sa.String(length=32), nullable=True))

@@ -46,7 +46,9 @@ def upgrade(name: str = '') -> None:  # noqa: C901
         TimeRemainingColumn,
     )
 
-    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseProcessedData  # type: ignore[attr-defined]
+    from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped]
+        BaseProcessedData,
+    )
 
     Base = automap_base()  # noqa: N806
     Base.prepare(autoload_with=op.get_bind())
