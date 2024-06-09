@@ -33,7 +33,3 @@ class DoNotCatchError(TetrisStatsError):
 
 class WhatTheFuckError(DoNotCatchError):
     """用于表示不应该出现的情况 ("""
-
-
-class HandleNotFinishedError(DoNotCatchError):
-    """任务没有正常完成处理的错误"""
