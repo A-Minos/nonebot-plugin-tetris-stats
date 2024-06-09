@@ -1,26 +1,27 @@
 from hashlib import sha256
 from ipaddress import IPv4Address, IPv6Address
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Literal
 
-from fastapi import FastAPI, status
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Path, status
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from nonebot import get_app, get_driver
 from nonebot.log import logger
-from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
 
+from ..config.config import CACHE_PATH
+from .image import img_to_png
+from .request import Request
 from .templates import templates_dir
 
 if TYPE_CHECKING:
     from pydantic import IPvAnyAddress
 
-app = get_app()
+app: FastAPI = get_app()
 
 driver = get_driver()
 
 global_config = driver.config
 
-cache_dir = get_cache_dir('nonebot_plugin_tetris_stats')
 
 if not isinstance(app, FastAPI):
     msg = '本插件需要 FastAPI 驱动器才能运行'
@@ -58,6 +59,22 @@ async def _(page_hash: str) -> HTMLResponse:
     if page_hash in HostPage.pages:
         return HTMLResponse(HostPage.pages[page_hash])
     return NOT_FOUND
+
+
+@app.get('/host/resource/tetrio/{resource_type}/{user_id}', status_code=status.HTTP_200_OK)
+async def _(
+    resource_type: Literal['avatars', 'banners'], revision: int, user_id: str = Path(regex=r'^[a-f0-9]{24}$')
+) -> Response:
+    if not (path := CACHE_PATH / 'tetrio' / resource_type / f'{user_id}_{revision}.png').exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(
+            img_to_png(
+                await Request.request(
+                    f'https://tetr.io/user-content/{resource_type}/{user_id}.jpg?rv={revision}', is_json=False
+                )
+            )
+        )
+    return FileResponse(path)
 
 
 def get_self_netloc() -> str:
