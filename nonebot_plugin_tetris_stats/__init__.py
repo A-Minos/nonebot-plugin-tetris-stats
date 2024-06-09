@@ -19,7 +19,7 @@ from .config.config import migrations  # noqa: E402
 __plugin_meta__ = PluginMetadata(
     name='Tetris Stats',
     description='一个用于查询 Tetris 相关游戏玩家数据的插件',
-    usage='发送 {游戏名} --help 查询使用方法',
+    usage='发送 tstats --help 查询使用方法',
     type='application',
     homepage='https://github.com/A-minos/nonebot-plugin-tetris-stats',
     extra={
