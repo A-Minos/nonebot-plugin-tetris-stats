@@ -1,11 +1,9 @@
-from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
-from nonebot_plugin_alconna import At, on_alconna
+from arclet.alconna import Arg, ArgFlag, Args, Subcommand
+from nonebot_plugin_alconna import At
 
-from ... import ns
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
-from .. import add_default_handlers
-from ..constant import BIND_COMMAND, QUERY_COMMAND
+from .. import add_block_handlers, alc
 from .api import Player
 from .constant import USER_NAME
 
@@ -16,31 +14,28 @@ def get_player(name: str) -> Player | MessageFormatError:
     return MessageFormatError('用户名/ID不合法')
 
 
-alc = on_alconna(
-    Alconna(
-        'top',
-        Option(
-            BIND_COMMAND[0],
+alc.command.add(
+    Subcommand(
+        'TOP',
+        Subcommand(
+            'bind',
             Args(
                 Arg(
                     'account',
                     get_player,
-                    notice='TOP 用户名',
+                    notice='TOP 用户名 / ID',
                     flags=[ArgFlag.HIDDEN],
                 )
             ),
-            alias=BIND_COMMAND[1:],
-            compact=True,
-            dest='bind',
             help_text='绑定 TOP 账号',
         ),
-        Option(
-            QUERY_COMMAND[0],
+        Subcommand(
+            'query',
             Args(
                 Arg(
                     'target',
                     At | Me,
-                    notice='@想要查询的人 | 自己',
+                    notice='@想要查询的人 / 自己',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
                 Arg(
@@ -50,25 +45,15 @@ alc = on_alconna(
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
             ),
-            alias=QUERY_COMMAND[1:],
-            compact=True,
-            dest='query',
             help_text='查询 TOP 游戏信息',
         ),
-        Arg('other', AllParam, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
-        meta=CommandMeta(
-            description='查询 TetrisOnline波兰服 的信息',
-            example='top绑定scdhh\ntop查我',
-            compact=True,
-            fuzzy_match=True,
-        ),
-        namespace=ns,
-    ),
-    skip_for_unmatch=False,
-    auto_send_output=True,
-    aliases={'TOP'},
+        help_text='TOP 游戏相关指令',
+    )
 )
 
-from . import bind, query  # noqa: E402, F401
+alc.shortcut('(?i:top)(?i:绑|绑定|bind)', {'command': 'tstats TOP bind', 'humanized': 'top绑定'})
+alc.shortcut('(?i:top)(?i:查|查询|query|stats)', {'command': 'tstats TOP query', 'humanized': 'top查'})
 
-add_default_handlers(alc)
+add_block_handlers(alc.assign('TOP.query'))
+
+from . import bind, query  # noqa: E402, F401

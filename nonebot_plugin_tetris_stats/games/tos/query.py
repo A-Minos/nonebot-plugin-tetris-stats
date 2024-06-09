@@ -34,7 +34,7 @@ from .constant import GAME_TYPE
 def add_special_handlers(
     teaid_prefix: Literal['onebot-', 'kook-', 'discord-', 'qqguild-'], match_event: type[Event]
 ) -> None:
-    @alc.assign('query')
+    @alc.assign('TOS.query')
     async def _(
         event: Event,
         target: At | Me,
@@ -98,7 +98,7 @@ except ImportError:
     pass
 
 
-@alc.assign('query')
+@alc.assign('TOS.query')
 async def _(
     event: Event,
     matcher: Matcher,
@@ -132,7 +132,7 @@ async def _(
         await (message + make_query_text(user_info, game_data)).finish()
 
 
-@alc.assign('query')
+@alc.assign('TOS.query')
 async def _(account: Player, event_session: EventSession, event_user_info: UserInfo = EventUserInfo()):  # noqa: B008
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

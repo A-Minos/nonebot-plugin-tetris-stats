@@ -47,7 +47,7 @@ UTC = timezone.utc
 driver = get_driver()
 
 
-@alc.assign('query')
+@alc.assign('TETRIO.query')
 async def _(event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
@@ -77,7 +77,7 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
         await message.finish()
 
 
-@alc.assign('query')
+@alc.assign('TETRIO.query')
 async def _(account: Player, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

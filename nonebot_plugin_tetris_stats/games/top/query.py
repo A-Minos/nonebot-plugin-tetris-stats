@@ -17,7 +17,7 @@ from .api.schemas.user_profile import UserProfile
 from .constant import GAME_TYPE
 
 
-@alc.assign('query')
+@alc.assign('TOP.query')
 async def _(event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
@@ -39,7 +39,7 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
         await (message + make_query_text(await Player(user_name=bind.game_account, trust=True).get_profile())).finish()
 
 
-@alc.assign('query')
+@alc.assign('TOP.query')
 async def _(account: Player, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

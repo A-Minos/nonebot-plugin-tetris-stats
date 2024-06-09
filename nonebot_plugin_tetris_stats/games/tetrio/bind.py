@@ -19,7 +19,7 @@ from .api import Player
 from .constant import GAME_TYPE
 
 
-@alc.assign('bind')
+@alc.assign('TETRIO.bind')
 async def _(nb_user: User, account: Player, event_session: EventSession, bot_info: UserInfo = BotUserInfo()):  # noqa: B008
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

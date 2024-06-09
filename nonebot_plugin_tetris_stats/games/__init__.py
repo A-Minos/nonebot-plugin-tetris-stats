@@ -1,38 +1,51 @@
-from typing import Any
+from collections.abc import Callable
 
 from nonebot.adapters import Bot
-from nonebot.exception import FinishedException
 from nonebot.matcher import Matcher
 from nonebot.message import run_postprocessor
-from nonebot_plugin_alconna import AlcMatches, AlconnaMatcher, At
+from nonebot.typing import T_Handler
+from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alconna
 
+from .. import ns
 from ..utils.exception import MessageFormatError, NeedCatchError
 
+alc = on_alconna(
+    Alconna(
+        ['tetris-stats', 'tstats'],
+        namespace=ns,
+        meta=CommandMeta(
+            description='俄罗斯方块相关游戏数据查询',
+            fuzzy_match=True,
+        ),
+    ),
+    skip_for_unmatch=False,
+    auto_send_output=True,
+    use_origin=True,
+)
 
-def add_default_handlers(matcher: type[AlconnaMatcher]) -> None:
-    @matcher.assign('query')
+
+def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:
+    @handler
     async def _(bot: Bot, matcher: Matcher, target: At):
         if isinstance(target, At) and target.target == bot.self_id:
             await matcher.finish('不能查询bot的信息')
 
-    @matcher.handle()
-    async def _(matcher: Matcher, account: MessageFormatError):
-        await matcher.finish(str(account))
-
-    @matcher.handle()
-    async def _(matcher: Matcher, matches: AlcMatches):
-        if matches.head_matched and matches.options != {} or matches.main_args == {}:
-            await matcher.finish(
-                (f'{matches.error_info!r}\n' if matches.error_info is not None else '')
-                + f'输入"{matches.header_result} --help"查看帮助'
-            )
-
-    @matcher.handle()
-    def _(other: Any):  # noqa: ANN401, ARG001
-        raise FinishedException
-
 
 from . import tetrio, top, tos  # noqa: F401, E402
+
+
+@alc.handle()
+async def _(matcher: Matcher, account: MessageFormatError):
+    await matcher.finish(str(account))
+
+
+@alc.handle()
+async def _(matcher: Matcher, matches: AlcMatches):
+    if matches.head_matched and matches.options != {} or matches.main_args == {}:
+        await matcher.finish(
+            (f'{matches.error_info!r}\n' if matches.error_info is not None else '')
+            + f'输入"{matches.header_result} --help"查看帮助'
+        )
 
 
 @run_postprocessor

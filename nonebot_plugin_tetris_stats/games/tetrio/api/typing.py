@@ -1,6 +1,6 @@
 from typing import Literal
 
-Rank = Literal[
+ValidRank = Literal[
     'x',
     'u',
     'ss',
@@ -18,5 +18,6 @@ Rank = Literal[
     'c-',
     'd+',
     'd',
-    'z',  # 未定级
 ]
+
+Rank = ValidRank | Literal['z']  # 未定级

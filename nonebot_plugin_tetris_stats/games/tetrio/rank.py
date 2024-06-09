@@ -37,7 +37,7 @@ UTC = timezone.utc
 driver = get_driver()
 
 
-@alc.assign('rank')
+@alc.assign('TETRIO.rank')
 async def _(matcher: Matcher, rank: Rank, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

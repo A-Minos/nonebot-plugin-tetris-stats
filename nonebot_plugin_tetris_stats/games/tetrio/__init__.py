@@ -1,14 +1,13 @@
-from arclet.alconna import Alconna, AllParam, Arg, ArgFlag, Args, CommandMeta, Option
-from nonebot_plugin_alconna import At, on_alconna
+from arclet.alconna import Arg, ArgFlag, Args, Option, Subcommand
+from nonebot_plugin_alconna import At
 
-from ... import ns
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
-from .. import add_default_handlers
-from ..constant import BIND_COMMAND, QUERY_COMMAND
+from .. import add_block_handlers, alc
 from .api import Player
-from .api.typing import Rank
+from .api.typing import ValidRank
 from .constant import USER_ID, USER_NAME
+from .typing import Template
 
 
 def get_player(user_id_or_name: str) -> Player | MessageFormatError:
@@ -19,69 +18,62 @@ def get_player(user_id_or_name: str) -> Player | MessageFormatError:
     return MessageFormatError('用户名/ID不合法')
 
 
-alc = on_alconna(
-    Alconna(
-        'io',
-        Option(
-            BIND_COMMAND[0],
+alc.command.add(
+    Subcommand(
+        'TETR.IO',
+        Subcommand(
+            'bind',
             Args(
                 Arg(
                     'account',
                     get_player,
-                    notice='IO 用户名 / ID',
+                    notice='TETR.IO 用户名 / ID',
                     flags=[ArgFlag.HIDDEN],
                 )
             ),
-            alias=BIND_COMMAND[1:],
-            compact=True,
-            dest='bind',
-            help_text='绑定 IO 账号',
+            help_text='绑定 TETR.IO 账号',
         ),
-        Option(
-            QUERY_COMMAND[0],
+        Subcommand(
+            'query',
             Args(
                 Arg(
                     'target',
                     At | Me,
-                    notice='@想要查询的人 | 自己',
+                    notice='@想要查询的人 / 自己',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
                 Arg(
                     'account',
                     get_player,
-                    notice='IO 用户名 / ID',
+                    notice='TETR.IO 用户名 / ID',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
             ),
-            alias=QUERY_COMMAND[1:],
-            compact=True,
-            dest='query',
-            help_text='查询 IO 游戏信息',
+            Option(
+                '--template',
+                Arg('template', Template),
+                alias=['-T'],
+                help_text='要使用的查询模板',
+            ),
+            help_text='查询 TETR.IO 游戏信息',
         ),
-        Option(
+        Subcommand(
             'rank',
-            Args(Arg('rank', Rank, notice='IO 段位')),
-            alias={'Rank', 'RANK', '段位'},
-            compact=True,
-            dest='rank',
-            help_text='查询 IO 段位信息',
+            Args(Arg('rank', ValidRank, notice='TETR.IO 段位')),
+            help_text='查询 TETR.IO 段位信息',
         ),
-        Arg('other', AllParam, flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL]),
-        meta=CommandMeta(
-            description='查询 TETR.IO 的信息',
-            example='io绑定scdhh\nio查我\niorankx',
-            compact=True,
-            fuzzy_match=True,
-        ),
-        namespace=ns,
-    ),
-    skip_for_unmatch=False,
-    auto_send_output=True,
-    aliases={'IO'},
+        dest='TETRIO',
+        help_text='TETR.IO 游戏相关指令',
+    )
 )
 
-alc.shortcut('fkosk', {'command': 'io查', 'args': ['我'], 'fuzzy': False, 'humanized': 'An Easter egg!'})
+alc.shortcut('(?i:io)(?i:绑|绑定|bind)', {'command': 'tstats TETR.IO bind', 'humanized': 'io绑定'})
+alc.shortcut('(?i:io)(?i:查|查询|query|stats)', {'command': 'tstats TETR.IO query', 'humanized': 'io查'})
+
+alc.shortcut(
+    'fkosk', {'command': 'tstats TETR.IO query', 'args': ['我'], 'fuzzy': False, 'humanized': 'An Easter egg!'}
+)
+
+add_block_handlers(alc.assign('TETRIO.query'))
 
 from . import bind, query, rank  # noqa: F401, E402
-
-add_default_handlers(alc)
