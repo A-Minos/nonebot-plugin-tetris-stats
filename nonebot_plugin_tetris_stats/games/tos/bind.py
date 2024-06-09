@@ -1,5 +1,3 @@
-from urllib.parse import urlunparse
-
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
@@ -60,5 +58,5 @@ async def _(
                 )
             ) as page_hash:
                 await UniMessage.image(
-                    raw=await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
+                    raw=await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
                 ).finish()

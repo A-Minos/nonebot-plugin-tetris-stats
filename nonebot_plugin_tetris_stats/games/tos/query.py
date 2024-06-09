@@ -2,7 +2,6 @@ from asyncio import gather
 from datetime import timedelta
 from http import HTTPStatus
 from typing import Literal, NamedTuple
-from urllib.parse import urlunparse
 
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -230,7 +229,7 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
             ),
         )
     ) as page_hash:
-        return await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
+        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
 
 
 def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> UniMessage:
