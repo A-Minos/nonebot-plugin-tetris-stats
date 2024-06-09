@@ -15,9 +15,9 @@ from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 from nonebot_plugin_userinfo import EventUserInfo, UserInfo  # type: ignore[import-untyped]
 
 from ...db import query_bind_info, trigger
-from ...utils.avatar import get_avatar
 from ...utils.exception import RequestError
 from ...utils.host import HostPage, get_self_netloc
+from ...utils.image import get_avatar
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
 from ...utils.render import render
 from ...utils.render.schemas.base import People, Ranking

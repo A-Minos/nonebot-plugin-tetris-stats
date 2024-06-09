@@ -52,3 +52,11 @@ async def get_avatar(user: UserInfo, scheme: Literal['Data URI', 'bytes'], defau
             raise TypeError(msg)
         return f'data:{Image.MIME[avatar_format]};base64,{b64encode(bot_avatar).decode()}'
     return bot_avatar
+
+
+def img_to_png(image: bytes) -> bytes:
+    """将图片转换为 PNG 格式"""
+    result = BytesIO()
+    with Image.open(BytesIO(image)) as img:
+        img.save(result, 'PNG')
+    return result.getvalue()
