@@ -26,11 +26,16 @@ class User(BaseModel):
     badges: list[str]
     xp: Number
 
-    playtime: str
+    playtime: str | None
     join_at: datetime | None
 
 
 class Statistic(BaseModel):
+    total: int | None
+    wins: int | None
+
+
+class TetraLeagueStatistic(BaseModel):
     total: int
     wins: int
 
@@ -44,18 +49,18 @@ class TetraLeague(BaseModel):
     glicko: Number
     rd: Number
 
-    global_rank: int
-    country_rank: int
+    global_rank: int | None
+    country_rank: int | None
 
     pps: Number
 
     apm: Number
-    adpm: Number
+    apl: Number
 
-    vs: Number
-    adpl: Number
+    vs: Number | None
+    adpl: Number | None
 
-    statistic: Statistic
+    statistic: TetraLeagueStatistic
 
 
 class Sprint(BaseModel):
