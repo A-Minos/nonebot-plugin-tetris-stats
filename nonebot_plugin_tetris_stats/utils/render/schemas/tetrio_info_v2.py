@@ -7,6 +7,13 @@ from ...typing import Number
 from .base import Avatar
 
 
+class Badge(BaseModel):
+    id: str
+    description: str
+    group: str | None
+    receive_at: datetime | None
+
+
 class User(BaseModel):
     id: str
     name: str
@@ -23,7 +30,7 @@ class User(BaseModel):
     verified: bool
     bad_standing: bool
 
-    badges: list[str]
+    badges: list[Badge]
     xp: Number
 
     playtime: str | None

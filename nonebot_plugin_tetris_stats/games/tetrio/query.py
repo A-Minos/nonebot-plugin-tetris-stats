@@ -32,7 +32,7 @@ from ...utils.render.schemas.base import Avatar, Ranking
 from ...utils.render.schemas.tetrio_info import Data, Radar, TetraLeague, TetraLeagueHistory
 from ...utils.render.schemas.tetrio_info import Info as V1TemplateInfo
 from ...utils.render.schemas.tetrio_info import User as V1TemplateUser
-from ...utils.render.schemas.tetrio_info_v2 import Blitz, Sprint, Statistic, TetraLeagueStatistic, Zen
+from ...utils.render.schemas.tetrio_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic, Zen
 from ...utils.render.schemas.tetrio_info_v2 import Info as V2TemplateInfo
 from ...utils.render.schemas.tetrio_info_v2 import TetraLeague as V2TemplateTetraLeague
 from ...utils.render.schemas.tetrio_info_v2 import User as V2TemplateUser
@@ -354,7 +354,15 @@ async def make_query_image_v2(player: Player) -> bytes:
                         type='identicon',
                         hash=md5(user_info.data.user.id.encode()).hexdigest(),  # noqa: S324
                     ),
-                    badges=[i.id for i in user_info.data.user.badges],
+                    badges=[
+                        Badge(
+                            id=i.id,
+                            description=i.label,
+                            group=i.group,
+                            receive_at=i.ts if isinstance(i.ts, datetime) else None,
+                        )
+                        for i in user_info.data.user.badges
+                    ],
                     country=user_info.data.user.country,
                     xp=user_info.data.user.xp,
                     friend_count=user_info.data.user.friend_count or 0,
