@@ -1,5 +1,6 @@
+from asyncio import gather
 from hashlib import md5
-from urllib.parse import urlunparse
+from urllib.parse import urlencode
 
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
@@ -27,7 +28,7 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
         command_type='bind',
         command_args=[],
     ):
-        user = await account.user
+        user, user_info = await gather(account.user, account.get_info())
         async with get_session() as session:
             bind_status = await create_or_update_bind(
                 session=session,
@@ -35,8 +36,8 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                 game_platform=GAME_TYPE,
                 game_account=user.unique_identifier,
             )
-        user_info = await account.get_info()
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
+            netloc = get_self_netloc()
             async with HostPage(
                 await render(
                     'v1/binding',
@@ -44,7 +45,7 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                         platform='TETR.IO',
                         status='unknown',
                         user=People(
-                            avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                            avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
                             if user_info.data.user.avatar_revision is not None
                             else Avatar(type='identicon', hash=md5(user_info.data.user.id.encode()).hexdigest()),  # noqa: S324
                             name=user_info.data.user.username.upper(),
@@ -57,6 +58,4 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                     ),
                 )
             ) as page_hash:
-                await UniMessage.image(
-                    raw=await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
-                ).finish()
+                await UniMessage.image(raw=await screenshot(f'http://{netloc}/host/{page_hash}.html')).finish()

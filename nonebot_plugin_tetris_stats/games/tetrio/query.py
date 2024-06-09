@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta, timezone
 from hashlib import md5
 from math import ceil, floor
 from typing import ClassVar, TypeVar, overload
-from urllib.parse import urlunparse
+from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
 from aiofiles import open
@@ -256,12 +256,13 @@ async def make_query_image_v1(player: Player) -> bytes:
     else:
         sprint_value = 'N/A'
     blitz_value = f'{blitz.endcontext.score:,}' if blitz is not None else 'N/A'
+    netloc = get_self_netloc()
     async with HostPage(
         page=await render(
             'v1/tetrio/info',
             V1TemplateInfo(
                 user=V1TemplateUser(
-                    avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
                     if user_info.data.user.avatar_revision is not None
                     else Avatar(
                         type='identicon',
@@ -305,7 +306,7 @@ async def make_query_image_v1(player: Player) -> bytes:
             ),
         )
     ) as page_hash:
-        return await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
+        return await screenshot(f'http://{netloc}/host/{page_hash}.html')
 
 
 N = TypeVar('N', int, float)
@@ -336,7 +337,7 @@ async def make_query_image_v2(player: Player) -> bytes:
             play_time = f'{game_time:.0f}s'
     else:
         play_time = game_time
-
+    netloc = get_self_netloc()
     async with HostPage(
         await render(
             'v2/tetrio/info',
@@ -345,10 +346,10 @@ async def make_query_image_v2(player: Player) -> bytes:
                     id=user.ID,
                     name=user.name.upper(),
                     bio=user_info.data.user.bio,
-                    banner=f'https://tetr.io/user-content/banners/{user_info.data.user.id}.jpg?rv={user_info.data.user.banner_revision}'
+                    banner=f'http://{netloc}/host/resource/tetrio/banners/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
                     if user_info.data.user.banner_revision is not None and user_info.data.user.banner_revision != 0
                     else None,
-                    avatar=f'https://tetr.io/user-content/avatars/{user_info.data.user.id}.jpg?rv={user_info.data.user.avatar_revision}'
+                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
                     if user_info.data.user.avatar_revision is not None
                     else Avatar(
                         type='identicon',
@@ -418,7 +419,7 @@ async def make_query_image_v2(player: Player) -> bytes:
             ),
         ),
     ) as page_hash:
-        return await screenshot(urlunparse(('http', get_self_netloc(), f'/host/{page_hash}.html', '', '', '')))
+        return await screenshot(f'http://{netloc}/host/{page_hash}.html')
 
 
 async def make_query_text(player: Player) -> UniMessage:
