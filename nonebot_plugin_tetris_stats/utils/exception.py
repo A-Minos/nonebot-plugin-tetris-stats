@@ -27,9 +27,17 @@ class MessageFormatError(NeedCatchError):
     """用户发送的消息格式不正确"""
 
 
+class FallbackError(NeedCatchError):
+    """需要回滚至更通用的方法"""
+
+
 class DoNotCatchError(TetrisStatsError):
     """不应该被捕获的异常基类"""
 
 
 class WhatTheFuckError(DoNotCatchError):
     """用于表示不应该出现的情况 ("""
+
+
+class NoFallbackError(DoNotCatchError):  # 暂时没用 但是先写了
+    """没有可用的回退方法"""
