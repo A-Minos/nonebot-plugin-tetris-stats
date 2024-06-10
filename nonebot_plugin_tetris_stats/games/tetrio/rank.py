@@ -30,7 +30,7 @@ from .api.schemas.user import User
 from .api.tetra_league import full_export
 from .api.typing import Rank
 from .constant import GAME_TYPE, RANK_PERCENTILE
-from .model import IORank
+from .models import IORank
 
 UTC = timezone.utc
 

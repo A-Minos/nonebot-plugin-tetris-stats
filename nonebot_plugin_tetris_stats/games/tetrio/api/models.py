@@ -15,8 +15,3 @@ class TETRIOHistoricalData(MappedAsDataclass, Model):
     api_type: Mapped[Literal['User Info', 'User Records']] = mapped_column(String(16), index=True)
     data: Mapped[SuccessModel] = mapped_column(PydanticType(get_model=[SuccessModel.__subclasses__], models=set()))
     update_time: Mapped[datetime] = mapped_column(DateTime, index=True)
-
-
-class TETRIOUserConfig(MappedAsDataclass, Model):
-    id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    query_template: Mapped[Literal['v1', 'v2']] = mapped_column(String(2))

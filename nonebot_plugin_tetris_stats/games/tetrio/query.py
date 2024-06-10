@@ -46,7 +46,7 @@ from .api.schemas.tetra_league import TetraLeagueSuccess
 from .api.schemas.user_info import NeverPlayedLeague, NeverRatedLeague, RatedLeague
 from .api.schemas.user_records import SoloModeRecord, UserRecordsSuccess
 from .constant import GAME_TYPE, TR_MAX, TR_MIN
-from .model import IORank
+from .models import IORank
 from .typing import Template
 
 UTC = timezone.utc

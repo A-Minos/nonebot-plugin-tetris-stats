@@ -5,6 +5,7 @@ from sqlalchemy import JSON, DateTime, String
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from .api.typing import Rank
+from .typing import Template
 
 
 class IORank(MappedAsDataclass, Model):
@@ -26,3 +27,8 @@ class IORank(MappedAsDataclass, Model):
         index=True,
     )
     file_hash: Mapped[str | None] = mapped_column(String(128), index=True)
+
+
+class TETRIOUserConfig(MappedAsDataclass, Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    query_template: Mapped[Template] = mapped_column(String(2))
