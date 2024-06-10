@@ -19,6 +19,7 @@ from nonebot_plugin_localstore import get_data_file  # type: ignore[import-untyp
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_user import User as NBUser  # type: ignore[import-untyped]
 from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 from sqlalchemy import select
 from zstandard import ZstdDecompressor
@@ -46,7 +47,7 @@ from .api.schemas.tetra_league import TetraLeagueSuccess
 from .api.schemas.user_info import NeverPlayedLeague, NeverRatedLeague, RatedLeague
 from .api.schemas.user_records import SoloModeRecord, UserRecordsSuccess
 from .constant import GAME_TYPE, TR_MAX, TR_MIN
-from .models import IORank
+from .models import IORank, TETRIOUserConfig
 from .typing import Template
 
 UTC = timezone.utc
@@ -55,7 +56,8 @@ driver = get_driver()
 
 
 @alc.assign('TETRIO.query')
-async def _(
+async def _(  # noqa: PLR0913
+    user: NBUser,
     event: Event,
     matcher: Matcher,
     target: At | Me,
@@ -76,6 +78,10 @@ async def _(
                 ),
                 game_platform=GAME_TYPE,
             )
+            if template is None:
+                template = await session.scalar(
+                    select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
+                )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
         message = UniMessage(CANT_VERIFY_MESSAGE)
@@ -84,13 +90,18 @@ async def _(
 
 
 @alc.assign('TETRIO.query')
-async def _(account: Player, event_session: EventSession, template: Template | None = None):
+async def _(user: NBUser, account: Player, event_session: EventSession, template: Template | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='query',
         command_args=[],
     ):
+        async with get_session() as session:
+            if template is None:
+                template = await session.scalar(
+                    select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
+                )
         await (await make_query_result(account, template or 'v1')).finish()
 
 

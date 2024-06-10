@@ -62,13 +62,22 @@ alc.command.add(
             Args(Arg('rank', ValidRank, notice='TETR.IO 段位')),
             help_text='查询 TETR.IO 段位信息',
         ),
+        Subcommand(
+            'config',
+            Option(
+                '--default-template',
+                Arg('template', Template),
+                alias=['-DT', 'DefaultTemplate'],
+            ),
+        ),
         dest='TETRIO',
         help_text='TETR.IO 游戏相关指令',
     )
 )
 
-alc.shortcut('(?i:io)(?i:绑|绑定|bind)', {'command': 'tstats TETR.IO bind', 'humanized': 'io绑定'})
-alc.shortcut('(?i:io)(?i:查|查询|query|stats)', {'command': 'tstats TETR.IO query', 'humanized': 'io查'})
+alc.shortcut('(?i:io)(?i:绑定|绑|bind)', {'command': 'tstats TETR.IO bind', 'humanized': 'io绑定'})
+alc.shortcut('(?i:io)(?i:查询|查|query|stats)', {'command': 'tstats TETR.IO query', 'humanized': 'io查'})
+alc.shortcut('(?i:io)(?i:配置|配|config)', {'command': 'tstats TETR.IO config', 'humanized': 'io配置'})
 
 alc.shortcut(
     'fkosk', {'command': 'tstats TETR.IO query', 'args': ['我'], 'fuzzy': False, 'humanized': 'An Easter egg!'}
@@ -76,4 +85,4 @@ alc.shortcut(
 
 add_block_handlers(alc.assign('TETRIO.query'))
 
-from . import bind, query, rank  # noqa: F401, E402
+from . import bind, config, query, rank  # noqa: F401, E402
