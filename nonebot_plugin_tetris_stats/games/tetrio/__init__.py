@@ -77,6 +77,7 @@ alc.command.add(
 
 alc.shortcut('(?i:io)(?i:绑定|绑|bind)', {'command': 'tstats TETR.IO bind', 'humanized': 'io绑定'})
 alc.shortcut('(?i:io)(?i:查询|查|query|stats)', {'command': 'tstats TETR.IO query', 'humanized': 'io查'})
+alc.shortcut('(?i:io)(?i:段位|段|rank)', {'command': 'tstats TETR.IO rank', 'humanized': 'iorank'})
 alc.shortcut('(?i:io)(?i:配置|配|config)', {'command': 'tstats TETR.IO config', 'humanized': 'io配置'})
 
 alc.shortcut(
