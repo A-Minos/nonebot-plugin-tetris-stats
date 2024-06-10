@@ -56,8 +56,8 @@ alc.command.add(
     )
 )
 
-alc.shortcut('(?i:tos|茶服)(?i:绑|绑定|bind)', {'command': 'tstats TOS bind', 'humanized': '茶服绑定'})
-alc.shortcut('(?i:tos|茶服)(?i:查|查询|query|stats)', {'command': 'tstats TOS query', 'humanized': '茶服查'})
+alc.shortcut('(?i:tos|茶服)(?i:绑定|绑|bind)', {'command': 'tstats TOS bind', 'humanized': '茶服绑定'})
+alc.shortcut('(?i:tos|茶服)(?i:查询|查|query|stats)', {'command': 'tstats TOS query', 'humanized': '茶服查'})
 
 add_block_handlers(alc.assign('TOS.query'))
 

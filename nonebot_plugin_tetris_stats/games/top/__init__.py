@@ -51,8 +51,8 @@ alc.command.add(
     )
 )
 
-alc.shortcut('(?i:top)(?i:绑|绑定|bind)', {'command': 'tstats TOP bind', 'humanized': 'top绑定'})
-alc.shortcut('(?i:top)(?i:查|查询|query|stats)', {'command': 'tstats TOP query', 'humanized': 'top查'})
+alc.shortcut('(?i:top)(?i:绑定|绑|bind)', {'command': 'tstats TOP bind', 'humanized': 'top绑定'})
+alc.shortcut('(?i:top)(?i:查询|查|query|stats)', {'command': 'tstats TOP query', 'humanized': 'top查'})
 
 add_block_handlers(alc.assign('TOP.query'))
 
