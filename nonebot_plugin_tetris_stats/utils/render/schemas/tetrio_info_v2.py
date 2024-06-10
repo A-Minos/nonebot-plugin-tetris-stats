@@ -69,6 +69,8 @@ class TetraLeague(BaseModel):
 
     statistic: TetraLeagueStatistic
 
+    decaying: bool
+
 
 class Sprint(BaseModel):
     time: str

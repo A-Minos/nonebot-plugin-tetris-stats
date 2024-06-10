@@ -394,6 +394,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                         total=league.gamesplayed,
                         wins=league.gameswon,
                     ),
+                    decaying=league.decaying,
                 )
                 if isinstance(league, RatedLeague)
                 else None,
