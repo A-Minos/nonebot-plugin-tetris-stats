@@ -27,6 +27,10 @@ class MessageFormatError(NeedCatchError):
     """用户发送的消息格式不正确"""
 
 
+class RecordNotFoundError(NeedCatchError):
+    """找不到用户的某种记录"""
+
+
 class FallbackError(NeedCatchError):
     """需要回滚至更通用的方法"""
 
