@@ -11,7 +11,7 @@ from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
-from .schemas.user_records import UserRecords, UserRecordsSuccess
+from .schemas.user_records import SoloModeRecord, UserRecords, UserRecordsSuccess, Zen
 
 
 class Player:
@@ -100,3 +100,15 @@ class Player:
                 ),
             )
         return self._user_records
+
+    @property
+    async def sprint(self) -> SoloModeRecord:
+        return (await self.get_records()).data.records.sprint
+
+    @property
+    async def blitz(self) -> SoloModeRecord:
+        return (await self.get_records()).data.records.blitz
+
+    @property
+    async def zen(self) -> Zen:
+        return (await self.get_records()).data.zen

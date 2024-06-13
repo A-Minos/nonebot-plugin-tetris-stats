@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 from aiofiles import open
 from nonebot import get_driver
 from nonebot.adapters import Event
-from nonebot.compat import model_dump, type_validate_json
+from nonebot.compat import type_validate_json
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
@@ -33,7 +33,7 @@ from ...utils.render.schemas.base import Avatar, Ranking
 from ...utils.render.schemas.tetrio_info import Data, Radar, TetraLeague, TetraLeagueHistory
 from ...utils.render.schemas.tetrio_info import Info as V1TemplateInfo
 from ...utils.render.schemas.tetrio_info import User as V1TemplateUser
-from ...utils.render.schemas.tetrio_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic, Zen
+from ...utils.render.schemas.tetrio_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic
 from ...utils.render.schemas.tetrio_info_v2 import Info as V2TemplateInfo
 from ...utils.render.schemas.tetrio_info_v2 import TetraLeague as V2TemplateTetraLeague
 from ...utils.render.schemas.tetrio_info_v2 import User as V2TemplateUser
@@ -244,29 +244,20 @@ def get_league(
     raise FallbackError
 
 
-def get_sprint(user_records: UserRecordsSuccess) -> SoloModeRecord:
-    return user_records.data.records.sprint
-
-
-def get_blitz(user_records: UserRecordsSuccess) -> SoloModeRecord:
-    return user_records.data.records.blitz
-
-
 async def make_query_image_v1(player: Player) -> bytes:
-    user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
+    user, user_info, sprint, blitz = await gather(player.user, player.get_info(), player.sprint, player.blitz)
     league = get_league(user_info, RatedLeague)
-    sprint, blitz = get_sprint(user_records).record, get_blitz(user_records).record
     if league.vs is None:
         raise FallbackError
     histories = await query_historical_data(user, user_info)
     value_max, value_min = get_value_bounds([i.tr for i in histories])
     split_value, offset = get_split(value_max, value_min)
-    if sprint is not None:
-        duration = timedelta(milliseconds=sprint.endcontext.final_time).total_seconds()
+    if sprint.record is not None:
+        duration = timedelta(milliseconds=sprint.record.endcontext.final_time).total_seconds()
         sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
     else:
         sprint_value = 'N/A'
-    blitz_value = f'{blitz.endcontext.score:,}' if blitz is not None else 'N/A'
+    blitz_value = f'{blitz.record.endcontext.score:,}' if blitz.record is not None else 'N/A'
     netloc = get_self_netloc()
     async with HostPage(
         page=await render(
@@ -328,9 +319,10 @@ def handling_special_value(value: N) -> N | None:
 
 
 async def make_query_image_v2(player: Player) -> bytes:
-    user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
+    user, user_info, sprint, blitz, zen = await gather(
+        player.user, player.get_info(), player.sprint, player.blitz, player.zen
+    )
     league = get_league(user_info)
-    sprint, blitz = get_sprint(user_records), get_blitz(user_records)
 
     if sprint.record is not None:
         duration = timedelta(milliseconds=sprint.record.endcontext.final_time).total_seconds()
@@ -427,7 +419,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                 )
                 if blitz.record is not None
                 else None,
-                zen=Zen.model_validate(model_dump(user_records.data.zen)),
+                zen=zen,
             ),
         ),
     ) as page_hash:
@@ -435,9 +427,8 @@ async def make_query_image_v2(player: Player) -> bytes:
 
 
 async def make_query_text(player: Player) -> UniMessage:
-    user, user_info, user_records = await gather(player.user, player.get_info(), player.get_records())
+    user, user_info, sprint, blitz = await gather(player.user, player.get_info(), player.sprint, player.blitz)
     league = get_league(user_info)
-    sprint, blitz = get_sprint(user_records), get_blitz(user_records)
 
     user_name = user.name.upper()
 
