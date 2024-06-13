@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from ....games.tetrio.api.schemas.user_records import Zen
 from ....games.tetrio.api.typing import Rank
 from ...typing import Number
 from .base import Avatar
@@ -82,11 +83,6 @@ class Blitz(BaseModel):
     score: int
     global_rank: int | None
     play_at: datetime
-
-
-class Zen(BaseModel):
-    score: int
-    level: int
 
 
 class Info(BaseModel):
