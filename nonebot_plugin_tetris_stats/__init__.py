@@ -8,6 +8,7 @@ require('nonebot_plugin_orm')
 require('nonebot_plugin_session_orm')
 require('nonebot_plugin_session')
 require('nonebot_plugin_user')
+require('nonebot_plugin_userinfo')
 
 from nonebot_plugin_alconna import namespace  # noqa: E402
 
