@@ -7,6 +7,7 @@ from ..templates import templates_dir
 from .schemas.bind import Bind
 from .schemas.tetrio_info import Info as TETRIOInfo
 from .schemas.tetrio_info_v2 import Info as TETRIOInfoV2
+from .schemas.tetrio_record_blitz import Record as TETRIORecordBlitz
 from .schemas.tetrio_record_sprint import Record as TETRIORecordSprint
 from .schemas.top_info import Info as TOPInfo
 from .schemas.tos_info import Info as TOSInfo
@@ -25,6 +26,14 @@ async def render(render_type: Literal['v1/tetrio/info'], data: TETRIOInfo) -> st
 
 
 @overload
+async def render(render_type: Literal['v1/top/info'], data: TOPInfo) -> str: ...
+
+
+@overload
+async def render(render_type: Literal['v1/tos/info'], data: TOSInfo) -> str: ...
+
+
+@overload
 async def render(render_type: Literal['v2/tetrio/info'], data: TETRIOInfoV2) -> str: ...
 
 
@@ -33,23 +42,20 @@ async def render(render_type: Literal['v2/tetrio/record/40l'], data: TETRIORecor
 
 
 @overload
-async def render(render_type: Literal['v1/top/info'], data: TOPInfo) -> str: ...
-
-
-@overload
-async def render(render_type: Literal['v1/tos/info'], data: TOSInfo) -> str: ...
+async def render(render_type: Literal['v2/tetrio/record/blitz'], data: TETRIORecordBlitz) -> str: ...
 
 
 async def render(
     render_type: Literal[
         'v1/binding',
         'v1/tetrio/info',
-        'v2/tetrio/info',
         'v1/top/info',
         'v1/tos/info',
+        'v2/tetrio/info',
         'v2/tetrio/record/40l',
+        'v2/tetrio/record/blitz',
     ],
-    data: Bind | TETRIOInfo | TETRIOInfoV2 | TETRIORecordSprint | TOPInfo | TOSInfo,
+    data: Bind | TETRIOInfo | TOPInfo | TOSInfo | TETRIOInfoV2 | TETRIORecordSprint | TETRIORecordBlitz,
 ) -> str:
     if PYDANTIC_V2:
         return await env.get_template('index.html').render_async(
@@ -58,4 +64,4 @@ async def render(
     return await env.get_template('index.html').render_async(path=render_type, data=data.json(by_alias=True))
 
 
-__all__ = ['render', 'Bind']
+__all__ = ['render']
