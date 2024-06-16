@@ -76,6 +76,6 @@ class TriggerHistoricalData(MappedAsDataclass, Model):
     trigger_time: Mapped[datetime] = mapped_column(DateTime)
     session_persist_id: Mapped[int]
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True)
-    command_type: Mapped[CommandType | Literal['rank']] = mapped_column(String(16), index=True)
+    command_type: Mapped[CommandType | Literal['rank', 'config', 'record']] = mapped_column(String(16), index=True)
     command_args: Mapped[list[str]] = mapped_column(JSON)
     finish_time: Mapped[datetime] = mapped_column(DateTime)

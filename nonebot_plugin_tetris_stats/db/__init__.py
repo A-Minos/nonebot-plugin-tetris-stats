@@ -92,7 +92,7 @@ async def anti_duplicate_add(cls: type[T], model: T) -> None:
 async def trigger(
     session_persist_id: int,
     game_platform: Literal['IO'],
-    command_type: CommandType | Literal['rank'],
+    command_type: CommandType | Literal['rank', 'config', 'record'],
     command_args: list[str],
 ) -> AsyncGenerator:
     yield
@@ -113,7 +113,7 @@ async def trigger(
 async def trigger(
     session_persist_id: int,
     game_platform: GameType,
-    command_type: CommandType | Literal['rank'],
+    command_type: CommandType | Literal['rank', 'config', 'record'],
     command_args: list[str],
 ) -> AsyncGenerator:
     trigger_time = datetime.now(UTC)
