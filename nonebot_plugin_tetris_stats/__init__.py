@@ -15,7 +15,7 @@ from nonebot_plugin_alconna import namespace  # noqa: E402
 with namespace('tetris_stats') as ns:
     ns.enable_message_cache = False
 
-from .config.config import migrations  # noqa: E402
+from .config import migrations  # noqa: E402
 
 __plugin_meta__ = PluginMetadata(
     name='Tetris Stats',
