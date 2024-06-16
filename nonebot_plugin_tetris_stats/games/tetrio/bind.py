@@ -47,6 +47,7 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                         user=People(
                             avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
                             if user_info.data.user.avatar_revision is not None
+                            and user_info.data.user.avatar_revision != 0
                             else Avatar(type='identicon', hash=md5(user_info.data.user.id.encode()).hexdigest()),  # noqa: S324
                             name=user_info.data.user.username.upper(),
                         ),

@@ -264,7 +264,7 @@ async def make_query_image_v1(player: Player) -> bytes:
             V1TemplateInfo(
                 user=V1TemplateUser(
                     avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
-                    if user_info.data.user.avatar_revision is not None
+                    if user_info.data.user.avatar_revision is not None and user_info.data.user.avatar_revision != 0
                     else Avatar(
                         type='identicon',
                         hash=md5(user_info.data.user.id.encode()).hexdigest(),  # noqa: S324
@@ -352,7 +352,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                     if user_info.data.user.banner_revision is not None and user_info.data.user.banner_revision != 0
                     else None,
                     avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
-                    if user_info.data.user.avatar_revision is not None
+                    if user_info.data.user.avatar_revision is not None and user_info.data.user.avatar_revision != 0
                     else Avatar(
                         type='identicon',
                         hash=md5(user_info.data.user.id.encode()).hexdigest(),  # noqa: S324
