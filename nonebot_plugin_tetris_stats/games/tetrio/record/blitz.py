@@ -91,7 +91,7 @@ async def make_blitz_image(player: Player) -> bytes:
                     lpm=metrics.lpm,
                     holds=endcontext.holds,
                     score=endcontext.score,
-                    spp=round(endcontext.score / metrics._pps, 2),  # noqa: SLF001 获取最高精度
+                    spp=round(endcontext.score / endcontext.piecesplaced, 2),
                     single=clears.singles,
                     double=clears.doubles,
                     triple=clears.triples,
