@@ -57,7 +57,7 @@ async def _(account: Player):
 async def make_blitz_image(player: Player) -> bytes:
     user, user_info, blitz = await gather(player.user, player.get_info(), player.blitz)
     if blitz.record is None:
-        msg = f'未找到用户 {user.name.upper()} 的 40L 记录'
+        msg = f'未找到用户 {user.name.upper()} 的 Blitz 记录'
         raise RecordNotFoundError(msg)
     endcontext = blitz.record.endcontext
     clears = endcontext.clears
