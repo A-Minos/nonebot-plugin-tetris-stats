@@ -348,7 +348,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                     id=user.ID,
                     name=user.name.upper(),
                     bio=user_info.data.user.bio,
-                    banner=f'http://{netloc}/host/resource/tetrio/banners/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
+                    banner=f'http://{netloc}/host/resource/tetrio/banners/{user.ID}?{urlencode({"revision": user_info.data.user.banner_revision})}'
                     if user_info.data.user.banner_revision is not None and user_info.data.user.banner_revision != 0
                     else None,
                     avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
