@@ -34,7 +34,7 @@ async def render(render_type: Literal['v1/tos/info'], data: TOSInfo) -> str: ...
 
 
 @overload
-async def render(render_type: Literal['v2/tetrio/info'], data: TETRIOInfoV2) -> str: ...
+async def render(render_type: Literal['v2/tetrio/user/info'], data: TETRIOInfoV2) -> str: ...
 
 
 @overload
@@ -51,7 +51,7 @@ async def render(
         'v1/tetrio/info',
         'v1/top/info',
         'v1/tos/info',
-        'v2/tetrio/info',
+        'v2/tetrio/user/info',
         'v2/tetrio/record/40l',
         'v2/tetrio/record/blitz',
     ],

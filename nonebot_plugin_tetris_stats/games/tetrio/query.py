@@ -342,7 +342,7 @@ async def make_query_image_v2(player: Player) -> bytes:
     netloc = get_self_netloc()
     async with HostPage(
         await render(
-            'v2/tetrio/info',
+            'v2/tetrio/user/info',
             V2TemplateInfo(
                 user=V2TemplateUser(
                     id=user.ID,
