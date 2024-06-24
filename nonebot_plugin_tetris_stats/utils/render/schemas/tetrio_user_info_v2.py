@@ -47,6 +47,12 @@ class TetraLeagueStatistic(BaseModel):
     total: int
     wins: int
 
+class TetraLeagueHistoryData(BaseModel):
+    if PYDANTIC_V2:
+        record_at: Annotated[datetime, PlainSerializer(format_datetime_to_timestamp, return_type=int)]
+    else:
+        record_at: datetime  # type: ignore[no-redef]
+    tr: Number
 
 class TetraLeague(BaseModel):
     rank: Rank
@@ -72,6 +78,7 @@ class TetraLeague(BaseModel):
 
     decaying: bool
 
+    history: list[TetraLeagueHistoryData]
 
 class Sprint(BaseModel):
     time: str

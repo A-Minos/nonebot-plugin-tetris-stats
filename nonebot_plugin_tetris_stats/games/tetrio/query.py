@@ -33,10 +33,10 @@ from ...utils.render.schemas.base import Avatar, Ranking
 from ...utils.render.schemas.tetrio_info import Data, Radar, TetraLeague, TetraLeagueHistory
 from ...utils.render.schemas.tetrio_info import Info as V1TemplateInfo
 from ...utils.render.schemas.tetrio_info import User as V1TemplateUser
-from ...utils.render.schemas.tetrio_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic
-from ...utils.render.schemas.tetrio_info_v2 import Info as V2TemplateInfo
-from ...utils.render.schemas.tetrio_info_v2 import TetraLeague as V2TemplateTetraLeague
-from ...utils.render.schemas.tetrio_info_v2 import User as V2TemplateUser
+from ...utils.render.schemas.tetrio_user_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic
+from ...utils.render.schemas.tetrio_user_info_v2 import Info as V2TemplateInfo
+from ...utils.render.schemas.tetrio_user_info_v2 import TetraLeague as V2TemplateTetraLeague
+from ...utils.render.schemas.tetrio_user_info_v2 import User as V2TemplateUser
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me, Number
 from ..constant import CANT_VERIFY_MESSAGE
@@ -322,6 +322,7 @@ async def make_query_image_v2(player: Player) -> bytes:
         player.user, player.get_info(), player.sprint, player.blitz, player.zen
     )
     league = get_league(user_info)
+    histories = await query_historical_data(user, user_info)
 
     if sprint.record is not None:
         duration = timedelta(milliseconds=sprint.record.endcontext.final_time).total_seconds()
@@ -397,6 +398,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                         wins=league.gameswon,
                     ),
                     decaying=league.decaying,
+                    history=histories
                 )
                 if isinstance(league, RatedLeague)
                 else None,
