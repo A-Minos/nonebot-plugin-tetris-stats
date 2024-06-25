@@ -9,15 +9,17 @@ from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alco
 from .. import ns
 from ..utils.exception import MessageFormatError, NeedCatchError
 
-alc = on_alconna(
-    Alconna(
-        ['tetris-stats', 'tstats'],
-        namespace=ns,
-        meta=CommandMeta(
-            description='俄罗斯方块相关游戏数据查询',
-            fuzzy_match=True,
-        ),
+command: Alconna = Alconna(
+    ['tetris-stats', 'tstats'],
+    namespace=ns,
+    meta=CommandMeta(
+        description='俄罗斯方块相关游戏数据查询',
+        fuzzy_match=True,
     ),
+)
+
+alc = on_alconna(
+    command=command,
     skip_for_unmatch=False,
     auto_send_output=True,
     use_origin=True,

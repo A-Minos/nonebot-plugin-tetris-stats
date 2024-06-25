@@ -3,7 +3,7 @@ from nonebot_plugin_alconna import At
 
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
-from .. import add_block_handlers, alc
+from .. import add_block_handlers, alc, command
 from .api import Player
 from .constant import USER_NAME
 
@@ -19,7 +19,7 @@ def get_player(teaid_or_name: str) -> Player | MessageFormatError:
     return MessageFormatError('用户名/ID不合法')
 
 
-alc.command.add(
+command.add(
     Subcommand(
         'TOS',
         Subcommand(

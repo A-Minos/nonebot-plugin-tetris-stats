@@ -3,7 +3,7 @@ from nonebot_plugin_alconna import At
 
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
-from .. import add_block_handlers, alc
+from .. import add_block_handlers, alc, command
 from .api import Player
 from .api.typing import ValidRank
 from .constant import USER_ID, USER_NAME
@@ -18,7 +18,7 @@ def get_player(user_id_or_name: str) -> Player | MessageFormatError:
     return MessageFormatError('用户名/ID不合法')
 
 
-alc.command.add(
+command.add(
     Subcommand(
         'TETR.IO',
         Subcommand(
