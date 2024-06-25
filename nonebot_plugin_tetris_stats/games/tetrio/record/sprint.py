@@ -87,8 +87,8 @@ async def make_sprint_image(player: Player) -> bytes:
                     kpp=round(endcontext.inputs / endcontext.piecesplaced, 2),
                     kps=round(endcontext.inputs / duration, 2),
                     max=Max(
-                        combo=max((0, endcontext.combo - 1)),
-                        btb=max((0, endcontext.btb - 1)),
+                        combo=max((0, endcontext.topcombo - 1)),
+                        btb=max((0, endcontext.topbtb - 1)),
                     ),
                     pieces=endcontext.piecesplaced,
                     pps=metrics.pps,
