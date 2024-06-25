@@ -2,10 +2,11 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from ....games.tetrio.api.schemas.user_records import Zen
-from ....games.tetrio.api.typing import Rank
-from ...typing import Number
-from .base import Avatar
+from .....games.tetrio.api.schemas.user_records import Zen
+from .....games.tetrio.api.typing import Rank
+from ....typing import Number
+from ..base import Avatar
+from .base import TetraLeagueHistoryData
 
 
 class Badge(BaseModel):
@@ -47,12 +48,6 @@ class TetraLeagueStatistic(BaseModel):
     total: int
     wins: int
 
-class TetraLeagueHistoryData(BaseModel):
-    if PYDANTIC_V2:
-        record_at: Annotated[datetime, PlainSerializer(format_datetime_to_timestamp, return_type=int)]
-    else:
-        record_at: datetime  # type: ignore[no-redef]
-    tr: Number
 
 class TetraLeague(BaseModel):
     rank: Rank
@@ -79,6 +74,7 @@ class TetraLeague(BaseModel):
     decaying: bool
 
     history: list[TetraLeagueHistoryData]
+
 
 class Sprint(BaseModel):
     time: str
