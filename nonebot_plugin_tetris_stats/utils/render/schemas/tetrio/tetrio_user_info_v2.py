@@ -2,10 +2,11 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from ....games.tetrio.api.schemas.user_records import Zen
-from ....games.tetrio.api.typing import Rank
-from ...typing import Number
-from .base import Avatar
+from .....games.tetrio.api.schemas.user_records import Zen
+from .....games.tetrio.api.typing import Rank
+from ....typing import Number
+from ..base import Avatar
+from .base import TetraLeagueHistoryData
 
 
 class Badge(BaseModel):
@@ -71,6 +72,8 @@ class TetraLeague(BaseModel):
     statistic: TetraLeagueStatistic
 
     decaying: bool
+
+    history: list[TetraLeagueHistoryData]
 
 
 class Sprint(BaseModel):

@@ -30,13 +30,13 @@ from ...utils.host import HostPage, get_self_netloc
 from ...utils.metrics import TetrisMetricsProWithPPSVS, get_metrics
 from ...utils.render import render
 from ...utils.render.schemas.base import Avatar, Ranking
-from ...utils.render.schemas.tetrio_info import Data, Radar, TetraLeague, TetraLeagueHistory
-from ...utils.render.schemas.tetrio_info import Info as V1TemplateInfo
-from ...utils.render.schemas.tetrio_info import User as V1TemplateUser
-from ...utils.render.schemas.tetrio_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic
-from ...utils.render.schemas.tetrio_info_v2 import Info as V2TemplateInfo
-from ...utils.render.schemas.tetrio_info_v2 import TetraLeague as V2TemplateTetraLeague
-from ...utils.render.schemas.tetrio_info_v2 import User as V2TemplateUser
+from ...utils.render.schemas.tetrio.tetrio_info import Info as V1TemplateInfo
+from ...utils.render.schemas.tetrio.tetrio_info import Radar, TetraLeague, TetraLeagueHistory, TetraLeagueHistoryData
+from ...utils.render.schemas.tetrio.tetrio_info import User as V1TemplateUser
+from ...utils.render.schemas.tetrio.tetrio_user_info_v2 import Badge, Blitz, Sprint, Statistic, TetraLeagueStatistic
+from ...utils.render.schemas.tetrio.tetrio_user_info_v2 import Info as V2TemplateInfo
+from ...utils.render.schemas.tetrio.tetrio_user_info_v2 import TetraLeague as V2TemplateTetraLeague
+from ...utils.render.schemas.tetrio.tetrio_user_info_v2 import User as V2TemplateUser
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me, Number
 from ..constant import CANT_VERIFY_MESSAGE
@@ -129,10 +129,10 @@ def get_split(value_max: int, value_min: int) -> tuple[int, int]:
 
 
 def get_specified_point(
-    previous_point: Data,
-    behind_point: Data,
+    previous_point: TetraLeagueHistoryData,
+    behind_point: TetraLeagueHistoryData,
     point_time: datetime,
-) -> Data:
+) -> TetraLeagueHistoryData:
     """根据给出的 previous_point 和 behind_point, 推算 point_time 点处的数据
 
     Args:
@@ -147,13 +147,13 @@ def get_specified_point(
     slope = (behind_point.tr - previous_point.tr) / (
         datetime.timestamp(behind_point.record_at) - datetime.timestamp(previous_point.record_at)
     )
-    return Data(
+    return TetraLeagueHistoryData(
         record_at=point_time,
         tr=previous_point.tr + slope * (datetime.timestamp(point_time) - datetime.timestamp(previous_point.record_at)),
     )
 
 
-async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[Data]:
+async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[TetraLeagueHistoryData]:
     today = datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
     forward = timedelta(days=9)
     start_time = (today - forward).astimezone(UTC)
@@ -183,11 +183,11 @@ async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[
     full_export_data = FullExport.get_data(user.unique_identifier)
     if not historical_data and not full_export_data:
         return [
-            Data(record_at=today - forward, tr=user_info.data.user.league.rating),
-            Data(record_at=today.replace(microsecond=1000), tr=user_info.data.user.league.rating),
+            TetraLeagueHistoryData(record_at=today - forward, tr=user_info.data.user.league.rating),
+            TetraLeagueHistoryData(record_at=today.replace(microsecond=1000), tr=user_info.data.user.league.rating),
         ]
     histories = [
-        Data(
+        TetraLeagueHistoryData(
             record_at=i.update_time.astimezone(ZoneInfo('Asia/Shanghai')),
             tr=i.data.data.user.league.rating,
         )
@@ -208,7 +208,7 @@ async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[
         histories.append(
             get_specified_point(
                 histories[-1],
-                Data(record_at=user_info.cache.cached_at, tr=user_info.data.user.league.rating),
+                TetraLeagueHistoryData(record_at=user_info.cache.cached_at, tr=user_info.data.user.league.rating),
                 today.replace(microsecond=1000),
             )
         )
@@ -219,7 +219,7 @@ async def query_historical_data(user: User, user_info: UserInfoSuccess) -> list[
             today - forward,
         )
     else:
-        histories.insert(0, Data(record_at=today - forward, tr=histories[0].tr))
+        histories.insert(0, TetraLeagueHistoryData(record_at=today - forward, tr=histories[0].tr))
     return histories
 
 
@@ -322,6 +322,7 @@ async def make_query_image_v2(player: Player) -> bytes:
         player.user, player.get_info(), player.sprint, player.blitz, player.zen
     )
     league = get_league(user_info)
+    histories = await query_historical_data(user, user_info)
 
     if sprint.record is not None:
         duration = timedelta(milliseconds=sprint.record.endcontext.final_time).total_seconds()
@@ -342,7 +343,7 @@ async def make_query_image_v2(player: Player) -> bytes:
     netloc = get_self_netloc()
     async with HostPage(
         await render(
-            'v2/tetrio/info',
+            'v2/tetrio/user/info',
             V2TemplateInfo(
                 user=V2TemplateUser(
                     id=user.ID,
@@ -397,6 +398,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                         wins=league.gameswon,
                     ),
                     decaying=league.decaying,
+                    history=histories,
                 )
                 if isinstance(league, RatedLeague)
                 else None,
@@ -510,8 +512,8 @@ class FullExport:
         cls.latest_update = datetime.now(tz=ZoneInfo('Asia/Shanghai')).date()
 
     @classmethod
-    def get_data(cls, unique_identifier: str) -> list[Data]:
-        return [Data(record_at=i[0], tr=i[1]) for i in cls.cache[unique_identifier]]
+    def get_data(cls, unique_identifier: str) -> list[TetraLeagueHistoryData]:
+        return [TetraLeagueHistoryData(record_at=i[0], tr=i[1]) for i in cls.cache[unique_identifier]]
 
     @classmethod
     def start_time(cls) -> datetime:

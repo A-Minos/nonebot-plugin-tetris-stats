@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from .base import People
+from ..base import People
 
 
 class User(People):

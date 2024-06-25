@@ -17,8 +17,8 @@ from ....utils.host import HostPage, get_self_netloc
 from ....utils.metrics import get_metrics
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar
-from ....utils.render.schemas.tetrio_record_base import Finesse, Max, Mini, Tspins, User
-from ....utils.render.schemas.tetrio_record_sprint import Record, Statistic
+from ....utils.render.schemas.tetrio.tetrio_record_base import Finesse, Max, Mini, Tspins, User
+from ....utils.render.schemas.tetrio.tetrio_record_sprint import Record, Statistic
 from ....utils.screenshot import screenshot
 from ....utils.typing import Me
 from ...constant import CANT_VERIFY_MESSAGE
