@@ -34,7 +34,7 @@ zstandard = "^0.22.0"
 [tool.poetry.group.dev.dependencies]
 mypy = '>=1.9'
 ruff = '>=0.3.0'
-types-aiofiles = "^23.2.0.20240106"
+types-aiofiles = ">=23.2.0.20240106,<25.0.0.0"
 types-lxml = "^2024.2.9"
 types-pillow = "^10.2.0.20240423"
 types-ujson = '^5.9.0'
