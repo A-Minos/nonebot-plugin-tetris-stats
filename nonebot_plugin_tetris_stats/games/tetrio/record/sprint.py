@@ -9,9 +9,10 @@ from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
 
-from ....db import query_bind_info
+from ....db import query_bind_info, trigger
 from ....utils.exception import RecordNotFoundError
 from ....utils.host import HostPage, get_self_netloc
 from ....utils.metrics import get_metrics
@@ -34,24 +35,36 @@ async def _(
     target: At | Me,
     event_session: EventSession,
 ):
-    async with get_session() as session:
-        bind = await query_bind_info(
-            session=session,
-            user=await get_user(
-                event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
-            ),
-            game_platform=GAME_TYPE,
-        )
-    if bind is None:
-        await matcher.finish('未查询到绑定信息')
-    message = UniMessage(CANT_VERIFY_MESSAGE)
-    player = Player(user_id=bind.game_account, trust=True)
-    await (message + UniMessage.image(raw=await make_sprint_image(player))).finish()
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='bind',
+        command_args=[],
+    ):
+        async with get_session() as session:
+            bind = await query_bind_info(
+                session=session,
+                user=await get_user(
+                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                ),
+                game_platform=GAME_TYPE,
+            )
+        if bind is None:
+            await matcher.finish('未查询到绑定信息')
+        message = UniMessage(CANT_VERIFY_MESSAGE)
+        player = Player(user_id=bind.game_account, trust=True)
+        await (message + UniMessage.image(raw=await make_sprint_image(player))).finish()
 
 
 @alc.assign('TETRIO.record.sprint')
-async def _(account: Player):
-    await UniMessage.image(raw=await make_sprint_image(account)).finish()
+async def _(account: Player, event_session: EventSession):
+    async with trigger(
+        session_persist_id=await get_session_persist_id(event_session),
+        game_platform=GAME_TYPE,
+        command_type='bind',
+        command_args=[],
+    ):
+        await UniMessage.image(raw=await make_sprint_image(account)).finish()
 
 
 async def make_sprint_image(player: Player) -> bytes:
