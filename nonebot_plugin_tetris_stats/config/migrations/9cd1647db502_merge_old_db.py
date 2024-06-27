@@ -37,14 +37,10 @@ def migrate_old_data(connection: Connection) -> None:
     Bind = Base.classes.nonebot_plugin_tetris_stats_bind  # noqa: N806
 
     def non_empty(obj: str) -> bool:
-        if obj != '' and not obj.isspace():
-            return True
-        return False
+        return bool(obj != '' and not obj.isspace())
 
     def is_int(obj: int | str) -> bool:
-        if isinstance(obj, int) or obj.isdigit():
-            return True
-        return False
+        return bool(isinstance(obj, int) or obj.isdigit())
 
     bind_list = [
         Bind(chat_platform='OneBot V11', chat_account=int(row.QQ), game_platform='IO', game_account=row.USER)
