@@ -1,10 +1,8 @@
-from collections.abc import Awaitable, Callable
-from typing import Any, Literal
+from typing import Literal
 
 Number = float | int
 GameType = Literal['IO', 'TOP', 'TOS']
 CommandType = Literal['bind', 'query']
-AsyncCallable = Callable[..., Awaitable[Any]]
 Me = Literal[
     '我',
     '自己',
