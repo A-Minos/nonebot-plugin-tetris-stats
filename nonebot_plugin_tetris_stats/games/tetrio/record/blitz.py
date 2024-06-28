@@ -38,8 +38,8 @@ async def _(
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
-        command_type='bind',
-        command_args=[],
+        command_type='record',
+        command_args=['--blitz'],
     ):
         async with get_session() as session:
             bind = await query_bind_info(
@@ -61,8 +61,8 @@ async def _(account: Player, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
-        command_type='bind',
-        command_args=[],
+        command_type='record',
+        command_args=['--blitz'],
     ):
         await UniMessage.image(raw=await make_blitz_image(account)).finish()
 

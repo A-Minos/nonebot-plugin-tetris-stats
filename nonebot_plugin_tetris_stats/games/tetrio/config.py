@@ -18,7 +18,7 @@ async def _(user: User, session: async_scoped_session, event_session: EventSessi
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='config',
-        command_args=[],
+        command_args=[f'--default-template {template}'],
     ):
         config = (await session.scalars(select(TETRIOUserConfig).where(TETRIOUserConfig.id == user.id))).one_or_none()
         if config is None:

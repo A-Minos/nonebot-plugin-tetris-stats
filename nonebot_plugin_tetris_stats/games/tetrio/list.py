@@ -26,7 +26,13 @@ async def _(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='list',
-        command_args=[],
+        command_args=[
+            f'{key} {value}'
+            for key, value in zip(
+                ('--max-tr', '--min-tr', '--limit', '--country'), (max_tr, min_tr, limit, country), strict=True
+            )
+            if value is not None
+        ],
     ):
         parameter: Parameter = {}
         if max_tr is not None:
