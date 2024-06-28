@@ -11,7 +11,7 @@ from nonebot_plugin_orm import AsyncSession, get_session
 from nonebot_plugin_user import User  # type: ignore[import-untyped]
 from sqlalchemy import select
 
-from ..utils.typing import CommandType, GameType
+from ..utils.typing import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
 from .models import Bind, TriggerHistoricalData
 
 UTC = timezone.utc
@@ -92,7 +92,7 @@ async def anti_duplicate_add(cls: type[T], model: T) -> None:
 async def trigger(
     session_persist_id: int,
     game_platform: Literal['IO'],
-    command_type: CommandType | Literal['rank', 'config', 'record'],
+    command_type: TETRIOCommandType,
     command_args: list[str],
 ) -> AsyncGenerator:
     yield
@@ -103,7 +103,7 @@ async def trigger(
 async def trigger(
     session_persist_id: int,
     game_platform: GameType,
-    command_type: CommandType,
+    command_type: BaseCommandType,
     command_args: list[str],
 ) -> AsyncGenerator:
     yield
@@ -113,7 +113,7 @@ async def trigger(
 async def trigger(
     session_persist_id: int,
     game_platform: GameType,
-    command_type: CommandType | Literal['rank', 'config', 'record'],
+    command_type: AllCommandType,
     command_args: list[str],
 ) -> AsyncGenerator:
     trigger_time = datetime.now(UTC)

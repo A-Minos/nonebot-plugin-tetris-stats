@@ -9,6 +9,7 @@ from .schemas.tetrio.tetrio_info import Info as TETRIOInfo
 from .schemas.tetrio.tetrio_record_blitz import Record as TETRIORecordBlitz
 from .schemas.tetrio.tetrio_record_sprint import Record as TETRIORecordSprint
 from .schemas.tetrio.tetrio_user_info_v2 import Info as TETRIOUserInfoV2
+from .schemas.tetrio.tetrio_user_list_v2 import List as TETRIOUserListV2
 from .schemas.top_info import Info as TOPInfo
 from .schemas.tos_info import Info as TOSInfo
 
@@ -38,6 +39,10 @@ async def render(render_type: Literal['v2/tetrio/user/info'], data: TETRIOUserIn
 
 
 @overload
+async def render(render_type: Literal['v2/tetrio/user/list'], data: TETRIOUserListV2) -> str: ...
+
+
+@overload
 async def render(render_type: Literal['v2/tetrio/record/40l'], data: TETRIORecordSprint) -> str: ...
 
 
@@ -52,10 +57,18 @@ async def render(
         'v1/top/info',
         'v1/tos/info',
         'v2/tetrio/user/info',
+        'v2/tetrio/user/list',
         'v2/tetrio/record/40l',
         'v2/tetrio/record/blitz',
     ],
-    data: Bind | TETRIOInfo | TOPInfo | TOSInfo | TETRIOUserInfoV2 | TETRIORecordSprint | TETRIORecordBlitz,
+    data: Bind
+    | TETRIOInfo
+    | TOPInfo
+    | TOSInfo
+    | TETRIOUserInfoV2
+    | TETRIOUserListV2
+    | TETRIORecordSprint
+    | TETRIORecordBlitz,
 ) -> str:
     if PYDANTIC_V2:
         return await env.get_template('index.html').render_async(

@@ -10,7 +10,7 @@ class _User(BaseModel):
     username: str
     role: str
     xp: float
-    supporter: bool
+    supporter: bool | None = None
     verified: bool
     country: str | None = None
 

@@ -1,6 +1,6 @@
 from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any
 
 from nonebot.compat import PYDANTIC_V2, type_validate_json
 from nonebot_plugin_orm import Model
@@ -9,7 +9,7 @@ from sqlalchemy import JSON, DateTime, Dialect, String, TypeDecorator
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 from typing_extensions import override
 
-from ..utils.typing import CommandType, GameType
+from ..utils.typing import AllCommandType, GameType
 
 
 class PydanticType(TypeDecorator):
@@ -76,6 +76,6 @@ class TriggerHistoricalData(MappedAsDataclass, Model):
     trigger_time: Mapped[datetime] = mapped_column(DateTime)
     session_persist_id: Mapped[int]
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True)
-    command_type: Mapped[CommandType | Literal['rank', 'config', 'record']] = mapped_column(String(16), index=True)
+    command_type: Mapped[AllCommandType] = mapped_column(String(16), index=True)
     command_args: Mapped[list[str]] = mapped_column(JSON)
     finish_time: Mapped[datetime] = mapped_column(DateTime)

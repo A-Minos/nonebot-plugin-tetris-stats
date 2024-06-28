@@ -2,7 +2,9 @@ from typing import Literal
 
 Number = float | int
 GameType = Literal['IO', 'TOP', 'TOS']
-CommandType = Literal['bind', 'query']
+BaseCommandType = Literal['bind', 'query']
+TETRIOCommandType = BaseCommandType | Literal['rank', 'config', 'list', 'record']
+AllCommandType = BaseCommandType | TETRIOCommandType
 Me = Literal[
     '我',
     '自己',

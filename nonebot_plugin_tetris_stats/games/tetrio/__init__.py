@@ -83,6 +83,14 @@ command.add(
             ),
         ),
         Subcommand(
+            'list',
+            Option('--max-tr', Arg('max_tr', float), help_text='TR的上限'),
+            Option('--min-tr', Arg('min_tr', float), help_text='TR的下限'),
+            Option('--limit', Arg('limit', int), help_text='查询数量'),
+            Option('--country', Arg('country', str), help_text='国家代码'),
+            help_text='查询 TETR.IO 段位排行榜',
+        ),
+        Subcommand(
             'rank',
             Args(Arg('rank', ValidRank, notice='TETR.IO 段位')),
             help_text='查询 TETR.IO 段位信息',
@@ -155,11 +163,12 @@ alc.shortcut(
 
 add_block_handlers(alc.assign('TETRIO.query'))
 
-from . import bind, config, query, rank, record  # noqa: E402
+from . import bind, config, list, query, rank, record  # noqa: E402
 
 __all__ = [
     'bind',
     'config',
+    'list',
     'query',
     'rank',
     'record',
