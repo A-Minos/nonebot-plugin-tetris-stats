@@ -1790,19 +1790,19 @@ pydantic = ">=1.10.0,<2.5.0 || >2.5.0,<2.5.1 || >2.5.1,<3.0.0"
 
 [[package]]
 name = "nonebot-plugin-localstore"
-version = "0.6.0"
+version = "0.7.0"
 description = "Local Storage Support for NoneBot2"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_plugin_localstore-0.6.0-py3-none-any.whl", hash = "sha256:59f0126d85680601166a9a62cca886a33e1b0a8fef7cd67fff52747bd47f42d3"},
-    {file = "nonebot_plugin_localstore-0.6.0.tar.gz", hash = "sha256:7eb4039cb2e76c54b860b2b98f2b90cd25284919603e81dedec367f215662fcd"},
+    {file = "nonebot_plugin_localstore-0.7.0-py3-none-any.whl", hash = "sha256:5cb8a18d87c88259ff3ae4d741390e44076d48c8cc9c33aea66f7a6a29fe70af"},
+    {file = "nonebot_plugin_localstore-0.7.0.tar.gz", hash = "sha256:f04d99daba13d8e7cc6cf72c43fab28cbde30e0c2a71b328e815d9c96403e2e3"},
 ]
 
 [package.dependencies]
 nonebot2 = ">=2.2.0,<3.0.0"
 pydantic = ">=1.10.0,<2.5.0 || >2.5.0,<2.5.1 || >2.5.1,<3.0.0"
-typing-extensions = ">=4.0.0"
+typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
 name = "nonebot-plugin-orm"
@@ -3699,4 +3699,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "947ddff4e2b61b2c8af7d01958f029d32c8122705e13e1edf8e0f39224137868"
+content-hash = "5e2e21fc74dcaaed91ca03071f619406a5e28a29d50492326944707a300b51f2"
