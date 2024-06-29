@@ -1774,13 +1774,13 @@ tarina = ">=0.5.4"
 
 [[package]]
 name = "nonebot-plugin-apscheduler"
-version = "0.4.0"
+version = "0.5.0"
 description = "APScheduler Support for NoneBot2"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_plugin_apscheduler-0.4.0-py3-none-any.whl", hash = "sha256:f01bb418a5ecf9f04dcadbbc2ff5ba565a48177eb0a758c8c46b13048ac5680c"},
-    {file = "nonebot_plugin_apscheduler-0.4.0.tar.gz", hash = "sha256:ba91e68809a38e6dbe28906366d47f37f754ded360944b938cd5ac62029a0eb6"},
+    {file = "nonebot_plugin_apscheduler-0.5.0-py3-none-any.whl", hash = "sha256:8b99b5ee60c4bc195d4df2fd27dab3d6963691e3332f6cee31a06eb4277c307f"},
+    {file = "nonebot_plugin_apscheduler-0.5.0.tar.gz", hash = "sha256:6c0230e99765f275dc83d6639ff33bd6f71203fa10cd1b8a204b0f95530cda86"},
 ]
 
 [package.dependencies]
@@ -3699,4 +3699,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e8811a8351a8aabc8790837250bfde281e53b7cc617bd0d3a9b4a664fe552ee7"
+content-hash = "b430b98410ea10219b8a8888c470e1c114b81da18ecc59bdd4fe292e4402daac"
