@@ -1871,13 +1871,13 @@ nonebot2 = {version = ">=2.2.0,<3.0.0", extras = ["fastapi"]}
 
 [[package]]
 name = "nonebot-plugin-user"
-version = "0.2.0"
+version = "0.3.0"
 description = "适用于 Nonebot2 的用户插件"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_plugin_user-0.2.0-py3-none-any.whl", hash = "sha256:9b052551b13fd8f8fab39023a8088637b0447b0ef42d87f54a0e7e2c3c371740"},
-    {file = "nonebot_plugin_user-0.2.0.tar.gz", hash = "sha256:f2f559e3381deb20a067fb2004a92f3625b1777da076ecfb956e334bdbe0f7d5"},
+    {file = "nonebot_plugin_user-0.3.0-py3-none-any.whl", hash = "sha256:3b65884368e446b7b64b46216d060a020100855ecabcbbeb6d10223e55804773"},
+    {file = "nonebot_plugin_user-0.3.0.tar.gz", hash = "sha256:82d7b039d69cd791ebaff1be0308618a850a798219901cee2f5bcd1a96e14911"},
 ]
 
 [package.dependencies]
@@ -3699,4 +3699,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "5e2e21fc74dcaaed91ca03071f619406a5e28a29d50492326944707a300b51f2"
+content-hash = "e8811a8351a8aabc8790837250bfde281e53b7cc617bd0d3a9b4a664fe552ee7"
