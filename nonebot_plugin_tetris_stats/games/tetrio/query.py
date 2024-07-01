@@ -368,8 +368,9 @@ async def make_query_image_v2(player: Player) -> bytes:
                         for i in user_info.data.user.badges
                     ],
                     country=user_info.data.user.country,
+                    role=user_info.data.user.role,
                     xp=user_info.data.user.xp,
-                    friend_count=user_info.data.user.friend_count or 0,
+                    friend_count=user_info.data.user.friend_count,
                     supporter_tier=user_info.data.user.supporter_tier,
                     bad_standing=user_info.data.user.badstanding or False,
                     verified=user_info.data.user.verified,

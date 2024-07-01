@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -21,12 +22,14 @@ class User(BaseModel):
     name: str
     country: str | None
 
+    role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned']
+
     avatar: str | Avatar
     banner: str | None
 
     bio: str | None
 
-    friend_count: int
+    friend_count: int | None
     supporter_tier: int
 
     verified: bool
