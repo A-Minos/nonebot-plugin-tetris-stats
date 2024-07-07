@@ -117,7 +117,7 @@ async def make_sprint_image(player: Player) -> bytes:
                         total=clears.realtspins,
                         single=clears.tspinsingles,
                         double=clears.tspindoubles,
-                        triple=clears.triples,
+                        triple=clears.tspintriples,
                         mini=Mini(
                             total=clears.minitspins,
                             single=clears.minitspinsingles,
