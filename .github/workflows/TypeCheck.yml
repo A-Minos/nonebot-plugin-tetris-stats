@@ -1,10 +1,10 @@
-name: Run mypy type check
+name: TypeCheck
 
 on:
     push:
 
 jobs:
-    release:
+    Mypy:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -15,7 +15,7 @@ jobs:
 
             - uses: actions/setup-python@v5
               with:
-                  python-version: '3.11'
+                  python-version: '3.10'
                   cache: 'poetry'
 
             - run: poetry install
