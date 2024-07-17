@@ -1,13 +1,13 @@
 from re import compile
 from typing import Literal
 
-from .api.typing import Rank
+from .api.typing import ValidRank
 
 GAME_TYPE: Literal['IO'] = 'IO'
 
 BASE_URL = 'https://ch.tetr.io/api/'
 
-RANK_PERCENTILE: dict[Rank, float] = {
+RANK_PERCENTILE: dict[ValidRank, float] = {
     'x': 1,
     'u': 5,
     'ss': 11,

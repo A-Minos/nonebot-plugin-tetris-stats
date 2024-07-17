@@ -92,7 +92,15 @@ command.add(
         ),
         Subcommand(
             'rank',
-            Args(Arg('rank', ValidRank, notice='TETR.IO 段位')),
+            Option(
+                '--all',
+                dest='all',
+            ),
+            Option(
+                '--detail',
+                Arg('rank', ValidRank),
+                alias=['-D'],
+            ),
             help_text='查询 TETR.IO 段位信息',
         ),
         Subcommand(
@@ -108,57 +116,54 @@ command.add(
     )
 )
 
+
+def rank_wrapper(slot: int | str, content: str | None):
+    if slot == 'rank' and not content:
+        return '--all'
+    if content is not None:
+        return f'--detail {content.lower()}'
+    return content
+
+
 alc.shortcut(
     '(?i:io)(?i:绑定|绑|bind)',
-    {
-        'command': 'tstats TETR.IO bind',
-        'humanized': 'io绑定',
-    },
+    command='tstats TETR.IO bind',
+    humanized='io绑定',
 )
 alc.shortcut(
     '(?i:io)(?i:查询|查|query|stats)',
-    {
-        'command': 'tstats TETR.IO query',
-        'humanized': 'io查',
-    },
+    command='tstats TETR.IO query',
+    humanized='io查',
 )
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:40l)',
-    {
-        'command': 'tstats TETR.IO record --40l',
-        'humanized': 'io记录40l',
-    },
+    command='tstats TETR.IO record --40l',
+    humanized='io记录40l',
 )
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:blitz)',
-    {
-        'command': 'tstats TETR.IO record --blitz',
-        'humanized': 'io记录blitz',
-    },
+    command='tstats TETR.IO record --blitz',
+    humanized='io记录blitz',
 )
 alc.shortcut(
-    '(?i:io)(?i:段位|段|rank)',
-    {
-        'command': 'tstats TETR.IO rank',
-        'humanized': 'iorank',
-    },
+    r'(?i:io)(?i:段位|段|rank)\s*(?P<rank>[a-zA-Z+-]{0,2})',
+    command='tstats TETR.IO rank {rank}',
+    humanized='iorank',
+    fuzzy=False,
+    wrapper=rank_wrapper,
 )
 alc.shortcut(
     '(?i:io)(?i:配置|配|config)',
-    {
-        'command': 'tstats TETR.IO config',
-        'humanized': 'io配置',
-    },
+    command='tstats TETR.IO config',
+    humanized='io配置',
 )
 
 alc.shortcut(
     'fkosk',
-    {
-        'command': 'tstats TETR.IO query',
-        'args': ['我'],
-        'fuzzy': False,
-        'humanized': 'An Easter egg!',
-    },
+    command='tstats TETR.IO query',
+    arguments=['我'],
+    fuzzy=False,
+    humanized='An Easter egg!',
 )
 
 add_block_handlers(alc.assign('TETRIO.query'))

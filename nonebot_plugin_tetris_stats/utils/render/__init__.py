@@ -6,6 +6,8 @@ from nonebot.compat import PYDANTIC_V2
 from ..templates import templates_dir
 from .schemas.bind import Bind
 from .schemas.tetrio.tetrio_info import Info as TETRIOInfo
+from .schemas.tetrio.tetrio_rank import Data as TETRIORankData
+from .schemas.tetrio.tetrio_rank_detail import Data as TETRIORankDetailData
 from .schemas.tetrio.tetrio_record_blitz import Record as TETRIORecordBlitz
 from .schemas.tetrio.tetrio_record_sprint import Record as TETRIORecordSprint
 from .schemas.tetrio.tetrio_user_info_v2 import Info as TETRIOUserInfoV2
@@ -20,34 +22,24 @@ env = Environment(
 
 @overload
 async def render(render_type: Literal['v1/binding'], data: Bind) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v1/tetrio/info'], data: TETRIOInfo) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v1/top/info'], data: TOPInfo) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v1/tos/info'], data: TOSInfo) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v2/tetrio/user/info'], data: TETRIOUserInfoV2) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v2/tetrio/user/list'], data: TETRIOUserListV2) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v2/tetrio/record/40l'], data: TETRIORecordSprint) -> str: ...
-
-
 @overload
 async def render(render_type: Literal['v2/tetrio/record/blitz'], data: TETRIORecordBlitz) -> str: ...
+@overload
+async def render(render_type: Literal['v2/tetrio/rank'], data: TETRIORankData) -> str: ...
+@overload
+async def render(render_type: Literal['v2/tetrio/rank/detail'], data: TETRIORankDetailData) -> str: ...
 
 
 async def render(
@@ -60,6 +52,8 @@ async def render(
         'v2/tetrio/user/list',
         'v2/tetrio/record/40l',
         'v2/tetrio/record/blitz',
+        'v2/tetrio/rank',
+        'v2/tetrio/rank/detail',
     ],
     data: Bind
     | TETRIOInfo
@@ -68,7 +62,9 @@ async def render(
     | TETRIOUserInfoV2
     | TETRIOUserListV2
     | TETRIORecordSprint
-    | TETRIORecordBlitz,
+    | TETRIORecordBlitz
+    | TETRIORankData
+    | TETRIORankDetailData,
 ) -> str:
     if PYDANTIC_V2:
         return await env.get_template('index.html').render_async(
