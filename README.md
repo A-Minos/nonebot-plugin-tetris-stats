@@ -87,3 +87,13 @@ pip install nonebot-plugin-tetris-stats
 ## 📝 开源
 
 本项目使用 [AGPL-3.0](https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE) 许可证开源
+
+## 🤓☝ 给个 star 吧
+
+<a href="https://star-history.com/#A-Minos/nonebot-plugin-tetris-stats&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=A-Minos/nonebot-plugin-tetris-stats&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=A-Minos/nonebot-plugin-tetris-stats&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=A-Minos/nonebot-plugin-tetris-stats&type=Date" />
+ </picture>
+</a>
