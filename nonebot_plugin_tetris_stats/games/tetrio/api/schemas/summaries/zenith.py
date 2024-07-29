@@ -117,7 +117,7 @@ class Best(BaseModel):
 
 
 class Data(BaseModel):
-    record: Record
+    record: Record | None
     rank: int
     rank_local: int
     best: Best
