@@ -178,7 +178,7 @@ alc.shortcut(
 
 # add_block_handlers(alc.assign('TETRIO.query'))
 
-# from . import bind, config, list, query, rank, record  # noqa: E402
+# from . import bind, config, list, query, rank, record
 from . import bind, config, record  # noqa: E402
 
 __all__ = [
