@@ -1,5 +1,7 @@
-from typing import overload
+from types import MappingProxyType
+from typing import Literal, overload
 
+from async_lru import alru_cache
 from nonebot.compat import type_validate_json
 
 from ....db import anti_duplicate_add
@@ -9,12 +11,31 @@ from ..constant import BASE_URL, USER_ID, USER_NAME
 from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
+from .schemas.summaries import (
+    AchievementsSuccessModel,
+    SoloSuccessModel,
+    SummariesModel,
+    ZenithSuccessModel,
+    ZenSuccessModel,
+)
+from .schemas.summaries.base import User as SummariesUser
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
-from .schemas.user_records import SoloModeRecord, UserRecords, UserRecordsSuccess, Zen
+from .typing import Summaries
 
 
 class Player:
+    __SUMMARIES_MAPPING: MappingProxyType[Summaries, type[SummariesModel]] = MappingProxyType(
+        {
+            '40l': SoloSuccessModel,
+            'blitz': SoloSuccessModel,
+            'zenith': ZenithSuccessModel,
+            'zenithex': ZenithSuccessModel,
+            'zen': ZenSuccessModel,
+            'achievements': AchievementsSuccessModel,
+        }
+    )
+
     @overload
     def __init__(self, *, user_id: str, trust: bool = False): ...
     @overload
@@ -36,7 +57,7 @@ class Player:
                 raise ValueError(msg)
         self.__user: User | None = None
         self._user_info: UserInfoSuccess | None = None
-        self._user_records: UserRecordsSuccess | None = None
+        self._summaries: dict[Summaries, SummariesModel] = {}
 
     @property
     def _request_user_parameter(self) -> str:
@@ -49,14 +70,21 @@ class Player:
 
     @property
     async def user(self) -> User:
-        if self.__user is None:
+        if self.__user is not None:
+            return self.__user
+        if (user := (await self._get_local_summaries_user())) is not None:
+            self.__user = User(
+                ID=user.id,
+                name=user.username,
+            )
+        else:
             user_info = await self.get_info()
             self.__user = User(
-                ID=user_info.data.user.id,
-                name=user_info.data.user.username,
+                ID=user_info.data.id,
+                name=user_info.data.username,
             )
-            self.user_id = user_info.data.user.id
-            self.user_name = user_info.data.user.username
+        self.user_id = user_info.data.id
+        self.user_name = user_info.data.username
         return self.__user
 
     async def get_info(self) -> UserInfoSuccess:
@@ -79,36 +107,85 @@ class Player:
             )
         return self._user_info
 
-    async def get_records(self) -> UserRecordsSuccess:
-        """Get User Records"""
-        if self._user_records is None:
-            raw_user_records = await Cache.get(
-                splice_url([BASE_URL, 'users/', f'{self._request_user_parameter}/', 'records'])
+    @overload
+    async def get_summaries(self, summaries_type: Literal['40l']) -> SoloSuccessModel: ...
+    @overload
+    async def get_summaries(self, summaries_type: Literal['blitz']) -> SoloSuccessModel: ...
+    @overload
+    async def get_summaries(self, summaries_type: Literal['zenith']) -> ZenithSuccessModel: ...
+    @overload
+    async def get_summaries(self, summaries_type: Literal['zenithex']) -> ZenithSuccessModel: ...
+    @overload
+    async def get_summaries(self, summaries_type: Literal['zen']) -> ZenSuccessModel: ...
+    @overload
+    async def get_summaries(self, summaries_type: Literal['achievements']) -> AchievementsSuccessModel: ...
+
+    async def get_summaries(self, summaries_type: Summaries) -> SummariesModel:
+        if summaries_type not in self._summaries:
+            raw_summaries = await Cache.get(
+                splice_url([BASE_URL, 'users/', f'{self._request_user_parameter}/', 'summaries/', summaries_type])
             )
-            user_records: UserRecords = type_validate_json(UserRecords, raw_user_records)  # type: ignore[arg-type]
-            if isinstance(user_records, FailedModel):
-                msg = f'用户Solo数据请求错误:\n{user_records.error}'
+            summaries: SummariesModel | FailedModel = type_validate_json(
+                self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[arg-type]
+                raw_summaries,
+            )
+            if isinstance(summaries, FailedModel):
+                msg = f'用户Summaries数据请求错误:\n{summaries.error}'
                 raise RequestError(msg)
-            self._user_records = user_records
+            self._summaries[summaries_type] = summaries
             await anti_duplicate_add(
                 TETRIOHistoricalData,
                 TETRIOHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
-                    api_type='User Records',
-                    data=user_records,
-                    update_time=user_records.cache.cached_at,
+                    api_type=summaries_type,
+                    data=summaries,
+                    update_time=summaries.cache.cached_at,
                 ),
             )
-        return self._user_records
+        return self._summaries[summaries_type]
 
     @property
-    async def sprint(self) -> SoloModeRecord:
-        return (await self.get_records()).data.records.sprint
+    @alru_cache
+    async def sprint(self) -> SoloSuccessModel:
+        return await self.get_summaries('40l')
 
     @property
-    async def blitz(self) -> SoloModeRecord:
-        return (await self.get_records()).data.records.blitz
+    @alru_cache
+    async def blitz(self) -> SoloSuccessModel:
+        return await self.get_summaries('blitz')
 
     @property
-    async def zen(self) -> Zen:
-        return (await self.get_records()).data.zen
+    @alru_cache
+    async def zen(self) -> ZenSuccessModel:
+        return await self.get_summaries('zen')
+
+    async def _get_local_summaries_user(self) -> SummariesUser | None:
+        allow_summaries: set[Literal['40l', 'blitz', 'zenith', 'zenithex']] = {
+            '40l',
+            'blitz',
+            'zenith',
+            'zenithex',
+        }
+        if has_summaries := (allow_summaries & self._summaries.keys()):
+            for i in has_summaries:
+                if (record := (await self.get_summaries(i)).data.record) is not None:
+                    return record.user
+        return None
+
+    @property
+    @alru_cache
+    async def avatar_revision(self) -> int | None:
+        if self._user_info is not None:
+            return self._user_info.data.avatar_revision
+        if (user := (await self._get_local_summaries_user())) is not None:
+            return user.avatar_revision
+        return (await self.get_info()).data.avatar_revision
+
+    @property
+    @alru_cache
+    async def banner_revision(self) -> int | None:
+        if self._user_info is not None:
+            return self._user_info.data.banner_revision
+        if (user := (await self._get_local_summaries_user())) is not None:
+            return user.banner_revision
+        return (await self.get_info()).data.banner_revision

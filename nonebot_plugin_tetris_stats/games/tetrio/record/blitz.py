@@ -68,14 +68,14 @@ async def _(account: Player, event_session: EventSession):
 
 
 async def make_blitz_image(player: Player) -> bytes:
-    user, user_info, blitz = await gather(player.user, player.get_info(), player.blitz)
-    if blitz.record is None:
+    user, blitz = await gather(player.user, player.blitz)
+    if blitz.data.record is None:
         msg = f'未找到用户 {user.name.upper()} 的 Blitz 记录'
         raise RecordNotFoundError(msg)
-    endcontext = blitz.record.endcontext
-    clears = endcontext.clears
-    duration = timedelta(milliseconds=endcontext.final_time).total_seconds()
-    metrics = get_metrics(pps=endcontext.piecesplaced / duration)
+    stats = blitz.data.record.results.stats
+    clears = stats.clears
+    duration = timedelta(milliseconds=stats.finaltime).total_seconds()
+    metrics = get_metrics(pps=stats.piecesplaced / duration)
     netloc = get_self_netloc()
     async with HostPage(
         page=await render(
@@ -84,30 +84,30 @@ async def make_blitz_image(player: Player) -> bytes:
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
-                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
-                    if user_info.data.user.avatar_revision is not None and user_info.data.user.avatar_revision != 0
+                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": avatar_revision})}'
+                    if (avatar_revision := (await player.avatar_revision)) is not None and avatar_revision != 0
                     else Avatar(
                         type='identicon',
                         hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                     ),
                 ),
-                replay_id=blitz.record.replayid,
-                rank=blitz.rank,
+                replay_id=blitz.data.record.replayid,
+                rank=blitz.data.rank,
                 statistic=Statistic(
-                    keys=endcontext.inputs,
-                    kpp=round(endcontext.inputs / endcontext.piecesplaced, 2),
-                    kps=round(endcontext.inputs / duration, 2),
+                    keys=stats.inputs,
+                    kpp=round(stats.inputs / stats.piecesplaced, 2),
+                    kps=round(stats.inputs / duration, 2),
                     max=Max(
-                        combo=max((0, endcontext.topcombo - 1)),
-                        btb=max((0, endcontext.topbtb - 1)),
+                        combo=max((0, stats.topcombo - 1)),
+                        btb=max((0, stats.topbtb - 1)),
                     ),
-                    pieces=endcontext.piecesplaced,
+                    pieces=stats.piecesplaced,
                     pps=metrics.pps,
-                    lines=endcontext.lines,
+                    lines=stats.lines,
                     lpm=metrics.lpm,
-                    holds=endcontext.holds,
-                    score=endcontext.score,
-                    spp=round(endcontext.score / endcontext.piecesplaced, 2),
+                    holds=stats.holds,
+                    score=stats.score,
+                    spp=round(stats.score / stats.piecesplaced, 2),
                     single=clears.singles,
                     double=clears.doubles,
                     triple=clears.triples,
@@ -125,12 +125,12 @@ async def make_blitz_image(player: Player) -> bytes:
                     ),
                     all_clear=clears.allclear,
                     finesse=Finesse(
-                        faults=endcontext.finesse.faults,
-                        accuracy=round(endcontext.finesse.perfectpieces / endcontext.piecesplaced * 100, 2),
+                        faults=stats.finesse.faults,
+                        accuracy=round(stats.finesse.perfectpieces / stats.piecesplaced * 100, 2),
                     ),
-                    level=endcontext.level,
+                    level=stats.level,
                 ),
-                play_at=blitz.record.ts,
+                play_at=blitz.data.record.ts,
             ),
         )
     ) as page_hash:
