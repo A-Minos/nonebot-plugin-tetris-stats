@@ -119,6 +119,7 @@ class Player:
     async def get_summaries(self, summaries_type: Literal['zen']) -> ZenSuccessModel: ...
     @overload
     async def get_summaries(self, summaries_type: Literal['achievements']) -> AchievementsSuccessModel: ...
+
     async def get_summaries(self, summaries_type: Summaries) -> SummariesModel:
         if summaries_type not in self._summaries:
             raw_summaries = await Cache.get(
@@ -136,7 +137,7 @@ class Player:
                 TETRIOHistoricalData,
                 TETRIOHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
-                    api_type='User Records',
+                    api_type=summaries_type,
                     data=summaries,
                     update_time=summaries.cache.cached_at,
                 ),
