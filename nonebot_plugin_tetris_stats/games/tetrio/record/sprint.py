@@ -68,15 +68,15 @@ async def _(account: Player, event_session: EventSession):
 
 
 async def make_sprint_image(player: Player) -> bytes:
-    user, user_info, sprint = await gather(player.user, player.get_info(), player.sprint)
-    if sprint.record is None:
+    user, sprint = await gather(player.user, player.sprint)
+    if sprint.data.record is None:
         msg = f'未找到用户 {user.name.upper()} 的 40L 记录'
         raise RecordNotFoundError(msg)
-    endcontext = sprint.record.endcontext
-    clears = endcontext.clears
-    duration = timedelta(milliseconds=endcontext.final_time).total_seconds()
+    stats = sprint.data.record.results.stats
+    clears = stats.clears
+    duration = timedelta(milliseconds=stats.finaltime).total_seconds()
     sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
-    metrics = get_metrics(pps=endcontext.piecesplaced / duration)
+    metrics = get_metrics(pps=stats.piecesplaced / duration)
     netloc = get_self_netloc()
     async with HostPage(
         page=await render(
@@ -85,30 +85,30 @@ async def make_sprint_image(player: Player) -> bytes:
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
-                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": user_info.data.user.avatar_revision})}'
-                    if user_info.data.user.avatar_revision is not None and user_info.data.user.avatar_revision != 0
+                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": avatar_revision})}'
+                    if (avatar_revision := (await player.avatar_revision)) is not None and avatar_revision != 0
                     else Avatar(
                         type='identicon',
                         hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                     ),
                 ),
                 time=sprint_value,
-                replay_id=sprint.record.replayid,
-                rank=sprint.rank,
+                replay_id=sprint.data.record.replayid,
+                rank=sprint.data.rank,
                 statistic=Statistic(
-                    keys=endcontext.inputs,
-                    kpp=round(endcontext.inputs / endcontext.piecesplaced, 2),
-                    kps=round(endcontext.inputs / duration, 2),
+                    keys=stats.inputs,
+                    kpp=round(stats.inputs / stats.piecesplaced, 2),
+                    kps=round(stats.inputs / duration, 2),
                     max=Max(
-                        combo=max((0, endcontext.topcombo - 1)),
-                        btb=max((0, endcontext.topbtb - 1)),
+                        combo=max((0, stats.topcombo - 1)),
+                        btb=max((0, stats.topbtb - 1)),
                     ),
-                    pieces=endcontext.piecesplaced,
+                    pieces=stats.piecesplaced,
                     pps=metrics.pps,
-                    lines=endcontext.lines,
+                    lines=stats.lines,
                     lpm=metrics.lpm,
-                    holds=endcontext.holds,
-                    score=endcontext.score,
+                    holds=stats.holds,
+                    score=stats.score,
                     single=clears.singles,
                     double=clears.doubles,
                     triple=clears.triples,
@@ -126,11 +126,11 @@ async def make_sprint_image(player: Player) -> bytes:
                     ),
                     all_clear=clears.allclear,
                     finesse=Finesse(
-                        faults=endcontext.finesse.faults,
-                        accuracy=round(endcontext.finesse.perfectpieces / endcontext.piecesplaced * 100, 2),
+                        faults=stats.finesse.faults,
+                        accuracy=round(stats.finesse.perfectpieces / stats.piecesplaced * 100, 2),
                     ),
                 ),
-                play_at=sprint.record.ts,
+                play_at=sprint.data.record.ts,
             ),
         )
     ) as page_hash:
