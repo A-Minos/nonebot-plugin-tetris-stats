@@ -76,7 +76,7 @@ class Stats(BaseModel):
     kills: int
     finesse: Finesse
     zenith: _Zenith
-    finaltime: int
+    finaltime: float
 
 
 class Results(BaseModel):
