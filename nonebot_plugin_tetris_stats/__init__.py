@@ -1,14 +1,19 @@
 from nonebot import require
-from nonebot.plugin import PluginMetadata
+from nonebot.plugin import PluginMetadata, inherit_supported_adapters
 
-require('nonebot_plugin_alconna')
-require('nonebot_plugin_apscheduler')
-require('nonebot_plugin_localstore')
-require('nonebot_plugin_orm')
-require('nonebot_plugin_session_orm')
-require('nonebot_plugin_session')
-require('nonebot_plugin_user')
-require('nonebot_plugin_userinfo')
+require_plugins = {
+    'nonebot_plugin_alconna',
+    'nonebot_plugin_apscheduler',
+    'nonebot_plugin_localstore',
+    'nonebot_plugin_orm',
+    'nonebot_plugin_session_orm',
+    'nonebot_plugin_session',
+    'nonebot_plugin_user',
+    'nonebot_plugin_userinfo',
+}
+
+for i in require_plugins:
+    require(i)
 
 from nonebot_plugin_alconna import namespace  # noqa: E402
 
@@ -16,6 +21,7 @@ with namespace('tetris_stats') as ns:
     ns.enable_message_cache = False
 
 from .config import migrations  # noqa: E402
+from .config.config import Config  # noqa: E402
 
 __plugin_meta__ = PluginMetadata(
     name='Tetris Stats',
@@ -23,6 +29,8 @@ __plugin_meta__ = PluginMetadata(
     usage='发送 tstats --help 查询使用方法',
     type='application',
     homepage='https://github.com/A-minos/nonebot-plugin-tetris-stats',
+    config=Config,
+    supported_adapters=inherit_supported_adapters(*require_plugins),
     extra={
         'orm_version_location': migrations,
     },
