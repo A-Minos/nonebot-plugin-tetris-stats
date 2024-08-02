@@ -6,8 +6,9 @@ from nonebot.compat import PYDANTIC_V2
 from ..templates import templates_dir
 from .schemas.bind import Bind
 from .schemas.tetrio.tetrio_info import Info as TETRIOInfo
-from .schemas.tetrio.tetrio_rank import Data as TETRIORankData
 from .schemas.tetrio.tetrio_rank_detail import Data as TETRIORankDetailData
+from .schemas.tetrio.tetrio_rank_v1 import Data as TETRIORankDataV1
+from .schemas.tetrio.tetrio_rank_v2 import Data as TETRIORankDataV2
 from .schemas.tetrio.tetrio_record_blitz import Record as TETRIORecordBlitz
 from .schemas.tetrio.tetrio_record_sprint import Record as TETRIORecordSprint
 from .schemas.tetrio.tetrio_user_info_v2 import Info as TETRIOUserInfoV2
@@ -25,6 +26,8 @@ async def render(render_type: Literal['v1/binding'], data: Bind) -> str: ...
 @overload
 async def render(render_type: Literal['v1/tetrio/info'], data: TETRIOInfo) -> str: ...
 @overload
+async def render(render_type: Literal['v1/tetrio/rank'], data: TETRIORankDataV1) -> str: ...
+@overload
 async def render(render_type: Literal['v1/top/info'], data: TOPInfo) -> str: ...
 @overload
 async def render(render_type: Literal['v1/tos/info'], data: TOSInfo) -> str: ...
@@ -37,7 +40,7 @@ async def render(render_type: Literal['v2/tetrio/record/40l'], data: TETRIORecor
 @overload
 async def render(render_type: Literal['v2/tetrio/record/blitz'], data: TETRIORecordBlitz) -> str: ...
 @overload
-async def render(render_type: Literal['v2/tetrio/rank'], data: TETRIORankData) -> str: ...
+async def render(render_type: Literal['v2/tetrio/rank'], data: TETRIORankDataV2) -> str: ...
 @overload
 async def render(render_type: Literal['v2/tetrio/rank/detail'], data: TETRIORankDetailData) -> str: ...
 
@@ -46,6 +49,7 @@ async def render(
     render_type: Literal[
         'v1/binding',
         'v1/tetrio/info',
+        'v1/tetrio/rank',
         'v1/top/info',
         'v1/tos/info',
         'v2/tetrio/user/info',
@@ -57,13 +61,14 @@ async def render(
     ],
     data: Bind
     | TETRIOInfo
+    | TETRIORankDataV1
     | TOPInfo
     | TOSInfo
     | TETRIOUserInfoV2
     | TETRIOUserListV2
     | TETRIORecordSprint
     | TETRIORecordBlitz
-    | TETRIORankData
+    | TETRIORankDataV2
     | TETRIORankDetailData,
 ) -> str:
     if PYDANTIC_V2:
