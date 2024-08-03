@@ -3,8 +3,8 @@ from typing import Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
-from ..base import FailedModel, SuccessModel
-from .base import AggregateStats, Finesse, P, User
+from ..base import FailedModel, P, SuccessModel
+from .base import AggregateStats, Finesse, User
 
 
 class Clears(BaseModel):

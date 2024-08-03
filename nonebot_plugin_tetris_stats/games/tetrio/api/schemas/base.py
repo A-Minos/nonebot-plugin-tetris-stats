@@ -4,6 +4,12 @@ from typing import Literal
 from pydantic import BaseModel
 
 
+class P(BaseModel):  # what is P
+    pri: float
+    sec: float
+    ter: float
+
+
 class Cache(BaseModel):
     status: str
     cached_at: datetime
