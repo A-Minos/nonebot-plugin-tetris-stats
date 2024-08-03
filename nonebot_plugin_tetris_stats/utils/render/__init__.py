@@ -3,7 +3,7 @@ from typing import Literal, overload
 from jinja2 import Environment, FileSystemLoader
 from nonebot.compat import PYDANTIC_V2
 
-from ..templates import templates_dir
+from ..templates import TEMPLATES_DIR
 from .schemas.bind import Bind
 from .schemas.tetrio.tetrio_info import Info as TETRIOInfo
 from .schemas.tetrio.tetrio_rank_detail import Data as TETRIORankDetailData
@@ -17,7 +17,7 @@ from .schemas.top_info import Info as TOPInfo
 from .schemas.tos_info import Info as TOSInfo
 
 env = Environment(
-    loader=FileSystemLoader(templates_dir), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
+    loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
 )
 
 

@@ -11,7 +11,7 @@ from nonebot.log import logger
 from ..config.config import CACHE_PATH
 from .image import img_to_png
 from .request import Request
-from .templates import templates_dir
+from .templates import TEMPLATES_DIR
 
 if TYPE_CHECKING:
     from pydantic import IPvAnyAddress
@@ -48,7 +48,7 @@ class HostPage:
 def _():
     app.mount(
         '/host/assets',
-        StaticFiles(directory=templates_dir / 'assets'),
+        StaticFiles(directory=TEMPLATES_DIR / 'assets'),
         name='assets',
     )
     logger.success('assets mounted')

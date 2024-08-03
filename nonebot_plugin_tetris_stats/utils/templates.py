@@ -1,186 +1,130 @@
-from asyncio.subprocess import PIPE, Process, create_subprocess_exec
-from enum import Enum, auto
+from hashlib import sha256
+from http import HTTPStatus
 from pathlib import Path
 from shutil import rmtree
-from typing import NamedTuple
+from time import time_ns
+from zipfile import ZipFile
 
+from aiofiles import open
+from httpx import AsyncClient
 from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
-from nonebot_plugin_alconna.uniseg import UniMessage
-from nonebot_plugin_localstore import get_data_dir  # type: ignore[import-untyped]
+from nonebot_plugin_localstore import get_cache_file, get_data_dir
+from rich.progress import Progress
 
 driver = get_driver()
 
-templates_dir = get_data_dir('nonebot_plugin_tetris_stats') / 'templates'
+TEMPLATES_DIR = get_data_dir('nonebot_plugin_tetris_stats') / 'templates'
 
 alc = on_alconna(Alconna('更新模板', Option('--revision', Args['revision', str], alias={'-R'})), permission=SUPERUSER)
 
-logger.level('GIT', no=10, color='<blue>')
+
+async def download_templates(tag: str) -> Path:
+    logger.info(f'开始下载模板 {tag}')
+    async with AsyncClient() as client:
+        if tag == 'latest':
+            logger.info('目标为 latest, 正在获取最新版本号')
+            tag = (
+                (
+                    await client.get(
+                        'https://github.com/A-Minos/tetris-stats-templates/releases/latest', follow_redirects=True
+                    )
+                )
+                .url.path.strip('/')
+                .rsplit('/', 1)[-1]
+            )
+            logger.success(f'获取到的最新版本号: {tag}')
+        path = get_cache_file('nonebot_plugin_tetris_stats', f'dist_{time_ns()}.zip')
+        with Progress() as progress:
+            task_id = progress.add_task('[red]Downloading...', total=None)
+            async with (
+                client.stream(
+                    'GET',
+                    f'https://github.com/A-Minos/tetris-stats-templates/releases/download/{tag}/dist.zip',
+                    follow_redirects=True,
+                ) as response,
+                open(path, 'wb') as file,
+            ):
+                response.raise_for_status()
+                progress.update(task_id, total=int(response.headers.get('content-length', 0)) or None)
+                async for chunk in response.aiter_bytes():
+                    await file.write(chunk)
+                    progress.update(task_id, advance=len(chunk))
+        logger.success('模板下载完成')
+        return path
 
 
-class Status(Enum):
-    OK = auto()
-    NOT_EXIST = auto()
-    NOT_INITIALIZATION = auto()
+async def unzip_templates(zip_path: Path) -> Path:
+    logger.info('开始解压模板')
+    temp_path = TEMPLATES_DIR.parent / f'temp_{time_ns()}'
+    with ZipFile(zip_path) as zip_file:
+        zip_file.extractall(temp_path)
+    zip_path.unlink()
+    logger.success('模板解压完成')
+    return temp_path
 
 
-class Output(NamedTuple):
-    stdout: list[str]
-    stderr: list[str]
-
-
-async def parse_log(proc: Process) -> Output:
-    stdout, stderr = await proc.communicate()
-    for i in (out := stdout.decode().splitlines()):
-        logger.log('GIT', f'stdout: {i}')
-    # stderr 可能是 None
-    for i in (err := (stderr or b'').decode().splitlines()):
-        logger.log('GIT', f'stderr: {i}')
-    return Output(out, err)
-
-
-async def check_git() -> None:
-    try:
-        await parse_log(await create_subprocess_exec('git', '--version', stdout=PIPE))
-    except FileNotFoundError as e:
-        msg = '未找到 git, 请确保 git 已安装并在环境变量中\n安装步骤请参阅: https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git'
-        raise RuntimeError(msg) from e
-
-
-async def check_repo(repo_path: Path) -> Status:
-    if not repo_path.exists():
-        return Status.NOT_EXIST
-    proc = await create_subprocess_exec(
-        'git', 'rev-parse', '--is-inside-work-tree', stdout=PIPE, stderr=PIPE, cwd=repo_path
-    )
-    await parse_log(proc)
-    if proc.returncode != 0:
-        return Status.NOT_INITIALIZATION
-    return Status.OK
-
-
-async def clone_repo(repo_url: str, repo_path: Path, branch: str | None = None, depth: int | None = 1) -> bool:
-    args: list[str | Path] = ['git', 'clone', repo_url, repo_path]
-    if branch is not None:
-        args.extend(['-b', branch])
-    if depth is not None:
-        args.append(f'--depth={depth}')
-    proc = await create_subprocess_exec(*args, stdout=PIPE, stderr=PIPE)
-    await parse_log(proc)
-    return proc.returncode == 0
-
-
-async def checkout(revision: str, repo_path: Path) -> bool:
-    proc = await create_subprocess_exec('git', 'checkout', revision, stdout=PIPE, stderr=PIPE, cwd=repo_path)
-    await parse_log(proc)
-    return proc.returncode == 0
-
-
-async def init_templates() -> None:
-    await check_git()
-    status = await check_repo(templates_dir)
-    if status == Status.OK:
-        return
-    if status == Status.NOT_EXIST:
-        logger.info('模板仓库不存在, 正在尝试初始化...')
-    if status == Status.NOT_INITIALIZATION:
-        logger.warning('模板仓库状态异常, 尝试重新初始化')
-        rmtree(templates_dir)
-    if not await clone_repo(
-        repo_url='https://github.com/A-Minos/tetris-stats-templates', repo_path=templates_dir, branch='gh-pages'
-    ):
-        msg = '模板仓库初始化失败'
-        raise RuntimeError(msg)
-    logger.success('模板仓库初始化成功')
-
-
-async def update_templates(repo_path: Path) -> bool:
-    logger.info('开始更新模板仓库...')
-    logger.info('拉取最新提交')
-    proc = await create_subprocess_exec('git', 'fetch', '--all', '--tags', stdout=PIPE, stderr=PIPE, cwd=repo_path)
-    await parse_log(proc)
-    if proc.returncode != 0:
-        logger.error('拉取最新提交失败')
-        return False
-    logger.success('拉取最新提交成功')
+async def check_hash(hash_file_path: Path) -> bool:
+    logger.info('开始校验模板哈希值')
+    for i in hash_file_path.read_text().splitlines():
+        file_sha256, file_relative_path = i.split(maxsplit=1)
+        file_path = hash_file_path.parent / file_relative_path
+        hasher = sha256()
+        if not file_path.is_file():
+            logger.error(f'{file_path.name} 不存在或不是文件')
+            return False
+        async with open(file_path, 'rb') as file:
+            while True:
+                chunk = await file.read(65535)
+                if not chunk:
+                    break
+                hasher.update(chunk)
+        if hasher.hexdigest() != file_sha256:
+            logger.error(f'{file_path.name} hash 不匹配')
+            return False
+        logger.debug(f'{file_path.name} hash 匹配成功')
+    logger.success('模板哈希值校验成功')
     return True
 
 
-async def check_commit_hash(commit_hash: str, repo_path: Path, branch: str | None = None) -> bool:
-    output = await parse_log(
-        proc := await create_subprocess_exec(
-            'git', 'branch', '--contains', commit_hash, stdout=PIPE, stderr=PIPE, cwd=repo_path
-        )
-    )
-    return (
-        proc.returncode == 0
-        and len(output.stdout) > 0
-        and (branch is None or branch in output.stdout[0] or 'HEAD detached at' in output.stdout[0])
-    )
+async def init_templates(tag: str) -> bool:
+    logger.info(f'开始初始化模板 {tag}')
+    temp_path = await unzip_templates(await download_templates(tag))
+    if not await check_hash(temp_path / 'hash.sha256'):
+        rmtree(temp_path)
+        return False
+    if TEMPLATES_DIR.exists():
+        logger.info('清除旧模板文件')
+        rmtree(TEMPLATES_DIR)
+    temp_path.rename(TEMPLATES_DIR)
+    logger.info('模板初始化完成')
+    return True
 
 
-async def handle_tag(tag: str) -> str | None:
-    tags = (
-        await parse_log(await create_subprocess_exec('git', 'tag', stdout=PIPE, stderr=PIPE, cwd=templates_dir))
-    ).stdout
-    if tag not in tags:
-        logger.debug(f'{tag} 不为 tag')
-        return None
-    logger.info(f'{tag} 为 tag, 正在尝试 checkout 到 tag 对应的 gh-pages commit')
-    tag_commit_hash = (
-        (
-            await parse_log(
-                await create_subprocess_exec(
-                    'git', 'show-ref', '--tags', tag, stdout=PIPE, stderr=PIPE, cwd=templates_dir
-                )
-            )
-        )
-        .stdout[0]
-        .split(maxsplit=1)[0]
-    )
-    logger.success(f'tag 的 commit 为 {tag_commit_hash}')
-    commit_hash = (
-        await parse_log(
-            await create_subprocess_exec(
-                'git',
-                'log',
-                'gh-pages',
-                '--grep',
-                f'deploy: {tag_commit_hash}',
-                '--pretty=format:%H',
-                stdout=PIPE,
-                stderr=PIPE,
-                cwd=templates_dir,
-            )
-        )
-    ).stdout[0]
-    logger.info(f'找到疑似的 gh-pages commit {commit_hash}')
-    if await check_commit_hash(commit_hash, templates_dir, branch='gh-pages'):
-        logger.success('验证成功')
-        return commit_hash
-    logger.error('验证失败')
-    return None
-
-
-@alc.handle()
-async def _(revision: str):
-    if not await update_templates(templates_dir):
-        msg = '模板仓库更新失败'
-        logger.error(msg)
-        await UniMessage(msg).finish()
-    commit_hash = await handle_tag(revision)
-    if commit_hash is not None:
-        if await checkout(commit_hash, templates_dir):
-            msg = f'模板成功 checkout 到 {commit_hash}'
-            logger.success(msg)
-            await alc.finish(msg)
-        else:
-            logger.error('checkout 失败')
-            await alc.finish('checkout 失败')
+async def check_tag(tag: str) -> bool:
+    async with AsyncClient() as client:
+        return (
+            await client.get(f'https://github.com/A-Minos/tetris-stats-templates/releases/tag/{tag}')
+        ).status_code != HTTPStatus.NOT_FOUND
 
 
 @driver.on_startup
 async def _():
-    await init_templates()
+    if (path := (TEMPLATES_DIR / 'hash.sha256')).is_file() and await check_hash(path):
+        logger.success('模板验证成功')
+        return
+    if not await init_templates('latest'):
+        msg = '模板初始化失败'
+        raise RuntimeError(msg)
+
+
+@alc.handle()
+async def _(revision: str | None = None):
+    if revision is not None and not await check_tag(revision):
+        await alc.finish(f'{revision} 不是模板仓库中的有效标签')
+    logger.info('开始更新模板')
+    if await init_templates(revision or 'latest'):
+        await alc.finish('更新模板成功')
+    await alc.finish('更新模板失败')
