@@ -1,18 +1,5 @@
-from datetime import datetime
-
-from pydantic import BaseModel
-
-from .tetrio_record_base import RecordStatistic as Statistic
-from .tetrio_record_base import User
+from .tetrio_record_base import Record as BaseRecord
 
 
-class Record(BaseModel):
-    user: User
-
+class Record(BaseRecord):
     time: str
-    replay_id: str
-    rank: int | None
-
-    statistic: Statistic
-
-    play_at: datetime

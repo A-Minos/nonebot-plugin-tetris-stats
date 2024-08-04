@@ -1,22 +1,12 @@
-from datetime import datetime
-
-from pydantic import BaseModel
-
-from .tetrio_record_base import RecordStatistic, User
+from .tetrio_record_base import Record as BaseRecord
+from .tetrio_record_base import Statistic as BaseStatistic
 
 
-class Statistic(RecordStatistic):
+class Statistic(BaseStatistic):
     spp: float
 
     level: int
 
 
-class Record(BaseModel):
-    user: User
-
-    replay_id: str
-    rank: int | None
-
+class Record(BaseRecord):
     statistic: Statistic
-
-    play_at: datetime

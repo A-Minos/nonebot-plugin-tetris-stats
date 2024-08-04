@@ -81,6 +81,7 @@ async def make_blitz_image(player: Player) -> bytes:
         page=await render(
             'v2/tetrio/record/blitz',
             Record(
+                type='personal_best',
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
@@ -93,6 +94,7 @@ async def make_blitz_image(player: Player) -> bytes:
                 ),
                 replay_id=blitz.data.record.replayid,
                 rank=blitz.data.rank,
+                personal_rank=1,
                 statistic=Statistic(
                     keys=stats.inputs,
                     kpp=round(stats.inputs / stats.piecesplaced, 2),

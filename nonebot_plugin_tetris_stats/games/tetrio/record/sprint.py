@@ -18,8 +18,8 @@ from ....utils.host import HostPage, get_self_netloc
 from ....utils.metrics import get_metrics
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar
-from ....utils.render.schemas.tetrio.tetrio_record_base import Finesse, Max, Mini, Tspins, User
-from ....utils.render.schemas.tetrio.tetrio_record_sprint import Record, Statistic
+from ....utils.render.schemas.tetrio.tetrio_record_base import Finesse, Max, Mini, Statistic, Tspins, User
+from ....utils.render.schemas.tetrio.tetrio_record_sprint import Record
 from ....utils.screenshot import screenshot
 from ....utils.typing import Me
 from ...constant import CANT_VERIFY_MESSAGE
@@ -82,6 +82,7 @@ async def make_sprint_image(player: Player) -> bytes:
         page=await render(
             'v2/tetrio/record/40l',
             Record(
+                type='personal_best',
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
@@ -95,6 +96,7 @@ async def make_sprint_image(player: Player) -> bytes:
                 time=sprint_value,
                 replay_id=sprint.data.record.replayid,
                 rank=sprint.data.rank,
+                personal_rank=1,
                 statistic=Statistic(
                     keys=stats.inputs,
                     kpp=round(stats.inputs / stats.piecesplaced, 2),

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Literal
+
 from pydantic import BaseModel
 
 from ..base import People
@@ -32,7 +35,7 @@ class Finesse(BaseModel):
     accuracy: float
 
 
-class RecordStatistic(BaseModel):
+class Statistic(BaseModel):
     keys: int
     kpp: float
     kps: float
@@ -56,3 +59,17 @@ class RecordStatistic(BaseModel):
     all_clear: int
 
     finesse: Finesse
+
+
+class Record(BaseModel):
+    type: Literal['best', 'personal_best', 'recent', 'disputed']
+
+    user: User
+
+    replay_id: str
+    rank: int | None
+    personal_rank: int | None
+
+    statistic: Statistic
+
+    play_at: datetime
