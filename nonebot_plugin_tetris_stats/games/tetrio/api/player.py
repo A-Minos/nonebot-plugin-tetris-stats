@@ -83,8 +83,8 @@ class Player:
                 ID=user_info.data.id,
                 name=user_info.data.username,
             )
-        self.user_id = user_info.data.id
-        self.user_name = user_info.data.username
+        self.user_id = self.__user.ID
+        self.user_name = self.__user.name
         return self.__user
 
     async def get_info(self) -> UserInfoSuccess:
