@@ -1854,18 +1854,18 @@ sqlite = ["sqlalchemy[aiosqlite]"]
 
 [[package]]
 name = "nonebot-plugin-session"
-version = "0.3.1"
+version = "0.3.2"
 description = "Nonebot2 会话信息提取与会话id定义"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_plugin_session-0.3.1-py3-none-any.whl", hash = "sha256:7d21ed11a7d2a3bc9466be11f9653270ff0951585bd8e6fdd8034274e883ffb0"},
-    {file = "nonebot_plugin_session-0.3.1.tar.gz", hash = "sha256:ba93b4b8e86394aa06ae099cd17c191e131f0d123a97e0c040578c08614fe306"},
+    {file = "nonebot_plugin_session-0.3.2-py3-none-any.whl", hash = "sha256:785e74ff656e46d84c4dbbac125f9a9adebcc4b9ff7db700527e6e47d47aabd6"},
+    {file = "nonebot_plugin_session-0.3.2.tar.gz", hash = "sha256:da0dabe9108151052a6e83d9923068d2ec43a93810ad37b264ed65aee2c69f93"},
 ]
 
 [package.dependencies]
-nonebot2 = ">=2.0.0,<3.0.0"
-strenum = ">=0.4.8,<0.5.0"
+nonebot2 = ">=2.3.0,<3.0.0"
+strenum = ">=0.4.15,<0.5.0"
 
 [[package]]
 name = "nonebot-plugin-session-orm"
