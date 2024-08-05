@@ -1,3 +1,5 @@
+from arclet.alconna import Arg
+from nonebot_plugin_alconna import Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import async_scoped_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
@@ -6,10 +8,29 @@ from nonebot_plugin_user import User  # type: ignore[import-untyped]
 from sqlalchemy import select
 
 from ...db import trigger
-from . import alc
+from . import alc, command
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
 from .typing import Template
+
+command.add(
+    Subcommand(
+        'config',
+        Option(
+            '--default-template',
+            Arg('template', Template, notice='模板版本'),
+            alias=['-DT', 'DefaultTemplate'],
+            help_text='设置默认查询模板',
+        ),
+        help_text='TETR.IO 查询个性化配置',
+    ),
+)
+
+alc.shortcut(
+    '(?i:io)(?i:配置|配|config)',
+    command='tstats TETR.IO config',
+    humanized='io配置',
+)
 
 
 @alc.assign('TETRIO.config')

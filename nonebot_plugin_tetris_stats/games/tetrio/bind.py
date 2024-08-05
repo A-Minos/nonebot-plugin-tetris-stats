@@ -2,6 +2,8 @@ from asyncio import gather
 from hashlib import md5
 from urllib.parse import urlencode
 
+from arclet.alconna import Arg, ArgFlag
+from nonebot_plugin_alconna import Args, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
@@ -15,9 +17,30 @@ from ...utils.image import get_avatar
 from ...utils.render import Bind, render
 from ...utils.render.schemas.base import Avatar, People
 from ...utils.screenshot import screenshot
-from . import alc
+from . import alc, command, get_player
 from .api import Player
 from .constant import GAME_TYPE
+
+command.add(
+    Subcommand(
+        'bind',
+        Args(
+            Arg(
+                'account',
+                get_player,
+                notice='TETR.IO 用户名 / ID',
+                flags=[ArgFlag.HIDDEN],
+            )
+        ),
+        help_text='绑定 TETR.IO 账号',
+    )
+)
+
+alc.shortcut(
+    '(?i:io)(?i:绑定|绑|bind)',
+    command='tstats TETR.IO bind',
+    humanized='io绑定',
+)
 
 
 @alc.assign('TETRIO.bind')

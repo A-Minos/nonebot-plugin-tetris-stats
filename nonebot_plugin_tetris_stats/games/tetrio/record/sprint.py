@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
-from nonebot_plugin_alconna import At
+from nonebot_plugin_alconna import At, Option
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
@@ -26,6 +26,15 @@ from ...constant import CANT_VERIFY_MESSAGE
 from .. import alc
 from ..api.player import Player
 from ..constant import GAME_TYPE
+from . import command
+
+command.add(Option('--40l', dest='sprint'))
+
+alc.shortcut(
+    '(?i:io)(?i:记录|record)(?i:40l)',
+    command='tstats TETR.IO record --40l',
+    humanized='io记录40l',
+)
 
 
 @alc.assign('TETRIO.record.sprint')
