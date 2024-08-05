@@ -90,7 +90,7 @@ async def make_blitz_image(player: Player) -> bytes:
         page=await render(
             'v2/tetrio/record/blitz',
             Record(
-                type='personal_best',
+                type='best',
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),

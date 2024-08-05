@@ -91,7 +91,7 @@ async def make_sprint_image(player: Player) -> bytes:
         page=await render(
             'v2/tetrio/record/40l',
             Record(
-                type='personal_best',
+                type='best',
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
