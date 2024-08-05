@@ -3,10 +3,10 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from .....games.tetrio.api.schemas.user_records import Zen
-from .....games.tetrio.api.typing import Rank
-from ....typing import Number
-from ..base import Avatar
+from ......games.tetrio.api.schemas.user_records import Zen
+from ......games.tetrio.api.typing import Rank, ValidRank
+from .....typing import Number
+from ...base import Avatar
 from .base import TetraLeagueHistoryData
 
 
@@ -54,20 +54,20 @@ class TetraLeagueStatistic(BaseModel):
 
 class TetraLeague(BaseModel):
     rank: Rank
-    highest_rank: Rank
+    highest_rank: ValidRank
 
     tr: Number
 
-    glicko: Number
-    rd: Number
+    glicko: Number | None
+    rd: Number | None
 
     global_rank: int | None
     country_rank: int | None
 
-    pps: Number
+    pps: Number | None
 
-    apm: Number
-    apl: Number
+    apm: Number | None
+    apl: Number | None
 
     vs: Number | None
     adpl: Number | None
@@ -76,7 +76,7 @@ class TetraLeague(BaseModel):
 
     decaying: bool
 
-    history: list[TetraLeagueHistoryData]
+    history: list[TetraLeagueHistoryData] | None
 
 
 class Sprint(BaseModel):
@@ -97,4 +97,4 @@ class Info(BaseModel):
     statistic: Statistic | None
     sprint: Sprint | None
     blitz: Blitz | None
-    zen: Zen
+    zen: Zen | None

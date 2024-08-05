@@ -2,21 +2,12 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from .....games.tetrio.api.typing import ValidRank
-
-
-class AverageData(BaseModel):
-    pps: float
-    apm: float
-    apl: float
-    vs: float
-    adpl: float
+from ......games.tetrio.api.typing import ValidRank
 
 
 class ItemData(BaseModel):
-    require_tr: float
     trending: float
-    average_data: AverageData
+    require_tr: float
     players: int
 
 

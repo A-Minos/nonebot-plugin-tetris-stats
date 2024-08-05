@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ..base import People
+from ...base import People
 
 
 class User(People):

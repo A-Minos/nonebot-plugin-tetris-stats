@@ -2,9 +2,9 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from .....games.tetrio.api.typing import Rank
-from ....typing import Number
-from ..base import Avatar
+from ......games.tetrio.api.typing import Rank
+from .....typing import Number
+from ...base import Avatar
 
 
 class TetraLeague(BaseModel):

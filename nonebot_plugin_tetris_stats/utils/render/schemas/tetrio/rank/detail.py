@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from .....games.tetrio.api.typing import ValidRank
+from ......games.tetrio.api.typing import ValidRank
 
 
 class SpecialData(BaseModel):

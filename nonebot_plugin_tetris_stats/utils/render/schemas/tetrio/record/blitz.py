@@ -1,5 +1,5 @@
-from .tetrio_record_base import Record as BaseRecord
-from .tetrio_record_base import Statistic as BaseStatistic
+from .base import Record as BaseRecord
+from .base import Statistic as BaseStatistic
 
 
 class Statistic(BaseStatistic):

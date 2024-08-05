@@ -5,14 +5,14 @@ from nonebot.compat import PYDANTIC_V2
 
 from ..templates import TEMPLATES_DIR
 from .schemas.bind import Bind
-from .schemas.tetrio.tetrio_info import Info as TETRIOInfo
-from .schemas.tetrio.tetrio_rank_detail import Data as TETRIORankDetailData
-from .schemas.tetrio.tetrio_rank_v1 import Data as TETRIORankDataV1
-from .schemas.tetrio.tetrio_rank_v2 import Data as TETRIORankDataV2
-from .schemas.tetrio.tetrio_record_blitz import Record as TETRIORecordBlitz
-from .schemas.tetrio.tetrio_record_sprint import Record as TETRIORecordSprint
-from .schemas.tetrio.tetrio_user_info_v2 import Info as TETRIOUserInfoV2
-from .schemas.tetrio.tetrio_user_list_v2 import List as TETRIOUserListV2
+from .schemas.tetrio.rank.detail import Data as TETRIORankDetailData
+from .schemas.tetrio.rank.v1 import Data as TETRIORankDataV1
+from .schemas.tetrio.rank.v2 import Data as TETRIORankDataV2
+from .schemas.tetrio.record.blitz import Record as TETRIORecordBlitz
+from .schemas.tetrio.record.sprint import Record as TETRIORecordSprint
+from .schemas.tetrio.user.info_v1 import Info as TETRIOUserInfoV1
+from .schemas.tetrio.user.info_v2 import Info as TETRIOUserInfoV2
+from .schemas.tetrio.user.list_v2 import List as TETRIOUserListV2
 from .schemas.top_info import Info as TOPInfo
 from .schemas.tos_info import Info as TOSInfo
 
@@ -24,7 +24,7 @@ env = Environment(
 @overload
 async def render(render_type: Literal['v1/binding'], data: Bind) -> str: ...
 @overload
-async def render(render_type: Literal['v1/tetrio/info'], data: TETRIOInfo) -> str: ...
+async def render(render_type: Literal['v1/tetrio/info'], data: TETRIOUserInfoV1) -> str: ...
 @overload
 async def render(render_type: Literal['v1/tetrio/rank'], data: TETRIORankDataV1) -> str: ...
 @overload
@@ -60,7 +60,7 @@ async def render(
         'v2/tetrio/rank/detail',
     ],
     data: Bind
-    | TETRIOInfo
+    | TETRIOUserInfoV1
     | TETRIORankDataV1
     | TOPInfo
     | TOSInfo

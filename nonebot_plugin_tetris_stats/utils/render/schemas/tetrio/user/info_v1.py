@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
-from .....games.tetrio.api.typing import Rank
-from ....typing import Number
-from ..base import People, Ranking
+from ......games.tetrio.api.typing import Rank
+from .....typing import Number
+from ...base import People, Ranking
 from .base import TetraLeagueHistoryData
 
 
