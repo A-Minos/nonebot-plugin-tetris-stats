@@ -1737,13 +1737,13 @@ typing-extensions = ">=4.0.0,<5.0.0"
 
 [[package]]
 name = "nonebot-adapter-qq"
-version = "1.4.4"
+version = "1.5.0"
 description = "QQ adapter for nonebot2"
 optional = false
-python-versions = "<4.0,>=3.8"
+python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_adapter_qq-1.4.4-py3-none-any.whl", hash = "sha256:238aea3f94a54907be426ebb402893882893dbdc15e9e603106c6399b5d26a7f"},
-    {file = "nonebot_adapter_qq-1.4.4.tar.gz", hash = "sha256:258beebf06da2b699c792a8c86a8f41f2cb44cf2b8544678a24cdd2543ad57c6"},
+    {file = "nonebot_adapter_qq-1.5.0-py3-none-any.whl", hash = "sha256:27e6bcbc733d41102c085c844008aa5f2651a5cb1b9f17a3972bb5548ee0b695"},
+    {file = "nonebot_adapter_qq-1.5.0.tar.gz", hash = "sha256:1f46389389f99b19d1447c6032a34d6a7c0d1876468b63152e2ec68c3a042e29"},
 ]
 
 [package.dependencies]
