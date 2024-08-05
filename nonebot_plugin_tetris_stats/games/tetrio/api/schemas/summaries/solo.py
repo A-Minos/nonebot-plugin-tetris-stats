@@ -39,13 +39,13 @@ class Garbage(BaseModel):
 
 
 class Stats(BaseModel):
-    seed: int
+    seed: int | None = None  # ?: 不知道是之后都没有了还是还会有
     lines: int
     level_lines: int
     level_lines_needed: int
     inputs: int
     holds: int
-    time: Time
+    time: Time | None = None  # ?: 不知道是之后都没有了还是还会有
     score: int
     zenlevel: int
     zenprogress: int
