@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Literal, TypeVar, overload
 from nonebot.exception import FinishedException
 from nonebot.log import logger
 from nonebot_plugin_orm import AsyncSession, get_session
-from nonebot_plugin_user import User  # type: ignore[import-untyped]
+from nonebot_plugin_user import User
 from sqlalchemy import select
 
 from ..utils.typing import AllCommandType, BaseCommandType, GameType, TETRIOCommandType

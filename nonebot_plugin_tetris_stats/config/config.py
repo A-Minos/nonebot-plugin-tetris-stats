@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nonebot_plugin_localstore import get_cache_dir  # type: ignore[import-untyped]
+from nonebot_plugin_localstore import get_cache_dir
 from pydantic import BaseModel
 
 CACHE_PATH: Path = get_cache_dir('nonebot_plugin_tetris_stats')

@@ -8,10 +8,10 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
-from nonebot_plugin_user import get_user  # type: ignore[import-untyped]
-from nonebot_plugin_userinfo import EventUserInfo, UserInfo  # type: ignore[import-untyped]
+from nonebot_plugin_user import get_user
+from nonebot_plugin_userinfo import EventUserInfo, UserInfo
 
 from ...db import query_bind_info, trigger
 from ...utils.exception import RequestError

@@ -2,7 +2,7 @@ from base64 import b64encode
 from io import BytesIO
 from typing import Literal, overload
 
-from nonebot_plugin_userinfo import UserInfo  # type: ignore[import-untyped]
+from nonebot_plugin_userinfo import UserInfo
 from PIL import Image
 
 

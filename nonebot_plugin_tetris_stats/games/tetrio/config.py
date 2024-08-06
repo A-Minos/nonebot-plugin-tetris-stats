@@ -3,9 +3,9 @@ from nepattern import parser  # type: ignore[import-untyped]
 from nonebot_plugin_alconna import Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import async_scoped_session
-from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
-from nonebot_plugin_user import User  # type: ignore[import-untyped]
+from nonebot_plugin_user import User
 from sqlalchemy import select
 
 from ...db import trigger

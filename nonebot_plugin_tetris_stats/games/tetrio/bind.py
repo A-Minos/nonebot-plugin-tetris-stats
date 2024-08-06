@@ -6,10 +6,10 @@ from nepattern import parser  # type: ignore[import-untyped]
 from nonebot_plugin_alconna import Args, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession  # type: ignore[import-untyped]
+from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
-from nonebot_plugin_user import User  # type: ignore[import-untyped]
-from nonebot_plugin_userinfo import BotUserInfo, UserInfo  # type: ignore[import-untyped]
+from nonebot_plugin_user import User
+from nonebot_plugin_userinfo import BotUserInfo, UserInfo
 
 from ...db import BindStatus, create_or_update_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
