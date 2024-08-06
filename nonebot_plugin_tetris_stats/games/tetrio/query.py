@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, TypeVar
 from urllib.parse import urlencode
 
 from arclet.alconna import Arg, ArgFlag
-from nepattern import parser  # type: ignore[import-untyped]
 from nonebot import get_driver
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -50,20 +49,20 @@ command.add(
         Args(
             Arg(
                 'target',
-                parser(At | Me),
+                At | Me,
                 notice='@想要查询的人 / 自己',
                 flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
             ),
             Arg(
                 'account',
-                parser(get_player),
+                get_player,
                 notice='TETR.IO 用户名 / ID',
                 flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
             ),
         ),
         Option(
             '--template',
-            Arg('template', parser(Template)),
+            Arg('template', Template),
             alias=['-T'],
             help_text='要使用的查询模板',
         ),

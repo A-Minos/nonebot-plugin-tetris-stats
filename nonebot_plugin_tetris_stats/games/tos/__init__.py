@@ -1,5 +1,4 @@
 from arclet.alconna import Arg, ArgFlag
-from nepattern import parser  # type: ignore[import-untyped]
 from nonebot_plugin_alconna import Args, At, Subcommand
 
 from ...utils.exception import MessageFormatError
@@ -28,7 +27,7 @@ command.add(
             Args(
                 Arg(
                     'account',
-                    parser(get_player),
+                    get_player,
                     notice='茶服 用户名 / ID',
                     flags=[ArgFlag.HIDDEN],
                 )
@@ -40,13 +39,13 @@ command.add(
             Args(
                 Arg(
                     'target',
-                    parser(At | Me),
+                    At | Me,
                     notice='@想要查询的人 / 自己',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
                 Arg(
                     'account',
-                    parser(get_player),
+                    get_player,
                     notice='茶服 用户名 / TeaID',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
