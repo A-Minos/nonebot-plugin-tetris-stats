@@ -285,13 +285,13 @@ full = ["arclet-alconna-tools (>=0.2.0)"]
 
 [[package]]
 name = "arclet-alconna-tools"
-version = "0.7.8"
+version = "0.7.9"
 description = "Builtin Tools for Alconna"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "arclet_alconna_tools-0.7.8-py3-none-any.whl", hash = "sha256:be57595d0f07882e1b221dacff0a81d492643915b85219d1b1e7ba5bee034c36"},
-    {file = "arclet_alconna_tools-0.7.8.tar.gz", hash = "sha256:4c54944bc4e495e730f41f96f1af23b86f3c8cde6c332699a9d82f839790ad32"},
+    {file = "arclet_alconna_tools-0.7.9-py3-none-any.whl", hash = "sha256:01a3462bb9f8dbe55010b394f7a0ac11e331799d463e326738870dce191aa608"},
+    {file = "arclet_alconna_tools-0.7.9.tar.gz", hash = "sha256:bded24c4157e13e2d803fe7b77ee246fda456206451337015513f150d1e4449c"},
 ]
 
 [package.dependencies]
@@ -1721,23 +1721,23 @@ nonebot2 = ">=2.3.0"
 
 [[package]]
 name = "nonebot-plugin-alconna"
-version = "0.50.3"
+version = "0.51.0"
 description = "Alconna Adapter for Nonebot"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "nonebot_plugin_alconna-0.50.3-py3-none-any.whl", hash = "sha256:4c8e2f8615eb984706f292e3ec9b9e0af904aeaf25a96c888b77851a3a2685c5"},
-    {file = "nonebot_plugin_alconna-0.50.3.tar.gz", hash = "sha256:f29428dbea17420e34625f21bd806e7c12b0f383e4f972d3ce42aa09d5c84e97"},
+    {file = "nonebot_plugin_alconna-0.51.0-py3-none-any.whl", hash = "sha256:0889f2a16824fe9e07adca6d2c1197db989208ace20f70f59829b6dec0f67b7e"},
+    {file = "nonebot_plugin_alconna-0.51.0.tar.gz", hash = "sha256:cf4c8f0d638e547993cb1ef13ccd2d5fa968206f83f1e7fc281dc359a497e8a1"},
 ]
 
 [package.dependencies]
-arclet-alconna = ">=1.8.21"
-arclet-alconna-tools = ">=0.7.8"
+arclet-alconna = ">=1.8.23"
+arclet-alconna-tools = ">=0.7.9"
 importlib-metadata = ">=4.13.0"
 nepattern = ">=0.7.4"
 nonebot-plugin-waiter = ">=0.6.0"
 nonebot2 = ">=2.3.0"
-tarina = ">=0.5.4"
+tarina = ">=0.5.5"
 
 [[package]]
 name = "nonebot-plugin-apscheduler"
