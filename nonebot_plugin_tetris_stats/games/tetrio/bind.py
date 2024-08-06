@@ -3,6 +3,7 @@ from hashlib import md5
 from urllib.parse import urlencode
 
 from arclet.alconna import Arg, ArgFlag
+from nepattern import parser  # type: ignore[import-untyped]
 from nonebot_plugin_alconna import Args, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
@@ -27,7 +28,7 @@ command.add(
         Args(
             Arg(
                 'account',
-                get_player,
+                parser(get_player),
                 notice='TETR.IO 用户名 / ID',
                 flags=[ArgFlag.HIDDEN],
             )

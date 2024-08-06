@@ -1,4 +1,5 @@
 from arclet.alconna import Arg
+from nepattern import parser  # type: ignore[import-untyped]
 from nonebot_plugin_alconna import Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import async_scoped_session
@@ -18,7 +19,7 @@ command.add(
         'config',
         Option(
             '--default-template',
-            Arg('template', Template, notice='模板版本'),
+            Arg('template', parser(Template), notice='模板版本'),
             alias=['-DT', 'DefaultTemplate'],
             help_text='设置默认查询模板',
         ),

@@ -1,5 +1,6 @@
-from arclet.alconna import Arg, ArgFlag, Args, Subcommand
-from nonebot_plugin_alconna import At
+from arclet.alconna import Arg, ArgFlag
+from nepattern import parser  # type: ignore[import-untyped]
+from nonebot_plugin_alconna import Args, At, Subcommand
 
 from ...utils.exception import MessageFormatError
 from ...utils.typing import Me
@@ -22,7 +23,7 @@ command.add(
             Args(
                 Arg(
                     'account',
-                    get_player,
+                    parser(get_player),
                     notice='TOP 用户名 / ID',
                     flags=[ArgFlag.HIDDEN],
                 )
@@ -34,13 +35,13 @@ command.add(
             Args(
                 Arg(
                     'target',
-                    At | Me,
+                    parser(At | Me),
                     notice='@想要查询的人 / 自己',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
                 Arg(
                     'account',
-                    get_player,
+                    parser(get_player),
                     notice='TOP 用户名',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
