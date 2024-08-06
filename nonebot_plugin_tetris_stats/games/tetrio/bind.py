@@ -1,4 +1,3 @@
-from asyncio import gather
 from hashlib import md5
 from urllib.parse import urlencode
 
@@ -52,7 +51,7 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
         command_type='bind',
         command_args=[],
     ):
-        user, user_info = await gather(account.user, account.get_info())
+        user = await account.user
         async with get_session() as session:
             bind_status = await create_or_update_bind(
                 session=session,
