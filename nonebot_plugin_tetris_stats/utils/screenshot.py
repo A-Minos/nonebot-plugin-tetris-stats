@@ -4,11 +4,13 @@ from playwright.async_api import TimeoutError, ViewportSize
 from ..config.config import Config
 from .browser import BrowserManager
 from .retry import retry
+from .time_it import time_it
 
 config = get_plugin_config(Config)
 
 
 @retry(exception_type=TimeoutError, reply='截图失败, 重试中')
+@time_it
 async def screenshot(url: str) -> bytes:
     browser = await BrowserManager.get_browser()
     async with (
