@@ -9,15 +9,3 @@ class User(BaseModel):
     country: str | None
     verified: int
     supporter: int
-
-
-class AggregateStats(BaseModel):
-    apm: float
-    pps: float
-    vsscore: float
-
-
-class Finesse(BaseModel):
-    combo: int
-    faults: int
-    perfectpieces: int

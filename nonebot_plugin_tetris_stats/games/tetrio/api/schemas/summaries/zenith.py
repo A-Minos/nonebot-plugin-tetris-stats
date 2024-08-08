@@ -3,38 +3,23 @@ from typing import Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
-from ..base import FailedModel, P, SuccessModel
-from .base import AggregateStats, Finesse, User
+from ..base import AggregateStats, FailedModel, Finesse, P, SuccessModel
+from ..base import Clears as BaseClears
+from ..base import Garbage as BaseGarbage
+from .base import User
 
 
-class Clears(BaseModel):
-    singles: int
-    doubles: int
-    triples: int
-    quads: int
+class Clears(BaseClears):
     pentas: int
-    realtspins: int
-    minitspins: int
-    minitspinsingles: int
-    tspinsingles: int
-    minitspindoubles: int
-    tspindoubles: int
     minitspintriples: int
-    tspintriples: int
     minitspinquads: int
-    tspinquads: int
     tspinpentas: int
-    allclear: int
 
 
-class Garbage(BaseModel):
-    sent: int
+class Garbage(BaseGarbage):
     sent_nomult: int
     maxspike: int
     maxspike_nomult: int
-    received: int
-    attack: int
-    cleared: int
 
 
 class _Zenith(BaseModel):
