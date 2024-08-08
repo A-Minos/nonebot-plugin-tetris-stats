@@ -3003,22 +3003,22 @@ files = [
 
 [[package]]
 name = "types-lxml"
-version = "2024.4.14"
+version = "2024.8.7"
 description = "Complete lxml external type annotation"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types_lxml-2024.4.14-py3-none-any.whl", hash = "sha256:7e5f836067cde4fddce3cdbf2bac7192c764bf5ee6d3eb86c732ad1b84f265c5"},
-    {file = "types_lxml-2024.4.14.tar.gz", hash = "sha256:dd8105b579925af1b6ae77469f4fc835be3872b15e86cb46ad4fcc33b20c781d"},
+    {file = "types_lxml-2024.8.7-py3-none-any.whl", hash = "sha256:a0b8669b2dc57d47dcf31fbbee5007f8ed71b37406f4c7e5fa650e2480568eb9"},
+    {file = "types_lxml-2024.8.7.tar.gz", hash = "sha256:9ee5cdb1efd60f6eeb101b78f92591fd99202e4878b46d621b52f6cd67a9c80f"},
 ]
 
 [package.dependencies]
 cssselect = ">=1.2,<2.0"
 types-beautifulsoup4 = ">=4.12,<5.0"
-typing-extensions = ">=4.5,<5.0"
+typing_extensions = {version = ">=4.10,<5.0", markers = "python_version < \"3.13\""}
 
 [package.extras]
-test = ["beautifulsoup4 (>=4.8,<5.0)", "html5lib (==1.1)", "lxml (>=4.9)", "mypy (==1.9.*)", "pyright (>=1.1.289)", "pytest (>=7.0,<9)", "pytest-mypy-plugins (==1.11.1)", "tox (>=4.0,<5.0)", "typeguard (>=3.0,<5)"]
+test = ["beautifulsoup4 (>=4.8,<5.0)", "html5lib (==1.1)", "lxml (>=4.9)", "mypy (>=1.11.0,<1.12.0)", "pyright (>=1.1.351)", "pytest (>=7.0,<9)", "pytest-mypy-plugins (>=2.0)", "tox (>=4.0,<5.0)", "typeguard (>=3.0)", "typeguard (>=4.3.0)"]
 
 [[package]]
 name = "types-pillow"
