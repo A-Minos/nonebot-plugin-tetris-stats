@@ -199,8 +199,15 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
 
 async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: UserInfo) -> bytes:
     metrics = game_data.metrics
-    duration = timedelta(milliseconds=float(user_info.data.pb_sprint)).total_seconds()
-    sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
+    sprint_value = (
+        (
+            f'{duration:.3f}s'
+            if (duration := timedelta(milliseconds=float(user_info.data.pb_sprint)).total_seconds()) < 60  # noqa: PLR2004
+            else f'{duration // 60:.0f}m {duration % 60:.3f}s'
+        )
+        if user_info.data.pb_sprint != '2147483647'
+        else 'N/A'
+    )
     async with HostPage(
         await render(
             'v1/tos/info',
