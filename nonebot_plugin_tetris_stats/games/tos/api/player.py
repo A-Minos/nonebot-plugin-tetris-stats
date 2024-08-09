@@ -85,7 +85,6 @@ class Player:
                 raise RequestError(msg)
             self._user_info = user_info
             await anti_duplicate_add(
-                TOSHistoricalData,
                 TOSHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type='User Info',
@@ -117,7 +116,6 @@ class Player:
             )
             self._user_profile[params] = type_validate_json(UserProfile, raw_user_profile)
             await anti_duplicate_add(
-                TOSHistoricalData,
                 TOSHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type='User Profile',

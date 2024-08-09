@@ -39,7 +39,6 @@ class Player:
             raw_user_profile = await Request.request(url, is_json=False)
             self._user_profile = self._parse_profile(raw_user_profile)
             await anti_duplicate_add(
-                TOPHistoricalData,
                 TOPHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type='User Profile',

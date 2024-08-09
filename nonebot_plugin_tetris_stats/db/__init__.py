@@ -68,11 +68,11 @@ T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData
 lock = Lock()
 
 
-async def anti_duplicate_add(cls: type[T], model: T) -> None:
+async def anti_duplicate_add(model: T) -> None:
     async with lock, get_session() as session:
         result = (
             await session.scalars(
-                select(cls)
+                select(cls := model.__class__)
                 .where(cls.update_time == model.update_time)
                 .where(cls.user_unique_identifier == model.user_unique_identifier)
                 .where(cls.api_type == model.api_type)

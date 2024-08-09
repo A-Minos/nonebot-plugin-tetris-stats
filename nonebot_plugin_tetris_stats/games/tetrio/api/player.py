@@ -122,7 +122,6 @@ class Player:
                 raise RequestError(msg)
             self._user_info = user_info
             await anti_duplicate_add(
-                TETRIOHistoricalData,
                 TETRIOHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type='User Info',
@@ -155,7 +154,6 @@ class Player:
                 raise RequestError(msg)
             self._summaries[summaries_type] = summaries
             await anti_duplicate_add(
-                TETRIOHistoricalData,
                 TETRIOHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type=summaries_type,
@@ -231,7 +229,6 @@ class Player:
                 raise RequestError(msg)
             self._records[record_key] = records
             await anti_duplicate_add(
-                TETRIOHistoricalData,
                 TETRIOHistoricalData(
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type=record_key.to_records(),
