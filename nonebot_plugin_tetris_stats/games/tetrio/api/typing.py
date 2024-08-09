@@ -31,3 +31,12 @@ Summaries = Literal[
     'zen',
     'achievements',
 ]
+
+Records = Literal[
+    '40l_top',
+    '40l_recent',
+    '40l_progression',
+    'blitz_top',
+    'blitz_recent',
+    'blitz_progression',
+]

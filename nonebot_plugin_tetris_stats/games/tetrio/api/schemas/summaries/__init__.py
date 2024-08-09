@@ -1,5 +1,5 @@
 from .achievements import Achievements, AchievementsSuccessModel
-from .solo import Blitz, SoloSuccessModel, Sprint
+from .solo import Solo, SoloSuccessModel
 from .zen import Zen, ZenSuccessModel
 from .zenith import Zenith, ZenithEx, ZenithSuccessModel
 
@@ -8,8 +8,7 @@ SummariesModel = AchievementsSuccessModel | SoloSuccessModel | ZenSuccessModel |
 __all__ = [
     'Achievements',
     'AchievementsSuccessModel',
-    'Blitz',
-    'Sprint',
+    'Solo',
     'SoloSuccessModel',
     'Zen',
     'ZenSuccessModel',

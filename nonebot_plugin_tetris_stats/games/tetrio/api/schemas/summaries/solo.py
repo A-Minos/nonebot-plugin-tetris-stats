@@ -21,5 +21,4 @@ class SoloSuccessModel(SuccessModel):
     data: Data
 
 
-Sprint: TypeAlias = SoloSuccessModel | FailedModel
-Blitz: TypeAlias = SoloSuccessModel | FailedModel
+Solo: TypeAlias = SoloSuccessModel | FailedModel
