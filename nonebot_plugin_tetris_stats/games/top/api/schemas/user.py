@@ -6,7 +6,7 @@ from ....schemas import BaseUser
 from ...constant import GAME_TYPE
 
 
-class User(BaseUser):
+class User(BaseUser[Literal['TOP']]):
     platform: Literal['TOP'] = GAME_TYPE
 
     user_name: str

@@ -70,6 +70,4 @@ class Record(BaseModel):
     rank: int | None
     personal_rank: int | None
 
-    statistic: Statistic
-
     play_at: datetime

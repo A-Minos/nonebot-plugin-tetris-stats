@@ -1,20 +1,21 @@
 from abc import ABC, abstractmethod
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
 
 from ..utils.typing import GameType
 
-
-class Base(BaseModel):
-    platform: GameType
+T = TypeVar('T', bound=GameType)
 
 
-class BaseUser(ABC, Base):
+class BaseUser(BaseModel, ABC, Generic[T]):
     """游戏用户"""
 
-    def __eq__(self, __value: object) -> bool:
-        if isinstance(__value, BaseUser):
-            return self.unique_identifier == __value.unique_identifier
+    platform: T
+
+    def __eq__(self, other: Any) -> bool:  # noqa: ANN401
+        if isinstance(other, BaseUser):
+            return self.unique_identifier == other.unique_identifier
         return False
 
     @property
