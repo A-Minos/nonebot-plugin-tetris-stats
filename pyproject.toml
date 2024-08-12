@@ -88,10 +88,12 @@ select = [
     'ICN',   # flake8-import-conventions
     'PIE',   # flake8-pie
     'T20',   # flake8-print
+    'PYI',   # flake8-pyi
     'Q',     # flake8-quotes
     'RSE',   # flake8-raise
     'RET',   # flake8-return
     'SLF',   # flake8-self
+    'SLOT',  # flake8-slots
     'SIM',   # flake8-simplify
     'TID',   # flake8-tidy-imports
     'TCH',   # flake8-type-checking
@@ -103,6 +105,7 @@ select = [
     'PL',    # pylint
     'TRY',   # tryceratops
     'FLY',   # flynt
+    'FAST',  # FastAPI
     'PERF',  # Perflint
     'FURB',  # refurb
     'RUF',   # Ruff-specific rules
