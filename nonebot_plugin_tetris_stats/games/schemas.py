@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
@@ -13,7 +13,7 @@ class BaseUser(BaseModel, ABC, Generic[T]):
 
     platform: T
 
-    def __eq__(self, other: Any) -> bool:  # noqa: ANN401
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, BaseUser):
             return self.unique_identifier == other.unique_identifier
         return False
