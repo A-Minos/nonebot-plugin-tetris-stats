@@ -151,7 +151,7 @@ async def make_query_image_v2(player: Player) -> bytes:
     zen: ZenSuccessModel
     avatar_revision: int | None
     banner_revision: int | None
-    # [todo) 有没有什么办法能让这类型推导成功)
+    # TODO)) 有没有什么办法能让这类型推导成功)
     user, user_info, sprint, blitz, zen, avatar_revision, banner_revision = await gather(  # type: ignore[assignment]
         player.user,
         player.get_info(),

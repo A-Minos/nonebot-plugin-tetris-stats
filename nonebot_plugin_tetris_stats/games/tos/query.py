@@ -184,7 +184,7 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
             break
     if num == 0:
         return None
-    # TODO: 如果有效局数小于 {查询数} , 并且没有无dig信息的局, 且 user_profile.data 内有{请求数}个局, 则继续往前获取信息
+    # TODO)) 如果有效局数小于 {查询数} , 并且没有无dig信息的局, 且 user_profile.data 内有{请求数}个局, 则继续往前获取信息
     metrics = get_metrics(
         lpm=weighted_total_lpm / total_time, apm=weighted_total_apm / total_time, adpm=weighted_total_adpm / total_time
     )
