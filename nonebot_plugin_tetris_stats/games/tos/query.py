@@ -19,6 +19,7 @@ from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
 from ...utils.render import render
+from ...utils.render.avatar import get_avatar as get_random_avatar
 from ...utils.render.schemas.base import People, Ranking
 from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
 from ...utils.screenshot import screenshot
@@ -57,7 +58,9 @@ def add_special_handlers(
                     user_info, game_data = await gather(player.get_info(), get_game_data(player))
                     if game_data is not None:
                         await UniMessage.image(
-                            raw=await make_query_image(user_info, game_data, event_user_info)
+                            raw=await make_query_image(
+                                user_info, game_data, None if isinstance(target, At) else event_user_info
+                            )
                         ).finish()
                     await make_query_text(user_info, game_data).finish()
                 except RequestError as e:
@@ -126,13 +129,18 @@ async def _(
         user_info, game_data = await gather(player.get_info(), get_game_data(player))
         if game_data is not None:
             await (
-                message + UniMessage.image(raw=await make_query_image(user_info, game_data, event_user_info))
+                message
+                + UniMessage.image(
+                    raw=await make_query_image(
+                        user_info, game_data, None if isinstance(target, At) else event_user_info
+                    )
+                )
             ).finish()
         await (message + make_query_text(user_info, game_data)).finish()
 
 
 @alc.assign('TOS.query')
-async def _(account: Player, event_session: EventSession, event_user_info: UserInfo = EventUserInfo()):  # noqa: B008
+async def _(account: Player, event_session: EventSession):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -141,7 +149,7 @@ async def _(account: Player, event_session: EventSession, event_user_info: UserI
     ):
         user_info, game_data = await gather(account.get_info(), get_game_data(account))
         if game_data is not None:
-            await UniMessage.image(raw=await make_query_image(user_info, game_data, event_user_info)).finish()
+            await UniMessage.image(raw=await make_query_image(user_info, game_data, None)).finish()
         await make_query_text(user_info, game_data).finish()
 
 
@@ -197,7 +205,7 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
     )
 
 
-async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: UserInfo) -> bytes:
+async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: UserInfo | None) -> bytes:
     metrics = game_data.metrics
     sprint_value = (
         (
@@ -212,7 +220,12 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
         await render(
             'v1/tos/info',
             Info(
-                user=People(avatar=await get_avatar(event_user_info, 'Data URI', None), name=user_info.data.name),
+                user=People(
+                    avatar=await get_avatar(event_user_info, 'Data URI', None)
+                    if event_user_info is not None
+                    else get_random_avatar(),
+                    name=user_info.data.name,
+                ),
                 ranking=Ranking(rating=float(user_info.data.ranking), rd=round(float(user_info.data.rd_now), 2)),
                 multiplayer=Multiplayer(
                     pps=metrics.pps,
