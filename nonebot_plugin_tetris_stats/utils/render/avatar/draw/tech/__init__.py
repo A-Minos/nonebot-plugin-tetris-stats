@@ -90,5 +90,5 @@ class TechSkin(Skin):
 @driver.on_startup
 def _():
     path = Path(__file__).parent / 'skins'
-    for i in path.iterdir():
+    for i in sorted(path.iterdir()):
         TechSkin(i)

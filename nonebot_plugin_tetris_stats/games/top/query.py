@@ -78,7 +78,7 @@ async def make_query_image(profile: UserProfile) -> bytes:
         await render(
             'v1/top/info',
             Info(
-                user=People(avatar=get_avatar(), name=profile.user_name),
+                user=People(avatar=get_avatar(profile.user_name), name=profile.user_name),
                 today=InfoData(pps=today.pps, lpm=today.lpm, apm=today.apm, apl=today.apl),
                 history=InfoData(pps=history.pps, lpm=history.lpm, apm=history.apm, apl=history.apl),
             ),

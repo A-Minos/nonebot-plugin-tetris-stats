@@ -1,6 +1,6 @@
 from base64 import b64encode
 from io import BytesIO
-from random import choice, randint
+from random import Random
 
 from PIL import Image
 from PIL.Image import Resampling
@@ -8,12 +8,13 @@ from PIL.Image import Resampling
 from .draw import PIECE_MEMBERS, SkinManager
 
 
-def get_avatar() -> str:
+def get_avatar(send: float | str | bytes | bytearray | None = None) -> str:
+    random = Random(send)  # noqa: S311
     skin = (
-        SkinManager.get_skin()
-        .get_piece(choice(PIECE_MEMBERS))  # noqa: S311
+        SkinManager.get_skin(send)
+        .get_piece(random.choice(PIECE_MEMBERS))
         .rotate(
-            randint(-360, 360),  # noqa: S311
+            random.randint(-360, 360),
             expand=True,
             resample=Resampling.BICUBIC,
         )

@@ -223,7 +223,7 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
                 user=People(
                     avatar=await get_avatar(event_user_info, 'Data URI', None)
                     if event_user_info is not None
-                    else get_random_avatar(),
+                    else get_random_avatar(user_info.data.teaid),
                     name=user_info.data.name,
                 ),
                 ranking=Ranking(rating=float(user_info.data.ranking), rd=round(float(user_info.data.rd_now), 2)),

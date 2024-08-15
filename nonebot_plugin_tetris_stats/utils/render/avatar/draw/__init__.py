@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from random import choice
+from random import Random
 from typing import Any, ClassVar
 
 from PIL.Image import Image
@@ -151,8 +151,8 @@ class SkinManager:
         cls.skin.append(skin)
 
     @classmethod
-    def get_skin(cls) -> 'Skin':
-        return choice(cls.skin)  # noqa: S311
+    def get_skin(cls, send: float | str | bytes | bytearray | None = None) -> 'Skin':
+        return Random(send).choice(cls.skin)  # noqa: S311
 
 
 class Skin(ABC):
