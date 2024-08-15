@@ -48,7 +48,8 @@ class Player:
             )
         return self._user_profile
 
-    def _parse_profile(self, original_user_profile: bytes) -> UserProfile:
+    @staticmethod
+    def _parse_profile(original_user_profile: bytes) -> UserProfile:
         html = etree.HTML(original_user_profile)
         user_name = html.xpath('//div[@class="mycontent"]/h1/text()')[0].replace("'s profile", '')
         today = None
