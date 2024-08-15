@@ -68,4 +68,4 @@ class Player:
         total: list[Data] = []
         for _, value in dataframe.iterrows():
             total.append(Data(lpm=value['lpm'], apm=value['apm']))
-        return UserProfile(user_name=user_name, today=today, total=total)
+        return UserProfile(user_name=user_name, today=today, total=total or None)
