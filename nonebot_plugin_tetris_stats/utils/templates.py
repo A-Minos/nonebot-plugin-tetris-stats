@@ -56,7 +56,7 @@ async def download_templates(tag: str) -> Path:
         return path
 
 
-async def unzip_templates(zip_path: Path) -> Path:
+def unzip_templates(zip_path: Path) -> Path:
     logger.info('开始解压模板')
     temp_path = TEMPLATES_DIR.parent / f'temp_{time_ns()}'
     with ZipFile(zip_path) as zip_file:
@@ -91,7 +91,7 @@ async def check_hash(hash_file_path: Path) -> bool:
 
 async def init_templates(tag: str) -> bool:
     logger.info(f'开始初始化模板 {tag}')
-    temp_path = await unzip_templates(await download_templates(tag))
+    temp_path = unzip_templates(await download_templates(tag))
     if not await check_hash(temp_path / 'hash.sha256'):
         rmtree(temp_path)
         return False

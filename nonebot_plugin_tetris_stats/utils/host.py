@@ -55,7 +55,7 @@ def _():
 
 
 @app.get('/host/{page_hash}.html', status_code=status.HTTP_200_OK)
-async def _(page_hash: str) -> HTMLResponse:
+def _(page_hash: str) -> HTMLResponse:
     if page_hash in HostPage.pages:
         return HTMLResponse(HostPage.pages[page_hash])
     return NOT_FOUND
