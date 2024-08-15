@@ -8,12 +8,20 @@ from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[im
 from nonebot_plugin_user import get_user
 
 from ...db import query_bind_info, trigger
-from ...utils.metrics import get_metrics
+from ...utils.exception import FallbackError
+from ...utils.host import HostPage, get_self_netloc
+from ...utils.metrics import TetrisMetricsBasicWithLPM, get_metrics
+from ...utils.render import render
+from ...utils.render.avatar import get_avatar
+from ...utils.render.schemas.base import People
+from ...utils.render.schemas.top_info import Data as InfoData
+from ...utils.render.schemas.top_info import Info
+from ...utils.screenshot import screenshot
 from ...utils.typing import Me
 from ..constant import CANT_VERIFY_MESSAGE
 from . import alc
 from .api import Player
-from .api.schemas.user_profile import UserProfile
+from .api.schemas.user_profile import Data, UserProfile
 from .constant import GAME_TYPE
 
 
@@ -35,8 +43,10 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
             )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
-        message = CANT_VERIFY_MESSAGE
-        await (message + make_query_text(await Player(user_name=bind.game_account, trust=True).get_profile())).finish()
+        await (
+            UniMessage(CANT_VERIFY_MESSAGE)
+            + await make_query_result(await Player(user_name=bind.game_account, trust=True).get_profile())
+        ).finish()
 
 
 @alc.assign('TOP.query')
@@ -47,7 +57,34 @@ async def _(account: Player, event_session: EventSession):
         command_type='query',
         command_args=[],
     ):
-        await (make_query_text(await account.get_profile())).finish()
+        await (await make_query_result(await account.get_profile())).finish()
+
+
+def get_avg_metrics(data: list[Data]) -> TetrisMetricsBasicWithLPM:
+    total_lpm = total_apm = 0.0
+    for value in data:
+        total_lpm += value.lpm
+        total_apm += value.apm
+    num = len(data)
+    return get_metrics(lpm=total_lpm / num, apm=total_apm / num)
+
+
+async def make_query_image(profile: UserProfile) -> bytes:
+    if profile.today is None or profile.total is None:
+        raise FallbackError
+    today = get_metrics(lpm=profile.today.lpm, apm=profile.today.apm)
+    history = get_avg_metrics(profile.total)
+    async with HostPage(
+        await render(
+            'v1/top/info',
+            Info(
+                user=People(avatar=get_avatar(), name=profile.user_name),
+                today=InfoData(pps=today.pps, lpm=today.lpm, apm=today.apm, apl=today.apl),
+                history=InfoData(pps=history.pps, lpm=history.lpm, apm=history.apm, apl=history.apl),
+            ),
+        )
+    ) as page_hash:
+        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
 
 
 def make_query_text(profile: UserProfile) -> UniMessage:
@@ -60,15 +97,18 @@ def make_query_text(profile: UserProfile) -> UniMessage:
     else:
         message += f'用户 {profile.user_name} 暂无24小时内统计数据'
     if profile.total is not None:
-        total_lpm = total_apm = 0.0
-        for value in profile.total:
-            total_lpm += value.lpm
-            total_apm += value.apm
-        num = len(profile.total)
-        total = get_metrics(lpm=total_lpm / num, apm=total_apm / num)
+        total = get_avg_metrics(profile.total)
         message += '\n历史统计数据为: '
         message += f"\nL'PM: {total.lpm} ( {total.pps} pps )"
         message += f'\nAPM: {total.apm} ( x{total.apl} )'
     else:
         message += '\n暂无历史统计数据'
     return UniMessage(message)
+
+
+async def make_query_result(profile: UserProfile) -> UniMessage:
+    try:
+        return UniMessage.image(raw=await make_query_image(profile))
+    except FallbackError:
+        ...
+    return make_query_text(profile)
