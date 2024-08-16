@@ -119,7 +119,7 @@ class Request:
     async def request(cls, url: str, *, is_json: bool = True) -> bytes:
         """请求api"""
         try:
-            async with AsyncClient(cookies=cls._cookies, timeout=config.tetris_req_timeout) as session:
+            async with AsyncClient(cookies=cls._cookies, timeout=config.tetris.request_timeout) as session:
                 response = await session.get(url, headers=cls._headers)
                 if response.status_code != HTTPStatus.OK:
                     msg = f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'

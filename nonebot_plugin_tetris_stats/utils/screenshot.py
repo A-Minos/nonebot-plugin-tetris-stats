@@ -14,7 +14,7 @@ config = get_plugin_config(Config)
 async def screenshot(url: str) -> bytes:
     browser = await BrowserManager.get_browser()
     async with (
-        await browser.new_page(device_scale_factor=config.tetris_screenshot_quality) as page,
+        await browser.new_page(device_scale_factor=config.tetris.screenshot_quality) as page,
     ):
         await page.goto(url)
         await page.wait_for_load_state('networkidle')
