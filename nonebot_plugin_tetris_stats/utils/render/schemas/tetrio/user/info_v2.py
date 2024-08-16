@@ -53,7 +53,7 @@ class TetraLeagueStatistic(BaseModel):
 
 class TetraLeague(BaseModel):
     rank: Rank
-    highest_rank: ValidRank
+    highest_rank: Rank
 
     tr: Number
 

@@ -35,7 +35,7 @@ class Data(BaseModel):
     gxe: float
     tr: float
     rank: Rank
-    bestrank: ValidRank = Field('z')
+    bestrank: Rank = Field('z')
     apm: float
     pps: float
     vs: float
