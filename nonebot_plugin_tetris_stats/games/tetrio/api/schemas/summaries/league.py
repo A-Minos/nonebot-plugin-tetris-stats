@@ -1,6 +1,8 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
-from ...typing import Rank, S1Rank, S1ValidRank, ValidRank
+from ...typing import Rank, S1Rank, S1ValidRank
 from ..base import SuccessModel
 
 
@@ -27,7 +29,54 @@ class Past(BaseModel):
     first: PastInner = Field(..., alias='1')
 
 
-class Data(BaseModel):
+class BaseData(BaseModel):
+    decaying: bool
+    past: Past
+
+
+class NeverPlayedData(BaseData):
+    gamesplayed: Literal[0]
+    gameswon: Literal[0]
+    glicko: Literal[-1]
+    rd: Literal[-1]
+    gxe: Literal[-1]
+    tr: Literal[-1]
+    rank: Literal['z']
+    apm: None = None
+    pps: None = None
+    vs: None = None
+    standing: Literal[-1]
+    standing_local: Literal[-1]
+    prev_rank: None
+    prev_at: Literal[-1]
+    next_rank: None
+    next_at: Literal[-1]
+    percentile: Literal[-1]
+    percentile_rank: Literal['z']
+
+
+class NeverRatedData(BaseData):
+    gamesplayed: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9]
+    gameswon: int
+    glicko: Literal[-1]
+    rd: Literal[-1]
+    gxe: Literal[-1]
+    tr: Literal[-1]
+    apm: float
+    pps: float
+    vs: float
+    rank: Literal['z']
+    standing: Literal[-1]
+    standing_local: Literal[-1]
+    prev_rank: None
+    prev_at: Literal[-1]
+    next_rank: None
+    next_at: Literal[-1]
+    percentile: Literal[-1]
+    percentile_rank: Literal['z']
+
+
+class RatedData(BaseData):
     gamesplayed: int
     gameswon: int
     glicko: float
@@ -35,21 +84,19 @@ class Data(BaseModel):
     gxe: float
     tr: float
     rank: Rank
-    bestrank: Rank = Field('z')
+    bestrank: Rank
+    standing: int
     apm: float
     pps: float
     vs: float
-    decaying: bool
-    standing: int
     standing_local: int
-    prev_rank: ValidRank | None = None
+    prev_rank: Rank | None = None
     prev_at: int
-    next_rank: ValidRank | None = None
+    next_rank: Rank | None = None
     next_at: int
     percentile: float
-    percentile_rank: Rank
-    past: Past
+    percentile_rank: str
 
 
 class LeagueSuccessModel(SuccessModel):
-    data: Data
+    data: NeverPlayedData | NeverRatedData | RatedData

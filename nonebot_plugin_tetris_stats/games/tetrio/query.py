@@ -39,13 +39,13 @@ from .. import add_block_handlers, alc
 from ..constant import CANT_VERIFY_MESSAGE
 from . import command, get_player
 from .api import Player
+from .api.schemas.summaries.league import LeagueSuccessModel, NeverPlayedData, NeverRatedData
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
 from .typing import Template
 
 if TYPE_CHECKING:
     from .api.schemas.summaries import SoloSuccessModel, ZenSuccessModel
-    from .api.schemas.summaries.league import LeagueSuccessModel
     from .api.schemas.user import User
     from .api.schemas.user_info import UserInfoSuccess
 
@@ -229,7 +229,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                 ),
                 tetra_league=TetraLeague(
                     rank=league.data.rank,
-                    highest_rank=league.data.bestrank,
+                    highest_rank='z' if isinstance(league.data, NeverRatedData) else league.data.bestrank,
                     tr=round(league.data.tr, 2),
                     glicko=round(league.data.glicko, 2),
                     rd=round(league.data.rd, 2),
@@ -243,7 +243,9 @@ async def make_query_image_v2(player: Player) -> bytes:
                     statistic=TetraLeagueStatistic(total=league.data.gamesplayed, wins=league.data.gameswon),
                     decaying=league.data.decaying,
                     history=None,
-                ),
+                )
+                if not isinstance(league.data, NeverPlayedData)
+                else None,
                 statistic=Statistic(
                     total=handling_special_value(user_info.data.gamesplayed),
                     wins=handling_special_value(user_info.data.gameswon),
