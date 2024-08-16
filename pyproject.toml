@@ -133,4 +133,3 @@ quote-style = 'single'
 
 [tool.nonebot]
 plugins = ['nonebot_plugin_tetris_stats']
-# plugins = ['test_aps']
