@@ -24,6 +24,7 @@ from .schemas.summaries import (
     SoloSuccessModel as SummariesSoloSuccessModel,
 )
 from .schemas.summaries.base import User as SummariesUser
+from .schemas.summaries.league import LeagueSuccessModel
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
 from .typing import Records, Summaries
@@ -55,6 +56,7 @@ class Player:
             'blitz': SummariesSoloSuccessModel,
             'zenith': ZenithSuccessModel,
             'zenithex': ZenithSuccessModel,
+            'league': LeagueSuccessModel,
             'zen': ZenSuccessModel,
             'achievements': AchievementsSuccessModel,
         }
@@ -138,6 +140,8 @@ class Player:
     @overload
     async def get_summaries(self, summaries_type: Literal['zen']) -> ZenSuccessModel: ...
     @overload
+    async def get_summaries(self, summaries_type: Literal['league']) -> LeagueSuccessModel: ...
+    @overload
     async def get_summaries(self, summaries_type: Literal['achievements']) -> AchievementsSuccessModel: ...
 
     async def get_summaries(self, summaries_type: Summaries) -> SummariesModel:
@@ -164,19 +168,20 @@ class Player:
         return self._summaries[summaries_type]
 
     @property
-    @alru_cache
     async def sprint(self) -> SummariesSoloSuccessModel:
         return await self.get_summaries('40l')
 
     @property
-    @alru_cache
     async def blitz(self) -> SummariesSoloSuccessModel:
         return await self.get_summaries('blitz')
 
     @property
-    @alru_cache
     async def zen(self) -> ZenSuccessModel:
         return await self.get_summaries('zen')
+
+    @property
+    async def league(self) -> LeagueSuccessModel:
+        return await self.get_summaries('league')
 
     async def _get_local_summaries_user(self) -> SummariesUser | None:
         allow_summaries: set[Literal['40l', 'blitz', 'zenith', 'zenithex']] = {

@@ -19,9 +19,18 @@ from sqlalchemy import select
 
 from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
+from ...utils.metrics import get_metrics
 from ...utils.render import render
 from ...utils.render.schemas.base import Avatar
-from ...utils.render.schemas.tetrio.user.info_v2 import Badge, Blitz, Sprint, Statistic, Zen
+from ...utils.render.schemas.tetrio.user.info_v2 import (
+    Badge,
+    Blitz,
+    Sprint,
+    Statistic,
+    TetraLeague,
+    TetraLeagueStatistic,
+    Zen,
+)
 from ...utils.render.schemas.tetrio.user.info_v2 import Info as V2TemplateInfo
 from ...utils.render.schemas.tetrio.user.info_v2 import User as V2TemplateUser
 from ...utils.screenshot import screenshot
@@ -36,6 +45,7 @@ from .typing import Template
 
 if TYPE_CHECKING:
     from .api.schemas.summaries import SoloSuccessModel, ZenSuccessModel
+    from .api.schemas.summaries.league import LeagueSuccessModel
     from .api.schemas.user import User
     from .api.schemas.user_info import UserInfoSuccess
 
@@ -146,15 +156,17 @@ def handling_special_value(value: N) -> N | None:
 async def make_query_image_v2(player: Player) -> bytes:
     user: User
     user_info: UserInfoSuccess
+    league: LeagueSuccessModel
     sprint: SoloSuccessModel
     blitz: SoloSuccessModel
     zen: ZenSuccessModel
     avatar_revision: int | None
     banner_revision: int | None
     # TODO)) 有没有什么办法能让这类型推导成功)
-    user, user_info, sprint, blitz, zen, avatar_revision, banner_revision = await gather(  # type: ignore[assignment]
+    user, user_info, league, sprint, blitz, zen, avatar_revision, banner_revision = await gather(  # type: ignore[assignment]
         player.user,
         player.get_info(),
+        player.league,
         player.sprint,
         player.blitz,
         player.zen,
@@ -211,11 +223,27 @@ async def make_query_image_v2(player: Player) -> bytes:
                     friend_count=user_info.data.friend_count,
                     supporter_tier=user_info.data.supporter_tier,
                     bad_standing=user_info.data.badstanding or False,
-                    verified=user_info.data.verified,
+                    verified=user_info.data.verified or False,
                     playtime=play_time,
                     join_at=user_info.data.ts,
                 ),
-                tetra_league=None,
+                tetra_league=TetraLeague(
+                    rank=league.data.rank,
+                    highest_rank=league.data.bestrank,
+                    tr=round(league.data.tr, 2),
+                    glicko=round(league.data.glicko, 2),
+                    rd=round(league.data.rd, 2),
+                    global_rank=league.data.standing,
+                    country_rank=league.data.standing_local,
+                    pps=(metrics := get_metrics(pps=league.data.pps, apm=league.data.apm, vs=league.data.vs)).pps,
+                    apm=metrics.apm,
+                    apl=metrics.apl,
+                    vs=metrics.vs,
+                    adpl=metrics.adpl,
+                    statistic=TetraLeagueStatistic(total=league.data.gamesplayed, wins=league.data.gameswon),
+                    decaying=league.data.decaying,
+                    history=None,
+                ),
                 statistic=Statistic(
                     total=handling_special_value(user_info.data.gamesplayed),
                     wins=handling_special_value(user_info.data.gameswon),

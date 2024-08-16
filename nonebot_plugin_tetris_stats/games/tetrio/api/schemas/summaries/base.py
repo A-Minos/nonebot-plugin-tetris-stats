@@ -7,5 +7,5 @@ class User(BaseModel):
     avatar_revision: int | None
     banner_revision: int | None
     country: str | None
-    verified: int
+    verified: int | None = None
     supporter: int

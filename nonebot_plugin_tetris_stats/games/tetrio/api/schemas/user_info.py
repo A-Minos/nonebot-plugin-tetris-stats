@@ -42,7 +42,7 @@ class Data(BaseModel):
     badstanding: bool | None = None
     supporter: bool | None = None  # osk说是必有, 但实际上不是 fkosk
     supporter_tier: int
-    verified: bool
+    verified: bool | None = None
     avatar_revision: int | None = None
     """This user's avatar ID. Get their avatar at
 

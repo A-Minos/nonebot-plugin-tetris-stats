@@ -1,6 +1,7 @@
 from typing import Literal
 
-ValidRank = Literal[
+S1ValidRank = Literal[
+    'x+',
     'x',
     'u',
     'ss',
@@ -19,7 +20,9 @@ ValidRank = Literal[
     'd+',
     'd',
 ]
+S1Rank = S1ValidRank | Literal['z']
 
+ValidRank = Literal['x+'] | S1ValidRank
 Rank = ValidRank | Literal['z']  # 未定级
 
 Summaries = Literal[
@@ -27,7 +30,7 @@ Summaries = Literal[
     'blitz',
     'zenith',
     'zenithex',
-    # 'league',  # 等待正式赛季开始
+    'league',
     'zen',
     'achievements',
 ]
