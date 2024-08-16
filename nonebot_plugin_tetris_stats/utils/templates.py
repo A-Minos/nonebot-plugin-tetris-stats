@@ -11,12 +11,13 @@ from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
-from nonebot_plugin_localstore import get_cache_file, get_data_dir
 from rich.progress import Progress
+
+from ..config.config import CACHE_PATH, DATA_PATH
 
 driver = get_driver()
 
-TEMPLATES_DIR = get_data_dir('nonebot_plugin_tetris_stats') / 'templates'
+TEMPLATES_DIR = DATA_PATH / 'templates'
 
 alc = on_alconna(Alconna('更新模板', Option('--revision', Args['revision', str], alias={'-R'})), permission=SUPERUSER)
 
@@ -36,7 +37,7 @@ async def download_templates(tag: str) -> Path:
                 .rsplit('/', 1)[-1]
             )
             logger.success(f'获取到的最新版本号: {tag}')
-        path = get_cache_file('nonebot_plugin_tetris_stats', f'dist_{time_ns()}.zip')
+        path = CACHE_PATH / f'dist_{time_ns()}.zip'
         with Progress() as progress:
             task_id = progress.add_task('[red]Downloading...', total=None)
             async with (
