@@ -17,7 +17,6 @@ async def screenshot(url: str) -> bytes:
         await browser.new_page(device_scale_factor=config.tetris.screenshot_quality) as page,
     ):
         await page.goto(url)
-        await page.wait_for_load_state('networkidle')
         size: ViewportSize = await page.evaluate("""
             () => {
                 const element = document.querySelector('#content');
