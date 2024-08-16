@@ -7,7 +7,7 @@ from ..base import SuccessModel
 class PastInner(BaseModel):
     season: str
     username: str
-    country: str
+    country: str | None = None
     placement: int
     gamesplayed: int
     gameswon: int
