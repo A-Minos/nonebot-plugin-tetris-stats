@@ -27,4 +27,5 @@ async def screenshot(url: str) -> bytes:
             };
         """)
         await page.set_viewport_size(size)
-        return await page.locator('id=content').screenshot(timeout=5000, type='png')
+        await page.wait_for_load_state('networkidle')
+        return await page.locator('id=content').screenshot(animations='disabled', timeout=5000, type='png')
