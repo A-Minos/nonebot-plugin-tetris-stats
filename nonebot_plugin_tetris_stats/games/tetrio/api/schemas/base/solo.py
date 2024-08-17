@@ -21,7 +21,7 @@ class Stats(BaseModel):
     level_lines: int
     level_lines_needed: int
     inputs: int
-    holds: int
+    holds: int = 0
     time: Time | None = None  # ?: 不知道是之后都没有了还是还会有
     score: int
     zenlevel: int
