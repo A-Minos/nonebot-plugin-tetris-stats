@@ -26,7 +26,7 @@ class PastInner(BaseModel):
 
 
 class Past(BaseModel):
-    first: PastInner = Field(..., alias='1')
+    first: PastInner | None = Field(default=None, alias='1')
 
 
 class BaseData(BaseModel):
