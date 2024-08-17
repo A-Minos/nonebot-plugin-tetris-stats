@@ -10,7 +10,7 @@ class PastInner(BaseModel):
     season: str
     username: str
     country: str | None = None
-    placement: int
+    placement: int | None = None
     gamesplayed: int
     gameswon: int
     glicko: float
