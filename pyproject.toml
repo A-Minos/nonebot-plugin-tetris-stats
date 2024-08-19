@@ -30,7 +30,6 @@ pandas = '>=1.4.3,<3.0.0'
 pillow = '^10.3.0'
 playwright = '^1.41.2'
 rich = '^13.7.1'
-ujson = '^5.9.0'
 yarl = "^1.9.4"
 zstandard = '>=0.22,<0.24'
 
