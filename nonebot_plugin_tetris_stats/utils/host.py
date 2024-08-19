@@ -1,3 +1,4 @@
+from functools import cache
 from hashlib import sha256
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path as FilePath
@@ -90,6 +91,7 @@ async def write_cache(path: FilePath, data: bytes) -> None:
         await file.write(data)
 
 
+@cache
 def get_self_netloc() -> str:
     host: IPv4Address | IPv6Address | IPvAnyAddress = global_config.host
     if isinstance(host, IPv4Address):
