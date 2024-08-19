@@ -1,12 +1,9 @@
-from nonebot import get_plugin_config
 from playwright.async_api import TimeoutError, ViewportSize
 
-from ..config.config import Config
+from ..config.config import config
 from .browser import BrowserManager
 from .retry import retry
 from .time_it import time_it
-
-config = get_plugin_config(Config)
 
 
 @retry(exception_type=TimeoutError, reply='截图失败, 重试中')
