@@ -1,54 +1,79 @@
 from collections.abc import Sequence
 from http import HTTPStatus
-from urllib.parse import urljoin, urlparse
+from typing import Any
 
-from aiofiles import open
 from httpx import AsyncClient, HTTPError
-from nonebot import get_driver, get_plugin_config
+from msgspec import DecodeError, Struct, json
+from nonebot import get_driver
 from nonebot.log import logger
 from playwright.async_api import Response
-from ujson import JSONDecodeError, dumps, loads
+from yarl import URL
 
-from ..config.config import CACHE_PATH, Config
+from ..config.config import CACHE_PATH, config
 from .browser import BrowserManager
 from .exception import RequestError
 
 driver = get_driver()
-config = get_plugin_config(Config)
 
 
-@driver.on_startup
-async def _():
-    await Request.init_cache()
-    await Request.read_cache()
+class CloudflareCache(Struct):
+    headers: dict[str, Any] | None = None
+    cookies: dict[str, Any] | None = None
 
 
-@driver.on_shutdown
-async def _():
-    await Request.write_cache()
+encoder = json.Encoder()
+decoder = json.Decoder()
 
 
-def splice_url(url_list: list[str]) -> str:
-    url = ''
-    if len(url_list):
-        url = url_list.pop(0)
-        for i in url_list:
-            url = urljoin(url, i)
-    return url
+class AntiCloudflare:
+    cache_decoder = json.Decoder(type=CloudflareCache)
 
+    def __init__(self, domain_suffix: str) -> None:
+        self.domain_suffix = domain_suffix
+        self.cache_path = CACHE_PATH / f'{self.domain_suffix}_cloudflare_cache.json'
+        self._headers: dict | None = None
+        self._cookies: dict | None = None
+        self.read_cache()
 
-class Request:
-    """网络请求相关类"""
+    def read_cache(self) -> None:
+        """读取缓存文件"""
+        try:
+            cache: CloudflareCache = self.cache_decoder.decode(self.cache_path.read_text(encoding='UTF-8'))
+            self._headers = cache.headers
+            self._cookies = cache.cookies
+        except (OSError, DecodeError):
+            self.cache_path.unlink()
+            self.write_cache()
 
-    _CACHE_FILE = CACHE_PATH / 'cloudflare_cache.json'
-    _headers: dict | None = None
-    _cookies: dict | None = None
+    def write_cache(self) -> None:
+        """写入缓存文件"""
+        self.cache_path.write_bytes(json.encode(CloudflareCache(headers=self.headers, cookies=self.cookies)))
 
-    @classmethod
-    async def _anti_cloudflare(cls, url: str) -> bytes:
+    @property
+    def headers(self) -> dict | None:
+        return self._headers
+
+    @headers.setter
+    def headers(self, value: dict | None) -> None:
+        self._headers = value
+        self.write_cache()
+
+    @property
+    def cookies(self) -> dict | None:
+        return self._cookies
+
+    @cookies.setter
+    def cookies(self, value: dict | None) -> None:
+        self._cookies = value
+        self.write_cache()
+
+    async def __call__(self, url: str, proxy: str | None = None) -> bytes:
         """用firefox硬穿五秒盾"""
         browser = await BrowserManager.get_browser()
-        async with await browser.new_context() as context, await context.new_page() as page:
+        async with (
+            await browser.new_context(proxy={'server': proxy} if proxy is not None else None) as context,
+            await context.new_page() as page,
+        ):
             response = await page.goto(url)
             attempts = 0
             while attempts < 60:  # noqa: PLR2004
@@ -61,84 +86,68 @@ class Request:
                     logger.warning('疑似触发了 Cloudflare 的验证码')
                     break
                 try:
-                    loads(text)
-                except JSONDecodeError:
+                    decoder.decode(text)
+                except DecodeError:
                     await page.wait_for_timeout(1000)
                 else:
                     if not isinstance(response, Response):
                         msg = 'api请求失败'
                         raise RequestError(msg)
-                    cls._headers = await response.request.all_headers()
+                    self.headers = await response.request.all_headers()
                     try:
-                        cls._cookies = {
+                        self.cookies = {
                             name: value
                             for i in await context.cookies()
                             if (name := i.get('name')) is not None and (value := i.get('value')) is not None
                         }
                     except KeyError:
-                        cls._cookies = None
+                        self.cookies = None
                     return await response.body()
         msg = '绕过五秒盾失败'
         raise RequestError(msg)
 
-    @classmethod
-    async def init_cache(cls) -> None:
-        """初始化缓存文件"""
-        if not cls._CACHE_FILE.exists():
-            async with open(file=cls._CACHE_FILE, mode='w', encoding='UTF-8') as file:
-                await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
 
-    @classmethod
-    async def read_cache(cls) -> None:
-        """读取缓存文件"""
-        try:
-            async with open(file=cls._CACHE_FILE, mode='r', encoding='UTF-8') as file:
-                json = loads(await file.read())
-        except FileNotFoundError:
-            await cls.init_cache()
-        except (PermissionError, JSONDecodeError):
-            cls._CACHE_FILE.unlink()
-            await cls.init_cache()
-        else:
-            cls._headers = json['headers']
-            cls._cookies = json['cookies']
+class Request:
+    """网络请求相关类"""
 
-    @classmethod
-    async def write_cache(cls) -> None:
-        """写入缓存文件"""
-        try:
-            async with open(file=cls._CACHE_FILE, mode='r+', encoding='UTF-8') as file:
-                await file.write(dumps({'headers': cls._headers, 'cookies': cls._cookies}))
-        except FileNotFoundError:
-            await cls.init_cache()
-        except (PermissionError, JSONDecodeError):
-            cls._CACHE_FILE.unlink()
-            await cls.init_cache()
+    def __init__(self, proxy: str | None) -> None:
+        self.proxy = proxy
+        self.anti_cloudflares: dict[str, AntiCloudflare] = {}
 
-    @classmethod
-    async def request(cls, url: str, *, is_json: bool = True) -> bytes:
+    async def request(
+        self,
+        url: URL,
+        *,
+        is_json: bool = True,
+        enable_anti_cloudflare: bool = False,
+    ) -> bytes:
         """请求api"""
+        if (anti_cloudflare := self.anti_cloudflares.get(url.host or '')) is not None:
+            cookies = anti_cloudflare.cookies
+            headers = anti_cloudflare.headers
+        else:
+            cookies = None
+            headers = None
         try:
-            async with AsyncClient(cookies=cls._cookies, timeout=config.tetris.request_timeout) as session:
-                response = await session.get(url, headers=cls._headers)
+            async with AsyncClient(cookies=cookies, timeout=config.tetris.request_timeout) as session:
+                response = await session.get(str(url), headers=headers)
                 if response.status_code != HTTPStatus.OK:
                     msg = f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
                     raise RequestError(msg, status_code=response.status_code)
                 if is_json:
-                    loads(response.content)
+                    decoder.decode(response.content)
                 return response.content
         except HTTPError as e:
             msg = f'请求错误 \n{e!r}'
             raise RequestError(msg) from e
-        except JSONDecodeError:
-            if urlparse(url).netloc.lower().endswith('tetr.io'):
-                return await cls._anti_cloudflare(url)
+        except DecodeError:  # 由于捕获的是 DecodeError 所以一定是 is_json = True
+            if enable_anti_cloudflare and url.host is not None:
+                return await self.anti_cloudflares.setdefault(url.host, AntiCloudflare(url.host))(str(url), self.proxy)
             raise
 
-    @classmethod
     async def failover_request(
-        cls,
-        urls: Sequence[str],
+        self,
+        urls: Sequence[URL],
         *,
         failover_code: Sequence[int],
         failover_exc: tuple[type[BaseException], ...],
@@ -148,7 +157,7 @@ class Request:
         for i in urls:
             logger.debug(f'尝试请求 {i}')
             try:
-                return await cls.request(i, is_json=is_json)
+                return await self.request(i, is_json=is_json)
             except RequestError as e:
                 if e.status_code in failover_code:  # 如果状态码在 failover_code 中, 则继续尝试下一个URL
                     error_list.append(e)
