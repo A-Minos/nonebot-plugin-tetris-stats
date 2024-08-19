@@ -7,7 +7,6 @@ from nonebot.compat import type_validate_json
 
 from ....db import anti_duplicate_add
 from ....utils.exception import RequestError
-from ....utils.request import splice_url
 from ..constant import BASE_URL, USER_ID, USER_NAME
 from .cache import Cache
 from .models import TETRIOHistoricalData
@@ -88,12 +87,7 @@ class Player:
 
     @property
     def _request_user_parameter(self) -> str:
-        if self.user_id is not None:
-            return self.user_id
-        if self.user_name is not None:
-            return self.user_name.lower()
-        msg = 'Invalid user'
-        raise ValueError(msg)
+        return self.user_id or cast(str, self.user_name).lower()
 
     @property
     async def user(self) -> User:
@@ -117,7 +111,7 @@ class Player:
     async def get_info(self) -> UserInfoSuccess:
         """Get User Info"""
         if self._user_info is None:
-            raw_user_info = await Cache.get(splice_url([BASE_URL, 'users/', f'{self._request_user_parameter}']))
+            raw_user_info = await Cache.get(BASE_URL / 'users' / self._request_user_parameter)
             user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]
             if isinstance(user_info, FailedModel):
                 msg = f'用户信息请求错误:\n{user_info.error}'
@@ -147,7 +141,7 @@ class Player:
     async def get_summaries(self, summaries_type: Summaries) -> SummariesModel:
         if summaries_type not in self._summaries:
             raw_summaries = await Cache.get(
-                splice_url([BASE_URL, 'users/', f'{self._request_user_parameter}/', 'summaries/', summaries_type])
+                BASE_URL / 'users' / self._request_user_parameter / 'summaries' / summaries_type
             )
             summaries: SummariesModel | FailedModel = type_validate_json(
                 self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[arg-type]
@@ -217,16 +211,7 @@ class Player:
     async def get_records(self, mode_type: RecordModeType, records_type: RecordType) -> RecordsSoloSuccessModel:
         if (record_key := RecordKey(mode_type, records_type)) not in self._records:
             raw_records = await Cache.get(
-                splice_url(
-                    [
-                        BASE_URL,
-                        'users/',
-                        f'{self._request_user_parameter}/',
-                        'records/',
-                        f'{mode_type}/',
-                        records_type,
-                    ]
-                )
+                BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type,
             )
             records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]
             if isinstance(records, FailedModel):

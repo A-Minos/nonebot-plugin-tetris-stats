@@ -1,13 +1,14 @@
 from datetime import datetime, timezone
-from typing import overload
-from urllib.parse import urlencode
+from typing import cast, overload
 
 from httpx import TimeoutException
 from nonebot.compat import type_validate_json
+from yarl import URL
 
+from ....config.config import config
 from ....db import anti_duplicate_add
 from ....utils.exception import RequestError
-from ....utils.request import Request, splice_url
+from ....utils.request import Request
 from ..constant import BASE_URL, USER_NAME
 from .models import TOSHistoricalData
 from .schemas.user import User
@@ -15,6 +16,8 @@ from .schemas.user_info import UserInfo, UserInfoSuccess
 from .schemas.user_profile import UserProfile
 
 UTC = timezone.utc
+
+request = Request(config.tetris.proxy.tos or config.tetris.proxy.main)
 
 
 class Player:
@@ -56,29 +59,14 @@ class Player:
     async def get_info(self) -> UserInfoSuccess:
         """获取用户信息"""
         if self._user_info is None:
-            if self.teaid is not None:
-                url = [
-                    splice_url(
-                        [
-                            i,
-                            'getTeaIdInfo',
-                            f'?{urlencode({"teaId":self.teaid})}',
-                        ]
-                    )
-                    for i in BASE_URL
-                ]
-            else:
-                url = [
-                    splice_url(
-                        [
-                            i,
-                            'getUsernameInfo',
-                            f'?{urlencode({"username":self.user_name})}',
-                        ]
-                    )
-                    for i in BASE_URL
-                ]
-            raw_user_info = await Request.failover_request(url, failover_code=[502], failover_exc=(TimeoutException,))
+            path = str(
+                URL('getTeaIdInfo') % {'teaId': self.teaid}
+                if self.teaid is not None
+                else URL('getUsernameInfo') % {'username': cast(str, self.user_name)}
+            )
+            raw_user_info = await request.failover_request(
+                [i / path for i in BASE_URL], failover_code=[502], failover_exc=(TimeoutException,)
+            )
             user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]
             if not isinstance(user_info, UserInfoSuccess):
                 msg = f'用户信息请求错误:\n{user_info.error}'
@@ -98,17 +86,11 @@ class Player:
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
-        params = urlencode(dict(sorted(other_parameter.items())))
+        params = (URL('') % dict(sorted(other_parameter.items()))).human_repr()
         if self._user_profile.get(params) is None:
-            raw_user_profile = await Request.failover_request(
+            raw_user_profile = await request.failover_request(
                 [
-                    splice_url(
-                        [
-                            i,
-                            'getProfile',
-                            f'?{urlencode({"id":self.teaid or self.user_name,**other_parameter})}',
-                        ]
-                    )
+                    i / 'getProfile' % {'id': self.teaid or cast(str, self.user_name), **other_parameter}
                     for i in BASE_URL
                 ],
                 failover_code=[502],

@@ -1,19 +1,21 @@
 from contextlib import suppress
 from datetime import datetime, timezone
 from io import StringIO
-from urllib.parse import urlencode
 
 from lxml import etree
 from pandas import read_html
 
+from ....config.config import config
 from ....db import anti_duplicate_add
-from ....utils.request import Request, splice_url
+from ....utils.request import Request
 from ..constant import BASE_URL, USER_NAME
 from .models import TOPHistoricalData
 from .schemas.user import User
 from .schemas.user_profile import Data, UserProfile
 
 UTC = timezone.utc
+
+request = Request(config.tetris.proxy.top or config.tetris.proxy.main)
 
 
 class Player:
@@ -35,8 +37,7 @@ class Player:
     async def get_profile(self) -> UserProfile:
         """获取用户信息"""
         if self._user_profile is None:
-            url = splice_url([BASE_URL, 'profile.php', f'?{urlencode({"user":self.user_name})}'])
-            raw_user_profile = await Request.request(url, is_json=False)
+            raw_user_profile = await request.request(BASE_URL / 'profile.php' % {'user': self.user_name}, is_json=False)
             self._user_profile = self._parse_profile(raw_user_profile)
             await anti_duplicate_add(
                 TOPHistoricalData(

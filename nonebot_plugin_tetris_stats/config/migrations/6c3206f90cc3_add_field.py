@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 from alembic import op
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from ujson import dumps, loads
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -27,6 +26,7 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
+    from json import dumps, loads
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()
@@ -50,6 +50,7 @@ def upgrade(name: str = '') -> None:
 def downgrade(name: str = '') -> None:
     if name:
         return
+    from json import dumps, loads
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()

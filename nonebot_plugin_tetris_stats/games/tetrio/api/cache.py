@@ -6,25 +6,29 @@ from weakref import WeakValueDictionary
 from aiocache import Cache as ACache  # type: ignore[import-untyped]
 from nonebot.compat import type_validate_json
 from nonebot.log import logger
+from yarl import URL
 
+from ....config.config import config
 from ....utils.request import Request
 from .schemas.base import FailedModel, SuccessModel
 
 UTC = timezone.utc
 
+request = Request(config.tetris.proxy.tetrio or config.tetris.proxy.main)
+
 
 class Cache:
     cache = ACache(ACache.MEMORY)
-    task: ClassVar[WeakValueDictionary[str, Lock]] = WeakValueDictionary()
+    task: ClassVar[WeakValueDictionary[URL, Lock]] = WeakValueDictionary()
 
     @classmethod
-    async def get(cls, url: str) -> bytes:
+    async def get(cls, url: URL) -> bytes:
         lock = cls.task.setdefault(url, Lock())
         async with lock:
             if (cached_data := await cls.cache.get(url)) is not None:
                 logger.debug(f'{url}: Cache hit!')
                 return cached_data
-            response_data = await Request.request(url)
+            response_data = await request.request(url)
             parsed_data: SuccessModel | FailedModel = type_validate_json(SuccessModel | FailedModel, response_data)  # type: ignore[arg-type]
             if isinstance(parsed_data, SuccessModel):
                 await cls.cache.add(

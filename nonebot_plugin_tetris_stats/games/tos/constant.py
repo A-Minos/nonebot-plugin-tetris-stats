@@ -1,11 +1,13 @@
 from re import compile
 from typing import Literal
 
+from yarl import URL
+
 GAME_TYPE: Literal['TOS'] = 'TOS'
 
 BASE_URL = {
-    'https://teatube.cn:8888/',
-    'http://cafuuchino1.studio26f.org:19970',
+    URL('https://teatube.cn:8888/'),
+    URL('http://cafuuchino1.studio26f.org:19970'),
 }
 
 USER_NAME = compile(

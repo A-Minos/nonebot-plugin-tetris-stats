@@ -1,5 +1,4 @@
 from hashlib import md5
-from urllib.parse import urlencode
 
 from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, Subcommand
@@ -9,6 +8,7 @@ from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 from nonebot_plugin_user import User
 from nonebot_plugin_userinfo import BotUserInfo, UserInfo
+from yarl import URL
 
 from ...db import BindStatus, create_or_update_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
@@ -67,7 +67,10 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                         platform='TETR.IO',
                         status='unknown',
                         user=People(
-                            avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": avatar_revision})}'
+                            avatar=str(
+                                URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}')
+                                % {'revision': avatar_revision}
+                            )
                             if (avatar_revision := (await account.avatar_revision)) is not None and avatar_revision != 0
                             else Avatar(type='identicon', hash=md5(user.ID.encode()).hexdigest()),  # noqa: S324
                             name=user.name.upper(),
