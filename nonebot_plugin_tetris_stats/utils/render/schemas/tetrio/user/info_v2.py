@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ......games.tetrio.api.typing import Rank, ValidRank
+from ......games.tetrio.api.typing import Rank
 from .....typing import Number
 from ...base import Avatar
 from .base import TetraLeagueHistoryData
