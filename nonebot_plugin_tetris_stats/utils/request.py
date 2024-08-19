@@ -129,7 +129,7 @@ class Request:
             cookies = None
             headers = None
         try:
-            async with AsyncClient(cookies=cookies, timeout=config.tetris.request_timeout) as session:
+            async with AsyncClient(cookies=cookies, timeout=config.tetris.request_timeout, proxy=self.proxy) as session:
                 response = await session.get(str(url), headers=headers)
                 if response.status_code != HTTPStatus.OK:
                     msg = f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
