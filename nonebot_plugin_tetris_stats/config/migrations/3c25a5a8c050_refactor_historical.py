@@ -19,7 +19,6 @@ from sqlalchemy import desc, select
 from sqlalchemy.dialects import sqlite
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from ujson import dumps, loads
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,6 +30,8 @@ depends_on: str | Sequence[str] | None = None
 
 
 def migrate_old_data() -> None:
+    from json import dumps, loads
+
     Base = automap_base()  # noqa: N806
     Base.prepare(autoload_with=op.get_bind())
     OldHistoricalData = Base.classes.nonebot_plugin_tetris_stats_historicaldata  # noqa: N806
