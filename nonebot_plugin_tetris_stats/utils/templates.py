@@ -13,7 +13,7 @@ from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
 from rich.progress import Progress
 
-from ..config.config import CACHE_PATH, DATA_PATH
+from ..config.config import CACHE_PATH, DATA_PATH, config
 
 driver = get_driver()
 
@@ -24,7 +24,7 @@ alc = on_alconna(Alconna('更新模板', Option('--revision', Args['revision', s
 
 async def download_templates(tag: str) -> Path:
     logger.info(f'开始下载模板 {tag}')
-    async with AsyncClient() as client:
+    async with AsyncClient(proxy=config.tetris.proxy.github or config.tetris.proxy.main) as client:
         if tag == 'latest':
             logger.info('目标为 latest, 正在获取最新版本号')
             tag = (
@@ -105,7 +105,7 @@ async def init_templates(tag: str) -> bool:
 
 
 async def check_tag(tag: str) -> bool:
-    async with AsyncClient() as client:
+    async with AsyncClient(proxy=config.tetris.proxy.github or config.tetris.proxy.main) as client:
         return (
             await client.get(f'https://github.com/A-Minos/tetris-stats-templates/releases/tag/{tag}')
         ).status_code != HTTPStatus.NOT_FOUND
