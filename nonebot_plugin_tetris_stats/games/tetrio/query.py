@@ -2,7 +2,6 @@ from asyncio import gather
 from datetime import datetime, timedelta, timezone
 from hashlib import md5
 from typing import TYPE_CHECKING, TypeVar
-from urllib.parse import urlencode
 
 from arclet.alconna import Arg, ArgFlag
 from nonebot import get_driver
@@ -16,6 +15,7 @@ from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[im
 from nonebot_plugin_user import User as NBUser
 from nonebot_plugin_user import get_user
 from sqlalchemy import select
+from yarl import URL
 
 from ...db import query_bind_info, trigger
 from ...utils.host import HostPage, get_self_netloc
@@ -199,10 +199,14 @@ async def make_query_image_v2(player: Player) -> bytes:
                     id=user.ID,
                     name=user.name.upper(),
                     bio=user_info.data.bio,
-                    banner=f'http://{netloc}/host/resource/tetrio/banners/{user.ID}?{urlencode({"revision": banner_revision})}'
+                    banner=str(
+                        URL(f'http://{netloc}/host/resource/tetrio/banners/{user.ID}') % {'revision': banner_revision}
+                    )
                     if banner_revision is not None and banner_revision != 0
                     else None,
-                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": avatar_revision})}'
+                    avatar=str(
+                        URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
+                    )
                     if avatar_revision is not None and avatar_revision != 0
                     else Avatar(
                         type='identicon',

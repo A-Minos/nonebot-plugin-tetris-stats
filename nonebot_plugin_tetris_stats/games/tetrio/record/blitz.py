@@ -1,7 +1,6 @@
 from asyncio import gather
 from datetime import timedelta
 from hashlib import md5
-from urllib.parse import urlencode
 
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -11,6 +10,7 @@ from nonebot_plugin_orm import get_session
 from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 from nonebot_plugin_user import get_user
+from yarl import URL
 
 from ....db import query_bind_info, trigger
 from ....utils.exception import RecordNotFoundError
@@ -94,7 +94,9 @@ async def make_blitz_image(player: Player) -> bytes:
                 user=User(
                     id=user.ID,
                     name=user.name.upper(),
-                    avatar=f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}?{urlencode({"revision": avatar_revision})}'
+                    avatar=str(
+                        URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
+                    )
                     if (avatar_revision := (await player.avatar_revision)) is not None and avatar_revision != 0
                     else Avatar(
                         type='identicon',

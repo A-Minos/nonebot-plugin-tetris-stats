@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from typing import cast, overload
-from urllib.parse import urlencode
 
 from httpx import TimeoutException
 from nonebot.compat import type_validate_json
@@ -87,7 +86,7 @@ class Player:
         """获取用户数据"""
         if other_parameter is None:
             other_parameter = {}
-        params = urlencode(dict(sorted(other_parameter.items())))
+        params = (URL('') % dict(sorted(other_parameter.items()))).human_repr()
         if self._user_profile.get(params) is None:
             raw_user_profile = await request.failover_request(
                 [
