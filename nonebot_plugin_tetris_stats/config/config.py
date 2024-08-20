@@ -1,9 +1,9 @@
 from nonebot import get_plugin_config
-from nonebot_plugin_localstore import get_cache_dir, get_data_dir
+from nonebot_plugin_localstore import get_plugin_cache_dir, get_plugin_data_dir
 from pydantic import BaseModel, Field
 
-CACHE_PATH = get_cache_dir('nonebot_plugin_tetris_stats')
-DATA_PATH = get_data_dir('nonebot_plugin_tetris_stats')
+CACHE_PATH = get_plugin_cache_dir()
+DATA_PATH = get_plugin_data_dir()
 
 
 class Proxy(BaseModel):
