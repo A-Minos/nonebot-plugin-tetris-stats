@@ -1,7 +1,7 @@
 from asyncio import gather
 from datetime import datetime, timedelta, timezone
 from hashlib import md5
-from typing import TYPE_CHECKING, TypeVar
+from typing import TypeVar
 
 from arclet.alconna import Arg, ArgFlag
 from nonebot import get_driver
@@ -39,15 +39,10 @@ from .. import add_block_handlers, alc
 from ..constant import CANT_VERIFY_MESSAGE
 from . import command, get_player
 from .api import Player
-from .api.schemas.summaries.league import LeagueSuccessModel, NeverPlayedData, NeverRatedData
+from .api.schemas.summaries.league import NeverPlayedData, NeverRatedData
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
 from .typing import Template
-
-if TYPE_CHECKING:
-    from .api.schemas.summaries import SoloSuccessModel, ZenSuccessModel
-    from .api.schemas.user import User
-    from .api.schemas.user_info import UserInfoSuccess
 
 UTC = timezone.utc
 
@@ -154,26 +149,13 @@ def handling_special_value(value: N) -> N | None:
 
 
 async def make_query_image_v2(player: Player) -> bytes:
-    user: User
-    user_info: UserInfoSuccess
-    league: LeagueSuccessModel
-    sprint: SoloSuccessModel
-    blitz: SoloSuccessModel
-    zen: ZenSuccessModel
-    avatar_revision: int | None
-    banner_revision: int | None
-    # TODO)) 有没有什么办法能让这类型推导成功)
-    user, user_info, league, sprint, blitz, zen, avatar_revision, banner_revision = await gather(  # type: ignore[assignment]
-        player.user,
-        player.get_info(),
-        player.league,
-        player.sprint,
-        player.blitz,
-        player.zen,
-        player.avatar_revision,
-        player.banner_revision,
+    (
+        (user, user_info, league, sprint, blitz, zen),
+        (avatar_revision, banner_revision),
+    ) = await gather(
+        gather(player.user, player.get_info(), player.league, player.sprint, player.blitz, player.zen),
+        gather(player.avatar_revision, player.banner_revision),
     )
-
     if sprint.data.record is not None:
         duration = timedelta(milliseconds=sprint.data.record.results.stats.finaltime).total_seconds()
         sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
