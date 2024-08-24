@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ..base import SuccessModel
+from ..base import FailedModel, SuccessModel
 from ..summaries.solo import Record
 
 
@@ -10,3 +10,6 @@ class Data(BaseModel):
 
 class SoloSuccessModel(SuccessModel):
     data: Data
+
+
+Solo = SoloSuccessModel | FailedModel

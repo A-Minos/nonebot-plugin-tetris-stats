@@ -22,13 +22,13 @@ class Cache:
     task: ClassVar[WeakValueDictionary[URL, Lock]] = WeakValueDictionary()
 
     @classmethod
-    async def get(cls, url: URL) -> bytes:
+    async def get(cls, url: URL, extra_headers: dict | None = None) -> bytes:
         lock = cls.task.setdefault(url, Lock())
         async with lock:
             if (cached_data := await cls.cache.get(url)) is not None:
                 logger.debug(f'{url}: Cache hit!')
                 return cached_data
-            response_data = await request.request(url)
+            response_data = await request.request(url, extra_headers, enable_anti_cloudflare=True)
             parsed_data: SuccessModel | FailedModel = type_validate_json(SuccessModel | FailedModel, response_data)  # type: ignore[arg-type]
             if isinstance(parsed_data, SuccessModel):
                 await cls.cache.add(

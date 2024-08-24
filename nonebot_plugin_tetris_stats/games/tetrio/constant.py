@@ -10,6 +10,7 @@ GAME_TYPE: Literal['IO'] = 'IO'
 BASE_URL = URL('https://ch.tetr.io/api/')
 
 RANK_PERCENTILE: dict[ValidRank, float] = {
+    'x+': 0.2,
     'x': 1,
     'u': 5,
     'ss': 11,

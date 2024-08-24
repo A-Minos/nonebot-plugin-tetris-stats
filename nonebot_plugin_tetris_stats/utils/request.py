@@ -117,6 +117,7 @@ class Request:
     async def request(
         self,
         url: URL,
+        extra_headers: dict | None = None,
         *,
         is_json: bool = True,
         enable_anti_cloudflare: bool = False,
@@ -128,6 +129,7 @@ class Request:
         else:
             cookies = None
             headers = None
+        headers = headers if extra_headers is None else extra_headers if headers is None else headers | extra_headers
         try:
             async with AsyncClient(cookies=cookies, timeout=config.tetris.request_timeout, proxy=self.proxy) as session:
                 response = await session.get(str(url), headers=headers)

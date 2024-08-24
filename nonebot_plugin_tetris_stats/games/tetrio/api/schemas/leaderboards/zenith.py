@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ..base import SuccessModel
+from ..base import FailedModel, SuccessModel
 from ..summaries.zenith import Record
 
 
@@ -10,3 +10,6 @@ class Data(BaseModel):
 
 class ZenithSuccessModel(SuccessModel):
     data: Data
+
+
+Zenith = ZenithSuccessModel | FailedModel
