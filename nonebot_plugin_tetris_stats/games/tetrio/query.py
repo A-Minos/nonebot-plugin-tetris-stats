@@ -209,7 +209,6 @@ async def make_query_image_v2(player: Player) -> bytes:
                     friend_count=user_info.data.friend_count,
                     supporter_tier=user_info.data.supporter_tier,
                     bad_standing=user_info.data.badstanding or False,
-                    verified=user_info.data.verified or False,
                     playtime=play_time,
                     join_at=user_info.data.ts,
                 ),

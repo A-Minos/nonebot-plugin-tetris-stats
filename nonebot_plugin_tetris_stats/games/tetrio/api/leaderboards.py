@@ -1,7 +1,6 @@
 from typing import Literal, overload
 from uuid import UUID
 
-from msgspec import to_builtins
 from nonebot.compat import type_validate_json
 from yarl import URL
 
@@ -87,4 +86,4 @@ async def records(
 
 
 async def get(url: URL, parameter: Parameter, extra_headers: dict | None = None) -> bytes:
-    return await Cache.get(url % to_builtins(parameter), extra_headers)
+    return await Cache.get(url % parameter.to_params(), extra_headers)

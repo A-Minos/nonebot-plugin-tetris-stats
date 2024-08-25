@@ -26,7 +26,6 @@ class User(BaseModel):
     name: str
     avatar: str | Avatar
     country: str | None
-    verified: bool
     tetra_league: TetraLeague
     xp: Number
     join_at: datetime | None

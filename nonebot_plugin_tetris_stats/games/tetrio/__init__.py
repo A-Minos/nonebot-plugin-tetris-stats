@@ -23,7 +23,7 @@ command = Subcommand(
 )
 
 
-from . import bind, config, query, rank, record  # noqa: E402
+from . import bind, config, list, query, rank, record  # noqa: E402
 
 main_command.add(command)
 
@@ -31,6 +31,7 @@ __all__ = [
     'alc',
     'bind',
     'config',
+    'list',
     'query',
     'rank',
     'record',

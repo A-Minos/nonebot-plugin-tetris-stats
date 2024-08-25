@@ -21,7 +21,7 @@ class User(BaseModel):
     name: str
     country: str | None
 
-    role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned']
+    role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'hidden', 'banned']
 
     avatar: str | Avatar
     banner: str | None
@@ -31,7 +31,6 @@ class User(BaseModel):
     friend_count: int | None
     supporter_tier: int
 
-    verified: bool
     bad_standing: bool
 
     badges: list[Badge]

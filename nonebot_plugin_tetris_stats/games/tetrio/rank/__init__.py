@@ -88,9 +88,7 @@ async def get_tetra_league_data() -> None:
     prisecter = P(pri=9007199254740991, sec=9007199254740991, ter=9007199254740991)  # * from ch.tetr.io
     results: list[BySuccessModel] = []
     while True:
-        model = await limit_by(
-            'league', Parameter(after=f'{prisecter.pri}:{prisecter.sec}:{prisecter.ter}', limit=100), x_session_id
-        )
+        model = await limit_by('league', Parameter(after=prisecter.to_prisecter(), limit=100), x_session_id)
         prisecter = model.data.entries[-1].p
         results.append(model)
         if len(model.data.entries) < 100:  # 分页值 # noqa: PLR2004

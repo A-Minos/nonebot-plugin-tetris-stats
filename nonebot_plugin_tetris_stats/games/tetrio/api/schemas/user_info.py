@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from .base import FailedModel
+from .base import ArCounts, FailedModel
 from .base import SuccessModel as BaseSuccessModel
 
 
@@ -14,13 +14,19 @@ class Badge(BaseModel):
     ts: datetime | Literal[False] | None = None
 
 
-class Discord(BaseModel):
+class Connection(BaseModel):
     id: str
     username: str
+    display_username: str
 
 
 class Connections(BaseModel):
-    discord: Discord | None = None
+    discord: Connection | None = None
+    twitch: Connection | None = None
+    twitter: Connection | None = None
+    reddit: Connection | None = None
+    youtube: Connection | None = None
+    steam: Connection | None = None
 
 
 class Distinguishment(BaseModel):
@@ -28,9 +34,9 @@ class Distinguishment(BaseModel):
 
 
 class Data(BaseModel):
-    id: str = Field(..., alias='_id')
+    id: str = Field(default=..., alias='_id')
     username: str
-    role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'banned']
+    role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'hidden', 'banned']
     ts: datetime | None = None
     botmaster: str | None = None
     badges: list[Badge]
@@ -42,7 +48,6 @@ class Data(BaseModel):
     badstanding: bool | None = None
     supporter: bool | None = None  # osk说是必有, 但实际上不是 fkosk
     supporter_tier: int
-    verified: bool | None = None
     avatar_revision: int | None = None
     """This user's avatar ID. Get their avatar at
 
@@ -57,6 +62,9 @@ class Data(BaseModel):
     connections: Connections
     friend_count: int | None = None
     distinguishment: Distinguishment | None = None
+    achievements: list[int]
+    ar: int
+    ar_counts: ArCounts
 
 
 class UserInfoSuccess(BaseSuccessModel):

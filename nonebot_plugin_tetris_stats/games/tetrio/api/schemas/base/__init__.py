@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from ...typing import Prisecter
 
 
 class AggregateStats(BaseModel):
@@ -39,10 +41,28 @@ class Garbage(BaseModel):
     cleared: int
 
 
-class P(BaseModel):  # what is P
+class P(BaseModel):
     pri: float
     sec: float
     ter: float
+
+    def to_prisecter(self) -> Prisecter:
+        return Prisecter(f'{self.pri}:{self.sec}:{self.ter}')
+
+
+class ArCounts(BaseModel):
+    bronze: int | None = Field(default=None, alias='1')
+    silver: int | None = Field(default=None, alias='2')
+    gold: int | None = Field(default=None, alias='3')
+    platinum: int | None = Field(default=None, alias='4')
+    diamond: int | None = Field(default=None, alias='5')
+    issued: int | None = Field(default=None, alias='100')
+    top3: int | None = Field(default=None, alias='t3')
+    top5: int | None = Field(default=None, alias='t5')
+    top10: int | None = Field(default=None, alias='t10')
+    top25: int | None = Field(default=None, alias='t25')
+    top50: int | None = Field(default=None, alias='t50')
+    top100: int | None = Field(default=None, alias='t100')
 
 
 class Cache(BaseModel):

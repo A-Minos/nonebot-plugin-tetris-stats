@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, NewType
 
 S1ValidRank = Literal[
     'x+',
@@ -43,3 +43,5 @@ Records = Literal[
     'blitz_recent',
     'blitz_progression',
 ]
+
+Prisecter = NewType('Prisecter', str)
