@@ -1,9 +1,20 @@
+from functools import partial
 from typing import Literal
 
+from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
 from ...typing import Rank, S1Rank, S1ValidRank
 from ..base import SuccessModel
+
+if PYDANTIC_V2:
+    from pydantic import field_validator
+
+    custom_validator = partial(field_validator, mode='before')
+else:
+    from pydantic import validator
+
+    custom_validator = partial(validator, pre=True, always=True)  # type: ignore[assignment, arg-type]
 
 
 class PastInner(BaseModel):
@@ -74,6 +85,13 @@ class NeverRatedData(BaseData):
     next_at: Literal[-1]
     percentile: Literal[-1]
     percentile_rank: Literal['z']
+
+    @custom_validator('apm', 'pps', 'vs')
+    @classmethod
+    def _(cls, value: float | None) -> float:
+        if value is None:
+            return 0
+        return value
 
 
 class RatedData(BaseData):
