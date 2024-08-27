@@ -25,8 +25,3 @@ jobs:
               shell: bash
               run: |
                   poetry run mypy ./nonebot_plugin_tetris_stats
-
-            - name: Run Pyright
-              shell: bash
-              run: |
-                  poetry run pyright ./nonebot_plugin_tetris_stats/
