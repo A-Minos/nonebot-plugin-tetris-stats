@@ -20,8 +20,3 @@ repos:
       hooks:
           - id: nonemoji
             stages: [prepare-commit-msg]
-
-    - repo: https://github.com/DetachHead/basedpyright-pre-commit-mirror
-      rev: v1.13.0
-      hooks:
-          - id: basedpyright
