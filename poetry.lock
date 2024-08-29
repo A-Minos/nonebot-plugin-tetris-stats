@@ -2363,13 +2363,13 @@ nonebot2 = {version = ">=2.2.0,<3.0.0", extras = ["fastapi"]}
 
 [[package]]
 name = "nonebot-plugin-user"
-version = "0.4.2"
+version = "0.4.3"
 description = "适用于 Nonebot2 的用户插件"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "nonebot_plugin_user-0.4.2-py3-none-any.whl", hash = "sha256:c7312109614cb40e1887e534deb1e81dd213b2304dd34cba738b35580971cc9f"},
-    {file = "nonebot_plugin_user-0.4.2.tar.gz", hash = "sha256:422062dfa97d8fbd8dbd11ab46b240e86d90fcca3d991886596c3332e4211694"},
+    {file = "nonebot_plugin_user-0.4.3-py3-none-any.whl", hash = "sha256:a9e90644238a89abbbd99c5ec2df1a750d33c5f8e2fe6f8ee9348868a6632ab7"},
+    {file = "nonebot_plugin_user-0.4.3.tar.gz", hash = "sha256:f7cf4102d3e0a511b49e4822d7c1d0f1e860abd53f596dbfe73339964c9f6c39"},
 ]
 
 [package.dependencies]
