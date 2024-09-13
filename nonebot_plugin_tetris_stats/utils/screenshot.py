@@ -1,4 +1,4 @@
-from playwright.async_api import TimeoutError, ViewportSize
+from playwright.async_api import BrowserContext, TimeoutError, ViewportSize
 
 from ..config.config import config
 from .browser import BrowserManager
@@ -6,13 +6,15 @@ from .retry import retry
 from .time_it import time_it
 
 
+async def context_factory() -> BrowserContext:
+    return await (await BrowserManager.get_browser()).new_context(device_scale_factor=config.tetris.screenshot_quality)
+
+
 @retry(exception_type=TimeoutError, reply='截图失败, 重试中')
 @time_it
 async def screenshot(url: str) -> bytes:
-    browser = await BrowserManager.get_browser()
-    async with (
-        await browser.new_page(device_scale_factor=config.tetris.screenshot_quality) as page,
-    ):
+    context = await BrowserManager.get_context('screenshot', factory=context_factory)
+    async with await context.new_page() as page:
         await page.goto(url)
         size: ViewportSize = await page.evaluate("""
             () => {

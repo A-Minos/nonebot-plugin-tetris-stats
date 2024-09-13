@@ -1,12 +1,14 @@
 import sys
+from collections.abc import Callable, Coroutine
 from os import environ
 from platform import system
 from re import sub
+from typing import Any, ClassVar
 
 from nonebot import get_driver
 from nonebot.log import logger
 from playwright.__main__ import main
-from playwright.async_api import Browser, async_playwright
+from playwright.async_api import Browser, BrowserContext, async_playwright
 
 driver = get_driver()
 
@@ -27,6 +29,7 @@ class BrowserManager:
     """浏览器管理类"""
 
     _browser: Browser | None = None
+    _contexts: ClassVar[dict[str, BrowserContext]] = {}
 
     @classmethod
     async def init_playwright(cls) -> None:
@@ -72,7 +75,11 @@ class BrowserManager:
     async def _start_browser(cls) -> Browser:
         """启动浏览器实例"""
         playwright = await async_playwright().start()
-        cls._browser = await playwright.firefox.launch()
+        cls._browser = await playwright.firefox.launch(
+            firefox_user_prefs={
+                'network.http.max-persistent-connections-per-server': 64,
+            },
+        )
         return cls._browser
 
     @classmethod
@@ -81,7 +88,25 @@ class BrowserManager:
         return cls._browser or await cls._start_browser()
 
     @classmethod
+    async def get_context(
+        cls, context_id: str = 'default', factory: Callable[[], Coroutine[Any, Any, BrowserContext]] | None = None
+    ) -> BrowserContext:
+        """获取浏览器上下文"""
+        return cls._contexts.setdefault(
+            context_id, await factory() if factory is not None else await (await cls.get_browser()).new_context()
+        )
+
+    @classmethod
+    async def del_context(cls, context_id: str) -> None:
+        """删除浏览器上下文"""
+        if context_id in cls._contexts:
+            await cls._contexts[context_id].close()
+            del cls._contexts[context_id]
+
+    @classmethod
     async def close_browser(cls) -> None:
         """关闭浏览器实例"""
+        for i in cls._contexts.values():
+            await i.close()
         if isinstance(cls._browser, Browser):
             await cls._browser.close()
