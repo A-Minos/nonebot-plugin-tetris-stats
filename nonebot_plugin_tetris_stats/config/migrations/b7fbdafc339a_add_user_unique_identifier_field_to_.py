@@ -26,12 +26,7 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
-    from nonebot_plugin_tetris_stats.version import __version__
 
-    if __version__ != '1.0.4':
-        msg = '本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移'
-        logger.critical(msg)
-        raise RuntimeError(msg)
     from nonebot.compat import type_validate_json
     from pydantic import ValidationError
     from rich.progress import (
@@ -46,8 +41,6 @@ def upgrade(name: str = '') -> None:
     from sqlalchemy.ext.automap import automap_base
     from sqlalchemy.orm import Session
 
-    from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseUser  # type: ignore[import-untyped]
-
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:
         batch_op.add_column(sa.Column('user_unique_identifier', sa.String(length=32), nullable=True))
         batch_op.create_index(
@@ -60,37 +53,48 @@ def upgrade(name: str = '') -> None:
     Base.prepare(autoload_with=connection)
     HistoricalData = Base.classes.nonebot_plugin_tetris_stats_historicaldata  # noqa: N806
 
-    models: list[type[BaseUser]] = BaseUser.__subclasses__()
-
-    def json_to_model(value: str) -> BaseUser:
-        for i in models:
-            try:
-                return type_validate_json(i, value)
-            except ValidationError:  # noqa: PERF203
-                ...
-        raise ValueError
-
     with Session(op.get_bind()) as session:
         count = session.query(HistoricalData).count()
-        with Progress(
-            TextColumn('[progress.description]{task.description}'),
-            BarColumn(),
-            MofNCompleteColumn(),
-            TaskProgressColumn(),
-            TimeRemainingColumn(),
-        ) as progress:
-            task_id = progress.add_task('[cyan]Updateing:', total=count)
-            for i in range(0, count, 100):
-                for j in session.scalars(
-                    select(HistoricalData).where(HistoricalData.id > i).order_by(HistoricalData.id).limit(100)
-                ):
-                    model = json_to_model(j.game_user)
+        if count == 0:
+            logger.info('空表, 跳过')
+        else:
+            from nonebot_plugin_tetris_stats.version import __version__
+
+            if __version__ != '1.0.4':
+                msg = '本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移'
+                logger.critical(msg)
+                raise RuntimeError(msg)
+            from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseUser  # type: ignore[import-untyped]
+
+            models: list[type[BaseUser]] = BaseUser.__subclasses__()
+
+            def json_to_model(value: str) -> BaseUser:
+                for i in models:
                     try:
-                        j.user_unique_identifier = model.unique_identifier
-                    except ValueError:
-                        session.delete(j)
-                    progress.update(task_id, advance=1)
-                session.commit()
+                        return type_validate_json(i, value)
+                    except ValidationError:  # noqa: PERF203
+                        ...
+                raise ValueError
+
+            with Progress(
+                TextColumn('[progress.description]{task.description}'),
+                BarColumn(),
+                MofNCompleteColumn(),
+                TaskProgressColumn(),
+                TimeRemainingColumn(),
+            ) as progress:
+                task_id = progress.add_task('[cyan]Updateing:', total=count)
+                for i in range(0, count, 100):
+                    for j in session.scalars(
+                        select(HistoricalData).where(HistoricalData.id > i).order_by(HistoricalData.id).limit(100)
+                    ):
+                        model = json_to_model(j.game_user)
+                        try:
+                            j.user_unique_identifier = model.unique_identifier
+                        except ValueError:
+                            session.delete(j)
+                        progress.update(task_id, advance=1)
+                    session.commit()
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:
         batch_op.alter_column('user_unique_identifier', existing_type=sa.VARCHAR(length=32), nullable=False)
     logger.success('database upgrade success')

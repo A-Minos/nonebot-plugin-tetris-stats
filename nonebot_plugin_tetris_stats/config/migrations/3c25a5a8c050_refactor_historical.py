@@ -47,6 +47,9 @@ def migrate_old_data() -> None:
             TimeRemainingColumn(),
         ) as progress,
     ):
+        if session.query(OldHistoricalData).count() == 0:
+            logger.info('空表, 跳过')
+            return
         task_id = progress.add_task('[cyan]Migrating:', total=session.query(OldHistoricalData).count())
         pointer = 0
         while pointer < session.query(OldHistoricalData).order_by(desc(OldHistoricalData.id)).limit(1).one().id:
