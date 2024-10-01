@@ -29,7 +29,7 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
-def migrate_old_data() -> None:
+def migrate_old_data() -> None:  # noqa: C901
     from json import dumps, loads
 
     Base = automap_base()  # noqa: N806
