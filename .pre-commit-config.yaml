@@ -13,7 +13,7 @@ repos:
             args: [--fix, --exit-non-zero-on-fix]
             stages: [Nonepre-commitNone]
           - id: ruff-format
-            stages: [Nonepre-commitNone]
+            stages: [pre-commit]
 
     - repo: https://github.com/nonebot/nonemoji
       rev: v0.1.4
