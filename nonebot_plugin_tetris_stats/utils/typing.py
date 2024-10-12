@@ -1,11 +1,11 @@
-from typing import Literal
+from typing import Literal, TypeAlias
 
-Number = float | int
-GameType = Literal['IO', 'TOP', 'TOS']
-BaseCommandType = Literal['bind', 'query']
-TETRIOCommandType = BaseCommandType | Literal['rank', 'config', 'list', 'record']
-AllCommandType = BaseCommandType | TETRIOCommandType
-Me = Literal[
+Number: TypeAlias = float | int
+GameType: TypeAlias = Literal['IO', 'TOP', 'TOS']
+BaseCommandType: TypeAlias = Literal['bind', 'query']
+TETRIOCommandType: TypeAlias = BaseCommandType | Literal['rank', 'config', 'list', 'record']
+AllCommandType: TypeAlias = BaseCommandType | TETRIOCommandType
+Me: TypeAlias = Literal[
     '我',
     '自己',
     '我等',
