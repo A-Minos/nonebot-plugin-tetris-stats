@@ -32,12 +32,12 @@ command.add(
 
 
 @alc.assign('TETRIO.rank.all')
-async def _(event_session: EventSession, template: Template = 'v1'):
+async def _(event_session: EventSession, template: Template | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='rank',
-        command_args=['--all'],
+        command_args=['--all'] + ([f'--template {template}'] if template is not None else []),
     ):
         async with get_session() as session:
             latest_data = (
@@ -62,7 +62,7 @@ async def _(event_session: EventSession, template: Template = 'v1'):
                 )
             ).one()
         match template:
-            case 'v1':
+            case 'v1' | None:
                 await UniMessage.image(raw=await make_image_v1(latest_data, compare_data)).finish()
             case 'v2':
                 await UniMessage.image(raw=await make_image_v2(latest_data, compare_data)).finish()

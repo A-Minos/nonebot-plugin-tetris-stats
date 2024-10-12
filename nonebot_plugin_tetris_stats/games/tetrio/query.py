@@ -104,7 +104,7 @@ async def _(  # noqa: PLR0913
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='query',
-        command_args=[f'--default-template {template}'] if template is not None else [],
+        command_args=[f'--template {template}'] if template is not None else [],
     ):
         async with get_session() as session:
             bind = await query_bind_info(
@@ -131,7 +131,7 @@ async def _(user: NBUser, account: Player, event_session: EventSession, template
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='query',
-        command_args=[f'--default-template {template}'] if template is not None else [],
+        command_args=[f'--template {template}'] if template is not None else [],
     ):
         async with get_session() as session:
             if template is None:
