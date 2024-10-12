@@ -36,6 +36,7 @@ async def _(
     limit: int | None = None,
     country: str | None = None,
 ):
+    country = country.upper() if country is not None else None
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
