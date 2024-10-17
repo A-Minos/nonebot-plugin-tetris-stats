@@ -47,7 +47,11 @@
     alt="wakatime"
     />
 </a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2FA-Minos%2Fnonebot-plugin-tetris-stats?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FA-Minos%2Fnonebot-plugin-tetris-stats.svg?type=shield"/></a>
 </p>
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FA-Minos%2Fnonebot-plugin-tetris-stats.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FA-Minos%2Fnonebot-plugin-tetris-stats?ref=badge_large)
 
 ## ✨ 目前支持的游戏
 
