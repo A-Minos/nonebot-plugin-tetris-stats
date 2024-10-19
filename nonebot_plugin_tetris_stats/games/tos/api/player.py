@@ -59,13 +59,14 @@ class Player:
     async def get_info(self) -> UserInfoSuccess:
         """获取用户信息"""
         if self._user_info is None:
-            path = str(
-                URL('getTeaIdInfo') % {'teaId': self.teaid}
-                if self.teaid is not None
-                else URL('getUsernameInfo') % {'username': cast(str, self.user_name)}
-            )
+            if self.teaid is not None:
+                path = 'getTeaIdInfo'
+                query = {'teaId': self.teaid}
+            else:
+                path = 'getUsernameInfo'
+                query = {'username': cast(str, self.user_name)}
             raw_user_info = await request.failover_request(
-                [i / path for i in BASE_URL], failover_code=[502], failover_exc=(TimeoutException,)
+                [i / path % query for i in BASE_URL], failover_code=[502], failover_exc=(TimeoutException,)
             )
             user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]
             if not isinstance(user_info, UserInfoSuccess):
