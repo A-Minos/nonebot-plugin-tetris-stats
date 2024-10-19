@@ -37,7 +37,7 @@ class PastInner(BaseModel):
 
 
 class Past(BaseModel):
-    first: PastInner | None = Field(default=None, alias='1')
+    first: PastInner | None = Field(default=None, alias='1')  # pyright: ignore [reportGeneralTypeIssues]
 
 
 class BaseData(BaseModel):
