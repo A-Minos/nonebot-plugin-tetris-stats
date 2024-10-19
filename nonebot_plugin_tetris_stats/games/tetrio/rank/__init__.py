@@ -13,7 +13,6 @@ from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 
 from ....utils.exception import RequestError
-from ....utils.limit import limit
 from ....utils.retry import retry
 from .. import alc
 from .. import command as base_command
