@@ -84,11 +84,11 @@ def find_special_player(
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
 async def get_tetra_league_data() -> None:
     x_session_id = uuid4()
-    limit_by = retry(max_attempts=10, exception_type=RequestError)(limit(timedelta(seconds=1))(by))
+    retry_by = retry(max_attempts=10, exception_type=RequestError)(by)
     prisecter = P(pri=9007199254740991, sec=9007199254740991, ter=9007199254740991)  # * from ch.tetr.io
     results: list[BySuccessModel] = []
     while True:
-        model = await limit_by('league', Parameter(after=prisecter.to_prisecter(), limit=100), x_session_id)
+        model = await retry_by('league', Parameter(after=prisecter.to_prisecter(), limit=100), x_session_id)
         prisecter = model.data.entries[-1].p
         results.append(model)
         if len(model.data.entries) < 100:  # 分页值 # noqa: PLR2004
