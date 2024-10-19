@@ -17,7 +17,7 @@ UTC = timezone.utc
 
 
 request = Request(config.tetris.proxy.tetrio or config.tetris.proxy.main)
-request.request = limit(timedelta(seconds=1))(request.request)
+request.request = limit(timedelta(seconds=1))(request.request)  # type: ignore[method-assign]
 
 
 class Cache:
