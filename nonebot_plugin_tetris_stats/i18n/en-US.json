@@ -1,0 +1,16 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "Can't query bot's information" },
+    "warning": {
+      "unverified": "* Because I can't verify account linking information, I can't guarantee the info I found is yourself/themself."
+    }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "Username/ID is invalid",
+      "TOS": "Username/ID is invalid",
+      "TOP": "Username is invalid"
+    }
+  }
+}

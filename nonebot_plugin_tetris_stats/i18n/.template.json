@@ -1,0 +1,16 @@
+{
+  "$schema": ".template.schema.json",
+  "scopes": [
+    {
+      "scope": "interaction",
+      "types": [
+        { "subtype": "wrong", "types": ["query_bot"] },
+        { "subtype": "warning", "types": ["unverified"] }
+      ]
+    },
+    {
+      "scope": "error",
+      "types": [{ "subtype": "MessageFormatError", "types": ["TETR.IO", "TOS", "TOP"] }]
+    }
+  ]
+}

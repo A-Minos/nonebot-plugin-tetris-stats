@@ -14,6 +14,7 @@ from nonebot_plugin_user import get_user
 from nonebot_plugin_userinfo import EventUserInfo, UserInfo
 
 from ...db import query_bind_info, trigger
+from ...i18n import Lang
 from ...utils.exception import RequestError
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
@@ -24,7 +25,6 @@ from ...utils.render.schemas.base import People, Ranking
 from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me, Number
-from ..constant import CANT_VERIFY_MESSAGE
 from . import alc
 from .api import Player
 from .api.schemas.user_info import UserInfoSuccess
@@ -124,7 +124,7 @@ async def _(
             )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
-        message = CANT_VERIFY_MESSAGE
+        message = UniMessage.i18n(Lang.interaction.warning.unverified)
         player = Player(teaid=bind.game_account, trust=True)
         user_info, game_data = await gather(player.get_info(), get_game_data(player))
         if game_data is not None:

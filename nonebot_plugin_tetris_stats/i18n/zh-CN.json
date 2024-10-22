@@ -1,0 +1,14 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "不能查询bot的信息" },
+    "warning": { "unverified": "* 由于无法验证绑定信息, 不能保证查询到的用户为本人" }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "用户名/ID不合法",
+      "TOS": "用户名/ID不合法",
+      "TOP": "用户名不合法"
+    }
+  }
+}

@@ -18,6 +18,7 @@ from sqlalchemy import select
 from yarl import URL
 
 from ...db import query_bind_info, trigger
+from ...i18n import Lang
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.metrics import get_metrics
 from ...utils.render import render
@@ -36,7 +37,6 @@ from ...utils.render.schemas.tetrio.user.info_v2 import User as V2TemplateUser
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me
 from .. import add_block_handlers, alc
-from ..constant import CANT_VERIFY_MESSAGE
 from . import command, get_player
 from .api import Player
 from .api.schemas.summaries.league import NeverPlayedData, NeverRatedData
@@ -120,9 +120,11 @@ async def _(  # noqa: PLR0913
                 )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
-        message = UniMessage(CANT_VERIFY_MESSAGE)
         player = Player(user_id=bind.game_account, trust=True)
-        await (message + UniMessage.image(raw=await make_query_image_v2(player))).finish()
+        await (
+            UniMessage.i18n(Lang.interaction.warning.unverified)
+            + UniMessage.image(raw=await make_query_image_v2(player))
+        ).finish()
 
 
 @alc.assign('TETRIO.query')
