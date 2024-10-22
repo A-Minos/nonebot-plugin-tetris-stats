@@ -1,5 +1,6 @@
 from typing import Any
 
+from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
 from ...typing import Prisecter
@@ -12,4 +13,6 @@ class Parameter(BaseModel):
     country: str | None = None
 
     def to_params(self) -> dict[str, Any]:
-        return self.model_dump(exclude_defaults=True)
+        if PYDANTIC_V2:
+            return self.model_dump(exclude_defaults=True)
+        return self.dict(exclude_defaults=True)
