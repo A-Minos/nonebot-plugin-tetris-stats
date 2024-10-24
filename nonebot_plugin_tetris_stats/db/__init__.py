@@ -55,12 +55,12 @@ async def create_or_update_bind(
             game_account=game_account,
         )
         session.add(bind)
-        message = BindStatus.SUCCESS
+        status = BindStatus.SUCCESS
     else:
         bind.game_account = game_account
-        message = BindStatus.UPDATE
+        status = BindStatus.UPDATE
     await session.commit()
-    return message
+    return status
 
 
 T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
