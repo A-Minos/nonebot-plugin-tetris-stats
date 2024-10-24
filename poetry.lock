@@ -2260,13 +2260,13 @@ typing-extensions = ">=4.8.0,<5.0.0"
 
 [[package]]
 name = "nonebot-adapter-onebot"
-version = "2.4.5"
+version = "2.4.6"
 description = "OneBot(CQHTTP) adapter for nonebot2"
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "nonebot_adapter_onebot-2.4.5-py3-none-any.whl", hash = "sha256:882780f2a8eb52137177643c78a6b36c73c38cc53b20e11a5f83aa66cd8bce3f"},
-    {file = "nonebot_adapter_onebot-2.4.5.tar.gz", hash = "sha256:5897903792226683323c960472e2cced7609d45e8e8c3730646e9db5d9c3241e"},
+    {file = "nonebot_adapter_onebot-2.4.6-py3-none-any.whl", hash = "sha256:b1ec7023fd83d731f63b513217327a57d12893a261944934b9195f79173791ad"},
+    {file = "nonebot_adapter_onebot-2.4.6.tar.gz", hash = "sha256:e33c93649ad11b320d8e9ff213635f29b23b4d0413c9158bd031c513c2f8f701"},
 ]
 
 [package.dependencies]
