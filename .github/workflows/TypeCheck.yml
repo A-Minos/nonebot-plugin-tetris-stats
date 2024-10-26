@@ -1,32 +1,33 @@
 name: TypeCheck
 
 on:
-    push:
+  push:
 
 jobs:
-    TypeCheck:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  TypeCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Install poetry
-              run: pipx install poetry
-              shell: bash
+      - uses: astral-sh/setup-uv@v3
+        name: Setup UV
+        with:
+          enable-cache: true
 
-            - uses: actions/setup-python@v5
-              with:
-                  python-version: '3.10'
-                  cache: 'poetry'
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
 
-            - run: poetry install
-              shell: bash
+      - run: uv sync
+        shell: bash
 
-            - name: Run Mypy
-              shell: bash
-              run: |
-                  poetry run mypy ./nonebot_plugin_tetris_stats
+      - name: Run Mypy
+        shell: bash
+        run: |
+          uv run mypy ./nonebot_plugin_tetris_stats
 
-            - name: Run BasedPyright
-              shell: bash
-              run: |
-                  poetry run basedpyright ./nonebot_plugin_tetris_stats/
+      - name: Run BasedPyright
+        shell: bash
+        run: |
+          uv run basedpyright ./nonebot_plugin_tetris_stats/
