@@ -14,10 +14,10 @@ from nonebot_plugin_user import get_user
 from sqlalchemy import select
 
 from ....db import query_bind_info, trigger
+from ....i18n import Lang
 from ....utils.exception import FallbackError
 from ....utils.typing import Me
 from ... import add_block_handlers, alc
-from ...constant import CANT_VERIFY_MESSAGE
 from .. import command, get_player
 from ..api import Player
 from ..constant import GAME_TYPE
@@ -113,9 +113,10 @@ async def _(  # noqa: PLR0913
                 )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
-        message = UniMessage(CANT_VERIFY_MESSAGE)
         player = Player(user_id=bind.game_account, trust=True)
-        await (message + await make_query_result(player, template or 'v1')).finish()
+        await (
+            UniMessage.i18n(Lang.interaction.warning.unverified) + await make_query_result(player, template or 'v1')
+        ).finish()
 
 
 @alc.assign('TETRIO.query')

@@ -7,6 +7,7 @@ from nonebot.typing import T_Handler
 from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alconna
 
 from .. import ns
+from ..i18n.model import Lang
 from ..utils.exception import MessageFormatError, NeedCatchError
 
 command: Alconna = Alconna(
@@ -30,7 +31,7 @@ def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:
     @handler
     async def _(bot: Bot, matcher: Matcher, target: At):
         if isinstance(target, At) and target.target == bot.self_id:
-            await matcher.finish('不能查询bot的信息')
+            await matcher.finish(Lang.interaction.wrong.query_bot())
 
 
 from . import tetrio, top, tos  # noqa: F401, E402

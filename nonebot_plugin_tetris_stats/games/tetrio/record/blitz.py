@@ -13,6 +13,7 @@ from nonebot_plugin_user import get_user
 from yarl import URL
 
 from ....db import query_bind_info, trigger
+from ....i18n import Lang
 from ....utils.exception import RecordNotFoundError
 from ....utils.host import HostPage, get_self_netloc
 from ....utils.metrics import get_metrics
@@ -22,7 +23,6 @@ from ....utils.render.schemas.tetrio.record.base import Finesse, Max, Mini, Tspi
 from ....utils.render.schemas.tetrio.record.blitz import Record, Statistic
 from ....utils.screenshot import screenshot
 from ....utils.typing import Me
-from ...constant import CANT_VERIFY_MESSAGE
 from .. import alc
 from ..api.player import Player
 from ..constant import GAME_TYPE
@@ -60,9 +60,10 @@ async def _(
             )
         if bind is None:
             await matcher.finish('未查询到绑定信息')
-        message = UniMessage(CANT_VERIFY_MESSAGE)
         player = Player(user_id=bind.game_account, trust=True)
-        await (message + UniMessage.image(raw=await make_blitz_image(player))).finish()
+        await (
+            UniMessage.i18n(Lang.interaction.warning.unverified) + UniMessage.image(raw=await make_blitz_image(player))
+        ).finish()
 
 
 @alc.assign('TETRIO.record.blitz')

@@ -1,0 +1,72 @@
+{
+  "title": "Lang Schema",
+  "description": "Schema for lang file",
+  "type": "object",
+  "properties": {
+    "interaction": {
+      "title": "Interaction",
+      "description": "Scope 'interaction' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wrong": {
+          "title": "Wrong",
+          "description": "Scope 'wrong' of lang item",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "query_bot": {
+              "title": "query_bot",
+              "description": "value of lang item type 'query_bot'",
+              "type": "string"
+            }
+          }
+        },
+        "warning": {
+          "title": "Warning",
+          "description": "Scope 'warning' of lang item",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unverified": {
+              "title": "unverified",
+              "description": "value of lang item type 'unverified'",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "error": {
+      "title": "Error",
+      "description": "Scope 'error' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "MessageFormatError": {
+          "title": "Messageformaterror",
+          "description": "Scope 'MessageFormatError' of lang item",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "TETR.IO": {
+              "title": "TETR.IO",
+              "description": "value of lang item type 'TETR.IO'",
+              "type": "string"
+            },
+            "TOS": {
+              "title": "TOS",
+              "description": "value of lang item type 'TOS'",
+              "type": "string"
+            },
+            "TOP": {
+              "title": "TOP",
+              "description": "value of lang item type 'TOP'",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

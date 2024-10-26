@@ -8,6 +8,7 @@ from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[im
 from nonebot_plugin_user import get_user
 
 from ...db import query_bind_info, trigger
+from ...i18n import Lang
 from ...utils.exception import FallbackError
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.metrics import TetrisMetricsBasicWithLPM, get_metrics
@@ -18,7 +19,6 @@ from ...utils.render.schemas.top_info import Data as InfoData
 from ...utils.render.schemas.top_info import Info
 from ...utils.screenshot import screenshot
 from ...utils.typing import Me
-from ..constant import CANT_VERIFY_MESSAGE
 from . import alc
 from .api import Player
 from .api.schemas.user_profile import Data, UserProfile
@@ -44,7 +44,7 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
         if bind is None:
             await matcher.finish('未查询到绑定信息')
         await (
-            UniMessage(CANT_VERIFY_MESSAGE)
+            UniMessage.i18n(Lang.interaction.warning.unverified)
             + await make_query_result(await Player(user_name=bind.game_account, trust=True).get_profile())
         ).finish()
 
