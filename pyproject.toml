@@ -66,6 +66,9 @@ test = [
 ]
 debug = ["matplotlib>=3.9.2", "memory-profiler>=0.61.0", "objprint>=0.2.3", "pyqt6>=6.7.1", "viztracer>=0.17.0"]
 
+[tool.uv]
+default-groups = ["dev", "typecheck"]
+
 [tool.ruff]
 line-length = 120
 target-version = "py310"
