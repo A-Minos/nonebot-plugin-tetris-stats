@@ -2,30 +2,19 @@
 
 ## 配置环境
 
-### 对于有一定 Python 基础的开发者
-
-首先你需要 [Python **3.10**](https://www.python.org/) 以及 [Poetry](https://python-poetry.org/)。  
-然后你需要使用`git clone`命令将本仓库克隆到本地，然后使用`poetry install --sync`安装依赖。
-
-### 对于基础不是很好的开发者
-
-以下是**我认为的**最佳实践:
+首先你需要安装 [uv](https://docs.astral.sh/uv/)。  
+然后：
 
 ```bash
-# 安装 uv
-# 请参考 https://docs.astral.sh/uv/getting-started/installation/
-
 # 配置基础 Python 环境
 uv python install 3.10
-uv tool install poetry
 
 # 克隆仓库
 git clone https://github.com/A-Minos/nonebot-plugin-tetris-stats.git
 cd nonebot-plugin-tetris-stats
 
 # 安装依赖
-uv run --no-project --python 3.10 poetry env use python
-poetry install --sync
+uv sync
 ```
 
 ## 开发
