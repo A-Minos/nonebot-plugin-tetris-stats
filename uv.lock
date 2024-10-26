@@ -1664,13 +1664,13 @@ debug = [
 dev = [
     { name = "basedpyright" },
     { name = "mypy" },
-    { name = "ruff" },
-]
-test = [
     { name = "nonebot-adapter-discord" },
     { name = "nonebot-adapter-kaiheila" },
     { name = "nonebot-adapter-onebot" },
     { name = "nonebot-adapter-qq" },
+    { name = "ruff" },
+]
+test = [
     { name = "nonebot-adapter-satori" },
     { name = "nonebot-plugin-orm", extra = ["default"] },
     { name = "nonebot2", extra = ["aiohttp", "fastapi"] },
@@ -1719,13 +1719,13 @@ debug = [
 dev = [
     { name = "basedpyright", specifier = ">=1.19.1" },
     { name = "mypy", specifier = ">=1.13.0" },
-    { name = "ruff", specifier = ">=0.7.1" },
-]
-test = [
     { name = "nonebot-adapter-discord", specifier = ">=0.1.8" },
     { name = "nonebot-adapter-kaiheila", specifier = ">=0.3.4" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.4.6" },
     { name = "nonebot-adapter-qq", specifier = ">=1.5.3" },
+    { name = "ruff", specifier = ">=0.7.1" },
+]
+test = [
     { name = "nonebot-adapter-satori", specifier = ">=0.12.6" },
     { name = "nonebot-plugin-orm", extras = ["default"], specifier = ">=0.7.6" },
     { name = "nonebot2", extras = ["aiohttp", "fastapi"], specifier = ">=2.3.3" },

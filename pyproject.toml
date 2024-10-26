@@ -48,22 +48,22 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["basedpyright>=1.19.1", "mypy>=1.13.0", "ruff>=0.7.1"]
+dev = [
+    "basedpyright>=1.19.1",
+    "mypy>=1.13.0",
+    "nonebot-adapter-discord>=0.1.8",
+    "nonebot-adapter-kaiheila>=0.3.4",
+    "nonebot-adapter-onebot>=2.4.6",
+    "nonebot-adapter-qq>=1.5.3",
+    "ruff>=0.7.1",
+]
 typecheck = [
     "pandas-stubs>=2.2.3.241009",
     "types-aiofiles>=24.1.0.20240626",
     "types-lxml>=2024.9.16",
     "types-pillow>=10.2.0.20240822",
 ]
-test = [
-    "nonebot-adapter-discord>=0.1.8",
-    "nonebot-adapter-kaiheila>=0.3.4",
-    "nonebot-adapter-onebot>=2.4.6",
-    "nonebot-adapter-qq>=1.5.3",
-    "nonebot-adapter-satori>=0.12.6",
-    "nonebot-plugin-orm[default]>=0.7.6",
-    "nonebot2[aiohttp,fastapi]>=2.3.3",
-]
+test = ["nonebot-adapter-satori>=0.12.6", "nonebot-plugin-orm[default]>=0.7.6", "nonebot2[aiohttp,fastapi]>=2.3.3"]
 debug = ["matplotlib>=3.9.2", "memory-profiler>=0.61.0", "objprint>=0.2.3", "pyqt6>=6.7.1", "viztracer>=0.17.0"]
 
 [tool.uv]
