@@ -11,6 +11,7 @@ from ..constant import BASE_URL, USER_ID, USER_NAME
 from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
+from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
 from .schemas.records.solo import Solo as SoloRecord
 from .schemas.records.solo import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
@@ -84,6 +85,7 @@ class Player:
         self._user_info: UserInfoSuccess | None = None
         self._summaries: dict[Summaries, SummariesModel] = {}
         self._records: dict[RecordKey, RecordsSoloSuccessModel] = {}
+        self._leagueflow: LeagueFlowSuccess | None = None
 
     @property
     def _request_user_parameter(self) -> str:
@@ -160,6 +162,18 @@ class Player:
                 ),
             )
         return self._summaries[summaries_type]
+
+    async def get_leagueflow(self) -> LeagueFlowSuccess:
+        if self._leagueflow is None:
+            leagueflow: LeagueFlow = type_validate_json(
+                LeagueFlow,  # type: ignore[arg-type]
+                await Cache.get(BASE_URL / 'labs/leagueflow' / self._request_user_parameter),
+            )
+            if isinstance(leagueflow, FailedModel):
+                msg = f'League 历史记录请求错误:\n{leagueflow.error}'
+                raise RequestError(msg)
+            self._leagueflow = leagueflow
+        return self._leagueflow
 
     @property
     async def sprint(self) -> SummariesSoloSuccessModel:
