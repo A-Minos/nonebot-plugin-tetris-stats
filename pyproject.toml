@@ -156,7 +156,7 @@ tag = true
 sign_tags = true
 tag_name = "{new_version}"
 commit = true
-message = "🔖 {new_version}"
+message = ":bookmark: {new_version}"
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
