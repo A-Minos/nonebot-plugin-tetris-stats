@@ -4,28 +4,19 @@
 
 ### For Developers with Basic Python Knowledge
 
-First, you need [Python **3.10**](https://www.python.org/) and [Poetry](https://python-poetry.org/).  
-Then, you need to clone this repository to your local machine using the `git clone` command, and install dependencies using `poetry install --sync`.
-
-### For Developers with Limited Python Knowledge
-
-Here are **my recommended** best practices:
+First, you need install [uv](https://docs.astral.sh/uv/).  
+Then:
 
 ```bash
-# Install uv
-# Please refer to https://docs.astral.sh/uv/getting-started/installation/
-
 # Set up the basic Python environment
 uv python install 3.10
-uv tool install poetry
 
 # Clone the repository
 git clone https://github.com/A-Minos/nonebot-plugin-tetris-stats.git
 cd nonebot-plugin-tetris-stats
 
 # Install dependencies
-uv run --no-project --python 3.10 poetry env use python
-poetry install --sync
+uv sync
 ```
 
 ## Development
