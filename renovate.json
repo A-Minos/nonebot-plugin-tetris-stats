@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "labels": ["dependencies"],
+  "dependencyDashboardTitle": "📌 Dependency Dashboard",
+  "dependencyDashboardLabels": ["dependencies"],
   "commitMessagePrefix": "⬆️",
   "commitMessageAction": "Upgrade",
   "packageRules": [
