@@ -65,6 +65,7 @@ typecheck = [
 ]
 test = ["nonebot-adapter-satori>=0.12.6", "nonebot-plugin-orm[default]>=0.7.6", "nonebot2[aiohttp,fastapi]>=2.3.3"]
 debug = ["matplotlib>=3.9.2", "memory-profiler>=0.61.0", "objprint>=0.2.3", "pyqt6>=6.7.1", "viztracer>=0.17.0"]
+release = ["bump-my-version>=0.28.0"]
 
 [tool.uv]
 default-groups = ["dev", "typecheck"]
@@ -148,6 +149,14 @@ pythonVersion = "3.10"
 pythonPlatform = "All"
 defineConstant = { PYDANTIC_V2 = true }
 typeCheckingMode = "standard"
+
+[tool.bumpversion]
+current_version = "1.5.5"
+tag = true
+sign_tags = true
+tag_name = "{new_version}"
+commit = true
+message = "🔖 {new_version}"
 
 [tool.nonebot]
 plugins = ["nonebot_plugin_tetris_stats"]
