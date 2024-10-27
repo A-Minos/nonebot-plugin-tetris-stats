@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-tetris-stats"
-version = "1.5.5"
+version = "1.6.0"
 description = "一款基于 NoneBot2 的用于查询 Tetris 相关游戏数据的插件"
 readme = "README.md"
 authors = [{ name = "shoucandanghehe", email = "wallfjjd@gmail.com" }]
@@ -151,7 +151,7 @@ defineConstant = { PYDANTIC_V2 = true }
 typeCheckingMode = "standard"
 
 [tool.bumpversion]
-current_version = "1.5.5"
+current_version = "1.6.0"
 tag = true
 sign_tags = true
 tag_name = "{new_version}"
