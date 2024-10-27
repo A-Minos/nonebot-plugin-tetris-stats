@@ -158,5 +158,10 @@ tag_name = "{new_version}"
 commit = true
 message = "🔖 {new_version}"
 
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
+
 [tool.nonebot]
 plugins = ["nonebot_plugin_tetris_stats"]
