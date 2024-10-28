@@ -122,5 +122,9 @@ class RatedData(BaseData):
     percentile_rank: str
 
 
+class InvalidData(BaseModel):
+    """I don't know what osk is doing, but the return value is an empty dictionary"""
+
+
 class LeagueSuccessModel(SuccessModel):
-    data: NeverPlayedData | NeverRatedData | RatedData
+    data: NeverPlayedData | NeverRatedData | RatedData | InvalidData

@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from ....utils.exception import FallbackError
 from ....utils.render.schemas.tetrio.user.base import TetraLeagueHistoryData
 from ..api.schemas.labs.leagueflow import Empty, LeagueFlowSuccess
-from ..api.schemas.summaries.league import LeagueSuccessModel, NeverPlayedData, NeverRatedData, RatedData
+from ..api.schemas.summaries.league import InvalidData, LeagueSuccessModel, NeverPlayedData, NeverRatedData, RatedData
 
 
 def flow_to_history(
@@ -47,6 +47,8 @@ def get_league_data(
     user_info: LeagueSuccessModel, league_type: type[L] | None = None
 ) -> L | NeverPlayedData | NeverRatedData | RatedData:
     league = user_info.data
+    if isinstance(league, InvalidData):
+        raise FallbackError
     if league_type is None:
         return league
     if isinstance(league, league_type):
