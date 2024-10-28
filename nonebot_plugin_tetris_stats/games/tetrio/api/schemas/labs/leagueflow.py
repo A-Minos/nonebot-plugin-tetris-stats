@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import IntEnum
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 from pydantic import BaseModel, Field
 
@@ -28,11 +28,16 @@ class Point(NamedTuple):
 
 class Data(BaseModel):
     start_time: datetime = Field(..., alias='startTime')
-    points: list[Point]
+    points: list[Point] = Field(..., min_length=1)
+
+
+class Empty(BaseModel):
+    start_time: Literal[9007199254740991] = Field(..., alias='startTime')
+    points: list = Field(..., max_length=0)
 
 
 class LeagueFlowSuccess(BaseSuccessModel):
-    data: Data
+    data: Data | Empty
 
 
 LeagueFlow = LeagueFlowSuccess | FailedModel

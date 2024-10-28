@@ -4,6 +4,7 @@ from hashlib import md5
 
 from yarl import URL
 
+from ....utils.exception import FallbackError
 from ....utils.host import HostPage, get_self_netloc
 from ....utils.metrics import get_metrics
 from ....utils.render import render
@@ -49,89 +50,89 @@ async def make_query_image_v2(player: Player) -> bytes:
             play_time = f'{game_time:.0f}s'
     else:
         play_time = game_time
+    try:
+        history = flow_to_history(leagueflow, lambda x: x[-100:])
+    except FallbackError:
+        history = None
     netloc = get_self_netloc()
-    async with (
-        HostPage(
-            await render(
-                'v2/tetrio/user/info',
-                Info(
-                    user=User(
-                        id=user.ID,
-                        name=user.name.upper(),
-                        bio=user_info.data.bio,
-                        banner=str(
-                            URL(f'http://{netloc}/host/resource/tetrio/banners/{user.ID}')
-                            % {'revision': banner_revision}
-                        )
-                        if banner_revision is not None and banner_revision != 0
-                        else None,
-                        avatar=str(
-                            URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}')
-                            % {'revision': avatar_revision}
-                        )
-                        if avatar_revision is not None and avatar_revision != 0
-                        else Avatar(
-                            type='identicon',
-                            hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
-                        ),
-                        badges=[
-                            Badge(
-                                id=i.id,
-                                description=i.label,
-                                group=i.group,
-                                receive_at=i.ts if isinstance(i.ts, datetime) else None,
-                            )
-                            for i in user_info.data.badges
-                        ],
-                        country=user_info.data.country,
-                        role=user_info.data.role,
-                        xp=user_info.data.xp,
-                        friend_count=user_info.data.friend_count,
-                        supporter_tier=user_info.data.supporter_tier,
-                        bad_standing=user_info.data.badstanding or False,
-                        playtime=play_time,
-                        join_at=user_info.data.ts,
+    async with HostPage(
+        await render(
+            'v2/tetrio/user/info',
+            Info(
+                user=User(
+                    id=user.ID,
+                    name=user.name.upper(),
+                    bio=user_info.data.bio,
+                    banner=str(
+                        URL(f'http://{netloc}/host/resource/tetrio/banners/{user.ID}') % {'revision': banner_revision}
+                    )
+                    if banner_revision is not None and banner_revision != 0
+                    else None,
+                    avatar=str(
+                        URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
+                    )
+                    if avatar_revision is not None and avatar_revision != 0
+                    else Avatar(
+                        type='identicon',
+                        hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                     ),
-                    tetra_league=TetraLeague(
-                        rank=league.data.rank,
-                        highest_rank='z' if isinstance(league.data, NeverRatedData) else league.data.bestrank,
-                        tr=round(league.data.tr, 2),
-                        glicko=round(league.data.glicko, 2),
-                        rd=round(league.data.rd, 2),
-                        global_rank=league.data.standing,
-                        country_rank=league.data.standing_local,
-                        pps=(metrics := get_metrics(pps=league.data.pps, apm=league.data.apm, vs=league.data.vs)).pps,
-                        apm=metrics.apm,
-                        apl=metrics.apl,
-                        vs=metrics.vs,
-                        adpl=metrics.adpl,
-                        statistic=TetraLeagueStatistic(total=league.data.gamesplayed, wins=league.data.gameswon),
-                        decaying=league.data.decaying,
-                        history=flow_to_history(leagueflow, lambda x: x[-100:]),
-                    )
-                    if not isinstance(league.data, NeverPlayedData)
-                    else None,
-                    statistic=Statistic(
-                        total=handling_special_value(user_info.data.gamesplayed),
-                        wins=handling_special_value(user_info.data.gameswon),
-                    ),
-                    sprint=Sprint(
-                        time=sprint_value,
-                        global_rank=sprint.data.rank,
-                        play_at=sprint.data.record.ts,
-                    )
-                    if sprint.data.record is not None
-                    else None,
-                    blitz=Blitz(
-                        score=blitz.data.record.results.stats.score,
-                        global_rank=blitz.data.rank,
-                        play_at=blitz.data.record.ts,
-                    )
-                    if blitz.data.record is not None
-                    else None,
-                    zen=Zen(level=zen.data.level, score=zen.data.score),
+                    badges=[
+                        Badge(
+                            id=i.id,
+                            description=i.label,
+                            group=i.group,
+                            receive_at=i.ts if isinstance(i.ts, datetime) else None,
+                        )
+                        for i in user_info.data.badges
+                    ],
+                    country=user_info.data.country,
+                    role=user_info.data.role,
+                    xp=user_info.data.xp,
+                    friend_count=user_info.data.friend_count,
+                    supporter_tier=user_info.data.supporter_tier,
+                    bad_standing=user_info.data.badstanding or False,
+                    playtime=play_time,
+                    join_at=user_info.data.ts,
                 ),
+                tetra_league=TetraLeague(
+                    rank=league.data.rank,
+                    highest_rank='z' if isinstance(league.data, NeverRatedData) else league.data.bestrank,
+                    tr=round(league.data.tr, 2),
+                    glicko=round(league.data.glicko, 2),
+                    rd=round(league.data.rd, 2),
+                    global_rank=league.data.standing,
+                    country_rank=league.data.standing_local,
+                    pps=(metrics := get_metrics(pps=league.data.pps, apm=league.data.apm, vs=league.data.vs)).pps,
+                    apm=metrics.apm,
+                    apl=metrics.apl,
+                    vs=metrics.vs,
+                    adpl=metrics.adpl,
+                    statistic=TetraLeagueStatistic(total=league.data.gamesplayed, wins=league.data.gameswon),
+                    decaying=league.data.decaying,
+                    history=history,
+                )
+                if not isinstance(league.data, NeverPlayedData)
+                else None,
+                statistic=Statistic(
+                    total=handling_special_value(user_info.data.gamesplayed),
+                    wins=handling_special_value(user_info.data.gameswon),
+                ),
+                sprint=Sprint(
+                    time=sprint_value,
+                    global_rank=sprint.data.rank,
+                    play_at=sprint.data.record.ts,
+                )
+                if sprint.data.record is not None
+                else None,
+                blitz=Blitz(
+                    score=blitz.data.record.results.stats.score,
+                    global_rank=blitz.data.rank,
+                    play_at=blitz.data.record.ts,
+                )
+                if blitz.data.record is not None
+                else None,
+                zen=Zen(level=zen.data.level, score=zen.data.score),
             ),
-        ) as page_hash
-    ):
+        ),
+    ) as page_hash:
         return await screenshot(f'http://{netloc}/host/{page_hash}.html')

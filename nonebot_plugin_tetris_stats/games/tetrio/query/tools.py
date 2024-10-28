@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 
 from ....utils.exception import FallbackError
 from ....utils.render.schemas.tetrio.user.base import TetraLeagueHistoryData
-from ..api.schemas.labs.leagueflow import LeagueFlowSuccess
+from ..api.schemas.labs.leagueflow import Empty, LeagueFlowSuccess
 from ..api.schemas.summaries.league import LeagueSuccessModel, NeverPlayedData, NeverRatedData, RatedData
 
 
@@ -13,6 +13,8 @@ def flow_to_history(
     leagueflow: LeagueFlowSuccess,
     handle: Callable[[list[TetraLeagueHistoryData]], list[TetraLeagueHistoryData]] | None = None,
 ) -> list[TetraLeagueHistoryData]:
+    if isinstance(leagueflow.data, Empty):
+        raise FallbackError
     start_time = leagueflow.data.start_time.astimezone(ZoneInfo('Asia/Shanghai'))
     ret = [
         TetraLeagueHistoryData(
