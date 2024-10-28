@@ -22,7 +22,7 @@ from ....utils.render.schemas.tetrio.user.info_v2 import (
 )
 from ....utils.screenshot import screenshot
 from ..api import Player
-from ..api.schemas.summaries.league import NeverPlayedData, NeverRatedData
+from ..api.schemas.summaries.league import InvalidData, NeverPlayedData, NeverRatedData
 from .tools import flow_to_history, handling_special_value
 
 
@@ -111,7 +111,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                     decaying=league.data.decaying,
                     history=history,
                 )
-                if not isinstance(league.data, NeverPlayedData)
+                if not isinstance(league.data, NeverPlayedData | InvalidData)
                 else None,
                 statistic=Statistic(
                     total=handling_special_value(user_info.data.gamesplayed),
