@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 from yarl import URL
 
-from ....utils.exception import FallbackError
+from ....utils.exception import FallbackError, WhatTheFuckError
 from ....utils.host import HostPage, get_self_netloc
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar, Ranking
@@ -68,15 +68,21 @@ def get_specified_point(
     )
 
 
-def handle_history_data(data: list[TetraLeagueHistoryData]) -> list[TetraLeagueHistoryData]:
+def handle_history_data(data: list[TetraLeagueHistoryData]) -> list[TetraLeagueHistoryData]:  # noqa: C901, PLR0912
+    # 按照 记录时间 对数据进行排序
     data.sort(key=lambda x: x.record_at)
 
-    right_border = datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
-    left_border = right_border - timedelta(days=9)
+    # 定义时间边界, 右边界为当前时间的当天零点, 左边界为右边界前推9天
+    # 返回值的[0]和[-1]分别应满足left_border和right_border
+    zero = datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
+    left_border = zero - timedelta(days=9)
+    right_border = zero.replace(microsecond=1000)
 
     lefts: list[TetraLeagueHistoryData] = []
     in_border: list[TetraLeagueHistoryData] = []
     rights: list[TetraLeagueHistoryData] = []
+
+    # 根据 记录时间 将数据分类到对应的列表中
     for i in data:
         if i.record_at < left_border:
             lefts.append(i)
@@ -84,16 +90,35 @@ def handle_history_data(data: list[TetraLeagueHistoryData]) -> list[TetraLeagueH
             in_border.append(i)
         else:
             rights.append(i)
+
     ret: list[TetraLeagueHistoryData] = []
-    if lefts:
+
+    # 处理左边界的点
+    if lefts and in_border:  # 如果边界左侧和边界内都有值则推算
         ret.append(get_specified_point(lefts[-1], in_border[0], left_border))
-    else:
+    elif lefts and not in_border:  # 如果边界左侧有值但是边界内没有值则直接取左侧的最后一个值
+        ret.append(TetraLeagueHistoryData(tr=lefts[-1].tr, record_at=left_border))
+    elif not lefts and in_border:  # 如果边界左侧没有值但是边界内有值则直接取边界内的第一个值
         ret.append(TetraLeagueHistoryData(tr=in_border[0].tr, record_at=left_border))
+    elif not lefts and not in_border and rights:  # 如果边界左侧和边界内都没有值但是边界右侧有值则直接取边界右侧的第一个值 # fmt: skip
+        ret.append(TetraLeagueHistoryData(tr=rights[0].tr, record_at=left_border))
+    else:  # 暂时没想到其他情况
+        raise WhatTheFuckError
+
+    # 添加边界内数据
     ret.extend(in_border)
-    if rights:
-        ret.append(get_specified_point(in_border[-1], rights[0], right_border.replace(microsecond=1000)))
-    else:
-        ret.append(TetraLeagueHistoryData(tr=in_border[-1].tr, record_at=right_border.replace(microsecond=1000)))
+
+    # 处理右边界的点
+    if in_border and rights:  # 如果边界内和边界右侧都有值则推算
+        ret.append(get_specified_point(in_border[-1], rights[0], right_border))
+    elif not in_border and rights:  # 如果边界内没有值但是边界右侧有值则直接取右侧的第一个值
+        ret.append(TetraLeagueHistoryData(tr=rights[0].tr, record_at=right_border))
+    elif in_border and not rights:  # 如果边界内有值但是边界右侧没有值则直接取边界内的最后一个值
+        ret.append(TetraLeagueHistoryData(tr=in_border[-1].tr, record_at=right_border))
+    elif not in_border and not rights and lefts:  # 如果边界内和边界右侧都没有值但是边界左侧有值则直接取边界左侧的最后一个值 # fmt: skip
+        ret.append(TetraLeagueHistoryData(tr=lefts[-1].tr, record_at=right_border))
+    else:  # 暂时没想到其他情况
+        raise WhatTheFuckError
     return ret
 
 
