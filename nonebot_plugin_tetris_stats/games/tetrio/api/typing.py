@@ -1,7 +1,6 @@
 from typing import Literal, NewType
 
 S1ValidRank = Literal[
-    'x+',
     'x',
     'u',
     'ss',
