@@ -169,5 +169,8 @@ filename = "pyproject.toml"
 search = "version = \"{current_version}\""
 replace = "version = \"{new_version}\""
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [tool.nonebot]
 plugins = ["nonebot_plugin_tetris_stats"]
