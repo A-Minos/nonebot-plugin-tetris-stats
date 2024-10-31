@@ -172,6 +172,7 @@ replace = "version = \"{new_version}\""
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.nonebot]
 plugins = ["nonebot_plugin_tetris_stats"]
