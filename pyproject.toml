@@ -63,7 +63,14 @@ typecheck = [
     "types-lxml>=2024.9.16",
     "types-pillow>=10.2.0.20240822",
 ]
-test = ["nonebot-adapter-satori>=0.12.6", "nonebot-plugin-orm[default]>=0.7.6", "nonebot2[aiohttp,fastapi]>=2.3.3"]
+test = [
+    "nonebot-adapter-satori>=0.12.6",
+    "nonebot-plugin-orm[default]>=0.7.6",
+    "nonebot2[aiohttp,fastapi]>=2.3.3",
+    "nonebug>=0.4.1",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+]
 debug = ["matplotlib>=3.9.2", "memory-profiler>=0.61.0", "objprint>=0.2.3", "pyqt6>=6.7.1", "viztracer>=0.17.0"]
 release = ["bump-my-version>=0.28.0"]
 
@@ -162,6 +169,10 @@ message = ":bookmark: {new_version}"
 filename = "pyproject.toml"
 search = "version = \"{current_version}\""
 replace = "version = \"{new_version}\""
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
 
 [tool.nonebot]
 plugins = ["nonebot_plugin_tetris_stats"]
