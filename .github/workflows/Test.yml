@@ -53,6 +53,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Decide whether the needed jobs succeeded or failed
-        uses: re-actors/alls-green@05ac9388f0aebcb5727afa17fcccfecd6f8ec5fe
+        uses: re-actors/alls-green@223e4bb7a751b91f43eda76992bcfbf23b8b0302
         with:
           jobs: ${{ toJSON(needs) }}
