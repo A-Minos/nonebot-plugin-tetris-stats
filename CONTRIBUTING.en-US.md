@@ -42,7 +42,7 @@ This project uses [Tarina](https://github.com/ArcletProject/Tarina) for internat
 #### Adding a New Language
 
 1. Navigate to the `./nonebot_plugin_tetris_stats/i18n/` directory.
-2. Run `tarina-lang create {language_code}` * Please note that the language code should preferably follow the [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) standard.
+2. Run `tarina-lang create {language_code}` \* Please note that the language code should preferably follow the [IETF language tag](https://en.wikipedia.org/wiki/IETF_language_tag) standard.
 3. Edit the generated `./nonebot_plugin_tetris_stats/i18n/{language_code}.json` file.
 
 #### Updating an Existing Language

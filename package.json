@@ -1,0 +1,11 @@
+{
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120,
+    "tabWidth": 2,
+    "endOfLine": "lf"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}
