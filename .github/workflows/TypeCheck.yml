@@ -14,10 +14,10 @@ jobs:
         with:
           enable-cache: true
 
-      - name: "Set up Python"
+      - name: 'Set up Python'
         uses: actions/setup-python@v5
         with:
-          python-version-file: ".python-version"
+          python-version-file: '.python-version'
 
       - run: uv sync
         shell: bash

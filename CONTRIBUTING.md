@@ -24,7 +24,7 @@ uv sync
 1. 代码静态检查使用 [ruff](https://docs.astral.sh/ruff/)，你可以为你的ide安装对应插件来使用，也可以在命令行使用`ruff check ./nonebot_plugin_tetris_stats/`来检查代码。
 2. 代码格式化使用 [ruff](https://docs.astral.sh/ruff/)，你可以为你的ide安装对应插件来使用，也可以在命令行使用`ruff format ./nonebot_plugin_tetris_stats/`来格式化代码。
 3. 类型检查同时使用 [basedpyright](https://docs.basedpyright.com/latest/) 和 [mypy](https://www.mypy-lang.org/)，你可以为你的ide安装对应插件来使用。
-也可以在命令行使用下面的命令来检查代码:
+   也可以在命令行使用下面的命令来检查代码:
 
 ```bash
 # basedpyright
@@ -41,7 +41,7 @@ mypy ./nonebot_plugin_tetris_stats/
 #### 添加新的语言
 
 1. 进入 `./nonebot_plugin_tetris_stats/i18n/` 目录。
-2. 运行 `tarina-lang create {语言代码}` * 请注意，语言代码最好符合 [IETF语言标签](https://zh.wikipedia.org/wiki/IETF%E8%AF%AD%E8%A8%80%E6%A0%87%E7%AD%BE) 的规范。
+2. 运行 `tarina-lang create {语言代码}` \* 请注意，语言代码最好符合 [IETF语言标签](https://zh.wikipedia.org/wiki/IETF%E8%AF%AD%E8%A8%80%E6%A0%87%E7%AD%BE) 的规范。
 3. 编辑生成的 `./nonebot_plugin_tetris_stats/i18n/{语言代码}.json` 文件。
 
 #### 更新已有语言
