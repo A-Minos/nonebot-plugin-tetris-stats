@@ -12,11 +12,11 @@ class Time(BaseModel):
     zero: bool
     locked: bool
     prev: int
-    frameoffset: int
+    frameoffset: int | None = None
 
 
 class Stats(BaseModel):
-    seed: int | None = None  # ?: 不知道是之后都没有了还是还会有
+    seed: float | None = None  # ?: 不知道是之后都没有了还是还会有
     lines: int
     level_lines: int
     level_lines_needed: int
@@ -24,8 +24,8 @@ class Stats(BaseModel):
     holds: int = 0
     time: Time | None = None  # ?: 不知道是之后都没有了还是还会有
     score: int
-    zenlevel: int
-    zenprogress: int
+    zenlevel: int | None = None
+    zenprogress: int | None = None
     level: int
     combo: int
     currentcombopower: int | None = None
