@@ -42,7 +42,7 @@ jobs:
         run: uv run pytest --cov=nonebot_plugin_tetris_stats --cov-report xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,PYTHON_VERSION
