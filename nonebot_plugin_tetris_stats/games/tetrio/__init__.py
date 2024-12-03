@@ -23,7 +23,7 @@ command = Subcommand(
 )
 
 
-from . import bind, config, list, query, rank, record  # noqa: E402
+from . import bind, config, list, query, rank, record  # noqa: A004, E402
 
 main_command.add(command)
 

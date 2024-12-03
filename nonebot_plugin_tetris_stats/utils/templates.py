@@ -5,7 +5,7 @@ from shutil import rmtree
 from time import time_ns
 from zipfile import ZipFile
 
-from aiofiles import open
+from aiofiles import open as aopen
 from httpx import AsyncClient
 from nonebot import get_driver
 from nonebot.log import logger
@@ -46,7 +46,7 @@ async def download_templates(tag: str) -> Path:
                     f'https://github.com/A-Minos/tetris-stats-templates/releases/download/{tag}/dist.zip',
                     follow_redirects=True,
                 ) as response,
-                open(path, 'wb') as file,
+                aopen(path, 'wb') as file,
             ):
                 response.raise_for_status()
                 progress.update(task_id, total=int(response.headers.get('content-length', 0)) or None)
@@ -76,7 +76,7 @@ async def check_hash(hash_file_path: Path) -> bool:
         if not file_path.is_file():
             logger.error(f'{file_path.name} 不存在或不是文件')
             return False
-        async with open(file_path, 'rb') as file:
+        async with aopen(file_path, 'rb') as file:
             while True:
                 chunk = await file.read(65535)
                 if not chunk:
