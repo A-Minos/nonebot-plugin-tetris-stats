@@ -146,7 +146,7 @@ async def _() -> None:
         await get_tetra_league_data()
 
 
-from . import all, detail  # noqa: E402
+from . import all, detail  # noqa: A004, E402
 
 base_command.add(command)
 
