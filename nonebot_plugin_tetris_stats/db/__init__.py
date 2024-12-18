@@ -63,6 +63,23 @@ async def create_or_update_bind(
     return status
 
 
+async def remove_bind(
+    session: AsyncSession,
+    user: User,
+    game_platform: GameType,
+) -> bool:
+    bind = await query_bind_info(
+        session=session,
+        user=user,
+        game_platform=game_platform,
+    )
+    if bind is not None:
+        await session.delete(bind)
+        await session.commit()
+        return True
+    return False
+
+
 T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
 
 lock = Lock()

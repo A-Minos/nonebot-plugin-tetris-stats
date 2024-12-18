@@ -10,6 +10,7 @@ require_plugins = {
     'nonebot_plugin_session',
     'nonebot_plugin_user',
     'nonebot_plugin_userinfo',
+    'nonebot_plugin_waiter',
 }
 
 for i in require_plugins:
