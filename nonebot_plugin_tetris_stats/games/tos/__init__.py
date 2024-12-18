@@ -35,6 +35,10 @@ command.add(
             help_text='绑定 茶服 账号',
         ),
         Subcommand(
+            'unbind',
+            help_text='解除绑定 TOS 账号',
+        ),
+        Subcommand(
             'query',
             Args(
                 Arg(
@@ -56,9 +60,22 @@ command.add(
     )
 )
 
-alc.shortcut('(?i:tos|茶服)(?i:绑定|绑|bind)', {'command': 'tstats TOS bind', 'humanized': '茶服绑定'})
-alc.shortcut('(?i:tos|茶服)(?i:查询|查|query|stats)', {'command': 'tstats TOS query', 'humanized': '茶服查'})
+alc.shortcut(
+    '(?i:tos|茶服)(?i:绑定|绑|bind)',
+    command='tstats TOS bind',
+    humanized='茶服绑定',
+)
+alc.shortcut(
+    '(?i:tos|茶服)(?i:解除绑定|解绑|unbind)',
+    command='tstats TOS unbind',
+    humanized='茶服解绑',
+)
+alc.shortcut(
+    '(?i:tos|茶服)(?i:查询|查|query|stats)',
+    command='tstats TOS query',
+    humanized='茶服查',
+)
 
 add_block_handlers(alc.assign('TOS.query'))
 
-from . import bind, query  # noqa: E402, F401
+from . import bind, query, unbind  # noqa: E402, F401

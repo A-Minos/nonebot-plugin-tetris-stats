@@ -1818,7 +1818,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-tetris-stats"
-version = "1.6.2"
+version = "1.6.3"
 source = { editable = "." }
 dependencies = [
     { name = "aiocache" },
@@ -1837,6 +1837,7 @@ dependencies = [
     { name = "nonebot-plugin-session-orm" },
     { name = "nonebot-plugin-user" },
     { name = "nonebot-plugin-userinfo" },
+    { name = "nonebot-plugin-waiter" },
     { name = "nonebot2", extra = ["fastapi"] },
     { name = "pandas" },
     { name = "pillow" },
@@ -1845,7 +1846,7 @@ dependencies = [
     { name = "yarl" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 debug = [
     { name = "matplotlib" },
     { name = "memory-profiler" },
@@ -1898,6 +1899,7 @@ requires-dist = [
     { name = "nonebot-plugin-session-orm", specifier = ">=0.2.0" },
     { name = "nonebot-plugin-user", specifier = ">=0.4.4" },
     { name = "nonebot-plugin-userinfo", specifier = ">=0.2.6" },
+    { name = "nonebot-plugin-waiter", specifier = ">=0.8.0" },
     { name = "nonebot2", extras = ["fastapi"], specifier = ">=2.3.3" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pillow", specifier = ">=11.0.0" },
@@ -1906,7 +1908,7 @@ requires-dist = [
     { name = "yarl", specifier = ">=1.16.0" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 debug = [
     { name = "matplotlib", specifier = ">=3.9.2" },
     { name = "memory-profiler", specifier = ">=0.61.0" },
