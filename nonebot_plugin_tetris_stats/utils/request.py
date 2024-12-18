@@ -2,6 +2,7 @@ from collections.abc import Sequence
 from http import HTTPStatus
 from typing import Any
 
+from fake_useragent import UserAgent
 from httpx import AsyncClient, HTTPError
 from msgspec import DecodeError, Struct, json
 from nonebot import get_driver
@@ -113,6 +114,8 @@ class Request:
     def __init__(self, proxy: str | None) -> None:
         self.proxy = proxy
         self.anti_cloudflares: dict[str, AntiCloudflare] = {}
+        self.client = AsyncClient(timeout=config.tetris.request_timeout, proxy=self.proxy)
+        self.ua = UserAgent()
 
     async def request(
         self,
@@ -129,16 +132,20 @@ class Request:
         else:
             cookies = None
             headers = None
-        headers = headers if extra_headers is None else extra_headers if headers is None else headers | extra_headers
+        if headers is None:
+            headers = {}
+        if extra_headers:
+            headers.update(extra_headers)
+        headers.setdefault('User-Agent', self.ua.random)
         try:
-            async with AsyncClient(cookies=cookies, timeout=config.tetris.request_timeout, proxy=self.proxy) as session:
-                response = await session.get(str(url), headers=headers)
-                if response.status_code != HTTPStatus.OK:
-                    msg = f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
-                    raise RequestError(msg, status_code=response.status_code)
-                if is_json:
-                    decoder.decode(response.content)
-                return response.content
+            response = await self.client.get(str(url), cookies=cookies, headers=headers)
+            if response.status_code != HTTPStatus.OK:
+                msg = (
+                    f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
+                )
+                raise RequestError(msg, status_code=response.status_code)
+            if is_json:
+                decoder.decode(response.content)
         except HTTPError as e:
             msg = f'请求错误 \n{e!r}'
             raise RequestError(msg) from e
@@ -146,6 +153,8 @@ class Request:
             if enable_anti_cloudflare and url.host is not None:
                 return await self.anti_cloudflares.setdefault(url.host, AntiCloudflare(url.host))(str(url), self.proxy)
             raise
+        else:
+            return response.content
 
     async def failover_request(
         self,

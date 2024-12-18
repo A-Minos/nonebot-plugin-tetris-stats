@@ -1,10 +1,12 @@
 from typing import Literal, overload
 from uuid import UUID
 
+from nonebot import __version__ as __nonebot_version__
 from nonebot.compat import type_validate_json
 from yarl import URL
 
 from ....utils.exception import RequestError
+from ....version import __version__
 from ..constant import BASE_URL
 from .cache import Cache
 from .schemas.base import FailedModel
@@ -22,7 +24,12 @@ async def by(
         await get(
             BASE_URL / f'users/by/{by_type}',
             parameter,
-            {'X-Session-ID': str(x_session_id)} if x_session_id is not None else None,
+            {
+                'X-Session-ID': str(x_session_id),
+                'User-Agent': f'nonebot-plugin-tetris-stats/{__version__} (Windows NT 10.0; Win64; x64) NoneBot2/{__nonebot_version__}',
+            }
+            if x_session_id is not None
+            else None,
         ),
     )
     if isinstance(model, FailedModel):
