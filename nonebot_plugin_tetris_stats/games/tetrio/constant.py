@@ -1,4 +1,4 @@
-from re import compile
+from re import compile  # noqa: A004
 from typing import Literal
 
 from yarl import URL

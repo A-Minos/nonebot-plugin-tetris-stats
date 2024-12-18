@@ -4,7 +4,7 @@ from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path as FilePath
 from typing import TYPE_CHECKING, ClassVar, Literal
 
-from aiofiles import open
+from aiofiles import open as aopen
 from fastapi import BackgroundTasks, FastAPI, Path, status
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -87,7 +87,7 @@ async def _(
 
 async def write_cache(path: FilePath, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    async with open(path, 'wb') as file:
+    async with aopen(path, 'wb') as file:
         await file.write(data)
 
 

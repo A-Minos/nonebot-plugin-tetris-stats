@@ -14,8 +14,8 @@ __all__ = [
     'SoloSuccessModel',
     'SummariesModel',
     'Zen',
+    'ZenSuccessModel',
     'Zenith',
     'ZenithEx',
     'ZenithSuccessModel',
-    'ZenSuccessModel',
 ]

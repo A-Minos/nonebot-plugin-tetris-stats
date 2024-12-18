@@ -133,8 +133,6 @@ select = [
 ]
 ignore = [
     "E501",   # 过长的行由 ruff format 处理, 剩余的都是字符串
-    "ANN101", # 由 type checker 自动推断
-    "ANN102", # 由 type checker 自动推断
     "ANN202", # 向 NoneBot 注册的函数
     "TRY003",
     "COM812", # 强制尾随逗号

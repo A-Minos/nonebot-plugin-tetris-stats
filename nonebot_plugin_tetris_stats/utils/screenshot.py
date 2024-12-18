@@ -1,4 +1,4 @@
-from playwright.async_api import BrowserContext, TimeoutError, ViewportSize
+from playwright.async_api import BrowserContext, TimeoutError, ViewportSize  # noqa: A004
 
 from ..config.config import config
 from .browser import BrowserManager

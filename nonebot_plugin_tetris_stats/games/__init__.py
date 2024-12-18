@@ -44,7 +44,7 @@ async def _(matcher: Matcher, account: MessageFormatError):
 
 @alc.handle()
 async def _(matcher: Matcher, matches: AlcMatches):
-    if matches.head_matched and matches.options != {} or matches.main_args == {}:
+    if (matches.head_matched and matches.options != {}) or matches.main_args == {}:
         await matcher.finish(
             (f'{matches.error_info!r}\n' if matches.error_info is not None else '')
             + f'输入"{matches.header_result} --help"查看帮助'
