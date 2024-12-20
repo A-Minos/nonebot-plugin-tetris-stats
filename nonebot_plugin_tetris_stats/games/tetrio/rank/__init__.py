@@ -95,7 +95,7 @@ async def get_tetra_league_data() -> None:
 
     players: list[Entry] = []
     for result in results:
-        players.extend(result.data.entries)
+        players.extend([i for i in result.data.entries if isinstance(i, Entry)])
     players.sort(key=lambda x: x.league.tr, reverse=True)
 
     rank_player_mapping: defaultdict[Rank, list[Entry]] = defaultdict(list)

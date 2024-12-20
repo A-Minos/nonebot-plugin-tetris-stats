@@ -14,6 +14,7 @@ from . import command
 from .api.leaderboards import by
 from .api.schemas.base import P
 from .api.schemas.leaderboards import Parameter
+from .api.schemas.leaderboards.by import Entry
 from .constant import GAME_TYPE
 
 command.add(
@@ -84,6 +85,7 @@ async def _(
                             join_at=None,
                         )
                         for i in league.data.entries
+                        if isinstance(i, Entry)
                     ],
                 ),
             )
