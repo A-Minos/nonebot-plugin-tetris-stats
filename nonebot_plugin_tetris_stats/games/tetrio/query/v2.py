@@ -43,9 +43,9 @@ async def make_query_image_v2(player: Player) -> bytes:
     play_time: str | None
     if (game_time := handling_special_value(user_info.data.gametime)) is not None:
         if game_time // 3600 > 0:
-            play_time = f'{game_time//3600:.0f}h {game_time % 3600 // 60:.0f}m {game_time % 60:.0f}s'
+            play_time = f'{game_time // 3600:.0f}h {game_time % 3600 // 60:.0f}m {game_time % 60:.0f}s'
         elif game_time // 60 > 0:
-            play_time = f'{game_time//60:.0f}m {game_time % 60:.0f}s'
+            play_time = f'{game_time // 60:.0f}m {game_time % 60:.0f}s'
         else:
             play_time = f'{game_time:.0f}s'
     else:
