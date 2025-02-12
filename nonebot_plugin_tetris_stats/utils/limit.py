@@ -23,7 +23,9 @@ def limit(limit: timedelta) -> Callable[[Callable[P, Coroutine[Any, Any, T]]], C
             nonlocal last_call
             async with lock:
                 if (diff := (time() - last_call)) < limit_seconds:
-                    logger.debug(f'func: {func.__name__} trigger limit, wait {(limit_time:=limit_seconds-diff):.3f}s')
+                    logger.debug(
+                        f'func: {func.__name__} trigger limit, wait {(limit_time := limit_seconds - diff):.3f}s'
+                    )
                     await sleep(limit_time)
             last_call = time()
             return await func(*args, **kwargs)

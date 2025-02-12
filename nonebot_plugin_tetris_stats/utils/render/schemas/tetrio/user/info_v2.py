@@ -3,8 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ......games.tetrio.api.typing import Rank
-from .....typing import Number
+from ......games.tetrio.api.typedefs import Rank
+from .....typedefs import Number
 from ...base import Avatar
 from .base import TetraLeagueHistoryData
 

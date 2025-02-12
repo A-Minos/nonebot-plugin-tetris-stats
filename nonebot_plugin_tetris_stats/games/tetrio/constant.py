@@ -3,7 +3,7 @@ from typing import Literal
 
 from yarl import URL
 
-from .api.typing import ValidRank
+from .api.typedefs import ValidRank
 
 GAME_TYPE: Literal['IO'] = 'IO'
 

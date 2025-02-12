@@ -24,7 +24,7 @@ from ...utils.render.avatar import get_avatar as get_random_avatar
 from ...utils.render.schemas.base import People, Ranking
 from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
 from ...utils.screenshot import screenshot
-from ...utils.typing import Me, Number
+from ...utils.typedefs import Me, Number
 from . import alc
 from .api import Player
 from .api.schemas.user_info import UserInfoSuccess
@@ -258,7 +258,7 @@ def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> U
     if user_data.ranked_games == '0':
         message += '暂无段位统计数据'
     else:
-        message += f', 段位分 {round(float(user_data.rating_now),2)}±{round(float(user_data.rd_now),2)} ({round(float(user_data.vol_now),2)}) '
+        message += f', 段位分 {round(float(user_data.rating_now), 2)}±{round(float(user_data.rd_now), 2)} ({round(float(user_data.vol_now), 2)}) '
     if game_data is None:
         message += ', 暂无游戏数据'
     else:
@@ -266,7 +266,7 @@ def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> U
         message += f"\nL'PM: {game_data.metrics.lpm} ( {game_data.metrics.pps} pps )"
         message += f'\nAPM: {game_data.metrics.apm} ( x{game_data.metrics.apl} )'
         message += f'\nADPM: {game_data.metrics.adpm} ( x{game_data.metrics.adpl} ) ( {game_data.metrics.vs}vs )'
-    message += f'\n40L: {float(user_data.pb_sprint)/1000:.2f}s' if user_data.pb_sprint != '2147483647' else ''
+    message += f'\n40L: {float(user_data.pb_sprint) / 1000:.2f}s' if user_data.pb_sprint != '2147483647' else ''
     message += f'\nMarathon: {user_data.pb_marathon}' if user_data.pb_marathon != '0' else ''
     message += f'\nChallenge: {user_data.pb_challenge}' if user_data.pb_challenge != '0' else ''
     return UniMessage(message)

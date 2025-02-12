@@ -7,8 +7,8 @@ from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationshi
 
 from ...db.models import PydanticType
 from .api.schemas.leaderboards.by import BySuccessModel, Entry
-from .api.typing import ValidRank
-from .typing import Template
+from .api.typedefs import ValidRank
+from .typedefs import Template
 
 
 class TETRIOUserConfig(MappedAsDataclass, Model):

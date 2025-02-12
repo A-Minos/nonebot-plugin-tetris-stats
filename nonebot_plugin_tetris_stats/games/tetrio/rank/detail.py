@@ -17,7 +17,7 @@ from ....utils.render import render
 from ....utils.render.schemas.tetrio.rank.detail import Data, SpecialData
 from ....utils.screenshot import screenshot
 from .. import alc
-from ..api.typing import ValidRank
+from ..api.typedefs import ValidRank
 from ..constant import GAME_TYPE
 from ..models import TETRIOLeagueStats
 from . import command

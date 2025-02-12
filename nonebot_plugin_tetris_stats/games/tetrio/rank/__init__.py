@@ -25,7 +25,7 @@ from ..models import TETRIOLeagueHistorical, TETRIOLeagueStats, TETRIOLeagueStat
 
 if TYPE_CHECKING:
     from ..api.schemas.leaderboards.by import BySuccessModel
-    from ..api.typing import Rank
+    from ..api.typedefs import Rank
 
 UTC = timezone.utc
 

@@ -22,7 +22,7 @@ from ....utils.render.schemas.base import Avatar
 from ....utils.render.schemas.tetrio.record.base import Finesse, Max, Mini, Statistic, Tspins, User
 from ....utils.render.schemas.tetrio.record.sprint import Record
 from ....utils.screenshot import screenshot
-from ....utils.typing import Me
+from ....utils.typedefs import Me
 from .. import alc
 from ..api.player import Player
 from ..constant import GAME_TYPE

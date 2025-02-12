@@ -3,7 +3,7 @@ from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
-from ..utils.typing import GameType
+from ..utils.typedefs import GameType
 
 T = TypeVar('T', bound=GameType)
 

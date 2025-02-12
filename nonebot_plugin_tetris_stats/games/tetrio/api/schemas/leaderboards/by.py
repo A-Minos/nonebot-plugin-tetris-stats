@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from ...typing import Rank, ValidRank
+from ...typedefs import Rank, ValidRank
 from ..base import ArCounts, FailedModel, P, SuccessModel
 
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from ...typing import Number
+from ...typedefs import Number
 from .base import People, Ranking
 
 

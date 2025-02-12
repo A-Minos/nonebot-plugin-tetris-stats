@@ -18,7 +18,7 @@ from ...utils.render.schemas.base import People
 from ...utils.render.schemas.top_info import Data as InfoData
 from ...utils.render.schemas.top_info import Info
 from ...utils.screenshot import screenshot
-from ...utils.typing import Me
+from ...utils.typedefs import Me
 from . import alc
 from .api import Player
 from .api.schemas.user_profile import Data, UserProfile

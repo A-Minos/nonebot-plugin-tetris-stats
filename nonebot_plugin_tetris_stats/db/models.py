@@ -9,7 +9,7 @@ from sqlalchemy import JSON, DateTime, Dialect, String, TypeDecorator
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 from typing_extensions import override
 
-from ..utils.typing import AllCommandType, GameType
+from ..utils.typedefs import AllCommandType, GameType
 
 
 class PydanticType(TypeDecorator):

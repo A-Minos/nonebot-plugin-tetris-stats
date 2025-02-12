@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from .....typing import Number
+from .....typedefs import Number
 
 
 class TetraLeagueHistoryData(BaseModel):

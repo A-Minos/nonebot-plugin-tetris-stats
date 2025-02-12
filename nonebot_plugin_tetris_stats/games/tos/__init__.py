@@ -2,7 +2,7 @@ from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Subcommand
 
 from ...utils.exception import MessageFormatError
-from ...utils.typing import Me
+from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
 from .api import Player
 from .constant import USER_NAME
