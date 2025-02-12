@@ -16,13 +16,13 @@ from sqlalchemy import select
 from ....db import query_bind_info, trigger
 from ....i18n import Lang
 from ....utils.exception import FallbackError
-from ....utils.typing import Me
+from ....utils.typedefs import Me
 from ... import add_block_handlers, alc
 from .. import command, get_player
 from ..api import Player
 from ..constant import GAME_TYPE
 from ..models import TETRIOUserConfig
-from ..typing import Template
+from ..typedefs import Template
 from .v1 import make_query_image_v1
 from .v2 import make_query_image_v2
 

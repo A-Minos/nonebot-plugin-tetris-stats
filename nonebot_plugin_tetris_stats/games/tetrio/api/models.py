@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from ....db.models import PydanticType
 from .schemas.base import SuccessModel
-from .typing import Records, Summaries
+from .typedefs import Records, Summaries
 
 
 class TETRIOHistoricalData(MappedAsDataclass, Model):

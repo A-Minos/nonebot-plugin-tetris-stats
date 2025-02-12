@@ -3,7 +3,7 @@ from typing import Any
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
-from ...typing import Prisecter
+from ...typedefs import Prisecter
 
 
 class Parameter(BaseModel):

@@ -24,7 +24,7 @@ from ...utils.render.avatar import get_avatar as get_random_avatar
 from ...utils.render.schemas.base import People, Ranking
 from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
 from ...utils.screenshot import screenshot
-from ...utils.typing import Me, Number
+from ...utils.typedefs import Me, Number
 from . import alc
 from .api import Player
 from .api.schemas.user_info import UserInfoSuccess

@@ -11,7 +11,7 @@ from nonebot_plugin_orm import AsyncSession, get_session
 from nonebot_plugin_user import User
 from sqlalchemy import select
 
-from ..utils.typing import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
+from ..utils.typedefs import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
 from .models import Bind, TriggerHistoricalData
 
 UTC = timezone.utc

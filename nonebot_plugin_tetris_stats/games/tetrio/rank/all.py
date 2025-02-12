@@ -21,7 +21,7 @@ from ....utils.screenshot import screenshot
 from .. import alc
 from ..constant import GAME_TYPE
 from ..models import TETRIOLeagueStats
-from ..typing import Template
+from ..typedefs import Template
 from . import command
 
 command.add(

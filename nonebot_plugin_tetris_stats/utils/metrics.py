@@ -1,6 +1,6 @@
 from typing import overload
 
-from .typing import Number
+from .typedefs import Number
 
 
 class TetrisMetricsBaseWithPPS:

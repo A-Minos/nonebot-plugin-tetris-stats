@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from ...typing import Number
+from ...typedefs import Number
 from .base import People
 
 

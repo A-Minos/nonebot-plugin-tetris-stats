@@ -1,7 +1,7 @@
 from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Subcommand
 
-from ....utils.typing import Me
+from ....utils.typedefs import Me
 from .. import command as base_command
 from .. import get_player
 

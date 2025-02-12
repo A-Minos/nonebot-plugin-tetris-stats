@@ -2,7 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ...typing import Number
+from ...typedefs import Number
 
 
 class Avatar(BaseModel):

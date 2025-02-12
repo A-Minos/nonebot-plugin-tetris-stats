@@ -3,7 +3,7 @@ from typing import Literal
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
-from ...typing import Rank, S1Rank, S1ValidRank
+from ...typedefs import Rank, S1Rank, S1ValidRank
 from ..base import SuccessModel
 
 if PYDANTIC_V2:

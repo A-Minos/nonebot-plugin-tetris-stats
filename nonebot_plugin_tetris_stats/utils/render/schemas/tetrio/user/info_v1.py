@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from ......games.tetrio.api.typing import Rank
-from .....typing import Number
+from ......games.tetrio.api.typedefs import Rank
+from .....typedefs import Number
 from ...base import People, Ranking
 from .base import TetraLeagueHistoryData
 

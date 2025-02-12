@@ -11,7 +11,7 @@ from ...db import trigger
 from . import alc, command
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
-from .typing import Template
+from .typedefs import Template
 
 command.add(
     Subcommand(

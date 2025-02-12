@@ -27,7 +27,7 @@ from .schemas.summaries.base import User as SummariesUser
 from .schemas.summaries.league import LeagueSuccessModel
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
-from .typing import Records, Summaries
+from .typedefs import Records, Summaries
 
 
 class RecordModeType(str, Enum):
