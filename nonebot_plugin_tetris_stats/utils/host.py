@@ -2,7 +2,7 @@ from functools import cache
 from hashlib import sha256
 from ipaddress import IPv4Address, IPv6Address
 from pathlib import Path as FilePath
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, Annotated, ClassVar, Literal
 
 from aiofiles import open as aopen
 from fastapi import BackgroundTasks, FastAPI, Path, status
@@ -69,9 +69,9 @@ def _(page_hash: str) -> HTMLResponse:
 @app.get('/host/resource/tetrio/{resource_type}/{user_id}', status_code=status.HTTP_200_OK)
 async def _(
     resource_type: Literal['avatars', 'banners'],
+    user_id: Annotated[str, Path(regex=r'^[a-f0-9]{24}$')],
     revision: int,
     background_tasks: BackgroundTasks,
-    user_id: str = Path(regex=r'^[a-f0-9]{24}$'),
 ) -> Response:
     if not (path := CACHE_PATH / 'tetrio' / resource_type / f'{user_id}_{revision}.png').exists():
         image = img_to_png(
