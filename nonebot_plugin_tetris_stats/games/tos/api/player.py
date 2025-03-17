@@ -64,7 +64,7 @@ class Player:
                 query = {'teaId': self.teaid}
             else:
                 path = 'getUsernameInfo'
-                query = {'username': cast(str, self.user_name)}
+                query = {'username': cast('str', self.user_name)}
             raw_user_info = await request.failover_request(
                 [i / path % query for i in BASE_URL], failover_code=[502], failover_exc=(TimeoutException,)
             )
@@ -91,7 +91,7 @@ class Player:
         if self._user_profile.get(params) is None:
             raw_user_profile = await request.failover_request(
                 [
-                    i / 'getProfile' % {'id': self.teaid or cast(str, self.user_name), **other_parameter}
+                    i / 'getProfile' % {'id': self.teaid or cast('str', self.user_name), **other_parameter}
                     for i in BASE_URL
                 ],
                 failover_code=[502],

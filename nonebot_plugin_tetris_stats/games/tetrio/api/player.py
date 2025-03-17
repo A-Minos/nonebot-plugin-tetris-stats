@@ -46,7 +46,7 @@ class RecordKey(NamedTuple):
     record_type: RecordType
 
     def to_records(self) -> Records:
-        return cast(Records, f'{self.mode_type.value}_{self.record_type.value}')
+        return cast('Records', f'{self.mode_type.value}_{self.record_type.value}')
 
 
 class Player:
@@ -89,7 +89,7 @@ class Player:
 
     @property
     def _request_user_parameter(self) -> str:
-        return self.user_id or cast(str, self.user_name).lower()
+        return self.user_id or cast('str', self.user_name).lower()
 
     @property
     async def user(self) -> User:
