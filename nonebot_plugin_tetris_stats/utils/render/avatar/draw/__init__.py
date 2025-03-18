@@ -156,7 +156,7 @@ class SkinManager:
 
 
 class Skin(ABC):
-    def __new__(cls, *args: Any, **kwargs: Any) -> Self:  # noqa: ANN401
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:  # noqa: ANN401, ARG004
         instance = super().__new__(cls)
         SkinManager.register(instance)
         return instance
