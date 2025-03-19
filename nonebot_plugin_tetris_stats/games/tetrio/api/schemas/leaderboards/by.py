@@ -16,16 +16,17 @@ class BaseLeague(BaseModel):
     bestrank: ValidRank
     glicko: float
     rd: float
-    pps: float
     decaying: bool
 
 
 class InvalidLeague(BaseLeague):
+    pps: float | None
     apm: None
     vs: None
 
 
 class League(BaseLeague):
+    pps: float
     apm: float
     vs: float
 
