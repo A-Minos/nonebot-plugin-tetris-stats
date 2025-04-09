@@ -17,7 +17,11 @@ from .schemas.top_info import Info as TOPInfo
 from .schemas.tos_info import Info as TOSInfo
 
 env = Environment(
-    loader=FileSystemLoader(TEMPLATES_DIR), autoescape=True, trim_blocks=True, lstrip_blocks=True, enable_async=True
+    loader=FileSystemLoader(TEMPLATES_DIR),
+    autoescape=False,  # noqa: S701
+    trim_blocks=True,
+    lstrip_blocks=True,
+    enable_async=True,
 )
 
 
