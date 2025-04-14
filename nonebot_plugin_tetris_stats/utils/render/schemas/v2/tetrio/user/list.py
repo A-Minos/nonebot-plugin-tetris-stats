@@ -1,24 +1,23 @@
-from datetime import datetime
-
 from pydantic import BaseModel
 
-from ......games.tetrio.api.typedefs import Rank
-from .....typedefs import Number
-from ...base import Avatar
+from .......games.tetrio.api.typedefs import Rank
+from ......typedefs import Number
+from ....base import Avatar
 
 
 class TetraLeague(BaseModel):
+    pps: Number
+    apm: Number
+    apl: Number
+    vs: Number | None
+    adpl: Number | None
+
     rank: Rank
     tr: Number
 
     glicko: Number | None
     rd: Number | None
     decaying: bool
-    pps: Number
-    apm: Number
-    apl: Number
-    vs: Number | None
-    adpl: Number | None
 
 
 class User(BaseModel):
@@ -26,11 +25,14 @@ class User(BaseModel):
     name: str
     avatar: str | Avatar
     country: str | None
-    tetra_league: TetraLeague
     xp: Number
-    join_at: datetime | None
+
+
+class Data(BaseModel):
+    user: User
+    tetra_league: TetraLeague
 
 
 class List(BaseModel):
     show_index: bool
-    users: list[User]
+    data: list[Data]

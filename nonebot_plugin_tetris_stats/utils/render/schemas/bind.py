@@ -1,13 +1,11 @@
 from typing import Literal
 
-from pydantic import BaseModel
-
-from .base import People
+from .base import Base, People
 
 
-class Bind(BaseModel):
+class Bind(Base):
     platform: Literal['TETR.IO', 'TOP', 'TOS']
-    status: Literal['error', 'success', 'unknown', 'unlink', 'unverified']
+    type: Literal['success', 'unknown', 'unlink', 'unverified', 'error']
     user: People
     bot: People
-    command: str
+    prompt: str

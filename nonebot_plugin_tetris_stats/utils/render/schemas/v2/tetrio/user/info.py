@@ -3,10 +3,9 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ......games.tetrio.api.typedefs import Rank
-from .....typedefs import Number
-from ...base import Avatar
-from .base import TetraLeagueHistoryData
+from .......games.tetrio.api.typedefs import Rank
+from ......typedefs import Number
+from ....base import Avatar, HistoryData
 
 
 class Badge(BaseModel):
@@ -22,6 +21,7 @@ class User(BaseModel):
     country: str | None
 
     role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'hidden', 'banned']
+    botmaster: str | None
 
     avatar: str | Avatar
     banner: str | None
@@ -35,6 +35,9 @@ class User(BaseModel):
 
     badges: list[Badge]
     xp: Number
+
+    ar: Number
+    achievements: list[Number]
 
     playtime: str | None
     join_at: datetime | None
@@ -74,18 +77,20 @@ class TetraLeague(BaseModel):
 
     decaying: bool
 
-    history: list[TetraLeagueHistoryData] | None
+    history: list[HistoryData] | None
 
 
 class Sprint(BaseModel):
     time: str
-    global_rank: int | None
+    global_rank: Number | None
+    country_rank: Number | None
     play_at: datetime
 
 
 class Blitz(BaseModel):
-    score: int
+    score: Number
     global_rank: int | None
+    country_rank: int | None
     play_at: datetime
 
 
@@ -94,9 +99,29 @@ class Zen(BaseModel):
     score: int
 
 
+class Week(BaseModel):
+    altitude: int
+    global_rank: int | None
+    country_rank: int | None
+    play_at: datetime
+
+
+class Best(BaseModel):
+    altitude: int
+    global_rank: int | None
+    play_at: datetime
+
+
+class Zenith(BaseModel):
+    week: Week
+    best: Best
+
+
 class Info(BaseModel):
     user: User
     tetra_league: TetraLeague | None
+    zenith: Zenith | None
+    zenithex: Zenith | None
     statistic: Statistic | None
     sprint: Sprint | None
     blitz: Blitz | None

@@ -1,8 +1,14 @@
+from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel
+from strenum import StrEnum
 
 from ...typedefs import Number
+
+
+class Base(BaseModel):
+    _lang: Literal['zh-CN', 'en-US']
 
 
 class Avatar(BaseModel):
@@ -18,3 +24,14 @@ class People(BaseModel):
 class Ranking(BaseModel):
     rating: Number
     rd: Number
+
+
+class HistoryData(BaseModel):
+    score: Number
+    record_at: datetime
+
+
+class Trending(StrEnum):
+    UP = 'up'
+    KEEP = 'keep'
+    DOWN = 'down'
