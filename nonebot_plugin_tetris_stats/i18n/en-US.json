@@ -12,5 +12,8 @@
       "TOS": "Username/ID is invalid",
       "TOP": "Username is invalid"
     }
+  },
+  "template": {
+    "template_language": "en-US"
   }
 }

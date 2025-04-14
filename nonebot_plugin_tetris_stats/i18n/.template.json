@@ -11,6 +11,7 @@
     {
       "scope": "error",
       "types": [{ "subtype": "MessageFormatError", "types": ["TETR.IO", "TOS", "TOP"] }]
-    }
+    },
+    { "scope": "template", "types": ["template_language"] }
   ]
 }
