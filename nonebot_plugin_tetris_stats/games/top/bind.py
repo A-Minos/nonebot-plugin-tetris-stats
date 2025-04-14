@@ -8,6 +8,7 @@ from nonebot_plugin_userinfo import BotUserInfo, EventUserInfo, UserInfo
 from ...db import BindStatus, create_or_update_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
+from ...utils.lang import get_lang
 from ...utils.render import Bind, render
 from ...utils.render.schemas.base import People
 from ...utils.screenshot import screenshot
@@ -44,7 +45,7 @@ async def _(
                     'v1/binding',
                     Bind(
                         platform=GAME_TYPE,
-                        status='unknown',
+                        type='unknown',
                         user=People(
                             avatar=await get_avatar(event_user_info, 'Data URI', None),
                             name=user.user_name,
@@ -53,7 +54,8 @@ async def _(
                             avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
                             name=bot_info.user_name,
                         ),
-                        command='top查我',
+                        prompt='top查我',
+                        _lang=get_lang(),
                     ),
                 )
             ) as page_hash:

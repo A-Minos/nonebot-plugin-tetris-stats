@@ -9,6 +9,7 @@ from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 from ...db import query_bind_info, remove_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
+from ...utils.lang import get_lang
 from ...utils.render import Bind, render
 from ...utils.render.avatar import get_avatar as get_random_avatar
 from ...utils.render.schemas.base import People
@@ -47,7 +48,7 @@ async def _(
                 'v1/binding',
                 Bind(
                     platform='TOS',
-                    status='unlink',
+                    type='unlink',
                     user=People(
                         avatar=await get_avatar(event_user_info, 'Data URI', None)
                         if event_user_info is not None
@@ -58,7 +59,8 @@ async def _(
                         avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
                         name=bot_info.user_name,
                     ),
-                    command='茶服绑定{游戏ID}',
+                    prompt='茶服绑定{游戏ID}',
+                    _lang=get_lang(),
                 ),
             )
         ) as page_hash:

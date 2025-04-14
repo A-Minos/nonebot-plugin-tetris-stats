@@ -4,11 +4,11 @@ from typing import Literal
 from pydantic import BaseModel
 from strenum import StrEnum
 
-from ...typedefs import Number
+from ...typedefs import Lang, Number
 
 
 class Base(BaseModel):
-    _lang: Literal['zh-CN', 'en-US']
+    _lang: Lang
 
 
 class Avatar(BaseModel):
