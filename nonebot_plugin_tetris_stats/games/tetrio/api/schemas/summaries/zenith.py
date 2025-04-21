@@ -86,7 +86,7 @@ class Record(BaseModel):
     pb: bool
     oncepb: bool
     ts: datetime
-    revolution: None
+    revolution: str | None
     user: User
     otherusers: list
     leaderboards: list[str]
@@ -97,7 +97,7 @@ class Record(BaseModel):
 
 
 class Best(BaseModel):
-    record: None  # WTF
+    record: Record | None
     rank: int
 
 

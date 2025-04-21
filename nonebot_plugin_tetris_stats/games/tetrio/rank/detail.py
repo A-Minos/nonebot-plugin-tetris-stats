@@ -12,9 +12,10 @@ from sqlalchemy.orm import selectinload
 
 from ....db import trigger
 from ....utils.host import HostPage, get_self_netloc
+from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render
-from ....utils.render.schemas.tetrio.rank.detail import Data, SpecialData
+from ....utils.render.schemas.v2.tetrio.rank.detail import Data, SpecialData
 from ....utils.screenshot import screenshot
 from .. import alc
 from ..api.typedefs import ValidRank
@@ -122,6 +123,7 @@ async def make_image(rank: ValidRank, latest: TETRIOLeagueStats, compare: TETRIO
                     vs_holder=latest_data.high_vs.username.upper(),
                 ),
                 updated_at=latest.update_time.replace(tzinfo=UTC).astimezone(ZoneInfo('Asia/Shanghai')),
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:

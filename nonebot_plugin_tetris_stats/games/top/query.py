@@ -11,12 +11,13 @@ from ...db import query_bind_info, trigger
 from ...i18n import Lang
 from ...utils.exception import FallbackError
 from ...utils.host import HostPage, get_self_netloc
+from ...utils.lang import get_lang
 from ...utils.metrics import TetrisMetricsBasicWithLPM, get_metrics
 from ...utils.render import render
 from ...utils.render.avatar import get_avatar
-from ...utils.render.schemas.base import People
-from ...utils.render.schemas.top_info import Data as InfoData
-from ...utils.render.schemas.top_info import Info
+from ...utils.render.schemas.base import People, Trending
+from ...utils.render.schemas.v1.top.info import Data as InfoData
+from ...utils.render.schemas.v1.top.info import Info
 from ...utils.screenshot import screenshot
 from ...utils.typedefs import Me
 from . import alc
@@ -79,8 +80,23 @@ async def make_query_image(profile: UserProfile) -> bytes:
             'v1/top/info',
             Info(
                 user=People(avatar=get_avatar(profile.user_name), name=profile.user_name),
-                today=InfoData(pps=today.pps, lpm=today.lpm, apm=today.apm, apl=today.apl),
-                history=InfoData(pps=history.pps, lpm=history.lpm, apm=history.apm, apl=history.apl),
+                today=InfoData(
+                    pps=today.pps,
+                    lpm=today.lpm,
+                    lpm_trending=Trending.KEEP,
+                    apm=today.apm,
+                    apl=today.apl,
+                    apm_trending=Trending.KEEP,
+                ),
+                historical=InfoData(
+                    pps=history.pps,
+                    lpm=history.lpm,
+                    lpm_trending=Trending.KEEP,
+                    apm=history.apm,
+                    apl=history.apl,
+                    apm_trending=Trending.KEEP,
+                ),
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:
