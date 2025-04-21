@@ -231,17 +231,18 @@ async def get_historical_data(unique_identifier: str) -> list[HistoryData]:
                 .order_by(TOSHistoricalData.id.asc())
             )
         ).all()
-        extra_info = (
-            await session.scalars(
-                select(TOSHistoricalData)
-                .where(TOSHistoricalData.id < user_infos[0].id)
-                .where(TOSHistoricalData.user_unique_identifier == unique_identifier)
-                .where(TOSHistoricalData.api_type == 'User Info')
-                .limit(1)
-            )
-        ).one_or_none()
-        if extra_info is not None:
-            user_infos = [extra_info, *user_infos]
+        if user_infos:
+            extra_info = (
+                await session.scalars(
+                    select(TOSHistoricalData)
+                    .where(TOSHistoricalData.id < user_infos[0].id)
+                    .where(TOSHistoricalData.user_unique_identifier == unique_identifier)
+                    .where(TOSHistoricalData.api_type == 'User Info')
+                    .limit(1)
+                )
+            ).one_or_none()
+            if extra_info is not None:
+                user_infos = [extra_info, *user_infos]
     return [
         HistoryData(score=float(i.data.data.rating_now), record_at=i.update_time.astimezone(ZoneInfo('Asia/Shanghai')))
         for i in user_infos
