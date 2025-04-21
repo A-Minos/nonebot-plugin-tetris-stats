@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ....base import People
+from ....base import Base, People
 
 
 class User(People):
@@ -61,7 +61,7 @@ class Statistic(BaseModel):
     finesse: Finesse
 
 
-class Record(BaseModel):
+class Record(Base):
     type: Literal['best', 'personal_best', 'recent', 'disputed']
 
     user: User

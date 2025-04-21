@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
-from ....base import Avatar, HistoryData
+from ....base import Avatar, Base, HistoryData
 
 
 class Badge(BaseModel):
@@ -37,7 +37,7 @@ class User(BaseModel):
     xp: Number
 
     ar: Number
-    achievements: list[Number]
+    achievements: list[int]
 
     playtime: str | None
     join_at: datetime | None
@@ -100,24 +100,24 @@ class Zen(BaseModel):
 
 
 class Week(BaseModel):
-    altitude: int
+    altitude: Number
     global_rank: int | None
     country_rank: int | None
     play_at: datetime
 
 
 class Best(BaseModel):
-    altitude: int
+    altitude: Number
     global_rank: int | None
     play_at: datetime
 
 
 class Zenith(BaseModel):
-    week: Week
-    best: Best
+    week: Week | None
+    best: Best | None
 
 
-class Info(BaseModel):
+class Info(Base):
     user: User
     tetra_league: TetraLeague | None
     zenith: Zenith | None

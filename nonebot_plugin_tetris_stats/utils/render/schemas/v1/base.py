@@ -7,6 +7,6 @@ from ..base import HistoryData
 class History(BaseModel):
     data: list[HistoryData]
     split_interval: Number
-    min_tr: Number
-    max_tr: Number
+    min_value: Number
+    max_value: Number
     offset: Number

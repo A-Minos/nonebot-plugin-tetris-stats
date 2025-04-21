@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from ......games.tetrio.api.typedefs import ValidRank
+from ...base import Base
 
 
 class ItemData(BaseModel):
@@ -11,6 +12,6 @@ class ItemData(BaseModel):
     players: int
 
 
-class Data(BaseModel):
+class Data(Base):
     items: dict[ValidRank, ItemData]
     updated_at: datetime

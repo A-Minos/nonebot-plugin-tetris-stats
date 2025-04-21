@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from .......games.tetrio.api.typedefs import ValidRank
 from ......typedefs import Number
+from ....base import Base
 
 
 class AverageData(BaseModel):
@@ -21,6 +22,6 @@ class ItemData(BaseModel):
     players: Number
 
 
-class Data(BaseModel):
+class Data(Base):
     items: dict[ValidRank, ItemData]
     updated_at: datetime

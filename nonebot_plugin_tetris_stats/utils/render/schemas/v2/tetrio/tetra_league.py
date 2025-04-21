@@ -3,6 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from .....typedefs import Number
+from ...base import Base
 
 
 class StatisticalData(BaseModel):
@@ -32,7 +33,7 @@ class Game(BaseModel):
     handling: Handling
 
 
-class Data(BaseModel):
+class Data(Base):
     replay_id: str
     games: list[Game]
     play_at: datetime

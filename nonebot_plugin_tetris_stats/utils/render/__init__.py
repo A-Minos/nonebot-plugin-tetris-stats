@@ -4,6 +4,7 @@ from jinja2 import Environment, FileSystemLoader
 from nonebot.compat import PYDANTIC_V2
 
 from ..templates import TEMPLATES_DIR
+from .schemas.base import Base
 from .schemas.bind import Bind
 from .schemas.v1.tetrio.rank import Data as TETRIORankDataV1
 from .schemas.v1.tetrio.user.info import Info as TETRIOUserInfoV1
@@ -15,7 +16,7 @@ from .schemas.v2.tetrio.record.blitz import Record as TETRIORecordBlitzV2
 from .schemas.v2.tetrio.record.sprint import Record as TETRIORecordSprintV2
 from .schemas.v2.tetrio.tetra_league import Data as TETRIOTetraLeagueDataV2
 from .schemas.v2.tetrio.user.info import Info as TETRIOUserInfoV2
-from .schemas.v2.tetrio.user.list import Data as TETRIOUserListV2
+from .schemas.v2.tetrio.user.list import List as TETRIOUserListV2
 
 env = Environment(
     loader=FileSystemLoader(TEMPLATES_DIR),
@@ -50,35 +51,9 @@ async def render(render_type: Literal['v2/tetrio/tetra-league'], data: TETRIOTet
 async def render(render_type: Literal['v2/tetrio/user/info'], data: TETRIOUserInfoV2) -> str: ...
 @overload
 async def render(render_type: Literal['v2/tetrio/user/list'], data: TETRIOUserListV2) -> str: ...
-
-
 async def render(
-    render_type: Literal[
-        'v1/binding',
-        'v1/tetrio/info',
-        'v1/tetrio/rank',
-        'v1/top/info',
-        'v1/tos/info',
-        'v2/tetrio/rank',
-        'v2/tetrio/rank/detail',
-        'v2/tetrio/record/blitz',
-        'v2/tetrio/record/sprint',
-        'v2/tetrio/tetra-league',
-        'v2/tetrio/user/info',
-        'v2/tetrio/user/list',
-    ],
-    data: Bind
-    | TETRIOUserInfoV1
-    | TETRIORankDataV1
-    | TOPInfoV1
-    | TOSInfoV1
-    | TETRIORankDataV2
-    | TETRIORankDetailDataV2
-    | TETRIORecordBlitzV2
-    | TETRIORecordSprintV2
-    | TETRIOTetraLeagueDataV2
-    | TETRIOUserInfoV2
-    | TETRIOUserListV2,
+    render_type: str,
+    data: Base,
 ) -> str:
     if PYDANTIC_V2:
         return await env.get_template('index.html').render_async(

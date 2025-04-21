@@ -1,12 +1,14 @@
 from pydantic import BaseModel, Field
 
 from .....typedefs import Number
-from ...base import People, Trending
+from ...base import Base, People, Trending
 from ..base import History
 
 
 class Multiplayer(BaseModel):
     history: History
+    rating: Number
+    rd: Number
 
     lpm: Number
     pps: Number
@@ -34,7 +36,7 @@ class Singleplayer(BaseModel):
     marathon: str
 
 
-class Info(BaseModel):
+class Info(Base):
     user: People
     multiplayer: Multiplayer
     singleplayer: Singleplayer

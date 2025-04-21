@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
-from ....base import Avatar
+from ....base import Avatar, Base
 
 
 class TetraLeague(BaseModel):
@@ -33,6 +33,6 @@ class Data(BaseModel):
     tetra_league: TetraLeague
 
 
-class List(BaseModel):
+class List(Base):
     show_index: bool
     data: list[Data]

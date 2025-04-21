@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from .......games.tetrio.api.typedefs import ValidRank
 from ......typedefs import Number
+from ....base import Base
 
 
 class SpecialData(BaseModel):
@@ -19,7 +20,7 @@ class SpecialData(BaseModel):
     vs_holder: str | None = None
 
 
-class Data(BaseModel):
+class Data(Base):
     name: ValidRank
     trending: Number
     require_tr: Number
