@@ -260,6 +260,8 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
         if user_info.data.pb_sprint != '2147483647'
         else 'N/A'
     )
+    data = handle_history_data(await get_historical_data(user_info.data.teaid))
+    values = get_value_bounds([i.score for i in data])
     async with HostPage(
         await render(
             'v1/tos/info',
@@ -272,8 +274,8 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
                 ),
                 multiplayer=Multiplayer(
                     history=History(
-                        data=(data := handle_history_data(await get_historical_data(user_info.data.teaid))),
-                        max_value=(values := get_value_bounds([i.score for i in data])).value_max,
+                        data=data,
+                        max_value=values.value_max,
                         min_value=values.value_min,
                         split_interval=(split := get_split(value_bound=values, min_value=0)).split_value,
                         offset=split.offset,
