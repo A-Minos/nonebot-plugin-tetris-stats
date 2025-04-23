@@ -17,6 +17,7 @@ from ..api import Player
 from ..api.schemas.summaries.league import RatedData
 from ..constant import TR_MAX, TR_MIN
 from .tools import flow_to_history, get_league_data
+from ....utils.lang import get_lang
 
 
 async def make_query_image_v1(player: Player) -> bytes:
@@ -92,7 +93,7 @@ async def make_query_image_v1(player: Player) -> bytes:
                     sprint=sprint_value,
                     blitz=blitz_value,
                 ),
-                _lang='zh-CN',
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:
