@@ -7,6 +7,7 @@ from yarl import URL
 from ....utils.chart import get_split, get_value_bounds, handle_history_data
 from ....utils.exception import FallbackError
 from ....utils.host import HostPage, get_self_netloc
+from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar, Trending
@@ -17,7 +18,6 @@ from ..api import Player
 from ..api.schemas.summaries.league import RatedData
 from ..constant import TR_MAX, TR_MIN
 from .tools import flow_to_history, get_league_data
-from ....utils.lang import get_lang
 
 
 async def make_query_image_v1(player: Player) -> bytes:
