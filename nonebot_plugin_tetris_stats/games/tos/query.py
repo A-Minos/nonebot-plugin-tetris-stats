@@ -1,7 +1,8 @@
 from asyncio import gather
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from typing import Literal, NamedTuple
+from zoneinfo import ZoneInfo
 
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -12,21 +13,27 @@ from nonebot_plugin_session import EventSession
 from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
 from nonebot_plugin_user import get_user
 from nonebot_plugin_userinfo import EventUserInfo, UserInfo
+from sqlalchemy import select
 
 from ...db import query_bind_info, trigger
 from ...i18n import Lang
+from ...utils.chart import get_split, get_value_bounds, handle_history_data
 from ...utils.exception import RequestError
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
+from ...utils.lang import get_lang
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
 from ...utils.render import render
 from ...utils.render.avatar import get_avatar as get_random_avatar
-from ...utils.render.schemas.base import People, Ranking
-from ...utils.render.schemas.tos_info import Info, Multiplayer, Radar
+from ...utils.render.schemas.base import HistoryData, People, Trending
+from ...utils.render.schemas.v1.base import History
+from ...utils.render.schemas.v1.tos.info import Info, Multiplayer, Singleplayer
 from ...utils.screenshot import screenshot
+from ...utils.time_it import time_it
 from ...utils.typedefs import Me, Number
 from . import alc
 from .api import Player
+from .api.models import TOSHistoricalData
 from .api.schemas.user_info import UserInfoSuccess
 from .constant import GAME_TYPE
 
@@ -148,6 +155,7 @@ async def _(account: Player, event_session: EventSession):
         command_args=[],
     ):
         user_info, game_data = await gather(account.get_info(), get_game_data(account))
+        await get_historical_data(user_info.data.teaid)
         if game_data is not None:
             await UniMessage.image(raw=await make_query_image(user_info, game_data, None)).finish()
         await make_query_text(user_info, game_data).finish()
@@ -156,7 +164,7 @@ async def _(account: Player, event_session: EventSession):
 class GameData(NamedTuple):
     game_num: int
     metrics: TetrisMetricsProWithLPMADPM
-    OR: Number
+    or_: Number
     dspp: Number
     ge: Number
 
@@ -199,10 +207,47 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
     return GameData(
         game_num=num,
         metrics=metrics,
-        OR=total_offset / total_receive * 100,
+        or_=total_offset / total_receive * 100,
         dspp=total_dig / total_pieses,
         ge=2 * ((total_attack * total_dig) / total_pieses**2),
     )
+
+
+@time_it
+async def get_historical_data(unique_identifier: str) -> list[HistoryData]:
+    async with get_session() as session:
+        user_infos = (
+            await session.scalars(
+                select(TOSHistoricalData)
+                .where(TOSHistoricalData.user_unique_identifier == unique_identifier)
+                .where(TOSHistoricalData.api_type == 'User Info')
+                .where(
+                    TOSHistoricalData.update_time
+                    > (
+                        datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
+                        - timedelta(days=9)
+                    ).replace(tzinfo=timezone.utc)
+                )
+                .order_by(TOSHistoricalData.id.asc())
+            )
+        ).all()
+        if user_infos:
+            extra_info = (
+                await session.scalars(
+                    select(TOSHistoricalData)
+                    .where(TOSHistoricalData.id < user_infos[0].id)
+                    .where(TOSHistoricalData.user_unique_identifier == unique_identifier)
+                    .where(TOSHistoricalData.api_type == 'User Info')
+                    .limit(1)
+                )
+            ).one_or_none()
+            if extra_info is not None:
+                user_infos = [extra_info, *user_infos]
+    return [
+        HistoryData(score=float(i.data.data.rating_now), record_at=i.update_time.astimezone(ZoneInfo('Asia/Shanghai')))
+        for i in user_infos
+        if isinstance(i.data, UserInfoSuccess)
+    ]
 
 
 async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: UserInfo | None) -> bytes:
@@ -216,6 +261,8 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
         if user_info.data.pb_sprint != '2147483647'
         else 'N/A'
     )
+    data = handle_history_data(await get_historical_data(user_info.data.teaid))
+    values = get_value_bounds([i.score for i in data])
     async with HostPage(
         await render(
             'v1/tos/info',
@@ -226,26 +273,38 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
                     else get_random_avatar(user_info.data.teaid),
                     name=user_info.data.name,
                 ),
-                ranking=Ranking(rating=float(user_info.data.ranking), rd=round(float(user_info.data.rd_now), 2)),
                 multiplayer=Multiplayer(
-                    pps=metrics.pps,
+                    history=History(
+                        data=data,
+                        max_value=values.value_max,
+                        min_value=values.value_min,
+                        split_interval=(split := get_split(value_bound=values, min_value=0)).split_value,
+                        offset=split.offset,
+                    ),
+                    rating=round(float(user_info.data.rating_now), 2),
+                    rd=round(float(user_info.data.rd_now), 2),
                     lpm=metrics.lpm,
+                    pps=metrics.pps,
+                    lpm_trending=Trending.KEEP,
                     apm=metrics.apm,
                     apl=metrics.apl,
-                    vs=metrics.vs,
+                    apm_trending=Trending.KEEP,
                     adpm=metrics.adpm,
+                    vs=metrics.vs,
                     adpl=metrics.adpl,
-                ),
-                radar=Radar(
+                    adpm_trending=Trending.KEEP,
                     app=(app := (metrics.apm / (60 * metrics.pps))),
-                    OR=game_data.OR,
+                    or_=game_data.or_,
                     dspp=game_data.dspp,
                     ci=150 * game_data.dspp - 125 * app + 50 * (metrics.vs / metrics.apm) - 25,
                     ge=game_data.ge,
                 ),
-                sprint=sprint_value,
-                challenge=f'{int(user_info.data.pb_challenge):,}' if user_info.data.pb_challenge != '0' else 'N/A',
-                marathon=f'{int(user_info.data.pb_marathon):,}' if user_info.data.pb_marathon != '0' else 'N/A',
+                singleplayer=Singleplayer(
+                    sprint=sprint_value,
+                    challenge=f'{int(user_info.data.pb_challenge):,}' if user_info.data.pb_challenge != '0' else 'N/A',
+                    marathon=f'{int(user_info.data.pb_marathon):,}' if user_info.data.pb_marathon != '0' else 'N/A',
+                ),
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:

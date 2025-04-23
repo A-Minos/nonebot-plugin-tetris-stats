@@ -4,22 +4,22 @@ from typing import TypeVar, overload
 from zoneinfo import ZoneInfo
 
 from ....utils.exception import FallbackError
-from ....utils.render.schemas.tetrio.user.base import TetraLeagueHistoryData
+from ....utils.render.schemas.base import HistoryData
 from ..api.schemas.labs.leagueflow import Empty, LeagueFlowSuccess
 from ..api.schemas.summaries.league import InvalidData, LeagueSuccessModel, NeverPlayedData, NeverRatedData, RatedData
 
 
 def flow_to_history(
     leagueflow: LeagueFlowSuccess,
-    handle: Callable[[list[TetraLeagueHistoryData]], list[TetraLeagueHistoryData]] | None = None,
-) -> list[TetraLeagueHistoryData]:
+    handle: Callable[[list[HistoryData]], list[HistoryData]] | None = None,
+) -> list[HistoryData]:
     if isinstance(leagueflow.data, Empty):
         raise FallbackError
     start_time = leagueflow.data.start_time.astimezone(ZoneInfo('Asia/Shanghai'))
     ret = [
-        TetraLeagueHistoryData(
+        HistoryData(
             record_at=start_time + timedelta(milliseconds=i.timestamp_offset),
-            tr=i.post_match_tr,
+            score=i.post_match_tr,
         )
         for i in leagueflow.data.points
         if start_time + timedelta(milliseconds=i.timestamp_offset)

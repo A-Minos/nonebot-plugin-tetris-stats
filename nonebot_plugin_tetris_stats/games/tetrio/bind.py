@@ -13,6 +13,7 @@ from yarl import URL
 from ...db import BindStatus, create_or_update_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
+from ...utils.lang import get_lang
 from ...utils.render import Bind, render
 from ...utils.render.schemas.base import Avatar, People
 from ...utils.screenshot import screenshot
@@ -65,7 +66,7 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                     'v1/binding',
                     Bind(
                         platform='TETR.IO',
-                        status='unknown',
+                        type='unknown',
                         user=People(
                             avatar=str(
                                 URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}')
@@ -79,7 +80,8 @@ async def _(nb_user: User, account: Player, event_session: EventSession, bot_inf
                             avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
                             name=bot_info.user_name,
                         ),
-                        command='io查我',
+                        prompt='io查我',
+                        _lang=get_lang(),
                     ),
                 )
             ) as page_hash:

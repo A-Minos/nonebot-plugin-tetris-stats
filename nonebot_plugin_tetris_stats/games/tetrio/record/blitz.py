@@ -16,11 +16,12 @@ from ....db import query_bind_info, trigger
 from ....i18n import Lang
 from ....utils.exception import RecordNotFoundError
 from ....utils.host import HostPage, get_self_netloc
+from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar
-from ....utils.render.schemas.tetrio.record.base import Finesse, Max, Mini, Tspins, User
-from ....utils.render.schemas.tetrio.record.blitz import Record, Statistic
+from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, Tspins, User
+from ....utils.render.schemas.v2.tetrio.record.blitz import Record, Statistic
 from ....utils.screenshot import screenshot
 from ....utils.typedefs import Me
 from .. import alc
@@ -145,6 +146,7 @@ async def make_blitz_image(player: Player) -> bytes:
                     level=stats.level,
                 ),
                 play_at=blitz.data.record.ts,
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:

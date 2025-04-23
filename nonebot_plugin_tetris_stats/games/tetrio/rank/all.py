@@ -10,13 +10,14 @@ from sqlalchemy.orm import selectinload
 
 from ....db import trigger
 from ....utils.host import HostPage, get_self_netloc
+from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render
-from ....utils.render.schemas.tetrio.rank.v1 import Data as DataV1
-from ....utils.render.schemas.tetrio.rank.v1 import ItemData as ItemDataV1
-from ....utils.render.schemas.tetrio.rank.v2 import AverageData as AverageDataV2
-from ....utils.render.schemas.tetrio.rank.v2 import Data as DataV2
-from ....utils.render.schemas.tetrio.rank.v2 import ItemData as ItemDataV2
+from ....utils.render.schemas.v1.tetrio.rank import Data as DataV1
+from ....utils.render.schemas.v1.tetrio.rank import ItemData as ItemDataV1
+from ....utils.render.schemas.v2.tetrio.rank import AverageData as AverageDataV2
+from ....utils.render.schemas.v2.tetrio.rank import Data as DataV2
+from ....utils.render.schemas.v2.tetrio.rank import ItemData as ItemDataV2
 from ....utils.screenshot import screenshot
 from .. import alc
 from ..constant import GAME_TYPE
@@ -82,6 +83,7 @@ async def make_image_v1(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     for i in zip(latest_data.fields, compare_data.fields, strict=True)
                 },
                 updated_at=latest_data.update_time,
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:
@@ -109,6 +111,7 @@ async def make_image_v2(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     for i in zip(latest_data.fields, compare_data.fields, strict=True)
                 },
                 updated_at=latest_data.update_time,
+                _lang=get_lang(),
             ),
         )
     ) as page_hash:

@@ -52,8 +52,8 @@ class HostPage:
 @driver.on_startup
 def _():
     app.mount(
-        '/host/assets',
-        StaticFiles(directory=TEMPLATES_DIR / 'assets'),
+        '/host/_nuxt',
+        StaticFiles(directory=TEMPLATES_DIR / '_nuxt'),
         name='assets',
     )
     logger.success('assets mounted')

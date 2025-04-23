@@ -29,6 +29,7 @@ dependencies = [
     "pillow>=11.0.0",
     "playwright>=1.48.0",
     "rich>=13.9.3",
+    "strenum>=0.4.15",
     "yarl>=1.16.0",
 ]
 classifiers = [

@@ -5,9 +5,10 @@ from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[im
 
 from ...db import trigger
 from ...utils.host import HostPage, get_self_netloc
+from ...utils.lang import get_lang
 from ...utils.metrics import get_metrics
 from ...utils.render import render
-from ...utils.render.schemas.tetrio.user.list_v2 import List, TetraLeague, User
+from ...utils.render.schemas.v2.tetrio.user.list import Data, List, TetraLeague, User
 from ...utils.screenshot import screenshot
 from .. import alc
 from . import command
@@ -63,12 +64,15 @@ async def _(
                 'v2/tetrio/user/list',
                 List(
                     show_index=True,
-                    users=[
-                        User(
-                            id=i.id,
-                            name=i.username.upper(),
-                            avatar=f'https://tetr.io/user-content/avatars/{i.id}.jpg',
-                            country=i.country,
+                    data=[
+                        Data(
+                            user=User(
+                                id=i.id,
+                                name=i.username.upper(),
+                                avatar=f'https://tetr.io/user-content/avatars/{i.id}.jpg',
+                                country=i.country,
+                                xp=i.xp,
+                            ),
                             tetra_league=TetraLeague(
                                 rank=i.league.rank,
                                 tr=round(i.league.tr, 2),
@@ -81,12 +85,11 @@ async def _(
                                 vs=metrics.vs,
                                 adpl=metrics.adpl,
                             ),
-                            xp=i.xp,
-                            join_at=None,
                         )
                         for i in league.data.entries
                         if isinstance(i, Entry)
                     ],
+                    _lang=get_lang(),
                 ),
             )
         ) as page_hash:

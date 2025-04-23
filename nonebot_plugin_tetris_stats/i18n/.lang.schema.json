@@ -67,6 +67,19 @@
           }
         }
       }
+    },
+    "template": {
+      "title": "Template",
+      "description": "Scope 'template' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "template_language": {
+          "title": "template_language",
+          "description": "value of lang item type 'template_language'",
+          "type": "string"
+        }
+      }
     }
   }
 }

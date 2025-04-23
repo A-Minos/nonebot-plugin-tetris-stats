@@ -30,7 +30,7 @@ async def download_templates(tag: str) -> Path:
             tag = (
                 (
                     await client.get(
-                        'https://github.com/A-Minos/tetris-stats-templates/releases/latest', follow_redirects=True
+                        'https://github.com/A-Minos/tetris-stats-templates-new/releases/latest', follow_redirects=True
                     )
                 )
                 .url.path.strip('/')
@@ -43,7 +43,7 @@ async def download_templates(tag: str) -> Path:
             async with (
                 client.stream(
                     'GET',
-                    f'https://github.com/A-Minos/tetris-stats-templates/releases/download/{tag}/dist.zip',
+                    f'https://github.com/A-Minos/tetris-stats-templates-new/releases/download/{tag}/dist.zip',
                     follow_redirects=True,
                 ) as response,
                 aopen(path, 'wb') as file,
@@ -107,7 +107,7 @@ async def init_templates(tag: str) -> bool:
 async def check_tag(tag: str) -> bool:
     async with AsyncClient(proxy=config.tetris.proxy.github or config.tetris.proxy.main) as client:
         return (
-            await client.get(f'https://github.com/A-Minos/tetris-stats-templates/releases/tag/{tag}')
+            await client.get(f'https://github.com/A-Minos/tetris-stats-templates-new/releases/tag/{tag}')
         ).status_code != HTTPStatus.NOT_FOUND
 
 

@@ -16,6 +16,7 @@ async def screenshot(url: str) -> bytes:
     context = await BrowserManager.get_context('screenshot', factory=context_factory)
     async with await context.new_page() as page:
         await page.goto(url)
+        await page.wait_for_selector('#content')
         size: ViewportSize = await page.evaluate("""
             () => {
                 const element = document.querySelector('#content');
@@ -26,5 +27,4 @@ async def screenshot(url: str) -> bytes:
             };
         """)
         await page.set_viewport_size(size)
-        await page.wait_for_load_state('networkidle')
         return await page.locator('id=content').screenshot(animations='disabled', timeout=5000, type='png')

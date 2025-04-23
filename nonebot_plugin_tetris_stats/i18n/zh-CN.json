@@ -10,5 +10,8 @@
       "TOS": "用户名/ID不合法",
       "TOP": "用户名不合法"
     }
+  },
+  "template": {
+    "template_language": "zh-CN"
   }
 }
