@@ -123,7 +123,7 @@ async def make_image(rank: ValidRank, latest: TETRIOLeagueStats, compare: TETRIO
                     vs_holder=latest_data.high_vs.username.upper(),
                 ),
                 updated_at=latest.update_time.replace(tzinfo=UTC).astimezone(ZoneInfo('Asia/Shanghai')),
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

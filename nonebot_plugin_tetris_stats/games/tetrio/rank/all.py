@@ -83,7 +83,7 @@ async def make_image_v1(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     for i in zip(latest_data.fields, compare_data.fields, strict=True)
                 },
                 updated_at=latest_data.update_time,
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:
@@ -111,7 +111,7 @@ async def make_image_v2(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     for i in zip(latest_data.fields, compare_data.fields, strict=True)
                 },
                 updated_at=latest_data.update_time,
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

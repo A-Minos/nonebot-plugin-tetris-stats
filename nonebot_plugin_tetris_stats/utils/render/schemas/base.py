@@ -8,7 +8,7 @@ from ...typedefs import Lang, Number
 
 
 class Base(BaseModel):
-    _lang: Lang
+    lang: Lang
 
 
 class Avatar(BaseModel):

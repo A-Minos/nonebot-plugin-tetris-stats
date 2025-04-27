@@ -89,7 +89,7 @@ async def _(
                         for i in league.data.entries
                         if isinstance(i, Entry)
                     ],
-                    _lang=get_lang(),
+                    lang=get_lang(),
                 ),
             )
         ) as page_hash:

@@ -96,7 +96,7 @@ async def make_query_image(profile: UserProfile) -> bytes:
                     apl=history.apl,
                     apm_trending=Trending.KEEP,
                 ),
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

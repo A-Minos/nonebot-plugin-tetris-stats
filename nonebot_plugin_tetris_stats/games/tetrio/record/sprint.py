@@ -146,7 +146,7 @@ async def make_sprint_image(player: Player) -> bytes:
                     ),
                 ),
                 play_at=sprint.data.record.ts,
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

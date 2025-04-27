@@ -60,7 +60,7 @@ async def _(
                         name=bot_info.user_name,
                     ),
                     prompt='茶服绑定{游戏ID}',
-                    _lang=get_lang(),
+                    lang=get_lang(),
                 ),
             )
         ) as page_hash:

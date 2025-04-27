@@ -93,7 +93,7 @@ async def make_query_image_v1(player: Player) -> bytes:
                     sprint=sprint_value,
                     blitz=blitz_value,
                 ),
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

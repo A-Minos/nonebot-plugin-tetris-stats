@@ -55,7 +55,7 @@ async def _(
                             name=bot_info.user_remark or bot_info.user_displayname or bot_info.user_name,
                         ),
                         prompt='茶服查我',
-                        _lang=get_lang(),
+                        lang=get_lang(),
                     ),
                 )
             ) as page_hash:

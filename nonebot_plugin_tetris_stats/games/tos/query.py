@@ -304,7 +304,7 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
                     challenge=f'{int(user_info.data.pb_challenge):,}' if user_info.data.pb_challenge != '0' else 'N/A',
                     marathon=f'{int(user_info.data.pb_marathon):,}' if user_info.data.pb_marathon != '0' else 'N/A',
                 ),
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

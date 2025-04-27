@@ -146,7 +146,7 @@ async def make_blitz_image(player: Player) -> bytes:
                     level=stats.level,
                 ),
                 play_at=blitz.data.record.ts,
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         )
     ) as page_hash:

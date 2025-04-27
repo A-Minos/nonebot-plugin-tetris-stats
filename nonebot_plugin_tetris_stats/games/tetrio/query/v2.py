@@ -188,7 +188,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                 if blitz.data.record is not None
                 else None,
                 zen=Zen(level=zen.data.level, score=zen.data.score),
-                _lang=get_lang(),
+                lang=get_lang(),
             ),
         ),
     ) as page_hash:
