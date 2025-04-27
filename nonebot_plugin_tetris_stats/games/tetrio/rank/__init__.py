@@ -12,6 +12,7 @@ from nonebot_plugin_apscheduler import scheduler
 from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 
+from ....config.config import config
 from ....utils.exception import RequestError
 from ....utils.retry import retry
 from .. import alc
@@ -136,14 +137,16 @@ async def get_tetra_league_data() -> None:
         await session.commit()
 
 
-@driver.on_startup
-async def _() -> None:
-    async with get_session() as session:
-        latest_time = await session.scalar(
-            select(TETRIOLeagueStats.update_time).order_by(TETRIOLeagueStats.id.desc()).limit(1)
-        )
-    if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
-        await get_tetra_league_data()
+if not config.tetris.development:
+
+    @driver.on_startup
+    async def _() -> None:
+        async with get_session() as session:
+            latest_time = await session.scalar(
+                select(TETRIOLeagueStats.update_time).order_by(TETRIOLeagueStats.id.desc()).limit(1)
+            )
+        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
+            await get_tetra_league_data()
 
 
 from . import all, detail  # noqa: A004, E402

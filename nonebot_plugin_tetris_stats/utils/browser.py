@@ -10,6 +10,8 @@ from nonebot.log import logger
 from playwright.__main__ import main
 from playwright.async_api import Browser, BrowserContext, async_playwright
 
+from ..config.config import config
+
 driver = get_driver()
 
 global_config = driver.config
@@ -76,6 +78,7 @@ class BrowserManager:
         """启动浏览器实例"""
         playwright = await async_playwright().start()
         cls._browser = await playwright.firefox.launch(
+            headless=not config.tetris.development,
             firefox_user_prefs={
                 'network.http.max-persistent-connections-per-server': 64,
             },

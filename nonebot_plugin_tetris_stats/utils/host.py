@@ -12,7 +12,7 @@ from nonebot import get_app, get_driver
 from nonebot.log import logger
 from yarl import URL
 
-from ..config.config import CACHE_PATH
+from ..config.config import CACHE_PATH, config
 from ..games.tetrio.api.cache import request
 from .image import img_to_png
 from .templates import TEMPLATES_DIR
@@ -45,8 +45,14 @@ class HostPage:
     async def __aenter__(self) -> str:
         return self.page_hash
 
-    async def __aexit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
-        self.pages.pop(self.page_hash, None)
+    if not config.tetris.development:
+
+        async def __aexit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
+            self.pages.pop(self.page_hash, None)
+    else:
+
+        async def __aexit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
+            pass
 
 
 @driver.on_startup
