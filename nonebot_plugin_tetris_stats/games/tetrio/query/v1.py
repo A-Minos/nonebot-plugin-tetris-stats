@@ -1,7 +1,10 @@
 from asyncio import gather
 from datetime import timedelta
 from hashlib import md5
+from typing import NamedTuple
 
+from nonebot_plugin_orm import get_session
+from sqlalchemy import func, select
 from yarl import URL
 
 from ....utils.chart import get_split, get_value_bounds, handle_history_data
@@ -13,9 +16,60 @@ from ....utils.render.schemas.base import Avatar, Trending
 from ....utils.render.schemas.v1.base import History
 from ....utils.render.schemas.v1.tetrio.info import Info, Multiplayer, Singleplayer, User
 from ..api import Player
-from ..api.schemas.summaries.league import RatedData
+from ..api.models import TETRIOHistoricalData
+from ..api.schemas.summaries.league import LeagueSuccessModel, NeverRatedData, RatedData
 from ..constant import TR_MAX, TR_MIN
 from .tools import flow_to_history, get_league_data
+
+
+def compare_trending(old: float, new: float) -> Trending:
+    if old > new:
+        return Trending.DOWN
+    if old < new:
+        return Trending.UP
+    return Trending.KEEP
+
+
+class Trends(NamedTuple):
+    pps: Trending = Trending.KEEP
+    apm: Trending = Trending.KEEP
+    vs: Trending = Trending.KEEP
+
+
+async def get_trending(player: Player) -> Trends:
+    league = await player.league
+    if not isinstance(league.data, RatedData | NeverRatedData):
+        return Trends()
+
+    async with get_session() as session:
+        # 查询约一天前的历史数据
+        historical = (
+            await session.scalars(
+                select(TETRIOHistoricalData)
+                .where(
+                    TETRIOHistoricalData.user_unique_identifier == (await player.user).unique_identifier,
+                    TETRIOHistoricalData.api_type == 'league',
+                    TETRIOHistoricalData.update_time > league.cache.cached_at - timedelta(days=1),
+                )
+                .order_by(
+                    func.julianday(TETRIOHistoricalData.update_time)
+                    - func.julianday(league.cache.cached_at - timedelta(days=1))
+                )
+                .limit(1)
+            )
+        ).one_or_none()
+    if (
+        historical is None
+        or not isinstance(historical.data, LeagueSuccessModel)
+        or not isinstance(historical.data.data, RatedData | NeverRatedData)
+    ):
+        return Trends()
+
+    return Trends(
+        pps=compare_trending(historical.data.data.pps, league.data.pps),
+        apm=compare_trending(historical.data.data.apm, league.data.apm),
+        vs=compare_trending(historical.data.data.vs, league.data.vs),
+    )
 
 
 async def make_query_image_v1(player: Player) -> bytes:
@@ -69,14 +123,14 @@ async def make_query_image_v1(player: Player) -> bytes:
                 ),
                 lpm=(metrics := get_metrics(pps=league_data.pps, apm=league_data.apm, vs=league_data.vs)).lpm,
                 pps=metrics.pps,
-                lpm_trending=Trending.KEEP,
+                lpm_trending=(trends := (await get_trending(player))).pps,
                 apm=metrics.apm,
                 apl=metrics.apl,
-                apm_trending=Trending.KEEP,
+                apm_trending=trends.apm,
                 adpm=metrics.adpm,
                 vs=metrics.vs,
                 adpl=metrics.adpl,
-                adpm_trending=Trending.KEEP,
+                adpm_trending=trends.vs,
                 app=(app := (league_data.apm / (60 * league_data.pps))),
                 dsps=(dsps := ((league_data.vs / 100) - (league_data.apm / 60))),
                 dspp=(dspp := (dsps / league_data.pps)),
