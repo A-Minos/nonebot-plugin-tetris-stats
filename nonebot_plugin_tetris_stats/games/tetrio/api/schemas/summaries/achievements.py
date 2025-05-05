@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from ..base import FailedModel, SuccessModel
 
 
-class Rt(IntEnum):
+class RankType(IntEnum):
     PERCENTILE = 1
     ISSUE = 2
     ZENITH = 3
@@ -16,7 +16,7 @@ class Rt(IntEnum):
     PERCENTILEMLAX = 6
 
 
-class Vt(IntEnum):
+class ValueType(IntEnum):
     NONE = 0
     NUMBER = 1
     TIME = 2
@@ -26,7 +26,7 @@ class Vt(IntEnum):
     NUMBER_INV = 6
 
 
-class Art(IntEnum):
+class ArType(IntEnum):
     UNRANKED = 0
     RANKED = 1
     COMPETITIVE = 2
@@ -57,15 +57,15 @@ class X(BaseModel):
 
 class Achievement(BaseModel):
     # 这**都是些啥
-    k: int
+    achievement_id: int = Field(alias='k')
     category: str
-    name: str
-    object: str
-    desc: str
-    o: int
-    rt: Rt
-    vt: Vt
-    art: Art
+    primary_name: str = Field(alias='name')
+    objective: str = Field(alias='object')
+    flavor_text: str = Field(alias='desc')
+    order: int = Field(alias='o')
+    rank_type: RankType = Field(alias='rt')
+    value_type: ValueType = Field(alias='vt')
+    ar_type: ArType = Field(alias='art')
     min: int
     deci: int
     hidden: bool
@@ -74,7 +74,7 @@ class Achievement(BaseModel):
     event_past: bool | None = None
     disabled: bool | None = None
     pair: str | None = None
-    v: float | None = None
+    achieved_score: float | None = Field(None, alias='v')
     a: float | None = None
     t: datetime | None = None
     pos: int | None = None
