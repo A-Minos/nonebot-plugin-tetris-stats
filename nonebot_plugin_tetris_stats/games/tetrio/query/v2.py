@@ -11,6 +11,7 @@ from ....utils.metrics import get_metrics
 from ....utils.render import render
 from ....utils.render.schemas.base import Avatar
 from ....utils.render.schemas.v2.tetrio.user.info import (
+    Achievement,
     Badge,
     Best,
     Blitz,
@@ -33,7 +34,7 @@ from .tools import flow_to_history, handling_special_value
 async def make_query_image_v2(player: Player) -> bytes:
     (
         (user, user_info, league, sprint, blitz, zen),
-        (avatar_revision, banner_revision, leagueflow, zenith, zenithex),
+        (avatar_revision, banner_revision, leagueflow, zenith, zenithex, achievements),
     ) = await gather(
         gather(
             player.user,
@@ -49,6 +50,7 @@ async def make_query_image_v2(player: Player) -> bytes:
             player.get_leagueflow(),
             player.get_summaries('zenith'),
             player.get_summaries('zenithex'),
+            player.get_summaries('achievements'),
         ),
     )
     if sprint.data.record is not None:
@@ -110,7 +112,20 @@ async def make_query_image_v2(player: Player) -> bytes:
                     ],
                     xp=user_info.data.xp,
                     ar=user_info.data.ar,
-                    achievements=user_info.data.achievements,
+                    achievements=[
+                        Achievement(
+                            key=i.achievement_id,
+                            rank_type=i.rank_type,
+                            ar_type=i.ar_type,
+                            stub=i.stub,
+                            rank=i.rank,
+                            achieved_score=i.achieved_score,
+                            pos=i.pos,
+                            progress=i.progress,
+                            total=i.total,
+                        )
+                        for i in achievements.data
+                    ],
                     playtime=play_time,
                     join_at=user_info.data.ts,
                 ),

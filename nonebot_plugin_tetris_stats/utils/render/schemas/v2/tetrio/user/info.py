@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from .......games.tetrio.api.schemas.summaries.achievements import ArType, RankType
+from .......games.tetrio.api.schemas.summaries.achievements import Rank as AchievementRank
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
 from ....base import Avatar, Base, HistoryData
@@ -13,6 +15,18 @@ class Badge(BaseModel):
     description: str
     group: str | None
     receive_at: datetime | None
+
+
+class Achievement(BaseModel):
+    key: int
+    rank_type: RankType
+    ar_type: ArType
+    stub: bool | None
+    rank: AchievementRank | None
+    achieved_score: float | None
+    pos: int | None
+    progress: float | None
+    total: int | None
 
 
 class User(BaseModel):
@@ -37,7 +51,7 @@ class User(BaseModel):
     xp: Number
 
     ar: Number
-    achievements: list[int]
+    achievements: list[Achievement]
 
     playtime: str | None
     join_at: datetime | None
