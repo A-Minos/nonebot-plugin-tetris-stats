@@ -73,7 +73,7 @@ class Achievement(BaseModel):
     event: str | None = None
     event_past: bool | None = None
     disabled: bool | None = None
-    pair: str | None = None
+    pair: bool | None = None
     achieved_score: float | None = Field(None, alias='v')
     a: float | None = None
     t: datetime | None = None
