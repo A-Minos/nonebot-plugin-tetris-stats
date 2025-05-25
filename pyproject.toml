@@ -23,6 +23,7 @@ dependencies = [
     "nonebot-plugin-orm>=0.7.6",
     "nonebot-plugin-session>=0.3.2",
     "nonebot-plugin-session-orm>=0.2.0",
+    "nonebot-plugin-uninfo>=0.7.4",
     "nonebot-plugin-user>=0.4.4",
     "nonebot-plugin-userinfo>=0.2.6",
     "nonebot-plugin-waiter>=0.8.0",
