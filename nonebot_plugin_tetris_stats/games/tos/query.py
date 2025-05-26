@@ -9,10 +9,9 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo, User
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import get_user
-from nonebot_plugin_userinfo import EventUserInfo, UserInfo
 from sqlalchemy import select
 
 from ...db import query_bind_info, trigger
@@ -45,8 +44,7 @@ def add_special_handlers(
     async def _(
         event: Event,
         target: At | Me,
-        event_session: EventSession,
-        event_user_info: UserInfo = EventUserInfo(),  # noqa: B008
+        event_session: Uninfo,
     ):
         if isinstance(event, match_event):
             async with trigger(
@@ -66,7 +64,9 @@ def add_special_handlers(
                     if game_data is not None:
                         await UniMessage.image(
                             raw=await make_query_image(
-                                user_info, game_data, None if isinstance(target, At) else event_user_info
+                                user_info,
+                                game_data,
+                                None if isinstance(target, At) else event_session.user,
                             )
                         ).finish()
                     await make_query_text(user_info, game_data).finish()
@@ -112,8 +112,7 @@ async def _(
     event: Event,
     matcher: Matcher,
     target: At | Me,
-    event_session: EventSession,
-    event_user_info: UserInfo = EventUserInfo(),  # noqa: B008
+    event_session: Uninfo,
 ):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
@@ -125,7 +124,7 @@ async def _(
             bind = await query_bind_info(
                 session=session,
                 user=await get_user(
-                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
                 ),
                 game_platform=GAME_TYPE,
             )
@@ -139,7 +138,9 @@ async def _(
                 message
                 + UniMessage.image(
                     raw=await make_query_image(
-                        user_info, game_data, None if isinstance(target, At) else event_user_info
+                        user_info,
+                        game_data,
+                        None if isinstance(target, At) else event_session.user,
                     )
                 )
             ).finish()
@@ -147,7 +148,7 @@ async def _(
 
 
 @alc.assign('TOS.query')
-async def _(account: Player, event_session: EventSession):
+async def _(account: Player, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -250,7 +251,7 @@ async def get_historical_data(unique_identifier: str) -> list[HistoryData]:
     ]
 
 
-async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: UserInfo | None) -> bytes:
+async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, event_user_info: User | None) -> bytes:
     metrics = game_data.metrics
     sprint_value = (
         (

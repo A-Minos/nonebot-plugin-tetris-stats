@@ -1,11 +1,14 @@
+from secrets import choice
+
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import QryItrface, Uninfo
+from nonebot_plugin_uninfo import User as UninfoUser
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
-from nonebot_plugin_userinfo import BotUserInfo, EventUserInfo, UserInfo
 from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 
+from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
@@ -21,9 +24,8 @@ from .constant import GAME_TYPE
 @alc.assign('TOP.unbind')
 async def _(
     nb_user: User,
-    event_session: EventSession,
-    event_user_info: UserInfo = EventUserInfo(),  # noqa: B008
-    bot_info: UserInfo = BotUserInfo(),  # noqa: B008
+    event_session: Uninfo,
+    interface: QryItrface,
 ):
     async with (
         trigger(
@@ -49,12 +51,23 @@ async def _(
                     platform='TOP',
                     type='unlink',
                     user=People(
-                        avatar=await get_avatar(event_user_info, 'Data URI', None),
+                        avatar=await get_avatar(
+                            event_session.user,
+                            'Data URI',
+                            None,
+                        ),
                         name=user.user_name,
                     ),
                     bot=People(
-                        avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
-                        name=bot_info.user_name,
+                        avatar=await get_avatar(
+                            (
+                                bot_user := await interface.get_user(event_session.self_id)
+                                or UninfoUser(id=event_session.self_id)
+                            ),
+                            'Data URI',
+                            '../../static/logo/logo.svg',
+                        ),
+                        name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                     ),
                     prompt='top绑定{游戏ID}',
                     lang=get_lang(),

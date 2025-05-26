@@ -3,8 +3,8 @@ from datetime import timedelta
 from arclet.alconna import Arg
 from nonebot_plugin_alconna import Option, Subcommand, UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
@@ -33,7 +33,7 @@ command.add(
 
 
 @alc.assign('TETRIO.rank.all')
-async def _(event_session: EventSession, template: Template | None = None):
+async def _(event_session: Uninfo, template: Template | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,

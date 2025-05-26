@@ -1,7 +1,7 @@
 from nonebot_plugin_alconna import Args, Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 
 from ...db import trigger
 from ...utils.host import HostPage, get_self_netloc
@@ -32,7 +32,7 @@ command.add(
 
 @alc.assign('TETRIO.list')
 async def _(
-    event_session: EventSession,
+    event_session: Uninfo,
     max_tr: float | None = None,
     min_tr: float | None = None,
     limit: int | None = None,

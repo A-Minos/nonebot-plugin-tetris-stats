@@ -2,8 +2,8 @@ from arclet.alconna import Arg
 from nonebot_plugin_alconna import Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import async_scoped_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
 from sqlalchemy import select
 
@@ -34,7 +34,7 @@ alc.shortcut(
 
 
 @alc.assign('TETRIO.config')
-async def _(user: User, session: async_scoped_session, event_session: EventSession, template: Template):
+async def _(user: User, session: async_scoped_session, event_session: Uninfo, template: Template):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
