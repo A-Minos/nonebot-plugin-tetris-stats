@@ -5,8 +5,8 @@ from arclet.alconna import Arg
 from nonebot import get_driver
 from nonebot_plugin_alconna import Option, UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
@@ -31,7 +31,7 @@ command.add(Option('--detail', Arg('rank', ValidRank), alias=['-D']))
 
 
 @alc.assign('TETRIO.rank')
-async def _(rank: ValidRank, event_session: EventSession):
+async def _(rank: ValidRank, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,

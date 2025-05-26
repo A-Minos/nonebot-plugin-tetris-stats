@@ -1,15 +1,17 @@
 from hashlib import md5
+from secrets import choice
 
 from nonebot_plugin_alconna import Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import QryItrface, Uninfo
+from nonebot_plugin_uninfo import User as UninfoUser
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
-from nonebot_plugin_userinfo import BotUserInfo, UserInfo
 from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 from yarl import URL
 
+from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
 from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
@@ -31,7 +33,7 @@ alc.shortcut(
 
 
 @alc.assign('TETRIO.unbind')
-async def _(nb_user: User, event_session: EventSession, bot_info: UserInfo = BotUserInfo()):  # noqa: B008
+async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
     async with (
         trigger(
             session_persist_id=await get_session_persist_id(event_session),
@@ -65,8 +67,15 @@ async def _(nb_user: User, event_session: EventSession, bot_info: UserInfo = Bot
                         name=user.name.upper(),
                     ),
                     bot=People(
-                        avatar=await get_avatar(bot_info, 'Data URI', '../../static/logo/logo.svg'),
-                        name=bot_info.user_name,
+                        avatar=await get_avatar(
+                            (
+                                bot_user := await interface.get_user(event_session.self_id)
+                                or UninfoUser(id=event_session.self_id)
+                            ),
+                            'Data URI',
+                            '../../static/logo/logo.svg',
+                        ),
+                        name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                     ),
                     prompt='io绑定{游戏ID}',
                     lang=get_lang(),

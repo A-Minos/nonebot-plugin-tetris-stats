@@ -2,16 +2,22 @@ from base64 import b64encode
 from io import BytesIO
 from typing import Literal, overload
 
-from nonebot_plugin_userinfo import UserInfo
+from nonebot_plugin_uninfo import User
 from PIL import Image
+from yarl import URL
+
+from ..config.config import config
+from .request import Request
+
+request = Request(config.tetris.proxy.main)
 
 
 @overload
-async def get_avatar(user: UserInfo, scheme: Literal['Data URI'], default: str | None) -> str:
+async def get_avatar(user: User, scheme: Literal['Data URI'], default: str | None) -> str:
     """获取用户头像的指定格式
 
     Args:
-        user (UserInfo): 要获取的用户
+        user (User): 要获取的用户
         scheme (Literal[&#39;Data URI&#39;]): 格式
         default (str | None): 获取不到时的默认值
 
@@ -25,11 +31,11 @@ async def get_avatar(user: UserInfo, scheme: Literal['Data URI'], default: str |
 
 
 @overload
-async def get_avatar(user: UserInfo, scheme: Literal['bytes'], default: str | None) -> bytes:
+async def get_avatar(user: User, scheme: Literal['bytes'], default: str | None) -> bytes:
     """获取用户头像的指定格式
 
     Args:
-        user (UserInfo): 要获取的用户
+        user (User): 要获取的用户
         scheme (Literal[&#39;bytes&#39;]): 格式
         default (str | None): 获取不到时的默认值
 
@@ -38,20 +44,20 @@ async def get_avatar(user: UserInfo, scheme: Literal['bytes'], default: str | No
     """
 
 
-async def get_avatar(user: UserInfo, scheme: Literal['Data URI', 'bytes'], default: str | None) -> str | bytes:
-    if user.user_avatar is None:
+async def get_avatar(user: User, scheme: Literal['Data URI', 'bytes'], default: str | None) -> str | bytes:
+    if user.avatar is None:
         if default is None:
             msg = "Can't get avatar"
             raise TypeError(msg)
         return default
-    bot_avatar = await user.user_avatar.get_image()
+    avatar = await request.request(URL(user.avatar), is_json=False)
     if scheme == 'Data URI':
-        avatar_format = Image.open(BytesIO(bot_avatar)).format
+        avatar_format = Image.open(BytesIO(avatar)).format
         if avatar_format is None:
             msg = "Can't get avatar format"
             raise TypeError(msg)
-        return f'data:{Image.MIME[avatar_format]};base64,{b64encode(bot_avatar).decode()}'
-    return bot_avatar
+        return f'data:{Image.MIME[avatar_format]};base64,{b64encode(avatar).decode()}'
+    return avatar
 
 
 def img_to_png(image: bytes) -> bytes:

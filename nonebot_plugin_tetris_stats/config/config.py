@@ -1,4 +1,4 @@
-from nonebot import get_plugin_config
+from nonebot import get_driver, get_plugin_config
 from nonebot_plugin_localstore import get_plugin_cache_dir, get_plugin_data_dir
 from pydantic import BaseModel, Field
 
@@ -26,3 +26,4 @@ class Config(BaseModel):
 
 
 config = get_plugin_config(Config)
+global_config = get_driver().config

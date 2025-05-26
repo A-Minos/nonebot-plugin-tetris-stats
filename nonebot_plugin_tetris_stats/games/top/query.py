@@ -3,8 +3,8 @@ from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
-from nonebot_plugin_session import EventSession
-from nonebot_plugin_session_orm import get_session_persist_id  # type: ignore[import-untyped]
+from nonebot_plugin_uninfo import Uninfo
+from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import get_user
 
 from ...db import query_bind_info, trigger
@@ -27,7 +27,7 @@ from .constant import GAME_TYPE
 
 
 @alc.assign('TOP.query')
-async def _(event: Event, matcher: Matcher, target: At | Me, event_session: EventSession):
+async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -38,7 +38,7 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
             bind = await query_bind_info(
                 session=session,
                 user=await get_user(
-                    event_session.platform, target.target if isinstance(target, At) else event.get_user_id()
+                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
                 ),
                 game_platform=GAME_TYPE,
             )
@@ -51,7 +51,7 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Even
 
 
 @alc.assign('TOP.query')
-async def _(account: Player, event_session: EventSession):
+async def _(account: Player, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,

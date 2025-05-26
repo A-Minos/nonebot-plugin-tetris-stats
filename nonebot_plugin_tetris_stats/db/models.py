@@ -71,7 +71,7 @@ class Bind(MappedAsDataclass, Model):
     game_account: Mapped[str]
 
 
-class TriggerHistoricalData(MappedAsDataclass, Model):
+class TriggerHistoricalDataV2(MappedAsDataclass, Model):
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     trigger_time: Mapped[datetime] = mapped_column(DateTime)
     session_persist_id: Mapped[int]
