@@ -12,7 +12,7 @@ from nonebot_plugin_user import User
 from sqlalchemy import select
 
 from ..utils.typedefs import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
-from .models import Bind, TriggerHistoricalData
+from .models import Bind, TriggerHistoricalDataV2
 
 UTC = timezone.utc
 
@@ -139,7 +139,7 @@ async def trigger(
     except FinishedException:
         async with get_session() as session:
             session.add(
-                TriggerHistoricalData(
+                TriggerHistoricalDataV2(
                     trigger_time=trigger_time,
                     session_persist_id=session_persist_id,
                     game_platform=game_platform,
