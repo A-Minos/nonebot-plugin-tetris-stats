@@ -24,6 +24,7 @@ dependencies = [
     "nonebot-plugin-uninfo>=0.7.4",
     "nonebot-plugin-user>=0.4.4",
     "nonebot-plugin-waiter>=0.8.0",
+    "nonebot-session-to-uninfo>=0.0.2",
     "nonebot2[fastapi]>=2.3.3",
     "pandas>=2.2.3",
     "pillow>=11.0.0",
