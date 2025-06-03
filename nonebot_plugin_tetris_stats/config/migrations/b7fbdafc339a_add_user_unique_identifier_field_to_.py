@@ -96,7 +96,7 @@ def upgrade(name: str = '') -> None:
                         progress.update(task_id, advance=1)
                     session.commit()
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:
-        batch_op.alter_column('user_unique_identifier', existing_type=sa.VARCHAR(length=32), nullable=False)
+        batch_op.alter_column('user_unique_identifier', existing_type=sa.String(length=32), nullable=False)
     logger.success('database upgrade success')
 
 
