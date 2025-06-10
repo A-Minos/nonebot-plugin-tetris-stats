@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.exc import IdentifierError
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -31,11 +32,14 @@ def upgrade(name: str = '') -> None:
         batch_op.drop_index('ix_nonebot_plugin_tetris_stats_iorank_update_time')
 
     op.drop_table('nonebot_plugin_tetris_stats_iorank')
-
-    with op.batch_alter_table('nonebot_plugin_tetris_stats_tetriohistoricaldata', schema=None) as batch_op:
-        batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_api_type')
-        batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_update_time')
-        batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_user_unique_identifier')
+    try:
+        with op.batch_alter_table('nonebot_plugin_tetris_stats_tetriohistoricaldata', schema=None) as batch_op:
+            batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_api_type')
+            batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_update_time')
+            batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_user_unique_identifier')
+    except IdentifierError:
+        with op.batch_alter_table('nonebot_plugin_tetris_stats_tetriohistoricaldata', schema=None) as batch_op:
+            batch_op.drop_index('ix_nonebot_plugin_tetris_stats_tetriohistoricaldata_use_4888')
 
     op.drop_table('nonebot_plugin_tetris_stats_tetriohistoricaldata')
 
@@ -68,21 +72,21 @@ def downgrade(name: str = '') -> None:
         return
     op.create_table(
         'nonebot_plugin_tetris_stats_iorank',
-        sa.Column('id', sa.INTEGER(), nullable=False),
-        sa.Column('rank', sa.VARCHAR(length=2), nullable=False),
-        sa.Column('tr_line', sa.FLOAT(), nullable=False),
-        sa.Column('player_count', sa.INTEGER(), nullable=False),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('rank', sa.String(length=2), nullable=False),
+        sa.Column('tr_line', sa.Float(), nullable=False),
+        sa.Column('player_count', sa.Integer(), nullable=False),
         sa.Column('low_pps', sa.JSON(), nullable=False),
         sa.Column('low_apm', sa.JSON(), nullable=False),
         sa.Column('low_vs', sa.JSON(), nullable=False),
-        sa.Column('avg_pps', sa.FLOAT(), nullable=False),
-        sa.Column('avg_apm', sa.FLOAT(), nullable=False),
-        sa.Column('avg_vs', sa.FLOAT(), nullable=False),
+        sa.Column('avg_pps', sa.Float(), nullable=False),
+        sa.Column('avg_apm', sa.Float(), nullable=False),
+        sa.Column('avg_vs', sa.Float(), nullable=False),
         sa.Column('high_pps', sa.JSON(), nullable=False),
         sa.Column('high_apm', sa.JSON(), nullable=False),
         sa.Column('high_vs', sa.JSON(), nullable=False),
-        sa.Column('update_time', sa.DATETIME(), nullable=False),
-        sa.Column('file_hash', sa.VARCHAR(length=128), nullable=True),
+        sa.Column('update_time', sa.DateTime(), nullable=False),
+        sa.Column('file_hash', sa.String(length=128), nullable=True),
         sa.PrimaryKeyConstraint('id', name='pk_nonebot_plugin_tetris_stats_iorank'),
     )
     with op.batch_alter_table('nonebot_plugin_tetris_stats_iorank', schema=None) as batch_op:
