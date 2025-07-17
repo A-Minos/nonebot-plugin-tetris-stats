@@ -65,6 +65,8 @@ class PydanticType(TypeDecorator):
 
 
 class Bind(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_bind'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     user_id: Mapped[int] = mapped_column(index=True)
     game_platform: Mapped[GameType] = mapped_column(String(32))
@@ -72,6 +74,8 @@ class Bind(MappedAsDataclass, Model):
 
 
 class TriggerHistoricalDataV2(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_trigger_hist_v2'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     trigger_time: Mapped[datetime] = mapped_column(DateTime)
     session_persist_id: Mapped[int]

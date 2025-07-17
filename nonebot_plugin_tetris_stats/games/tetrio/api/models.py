@@ -11,6 +11,8 @@ from .typedefs import Records, Summaries
 
 
 class TETRIOHistoricalData(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_hist_data'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     user_unique_identifier: Mapped[str] = mapped_column(String(24), index=True)
     api_type: Mapped[Literal['User Info', Records, Summaries]] = mapped_column(String(32), index=True)

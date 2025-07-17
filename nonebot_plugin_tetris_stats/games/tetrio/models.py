@@ -12,11 +12,15 @@ from .typedefs import Template
 
 
 class TETRIOUserConfig(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_u_cfg'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     query_template: Mapped[Template] = mapped_column(String(2))
 
 
 class TETRIOLeagueStats(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_tl_stats'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     raw: Mapped[list['TETRIOLeagueHistorical']] = relationship(back_populates='stats', lazy='noload')
     fields: Mapped[list['TETRIOLeagueStatsField']] = relationship(back_populates='stats')
@@ -24,11 +28,13 @@ class TETRIOLeagueStats(MappedAsDataclass, Model):
 
 
 class TETRIOLeagueHistorical(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_tl_hist'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     request_id: Mapped[UUID] = mapped_column(index=True)
     data: Mapped[BySuccessModel] = mapped_column(PydanticType([], {BySuccessModel}))
     update_time: Mapped[datetime] = mapped_column(DateTime, index=True)
-    stats_id: Mapped[int] = mapped_column(ForeignKey('nonebot_plugin_tetris_stats_tetrioleaguestats.id'), init=False)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False)
     stats: Mapped['TETRIOLeagueStats'] = relationship(back_populates='raw')
 
 
@@ -36,6 +42,8 @@ entry_type = PydanticType([], {Entry})
 
 
 class TETRIOLeagueStatsField(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_tl_stats_field'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     rank: Mapped[ValidRank] = mapped_column(String(2), index=True)
     tr_line: Mapped[float]
@@ -49,5 +57,5 @@ class TETRIOLeagueStatsField(MappedAsDataclass, Model):
     high_pps: Mapped[Entry] = mapped_column(entry_type)
     high_apm: Mapped[Entry] = mapped_column(entry_type)
     high_vs: Mapped[Entry] = mapped_column(entry_type)
-    stats_id: Mapped[int] = mapped_column(ForeignKey('nonebot_plugin_tetris_stats_tetrioleaguestats.id'), init=False)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False)
     stats: Mapped['TETRIOLeagueStats'] = relationship(back_populates='fields')
