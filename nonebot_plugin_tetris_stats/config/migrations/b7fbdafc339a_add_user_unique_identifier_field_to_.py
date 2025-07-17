@@ -23,7 +23,7 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
-def upgrade(name: str = '') -> None:
+def upgrade(name: str = '') -> None:  # noqa: C901
     if name:
         return
     if op.get_bind().dialect.name == 'postgresql':
