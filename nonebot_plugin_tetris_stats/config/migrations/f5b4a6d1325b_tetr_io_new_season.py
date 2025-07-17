@@ -25,6 +25,8 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
     with op.batch_alter_table('nonebot_plugin_tetris_stats_iorank', schema=None) as batch_op:
         batch_op.drop_index('ix_nonebot_plugin_tetris_stats_iorank_file_hash')
         batch_op.drop_index('ix_nonebot_plugin_tetris_stats_iorank_rank')
@@ -65,6 +67,8 @@ def upgrade(name: str = '') -> None:
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return
     op.create_table(
         'nonebot_plugin_tetris_stats_iorank',
