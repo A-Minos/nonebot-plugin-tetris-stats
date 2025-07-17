@@ -22,3 +22,5 @@ class BaseUser(BaseModel, ABC, Generic[T]):
     @abstractmethod
     def unique_identifier(self) -> str:
         raise NotImplementedError
+
+    __hash__ = BaseModel.__hash__

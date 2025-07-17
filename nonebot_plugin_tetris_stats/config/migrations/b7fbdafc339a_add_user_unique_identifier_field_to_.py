@@ -29,9 +29,9 @@ def upgrade(name: str = '') -> None:  # noqa: C901
     if op.get_bind().dialect.name == 'postgresql':
         return
 
-    from nonebot.compat import type_validate_json
-    from pydantic import ValidationError
-    from rich.progress import (
+    from nonebot.compat import type_validate_json  # noqa: PLC0415
+    from pydantic import ValidationError  # noqa: PLC0415
+    from rich.progress import (  # noqa: PLC0415
         BarColumn,
         MofNCompleteColumn,
         Progress,
@@ -39,9 +39,9 @@ def upgrade(name: str = '') -> None:  # noqa: C901
         TextColumn,
         TimeRemainingColumn,
     )
-    from sqlalchemy import select
-    from sqlalchemy.ext.automap import automap_base
-    from sqlalchemy.orm import Session
+    from sqlalchemy import select  # noqa: PLC0415
+    from sqlalchemy.ext.automap import automap_base  # noqa: PLC0415
+    from sqlalchemy.orm import Session  # noqa: PLC0415
 
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:
         batch_op.add_column(sa.Column('user_unique_identifier', sa.String(length=32), nullable=True))
@@ -60,13 +60,15 @@ def upgrade(name: str = '') -> None:  # noqa: C901
         if count == 0:
             logger.info('空表, 跳过')
         else:
-            from nonebot_plugin_tetris_stats.version import __version__
+            from nonebot_plugin_tetris_stats.version import __version__  # noqa: PLC0415
 
             if __version__ != '1.0.4':
                 msg = '本迁移需要1.0.4版本, 请先锁定版本至1.0.4版本再执行本迁移'
                 logger.critical(msg)
                 raise RuntimeError(msg)
-            from nonebot_plugin_tetris_stats.game_data_processor.schemas import BaseUser  # type: ignore[import-untyped]
+            from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped] # noqa: PLC0415
+                BaseUser,
+            )
 
             models: list[type[BaseUser]] = BaseUser.__subclasses__()
 

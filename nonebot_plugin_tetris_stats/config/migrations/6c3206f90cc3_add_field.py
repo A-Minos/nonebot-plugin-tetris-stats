@@ -28,7 +28,7 @@ def upgrade(name: str = '') -> None:
         return
     if op.get_bind().dialect.name == 'postgresql':
         return
-    from json import dumps, loads
+    from json import dumps, loads  # noqa: PLC0415
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()
@@ -54,7 +54,7 @@ def downgrade(name: str = '') -> None:
         return
     if op.get_bind().dialect.name == 'postgresql':
         return
-    from json import dumps, loads
+    from json import dumps, loads  # noqa: PLC0415
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()

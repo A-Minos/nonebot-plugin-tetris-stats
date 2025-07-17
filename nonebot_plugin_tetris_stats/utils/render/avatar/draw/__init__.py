@@ -43,8 +43,8 @@ class Piece(Enum):
     )
 
     I5 = (
-        (True, True, True, True, True),  # fmt: skip
-    )
+        (True, True, True, True, True),
+    )  # fmt: skip
 
     V = (
         (True, False, False),

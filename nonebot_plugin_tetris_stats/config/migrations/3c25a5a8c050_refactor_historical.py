@@ -29,7 +29,7 @@ depends_on: str | Sequence[str] | None = None
 
 
 def migrate_old_data() -> None:  # noqa: C901
-    from json import dumps, loads
+    from json import dumps, loads  # noqa: PLC0415
 
     Base = automap_base()  # noqa: N806
     Base.prepare(autoload_with=op.get_bind())

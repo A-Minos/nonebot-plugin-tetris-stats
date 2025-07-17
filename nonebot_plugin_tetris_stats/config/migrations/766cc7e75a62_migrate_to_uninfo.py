@@ -45,7 +45,10 @@ def data_migrate() -> None:
             return
 
         try:
-            from nonebot_session_to_uninfo import check_tables, get_id_map  # type: ignore[import-untyped]
+            from nonebot_session_to_uninfo import (  # type: ignore[import-untyped]  # noqa: PLC0415
+                check_tables,
+                get_id_map,
+            )
         except ImportError as err:
             msg = '请安装 `nonebot-session-to-uninfo` 以迁移数据'
             raise ValueError(msg) from err
