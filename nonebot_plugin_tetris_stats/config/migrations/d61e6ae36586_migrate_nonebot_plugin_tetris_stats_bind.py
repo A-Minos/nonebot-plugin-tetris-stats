@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING
 
 from alembic import op
 from nonebot.log import logger
-from objprint import objprint
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 from sqlalchemy import inspect
 from sqlalchemy.ext.automap import automap_base
