@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects import sqlite
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -86,19 +85,19 @@ def downgrade(name: str = '') -> None:
 
     op.create_table(
         'nonebot_plugin_tetris_stats_historicaldata',
-        sa.Column('id', sa.INTEGER(), nullable=False),
-        sa.Column('trigger_time', sa.DATETIME(), nullable=False),
-        sa.Column('bot_platform', sa.VARCHAR(length=32), nullable=True),
-        sa.Column('bot_account', sa.VARCHAR(), nullable=True),
-        sa.Column('source_type', sa.VARCHAR(length=32), nullable=True),
-        sa.Column('source_account', sa.VARCHAR(), nullable=True),
-        sa.Column('message', sa.BLOB(), nullable=True),
-        sa.Column('game_platform', sa.VARCHAR(length=32), nullable=False),
-        sa.Column('command_type', sa.VARCHAR(length=16), nullable=False),
-        sa.Column('command_args', sqlite.JSON(), nullable=False),
-        sa.Column('game_user', sa.BLOB(), nullable=False),
-        sa.Column('processed_data', sa.BLOB(), nullable=False),
-        sa.Column('finish_time', sa.DATETIME(), nullable=False),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('trigger_time', sa.DateTime(), nullable=False),
+        sa.Column('bot_platform', sa.String(length=32), nullable=True),
+        sa.Column('bot_account', sa.String(), nullable=True),
+        sa.Column('source_type', sa.String(length=32), nullable=True),
+        sa.Column('source_account', sa.String(), nullable=True),
+        sa.Column('message', sa.PickleType(), nullable=True),
+        sa.Column('game_platform', sa.String(length=32), nullable=False),
+        sa.Column('command_type', sa.String(length=16), nullable=False),
+        sa.Column('command_args', sa.JSON(), nullable=False),
+        sa.Column('game_user', sa.PickleType(), nullable=False),
+        sa.Column('processed_data', sa.PickleType(), nullable=False),
+        sa.Column('finish_time', sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint('id', name='pk_nonebot_plugin_tetris_stats_historicaldata'),
     )
     with op.batch_alter_table('nonebot_plugin_tetris_stats_historicaldata', schema=None) as batch_op:

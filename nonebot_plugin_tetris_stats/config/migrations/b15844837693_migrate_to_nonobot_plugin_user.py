@@ -61,11 +61,11 @@ def downgrade(name: str = '') -> None:
 
     op.create_table(
         'nonebot_plugin_tetris_stats_bind',
-        sa.Column('id', sa.INTEGER(), nullable=False),
-        sa.Column('chat_platform', sa.VARCHAR(length=32), nullable=False),
-        sa.Column('chat_account', sa.VARCHAR(), nullable=False),
-        sa.Column('game_platform', sa.VARCHAR(length=32), nullable=False),
-        sa.Column('game_account', sa.VARCHAR(), nullable=False),
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('chat_platform', sa.String(length=32), nullable=False),
+        sa.Column('chat_account', sa.String(), nullable=False),
+        sa.Column('game_platform', sa.String(length=32), nullable=False),
+        sa.Column('game_account', sa.String(), nullable=False),
         sa.PrimaryKeyConstraint('id', name='pk_nonebot_plugin_tetris_stats_bind'),
     )
     with op.batch_alter_table('nonebot_plugin_tetris_stats_bind', schema=None) as batch_op:
