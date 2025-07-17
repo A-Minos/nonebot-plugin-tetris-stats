@@ -26,7 +26,7 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
-    from json import dumps, loads
+    from json import dumps, loads  # noqa: PLC0415
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()
@@ -50,7 +50,7 @@ def upgrade(name: str = '') -> None:
 def downgrade(name: str = '') -> None:
     if name:
         return
-    from json import dumps, loads
+    from json import dumps, loads  # noqa: PLC0415
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()

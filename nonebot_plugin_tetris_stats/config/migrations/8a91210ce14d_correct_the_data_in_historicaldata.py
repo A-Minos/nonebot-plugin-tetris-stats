@@ -29,9 +29,9 @@ def upgrade(name: str = '') -> None:  # noqa: C901
     if name:
         return
 
-    from nonebot.compat import PYDANTIC_V2, type_validate_json
-    from pydantic import BaseModel, ValidationError
-    from rich.progress import (
+    from nonebot.compat import PYDANTIC_V2, type_validate_json  # noqa: PLC0415
+    from pydantic import BaseModel, ValidationError  # noqa: PLC0415
+    from rich.progress import (  # noqa: PLC0415
         BarColumn,
         MofNCompleteColumn,
         Progress,
@@ -58,14 +58,14 @@ def upgrade(name: str = '') -> None:  # noqa: C901
             logger.info('空表, 跳过')
             return
 
-        from nonebot_plugin_tetris_stats.version import __version__
+        from nonebot_plugin_tetris_stats.version import __version__  # noqa: PLC0415
 
         if __version__ != '1.0.3':
             msg = '本迁移需要1.0.3版本, 请先锁定版本至1.0.3版本再执行本迁移'
             logger.critical(msg)
             raise RuntimeError(msg)
 
-        from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped]
+        from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped]  # noqa: PLC0415
             BaseProcessedData,
         )
 
