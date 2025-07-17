@@ -105,9 +105,13 @@ def data_migrate() -> None:
 def upgrade(name: str = '') -> None:
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
     data_migrate()
 
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return

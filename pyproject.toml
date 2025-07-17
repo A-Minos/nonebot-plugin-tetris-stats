@@ -59,6 +59,7 @@ dev = [
     "nonebot-adapter-kaiheila>=0.3.4",
     "nonebot-adapter-onebot>=2.4.6",
     "nonebot-adapter-qq>=1.5.3",
+    "nonebot-plugin-orm[postgresql]>=0.8.2",
     "nonebot-plugin-tarina-lang-turbo>=0.1.1",
     "ruff>=0.7.1",
 ]

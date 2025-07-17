@@ -11,6 +11,8 @@ from .schemas.user_profile import UserProfile
 
 
 class TOSHistoricalData(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_tos_hist_data'
+
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     user_unique_identifier: Mapped[str] = mapped_column(String(24), index=True)
     api_type: Mapped[Literal['User Info', 'User Profile']] = mapped_column(String(16), index=True)

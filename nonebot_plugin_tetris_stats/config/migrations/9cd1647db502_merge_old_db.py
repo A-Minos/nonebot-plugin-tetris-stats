@@ -63,6 +63,8 @@ def migrate_old_data(connection: Connection) -> None:
 def upgrade(name: str = '') -> None:
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
     try:
         db_path = Path(config.db_url)
     except AttributeError:
@@ -90,4 +92,6 @@ def upgrade(name: str = '') -> None:
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return
