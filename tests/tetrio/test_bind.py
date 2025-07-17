@@ -7,7 +7,7 @@ from tests.fake_event import FakeGroupMessageEvent
 
 @pytest.mark.asyncio
 async def test_invalid_name(app: App) -> None:
-    from nonebot_plugin_tetris_stats.games import alc
+    from nonebot_plugin_tetris_stats.games import alc  # noqa: PLC0415
 
     raw_message = 'tstats tetrio bind 芜湖'
     message = Message(raw_message)
