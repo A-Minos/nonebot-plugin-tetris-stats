@@ -26,6 +26,8 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
 
     Base = automap_base()  # noqa: N806
     connection = op.get_bind()
@@ -39,4 +41,6 @@ def upgrade(name: str = '') -> None:
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return

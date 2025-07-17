@@ -28,6 +28,8 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:  # noqa: C901
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
 
     from nonebot.compat import PYDANTIC_V2, type_validate_json  # noqa: PLC0415
     from pydantic import BaseModel, ValidationError  # noqa: PLC0415
@@ -100,4 +102,6 @@ def upgrade(name: str = '') -> None:  # noqa: C901
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return

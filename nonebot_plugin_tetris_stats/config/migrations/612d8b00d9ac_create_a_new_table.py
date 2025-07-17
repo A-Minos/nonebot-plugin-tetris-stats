@@ -25,6 +25,8 @@ depends_on: str | Sequence[str] | None = None
 def upgrade(name: str = '') -> None:
     if name:
         return
+    if op.get_bind().dialect.name == 'postgresql':
+        return
     op.create_table(
         'nonebot_plugin_tetris_stats_triggerhistoricaldatav2',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -52,6 +54,8 @@ def upgrade(name: str = '') -> None:
 
 def downgrade(name: str = '') -> None:
     if name:
+        return
+    if op.get_bind().dialect.name == 'postgresql':
         return
     with op.batch_alter_table('nonebot_plugin_tetris_stats_triggerhistoricaldatav2', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_nonebot_plugin_tetris_stats_triggerhistoricaldatav2_game_platform'))
