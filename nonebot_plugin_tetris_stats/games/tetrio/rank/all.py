@@ -5,7 +5,7 @@ from nonebot_plugin_alconna import Option, Subcommand, UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ....db import trigger
@@ -41,6 +41,7 @@ async def _(event_session: Uninfo, template: Template | None = None):
         command_args=['--all'] + ([f'--template {template}'] if template is not None else []),
     ):
         async with get_session() as session:
+            # 获取最新记录
             latest_data = (
                 await session.scalars(
                     select(TETRIOLeagueStats)
@@ -49,19 +50,42 @@ async def _(event_session: Uninfo, template: Template | None = None):
                     .options(selectinload(TETRIOLeagueStats.fields))
                 )
             ).one()
-            compare_data = (
-                await session.scalars(
+
+            # 计算目标时间点 (24小时前)
+            target_time = latest_data.update_time - timedelta(hours=24)
+
+            # 查询目标时间点之前的最近记录
+            before = (
+                await session.scalar(
                     select(TETRIOLeagueStats)
-                    .order_by(
-                        func.abs(
-                            func.julianday(TETRIOLeagueStats.update_time)
-                            - func.julianday(latest_data.update_time - timedelta(hours=24))
-                        )
-                    )
+                    .where(TETRIOLeagueStats.update_time <= target_time)
+                    .order_by(TETRIOLeagueStats.update_time.desc())
                     .limit(1)
                     .options(selectinload(TETRIOLeagueStats.fields))
                 )
-            ).one()
+                or latest_data
+            )
+
+            # 查询目标时间点之后的最近记录
+            after = (
+                await session.scalar(
+                    select(TETRIOLeagueStats)
+                    .where(TETRIOLeagueStats.update_time >= target_time)  # 使用 >= 避免间隙
+                    .order_by(TETRIOLeagueStats.update_time.asc())
+                    .limit(1)
+                    .options(selectinload(TETRIOLeagueStats.fields))
+                )
+                or latest_data
+            )
+
+            # 确定最接近的记录
+            compare_data = (
+                before
+                if abs((target_time - before.update_time).total_seconds())
+                < abs((target_time - after.update_time).total_seconds())
+                else after
+            )
+
         match template:
             case 'v1' | None:
                 await UniMessage.image(raw=await make_image_v1(latest_data, compare_data)).finish()
