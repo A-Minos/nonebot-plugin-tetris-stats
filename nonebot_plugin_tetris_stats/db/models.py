@@ -71,6 +71,7 @@ class Bind(MappedAsDataclass, Model):
     user_id: Mapped[int] = mapped_column(index=True)
     game_platform: Mapped[GameType] = mapped_column(String(32))
     game_account: Mapped[str]
+    verify: Mapped[bool]
 
 
 class TriggerHistoricalDataV2(MappedAsDataclass, Model):

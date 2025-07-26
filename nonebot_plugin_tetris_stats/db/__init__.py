@@ -42,6 +42,8 @@ async def create_or_update_bind(
     user: User,
     game_platform: GameType,
     game_account: str,
+    *,
+    verify: bool = False,
 ) -> BindStatus:
     bind = await query_bind_info(
         session=session,
@@ -53,6 +55,7 @@ async def create_or_update_bind(
             user_id=user.id,
             game_platform=game_platform,
             game_account=game_account,
+            verify=verify,
         )
         session.add(bind)
         status = BindStatus.SUCCESS
