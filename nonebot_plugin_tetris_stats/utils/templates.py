@@ -17,7 +17,8 @@ from ..config.config import CACHE_PATH, DATA_PATH, config
 
 driver = get_driver()
 
-TEMPLATES_DIR = DATA_PATH / 'templates'
+TEMPLATES_DIR = config.tetris.dev.template_path or DATA_PATH / 'templates'
+
 
 alc = on_alconna(Alconna('更新模板', Option('--revision', Args['revision', str], alias={'-R'})), permission=SUPERUSER)
 
@@ -111,16 +112,6 @@ async def check_tag(tag: str) -> bool:
         ).status_code != HTTPStatus.NOT_FOUND
 
 
-@driver.on_startup
-async def _():
-    if (path := (TEMPLATES_DIR / 'hash.sha256')).is_file() and await check_hash(path):
-        logger.success('模板验证成功')
-        return
-    if not await init_templates('latest'):
-        msg = '模板初始化失败'
-        raise RuntimeError(msg)
-
-
 @alc.handle()
 async def _(revision: str | None = None):
     if revision is not None and not await check_tag(revision):
@@ -129,3 +120,17 @@ async def _(revision: str | None = None):
     if await init_templates(revision or 'latest'):
         await alc.finish('更新模板成功')
     await alc.finish('更新模板失败')
+
+
+if config.tetris.dev.enable_template_check:
+    # !https://github.com/python/mypy/issues/19516
+    # 只能放def后面了(
+
+    @driver.on_startup
+    async def _():
+        if (path := (TEMPLATES_DIR / 'hash.sha256')).is_file() and await check_hash(path):
+            logger.success('模板验证成功')
+            return
+        if not await init_templates('latest'):
+            msg = '模板初始化失败'
+            raise RuntimeError(msg)

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from nonebot import get_driver, get_plugin_config
 from nonebot_plugin_localstore import get_plugin_cache_dir, get_plugin_data_dir
 from pydantic import BaseModel, Field
@@ -14,11 +16,17 @@ class Proxy(BaseModel):
     top: str | None = None
 
 
+class Dev(BaseModel):
+    enabled: bool = False
+    template_path: Path | None = None
+    enable_template_check: bool = True
+
+
 class ScopedConfig(BaseModel):
     request_timeout: float = 30.0
     screenshot_quality: float = 2
     proxy: Proxy = Field(default_factory=Proxy)
-    development: bool = False
+    dev: Dev = Field(default_factory=Dev)
 
 
 class Config(BaseModel):

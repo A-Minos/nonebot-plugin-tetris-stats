@@ -45,7 +45,7 @@ class HostPage:
     async def __aenter__(self) -> str:
         return self.page_hash
 
-    if not config.tetris.development:
+    if not config.tetris.dev.enabled:
 
         async def __aexit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
             self.pages.pop(self.page_hash, None)
