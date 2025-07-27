@@ -18,16 +18,14 @@ from ...db import query_bind_info, trigger
 from ...i18n import Lang
 from ...utils.chart import get_split, get_value_bounds, handle_history_data
 from ...utils.exception import RequestError
-from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
 from ...utils.metrics import TetrisMetricsProWithLPMADPM, get_metrics
-from ...utils.render import render
+from ...utils.render import render_image
 from ...utils.render.avatar import get_avatar as get_random_avatar
 from ...utils.render.schemas.base import HistoryData, People, Trending
 from ...utils.render.schemas.v1.base import History
 from ...utils.render.schemas.v1.tos.info import Info, Multiplayer, Singleplayer
-from ...utils.screenshot import screenshot
 from ...utils.time_it import time_it
 from ...utils.typedefs import Me, Number
 from . import alc
@@ -264,52 +262,48 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
     )
     data = handle_history_data(await get_historical_data(user_info.data.teaid))
     values = get_value_bounds([i.score for i in data])
-    async with HostPage(
-        await render(
-            'v1/tos/info',
-            Info(
-                user=People(
-                    avatar=await get_avatar(event_user_info, 'Data URI', None)
-                    if event_user_info is not None
-                    else get_random_avatar(user_info.data.teaid),
-                    name=user_info.data.name,
-                ),
-                multiplayer=Multiplayer(
-                    history=History(
-                        data=data,
-                        max_value=values.value_max,
-                        min_value=values.value_min,
-                        split_interval=(split := get_split(value_bound=values, min_value=0)).split_value,
-                        offset=split.offset,
-                    ),
-                    rating=round(float(user_info.data.rating_now), 2),
-                    rd=round(float(user_info.data.rd_now), 2),
-                    lpm=metrics.lpm,
-                    pps=metrics.pps,
-                    lpm_trending=Trending.KEEP,
-                    apm=metrics.apm,
-                    apl=metrics.apl,
-                    apm_trending=Trending.KEEP,
-                    adpm=metrics.adpm,
-                    vs=metrics.vs,
-                    adpl=metrics.adpl,
-                    adpm_trending=Trending.KEEP,
-                    app=(app := (metrics.apm / (60 * metrics.pps))),
-                    or_=game_data.or_,
-                    dspp=game_data.dspp,
-                    ci=150 * game_data.dspp - 125 * app + 50 * (metrics.vs / metrics.apm) - 25,
-                    ge=game_data.ge,
-                ),
-                singleplayer=Singleplayer(
-                    sprint=sprint_value,
-                    challenge=f'{int(user_info.data.pb_challenge):,}' if user_info.data.pb_challenge != '0' else 'N/A',
-                    marathon=f'{int(user_info.data.pb_marathon):,}' if user_info.data.pb_marathon != '0' else 'N/A',
-                ),
-                lang=get_lang(),
+    return await render_image(
+        Info(
+            user=People(
+                avatar=await get_avatar(event_user_info, 'Data URI', None)
+                if event_user_info is not None
+                else get_random_avatar(user_info.data.teaid),
+                name=user_info.data.name,
             ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
+            multiplayer=Multiplayer(
+                history=History(
+                    data=data,
+                    max_value=values.value_max,
+                    min_value=values.value_min,
+                    split_interval=(split := get_split(value_bound=values, min_value=0)).split_value,
+                    offset=split.offset,
+                ),
+                rating=round(float(user_info.data.rating_now), 2),
+                rd=round(float(user_info.data.rd_now), 2),
+                lpm=metrics.lpm,
+                pps=metrics.pps,
+                lpm_trending=Trending.KEEP,
+                apm=metrics.apm,
+                apl=metrics.apl,
+                apm_trending=Trending.KEEP,
+                adpm=metrics.adpm,
+                vs=metrics.vs,
+                adpl=metrics.adpl,
+                adpm_trending=Trending.KEEP,
+                app=(app := (metrics.apm / (60 * metrics.pps))),
+                or_=game_data.or_,
+                dspp=game_data.dspp,
+                ci=150 * game_data.dspp - 125 * app + 50 * (metrics.vs / metrics.apm) - 25,
+                ge=game_data.ge,
+            ),
+            singleplayer=Singleplayer(
+                sprint=sprint_value,
+                challenge=f'{int(user_info.data.pb_challenge):,}' if user_info.data.pb_challenge != '0' else 'N/A',
+                marathon=f'{int(user_info.data.pb_marathon):,}' if user_info.data.pb_marathon != '0' else 'N/A',
+            ),
+            lang=get_lang(),
+        ),
+    )
 
 
 def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> UniMessage:

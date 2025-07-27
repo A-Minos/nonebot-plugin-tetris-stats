@@ -4,12 +4,10 @@ from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 
 from ...db import trigger
-from ...utils.host import HostPage, get_self_netloc
 from ...utils.lang import get_lang
 from ...utils.metrics import get_metrics
-from ...utils.render import render
+from ...utils.render import render_image
 from ...utils.render.schemas.v2.tetrio.user.list import Data, List, TetraLeague, User
-from ...utils.screenshot import screenshot
 from .. import alc
 from . import command
 from .api.leaderboards import by
@@ -59,9 +57,8 @@ async def _(
             country=country,
         )
         league = await by('league', parameter)
-        async with HostPage(
-            await render(
-                'v2/tetrio/user/list',
+        await UniMessage.image(
+            raw=await render_image(
                 List(
                     show_index=True,
                     data=[
@@ -92,5 +89,4 @@ async def _(
                     lang=get_lang(),
                 ),
             )
-        ) as page_hash:
-            await UniMessage.image(raw=await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')).finish()
+        ).finish()

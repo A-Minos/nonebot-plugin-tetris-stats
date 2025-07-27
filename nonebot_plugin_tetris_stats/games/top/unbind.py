@@ -10,12 +10,11 @@ from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 
 from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
-from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
-from ...utils.render import Bind, render
+from ...utils.render import render_image
 from ...utils.render.schemas.base import People
-from ...utils.screenshot import screenshot
+from ...utils.render.schemas.bind import Bind
 from . import alc
 from .api import Player
 from .constant import GAME_TYPE
@@ -43,10 +42,8 @@ async def _(
             return
         player = Player(user_name=bind.game_account, trust=True)
         user = await player.user
-        netloc = get_self_netloc()
-        async with HostPage(
-            await render(
-                'v1/binding',
+        await UniMessage.image(
+            raw=await render_image(
                 Bind(
                     platform='TOP',
                     type='unlink',
@@ -73,6 +70,5 @@ async def _(
                     lang=get_lang(),
                 ),
             )
-        ) as page_hash:
-            await UniMessage.image(raw=await screenshot(f'http://{netloc}/host/{page_hash}.html')).send()
+        ).send()
         await remove_bind(session=session, user=nb_user, game_platform=GAME_TYPE)

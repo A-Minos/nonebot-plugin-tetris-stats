@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing_extensions import override
 
 from .....typedefs import Number
 from ...base import Base, People, Trending
@@ -37,6 +38,11 @@ class Singleplayer(BaseModel):
 
 
 class Info(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v1/tos/info'
+
     user: People
     multiplayer: Multiplayer
     singleplayer: Singleplayer

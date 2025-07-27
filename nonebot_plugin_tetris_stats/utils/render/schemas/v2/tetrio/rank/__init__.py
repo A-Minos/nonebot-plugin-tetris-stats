@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pydantic import BaseModel
+from typing_extensions import override
 
 from .......games.tetrio.api.typedefs import ValidRank
 from ......typedefs import Number
@@ -23,5 +24,10 @@ class ItemData(BaseModel):
 
 
 class Data(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v2/tetrio/rank'
+
     items: dict[ValidRank, ItemData]
     updated_at: datetime

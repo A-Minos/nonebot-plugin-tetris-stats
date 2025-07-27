@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from typing_extensions import override
 
-from .......games.tetrio.api.typedefs import Rank
-from ......typedefs import Number
-from ....base import Base, People, Trending
-from ...base import History
+from ......games.tetrio.api.typedefs import Rank
+from .....typedefs import Number
+from ...base import Base, People, Trending
+from ..base import History
 
 
 class User(People):
@@ -45,6 +46,11 @@ class Singleplayer(BaseModel):
 
 
 class Info(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v1/tetrio/info'
+
     user: User
     multiplayer: Multiplayer
     singleplayer: Singleplayer

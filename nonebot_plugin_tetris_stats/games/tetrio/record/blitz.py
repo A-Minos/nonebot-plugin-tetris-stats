@@ -15,14 +15,13 @@ from yarl import URL
 from ....db import query_bind_info, trigger
 from ....i18n import Lang
 from ....utils.exception import RecordNotFoundError
-from ....utils.host import HostPage, get_self_netloc
+from ....utils.host import get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
-from ....utils.render import render
+from ....utils.render import render_image
 from ....utils.render.schemas.base import Avatar
 from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, Tspins, User
 from ....utils.render.schemas.v2.tetrio.record.blitz import Record, Statistic
-from ....utils.screenshot import screenshot
 from ....utils.typedefs import Me
 from .. import alc
 from ..api.player import Player
@@ -88,66 +87,62 @@ async def make_blitz_image(player: Player) -> bytes:
     duration = timedelta(milliseconds=stats.finaltime).total_seconds()
     metrics = get_metrics(pps=stats.piecesplaced / duration)
     netloc = get_self_netloc()
-    async with HostPage(
-        page=await render(
-            'v2/tetrio/record/blitz',
-            Record(
-                type='best',
-                user=User(
-                    id=user.ID,
-                    name=user.name.upper(),
-                    avatar=str(
-                        URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
-                    )
-                    if (avatar_revision := (await player.avatar_revision)) is not None and avatar_revision != 0
-                    else Avatar(
-                        type='identicon',
-                        hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
-                    ),
+    return await render_image(
+        Record(
+            type='best',
+            user=User(
+                id=user.ID,
+                name=user.name.upper(),
+                avatar=str(
+                    URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
+                )
+                if (avatar_revision := (await player.avatar_revision)) is not None and avatar_revision != 0
+                else Avatar(
+                    type='identicon',
+                    hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                 ),
-                replay_id=blitz.data.record.replayid,
-                rank=blitz.data.rank,
-                personal_rank=1,
-                statistic=Statistic(
-                    keys=stats.inputs,
-                    kpp=round(stats.inputs / stats.piecesplaced, 2),
-                    kps=round(stats.inputs / duration, 2),
-                    max=Max(
-                        combo=max((0, stats.topcombo - 1)),
-                        btb=max((0, stats.topbtb - 1)),
-                    ),
-                    pieces=stats.piecesplaced,
-                    pps=metrics.pps,
-                    lines=stats.lines,
-                    lpm=metrics.lpm,
-                    holds=stats.holds,
-                    score=stats.score,
-                    spp=round(stats.score / stats.piecesplaced, 2),
-                    single=clears.singles,
-                    double=clears.doubles,
-                    triple=clears.triples,
-                    quad=clears.quads,
-                    tspins=Tspins(
-                        total=clears.realtspins,
-                        single=clears.tspinsingles,
-                        double=clears.tspindoubles,
-                        triple=clears.tspintriples,
-                        mini=Mini(
-                            total=clears.minitspins,
-                            single=clears.minitspinsingles,
-                            double=clears.minitspindoubles,
-                        ),
-                    ),
-                    all_clear=clears.allclear,
-                    finesse=Finesse(
-                        faults=stats.finesse.faults,
-                        accuracy=round(stats.finesse.perfectpieces / stats.piecesplaced * 100, 2),
-                    ),
-                    level=stats.level,
-                ),
-                play_at=blitz.data.record.ts,
-                lang=get_lang(),
             ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{netloc}/host/{page_hash}.html')
+            replay_id=blitz.data.record.replayid,
+            rank=blitz.data.rank,
+            personal_rank=1,
+            statistic=Statistic(
+                keys=stats.inputs,
+                kpp=round(stats.inputs / stats.piecesplaced, 2),
+                kps=round(stats.inputs / duration, 2),
+                max=Max(
+                    combo=max((0, stats.topcombo - 1)),
+                    btb=max((0, stats.topbtb - 1)),
+                ),
+                pieces=stats.piecesplaced,
+                pps=metrics.pps,
+                lines=stats.lines,
+                lpm=metrics.lpm,
+                holds=stats.holds,
+                score=stats.score,
+                spp=round(stats.score / stats.piecesplaced, 2),
+                single=clears.singles,
+                double=clears.doubles,
+                triple=clears.triples,
+                quad=clears.quads,
+                tspins=Tspins(
+                    total=clears.realtspins,
+                    single=clears.tspinsingles,
+                    double=clears.tspindoubles,
+                    triple=clears.tspintriples,
+                    mini=Mini(
+                        total=clears.minitspins,
+                        single=clears.minitspinsingles,
+                        double=clears.minitspindoubles,
+                    ),
+                ),
+                all_clear=clears.allclear,
+                finesse=Finesse(
+                    faults=stats.finesse.faults,
+                    accuracy=round(stats.finesse.perfectpieces / stats.piecesplaced * 100, 2),
+                ),
+                level=stats.level,
+            ),
+            play_at=blitz.data.record.ts,
+            lang=get_lang(),
+        ),
+    )

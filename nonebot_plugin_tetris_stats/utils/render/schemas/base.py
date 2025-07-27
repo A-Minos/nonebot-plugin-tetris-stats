@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from datetime import datetime
 from typing import Literal
 
@@ -8,6 +9,11 @@ from ...typedefs import Lang, Number
 
 
 class Base(BaseModel):
+    @property
+    @abstractmethod
+    def path(self) -> str:
+        raise NotImplementedError
+
     lang: Lang
 
 

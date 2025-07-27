@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing_extensions import override
 
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
@@ -34,5 +35,10 @@ class Data(BaseModel):
 
 
 class List(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v2/tetrio/user/list'
+
     show_index: bool
     data: list[Data]

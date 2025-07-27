@@ -14,12 +14,12 @@ from yarl import URL
 
 from ...config.config import global_config
 from ...db import BindStatus, create_or_update_bind, trigger
-from ...utils.host import HostPage, get_self_netloc
+from ...utils.host import get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
-from ...utils.render import Bind, render
+from ...utils.render import render_image
 from ...utils.render.schemas.base import Avatar, People
-from ...utils.screenshot import screenshot
+from ...utils.render.schemas.bind import Bind
 from . import alc, command, get_player
 from .api import Player
 from .constant import GAME_TYPE
@@ -113,35 +113,31 @@ async def make_bind_image(
     player: Player, event_session: Uninfo, interface: QryItrface, *, verify: bool | None = None
 ) -> bytes:
     (user, avatar_revision) = await gather(player.user, player.avatar_revision)
-    netloc = get_self_netloc()
-    async with HostPage(
-        await render(
-            'v1/binding',
-            Bind(
-                platform='TETR.IO',
-                type='unknown' if verify is None else 'success' if verify else 'unverified',
-                user=People(
-                    avatar=str(
-                        URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}') % {'revision': avatar_revision}
-                    )
-                    if avatar_revision is not None and avatar_revision != 0
-                    else Avatar(type='identicon', hash=md5(user.ID.encode()).hexdigest()),  # noqa: S324
-                    name=user.name.upper(),
-                ),
-                bot=People(
-                    avatar=await get_avatar(
-                        (
-                            bot_user := await interface.get_user(event_session.self_id)
-                            or UninfoUser(id=event_session.self_id)
-                        ),
-                        'Data URI',
-                        '../../static/logo/logo.svg',
-                    ),
-                    name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
-                ),
-                prompt='io查我',
-                lang=get_lang(),
+    return await render_image(
+        Bind(
+            platform='TETR.IO',
+            type='unknown' if verify is None else 'success' if verify else 'unverified',
+            user=People(
+                avatar=str(
+                    URL(f'http://{get_self_netloc()}/host/resource/tetrio/avatars/{user.ID}')
+                    % {'revision': avatar_revision}
+                )
+                if avatar_revision is not None and avatar_revision != 0
+                else Avatar(type='identicon', hash=md5(user.ID.encode()).hexdigest()),  # noqa: S324
+                name=user.name.upper(),
             ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{netloc}/host/{page_hash}.html')
+            bot=People(
+                avatar=await get_avatar(
+                    (
+                        bot_user := await interface.get_user(event_session.self_id)
+                        or UninfoUser(id=event_session.self_id)
+                    ),
+                    'Data URI',
+                    '../../static/logo/logo.svg',
+                ),
+                name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
+            ),
+            prompt='io查我',
+            lang=get_lang(),
+        ),
+    )

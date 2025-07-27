@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing_extensions import override
 
 from .....typedefs import Number
 from ...base import Base, People, Trending
@@ -14,6 +15,11 @@ class Data(BaseModel):
 
 
 class Info(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v1/top/info'
+
     user: People
     today: Data
     historical: Data
