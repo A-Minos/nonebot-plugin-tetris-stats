@@ -9,12 +9,11 @@ from nonebot_plugin_user import User
 
 from ...config.config import global_config
 from ...db import BindStatus, create_or_update_bind, trigger
-from ...utils.host import HostPage, get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
-from ...utils.render import Bind, render
+from ...utils.render import render_image
 from ...utils.render.schemas.base import People
-from ...utils.screenshot import screenshot
+from ...utils.render.schemas.bind import Bind
 from . import alc
 from .api import Player
 from .constant import GAME_TYPE
@@ -37,9 +36,8 @@ async def _(nb_user: User, account: Player, event_session: Uninfo, interface: Qr
                 game_account=user.unique_identifier,
             )
         if bind_status in (BindStatus.SUCCESS, BindStatus.UPDATE):
-            async with HostPage(
-                await render(
-                    'v1/binding',
+            await UniMessage.image(
+                raw=await render_image(
                     Bind(
                         platform=GAME_TYPE,
                         type='unknown',
@@ -66,7 +64,4 @@ async def _(nb_user: User, account: Player, event_session: Uninfo, interface: Qr
                         lang=get_lang(),
                     ),
                 )
-            ) as page_hash:
-                await UniMessage.image(
-                    raw=await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
-                ).finish()
+            ).finish()

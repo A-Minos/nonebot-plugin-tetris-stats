@@ -10,15 +10,13 @@ from nonebot_plugin_user import get_user
 from ...db import query_bind_info, trigger
 from ...i18n import Lang
 from ...utils.exception import FallbackError
-from ...utils.host import HostPage, get_self_netloc
 from ...utils.lang import get_lang
 from ...utils.metrics import TetrisMetricsBasicWithLPM, get_metrics
-from ...utils.render import render
+from ...utils.render import render_image
 from ...utils.render.avatar import get_avatar
 from ...utils.render.schemas.base import People, Trending
 from ...utils.render.schemas.v1.top.info import Data as InfoData
 from ...utils.render.schemas.v1.top.info import Info
-from ...utils.screenshot import screenshot
 from ...utils.typedefs import Me
 from . import alc
 from .api import Player
@@ -75,32 +73,28 @@ async def make_query_image(profile: UserProfile) -> bytes:
         raise FallbackError
     today = get_metrics(lpm=profile.today.lpm, apm=profile.today.apm)
     history = get_avg_metrics(profile.total)
-    async with HostPage(
-        await render(
-            'v1/top/info',
-            Info(
-                user=People(avatar=get_avatar(profile.user_name), name=profile.user_name),
-                today=InfoData(
-                    pps=today.pps,
-                    lpm=today.lpm,
-                    lpm_trending=Trending.KEEP,
-                    apm=today.apm,
-                    apl=today.apl,
-                    apm_trending=Trending.KEEP,
-                ),
-                historical=InfoData(
-                    pps=history.pps,
-                    lpm=history.lpm,
-                    lpm_trending=Trending.KEEP,
-                    apm=history.apm,
-                    apl=history.apl,
-                    apm_trending=Trending.KEEP,
-                ),
-                lang=get_lang(),
+    return await render_image(
+        Info(
+            user=People(avatar=get_avatar(profile.user_name), name=profile.user_name),
+            today=InfoData(
+                pps=today.pps,
+                lpm=today.lpm,
+                lpm_trending=Trending.KEEP,
+                apm=today.apm,
+                apl=today.apl,
+                apm_trending=Trending.KEEP,
             ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
+            historical=InfoData(
+                pps=history.pps,
+                lpm=history.lpm,
+                lpm_trending=Trending.KEEP,
+                apm=history.apm,
+                apl=history.apl,
+                apm_trending=Trending.KEEP,
+            ),
+            lang=get_lang(),
+        ),
+    )
 
 
 def make_query_text(profile: UserProfile) -> UniMessage:

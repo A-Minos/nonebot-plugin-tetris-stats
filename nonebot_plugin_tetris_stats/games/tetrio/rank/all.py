@@ -9,16 +9,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ....db import trigger
-from ....utils.host import HostPage, get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
-from ....utils.render import render
+from ....utils.render import render_image
 from ....utils.render.schemas.v1.tetrio.rank import Data as DataV1
 from ....utils.render.schemas.v1.tetrio.rank import ItemData as ItemDataV1
 from ....utils.render.schemas.v2.tetrio.rank import AverageData as AverageDataV2
 from ....utils.render.schemas.v2.tetrio.rank import Data as DataV2
 from ....utils.render.schemas.v2.tetrio.rank import ItemData as ItemDataV2
-from ....utils.screenshot import screenshot
 from .. import alc
 from ..constant import GAME_TYPE
 from ..models import TETRIOLeagueStats
@@ -94,49 +92,41 @@ async def _(event_session: Uninfo, template: Template | None = None):
 
 
 async def make_image_v1(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeagueStats) -> bytes:
-    async with HostPage(
-        await render(
-            'v1/tetrio/rank',
-            DataV1(
-                items={
-                    i[0].rank: ItemDataV1(
-                        trending=round(i[0].tr_line - i[1].tr_line, 2),
-                        require_tr=round(i[0].tr_line, 2),
-                        players=i[0].player_count,
-                    )
-                    for i in zip(latest_data.fields, compare_data.fields, strict=True)
-                },
-                updated_at=latest_data.update_time,
-                lang=get_lang(),
-            ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
+    return await render_image(
+        DataV1(
+            items={
+                i[0].rank: ItemDataV1(
+                    trending=round(i[0].tr_line - i[1].tr_line, 2),
+                    require_tr=round(i[0].tr_line, 2),
+                    players=i[0].player_count,
+                )
+                for i in zip(latest_data.fields, compare_data.fields, strict=True)
+            },
+            updated_at=latest_data.update_time,
+            lang=get_lang(),
+        ),
+    )
 
 
 async def make_image_v2(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeagueStats) -> bytes:
-    async with HostPage(
-        await render(
-            'v2/tetrio/rank',
-            DataV2(
-                items={
-                    i[0].rank: ItemDataV2(
-                        require_tr=round(i[0].tr_line, 2),
-                        trending=round(i[0].tr_line - i[1].tr_line, 2),
-                        average_data=AverageDataV2(
-                            pps=(metrics := get_metrics(pps=i[0].avg_pps, apm=i[0].avg_apm, vs=i[0].avg_vs)).pps,
-                            apm=metrics.apm,
-                            apl=metrics.apl,
-                            vs=metrics.vs,
-                            adpl=metrics.adpl,
-                        ),
-                        players=i[0].player_count,
-                    )
-                    for i in zip(latest_data.fields, compare_data.fields, strict=True)
-                },
-                updated_at=latest_data.update_time,
-                lang=get_lang(),
-            ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
+    return await render_image(
+        DataV2(
+            items={
+                i[0].rank: ItemDataV2(
+                    require_tr=round(i[0].tr_line, 2),
+                    trending=round(i[0].tr_line - i[1].tr_line, 2),
+                    average_data=AverageDataV2(
+                        pps=(metrics := get_metrics(pps=i[0].avg_pps, apm=i[0].avg_apm, vs=i[0].avg_vs)).pps,
+                        apm=metrics.apm,
+                        apl=metrics.apl,
+                        vs=metrics.vs,
+                        adpl=metrics.adpl,
+                    ),
+                    players=i[0].player_count,
+                )
+                for i in zip(latest_data.fields, compare_data.fields, strict=True)
+            },
+            updated_at=latest_data.update_time,
+            lang=get_lang(),
+        ),
+    )

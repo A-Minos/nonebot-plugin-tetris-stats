@@ -11,12 +11,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ....db import trigger
-from ....utils.host import HostPage, get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
-from ....utils.render import render
+from ....utils.render import render_image
 from ....utils.render.schemas.v2.tetrio.rank.detail import Data, SpecialData
-from ....utils.screenshot import screenshot
 from .. import alc
 from ..api.typedefs import ValidRank
 from ..constant import GAME_TYPE
@@ -114,40 +112,36 @@ async def make_image(rank: ValidRank, latest: TETRIOLeagueStats, compare: TETRIO
     max_vs = get_metrics(
         pps=latest_data.high_vs.league.pps, apm=latest_data.high_vs.league.apm, vs=latest_data.high_vs.league.vs
     )
-    async with HostPage(
-        await render(
-            'v2/tetrio/rank/detail',
-            Data(
-                name=latest_data.rank,
-                trending=round(latest_data.tr_line - compare_data.tr_line, 2),
-                require_tr=round(latest_data.tr_line, 2),
-                players=latest_data.player_count,
-                minimum_data=SpecialData(
-                    apm=low_apm.apm,
-                    pps=low_pps.pps,
-                    lpm=low_pps.lpm,
-                    vs=low_vs.vs,
-                    adpm=low_vs.adpm,
-                    apm_holder=latest_data.low_apm.username.upper(),
-                    pps_holder=latest_data.low_pps.username.upper(),
-                    vs_holder=latest_data.low_vs.username.upper(),
-                ),
-                average_data=SpecialData(
-                    apm=avg.apm, pps=avg.pps, lpm=avg.lpm, vs=avg.vs, adpm=avg.adpm, apl=avg.apl, adpl=avg.adpl
-                ),
-                maximum_data=SpecialData(
-                    apm=max_apm.apm,
-                    pps=max_pps.pps,
-                    lpm=max_pps.lpm,
-                    vs=max_vs.vs,
-                    adpm=max_vs.adpm,
-                    apm_holder=latest_data.high_apm.username.upper(),
-                    pps_holder=latest_data.high_pps.username.upper(),
-                    vs_holder=latest_data.high_vs.username.upper(),
-                ),
-                updated_at=latest.update_time.replace(tzinfo=UTC).astimezone(ZoneInfo('Asia/Shanghai')),
-                lang=get_lang(),
+    return await render_image(
+        Data(
+            name=latest_data.rank,
+            trending=round(latest_data.tr_line - compare_data.tr_line, 2),
+            require_tr=round(latest_data.tr_line, 2),
+            players=latest_data.player_count,
+            minimum_data=SpecialData(
+                apm=low_apm.apm,
+                pps=low_pps.pps,
+                lpm=low_pps.lpm,
+                vs=low_vs.vs,
+                adpm=low_vs.adpm,
+                apm_holder=latest_data.low_apm.username.upper(),
+                pps_holder=latest_data.low_pps.username.upper(),
+                vs_holder=latest_data.low_vs.username.upper(),
             ),
-        )
-    ) as page_hash:
-        return await screenshot(f'http://{get_self_netloc()}/host/{page_hash}.html')
+            average_data=SpecialData(
+                apm=avg.apm, pps=avg.pps, lpm=avg.lpm, vs=avg.vs, adpm=avg.adpm, apl=avg.apl, adpl=avg.adpl
+            ),
+            maximum_data=SpecialData(
+                apm=max_apm.apm,
+                pps=max_pps.pps,
+                lpm=max_pps.lpm,
+                vs=max_vs.vs,
+                adpm=max_vs.adpm,
+                apm_holder=latest_data.high_apm.username.upper(),
+                pps_holder=latest_data.high_pps.username.upper(),
+                vs_holder=latest_data.high_vs.username.upper(),
+            ),
+            updated_at=latest.update_time.replace(tzinfo=UTC).astimezone(ZoneInfo('Asia/Shanghai')),
+            lang=get_lang(),
+        ),
+    )
