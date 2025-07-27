@@ -23,7 +23,7 @@ from . import alc, command
 from .api import Player
 from .constant import GAME_TYPE
 
-command.add(Subcommand('verify', help_text='解除绑定 TETR.IO 账号'))
+command.add(Subcommand('verify', help_text='验证 TETR.IO 账号'))
 
 alc.shortcut(
     '(?i:io)(?i:验证|verify)',
