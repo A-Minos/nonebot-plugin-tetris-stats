@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel
+from typing_extensions import override
 
 from .......games.tetrio.api.schemas.summaries.achievements import ArType, RankType
 from .......games.tetrio.api.schemas.summaries.achievements import Rank as AchievementRank
@@ -132,6 +133,11 @@ class Zenith(BaseModel):
 
 
 class Info(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v2/tetrio/user/info'
+
     user: User
     tetra_league: TetraLeague | None
     zenith: Zenith | None

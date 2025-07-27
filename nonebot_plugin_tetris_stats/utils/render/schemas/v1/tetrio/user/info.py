@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing_extensions import override
 
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
@@ -45,6 +46,11 @@ class Singleplayer(BaseModel):
 
 
 class Info(Base):
+    @property
+    @override
+    def path(self) -> str:
+        return 'v1/tetrio/info'
+
     user: User
     multiplayer: Multiplayer
     singleplayer: Singleplayer
