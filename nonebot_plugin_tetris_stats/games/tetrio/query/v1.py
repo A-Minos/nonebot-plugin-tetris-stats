@@ -12,7 +12,7 @@ from ....utils.metrics import get_metrics
 from ....utils.render import render_image
 from ....utils.render.schemas.base import Avatar, Trending
 from ....utils.render.schemas.v1.base import History
-from ....utils.render.schemas.v1.tetrio.user.info import Info, Multiplayer, Singleplayer, User
+from ....utils.render.schemas.v1.tetrio.info import Info, Multiplayer, Singleplayer, User
 from ..api import Player
 from ..api.schemas.summaries.league import RatedData
 from ..constant import TR_MAX, TR_MIN
