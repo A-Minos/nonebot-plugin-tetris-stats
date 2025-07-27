@@ -61,6 +61,7 @@ async def create_or_update_bind(
         status = BindStatus.SUCCESS
     else:
         bind.game_account = game_account
+        bind.verify = verify
         status = BindStatus.UPDATE
     await session.commit()
     return status
