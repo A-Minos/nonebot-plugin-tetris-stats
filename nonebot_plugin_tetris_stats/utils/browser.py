@@ -78,7 +78,7 @@ class BrowserManager:
         """启动浏览器实例"""
         playwright = await async_playwright().start()
         cls._browser = await playwright.firefox.launch(
-            headless=not config.tetris.development,
+            headless=not config.tetris.dev.enabled,
             firefox_user_prefs={
                 'network.http.max-persistent-connections-per-server': 64,
             },

@@ -137,7 +137,7 @@ async def get_tetra_league_data() -> None:
         await session.commit()
 
 
-if not config.tetris.development:
+if not config.tetris.dev.enabled:
 
     @driver.on_startup
     async def _() -> None:
