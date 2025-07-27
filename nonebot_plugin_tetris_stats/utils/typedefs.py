@@ -3,7 +3,7 @@ from typing import Literal, TypeAlias
 Number: TypeAlias = float | int
 GameType: TypeAlias = Literal['IO', 'TOP', 'TOS']
 BaseCommandType: TypeAlias = Literal['bind', 'unbind', 'query']
-TETRIOCommandType: TypeAlias = BaseCommandType | Literal['rank', 'config', 'list', 'record']
+TETRIOCommandType: TypeAlias = BaseCommandType | Literal['rank', 'config', 'list', 'record', 'verify']
 AllCommandType: TypeAlias = BaseCommandType | TETRIOCommandType
 Me: TypeAlias = Literal[
     '我',
