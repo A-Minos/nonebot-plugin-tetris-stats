@@ -95,9 +95,11 @@ class BrowserManager:
         cls, context_id: str = 'default', factory: Callable[[], Coroutine[Any, Any, BrowserContext]] | None = None
     ) -> BrowserContext:
         """获取浏览器上下文"""
-        return cls._contexts.setdefault(
-            context_id, await factory() if factory is not None else await (await cls.get_browser()).new_context()
-        )
+        context = cls._contexts.get(context_id)
+        if context is None:
+            context = await (factory or (await cls.get_browser()).new_context)()
+            cls._contexts[context_id] = context
+        return context
 
     @classmethod
     async def del_context(cls, context_id: str) -> None:
