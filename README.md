@@ -41,10 +41,10 @@
     alt="Gitmoji"
   />
 </a>
-<a href="https://wakatime.com/badge/user/138b2226-8e02-42be-b99d-35c05198836f/project/65f5bdf7-45ec-479a-8dd2-18c498c910ca">
-  <img
-    src="https://wakatime.com/badge/user/138b2226-8e02-42be-b99d-35c05198836f/project/65f5bdf7-45ec-479a-8dd2-18c498c910ca.svg"
-    alt="wakatime"
+<a href="https://wakatime.com/badge/user/138b2226-8e02-42be-b99d-35c05198836f/project/e26c7985-a236-4e76-90a6-a72f71d305ef">
+    <img 
+        src="https://wakatime.com/badge/user/138b2226-8e02-42be-b99d-35c05198836f/project/e26c7985-a236-4e76-90a6-a72f71d305ef.svg"
+        alt="wakatime"
     />
 </a>
 </p>
