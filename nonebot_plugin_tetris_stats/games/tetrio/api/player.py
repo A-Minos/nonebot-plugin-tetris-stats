@@ -146,7 +146,7 @@ class Player:
                 BASE_URL / 'users' / self._request_user_parameter / 'summaries' / summaries_type
             )
             summaries: SummariesModel | FailedModel = type_validate_json(
-                self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[arg-type]
+                self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[assignment, arg-type] #! waiting for [PEP 747](https://peps.python.org/pep-0747/)
                 raw_summaries,
             )
             if isinstance(summaries, FailedModel):
