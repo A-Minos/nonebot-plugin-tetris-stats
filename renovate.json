@@ -5,6 +5,9 @@
   "dependencyDashboardLabels": ["dependencies"],
   "commitMessagePrefix": "⬆️",
   "commitMessageAction": "Upgrade",
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "matchUpdateTypes": "pin",
