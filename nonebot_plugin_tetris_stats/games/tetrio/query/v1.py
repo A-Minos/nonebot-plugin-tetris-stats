@@ -5,7 +5,6 @@ from hashlib import md5
 from yarl import URL
 
 from ....utils.chart import get_split, get_value_bounds, handle_history_data
-from ....utils.exception import FallbackError
 from ....utils.host import get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
