@@ -91,6 +91,22 @@ async def _(event_session: Uninfo, template: Template | None = None):
                 await UniMessage.image(raw=await make_image_v2(latest_data, compare_data)).finish()
 
 
+_RANK_ORDER_INDEX = {
+    v: i
+    for i, v in enumerate(
+        ('x+', 'x', 'u', 'ss', 's+', 's', 's-', 'a+', 'a', 'a-', 'b+', 'b', 'b-', 'c+', 'c', 'c-', 'd+', 'd', 'z')
+    )
+}
+
+
+def _rank_sort_key(rank: str) -> int:
+    try:
+        return _RANK_ORDER_INDEX[rank]
+    except KeyError as e:
+        msg = f'未知段位: {rank!r}'
+        raise ValueError(msg) from e
+
+
 async def make_image_v1(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeagueStats) -> bytes:
     return await render_image(
         DataV1(
@@ -100,7 +116,11 @@ async def make_image_v1(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     require_tr=round(i[0].tr_line, 2),
                     players=i[0].player_count,
                 )
-                for i in zip(latest_data.fields, compare_data.fields, strict=True)
+                for i in zip(
+                    sorted(latest_data.fields, key=lambda x: _rank_sort_key(x.rank)),
+                    sorted(compare_data.fields, key=lambda x: _rank_sort_key(x.rank)),
+                    strict=True,
+                )
             },
             updated_at=latest_data.update_time,
             lang=get_lang(),
@@ -124,7 +144,11 @@ async def make_image_v2(latest_data: TETRIOLeagueStats, compare_data: TETRIOLeag
                     ),
                     players=i[0].player_count,
                 )
-                for i in zip(latest_data.fields, compare_data.fields, strict=True)
+                for i in zip(
+                    sorted(latest_data.fields, key=lambda x: _rank_sort_key(x.rank)),
+                    sorted(compare_data.fields, key=lambda x: _rank_sort_key(x.rank)),
+                    strict=True,
+                )
             },
             updated_at=latest_data.update_time,
             lang=get_lang(),
