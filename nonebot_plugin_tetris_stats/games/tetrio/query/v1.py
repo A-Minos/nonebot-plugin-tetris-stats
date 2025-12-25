@@ -5,7 +5,6 @@ from hashlib import md5
 from yarl import URL
 
 from ....utils.chart import get_split, get_value_bounds, handle_history_data
-from ....utils.exception import FallbackError
 from ....utils.host import get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
@@ -28,8 +27,6 @@ async def make_query_image_v1(player: Player) -> bytes:
         gather(player.avatar_revision),
     )
     league_data = get_league_data(league, RatedData)
-    if league_data.vs is None:
-        raise FallbackError
     histories = flow_to_history(leagueflow, handle_history_data)
     values = get_value_bounds([i.score for i in histories])
     split_value, offset = get_split(values, TR_MAX, TR_MIN)

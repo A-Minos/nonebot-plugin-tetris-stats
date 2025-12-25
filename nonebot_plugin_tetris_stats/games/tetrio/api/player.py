@@ -114,7 +114,7 @@ class Player:
         """Get User Info"""
         if self._user_info is None:
             raw_user_info = await Cache.get(BASE_URL / 'users' / self._request_user_parameter)
-            user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]
+            user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(user_info, FailedModel):
                 msg = f'用户信息请求错误:\n{user_info.error}'
                 raise RequestError(msg)
@@ -146,7 +146,7 @@ class Player:
                 BASE_URL / 'users' / self._request_user_parameter / 'summaries' / summaries_type
             )
             summaries: SummariesModel | FailedModel = type_validate_json(
-                self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[assignment, arg-type] #! waiting for [PEP 747](https://peps.python.org/pep-0747/)
+                self.__SUMMARIES_MAPPING[summaries_type] | FailedModel,  # type: ignore[assignment, arg-type]  # pyright: ignore[reportArgumentType]  #! waiting for [PEP 747](https://peps.python.org/pep-0747/)
                 raw_summaries,
             )
             if isinstance(summaries, FailedModel):
@@ -166,7 +166,7 @@ class Player:
     async def get_leagueflow(self) -> LeagueFlowSuccess:
         if self._leagueflow is None:
             leagueflow: LeagueFlow = type_validate_json(
-                LeagueFlow,  # type: ignore[arg-type]
+                LeagueFlow,  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
                 await Cache.get(BASE_URL / 'labs/leagueflow' / self._request_user_parameter),
             )
             if isinstance(leagueflow, FailedModel):
@@ -227,7 +227,7 @@ class Player:
             raw_records = await Cache.get(
                 BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type,
             )
-            records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]
+            records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(records, FailedModel):
                 msg = f'用户Summaries数据请求错误:\n{records.error}'
                 raise RequestError(msg)

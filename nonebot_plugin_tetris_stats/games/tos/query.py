@@ -178,7 +178,7 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
     for i in user_profile.data:
         # 排除单人局和时间为0的游戏
         # 茶: 不计算没挖掘的局, 即使apm和lpm也如此
-        if i.num_players == 1 or i.time == 0 or i.dig is None:
+        if i.num_players == 1 or i.time == 0:
             continue
         # 加权计算
         time = i.time / 1000

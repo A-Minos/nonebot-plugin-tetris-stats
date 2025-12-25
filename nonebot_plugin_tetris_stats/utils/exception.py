@@ -1,12 +1,17 @@
+from typing_extensions import override
+
+
 class TetrisStatsError(Exception):
     """所有 TetrisStats 发生的异常基类"""
 
     def __init__(self, message: str = ''):
         self.message = message
 
+    @override
     def __str__(self) -> str:
         return self.message
 
+    @override
     def __repr__(self) -> str:
         return self.message
 

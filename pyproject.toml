@@ -160,6 +160,12 @@ pythonVersion = "3.10"
 pythonPlatform = "All"
 defineConstant = { PYDANTIC_V2 = true }
 typeCheckingMode = "standard"
+reportExplicitAny = 'hint'
+reportUnnecessaryTypeIgnoreComment = 'error'
+reportImplicitOverride = 'error'
+reportUnnecessaryComparison = 'error'
+reportImplicitAbstractClass = 'error'
+enableTypeIgnoreComments = false
 
 [tool.bumpversion]
 current_version = "1.11.0"

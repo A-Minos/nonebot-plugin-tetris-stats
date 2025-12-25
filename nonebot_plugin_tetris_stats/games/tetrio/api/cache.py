@@ -17,7 +17,7 @@ UTC = timezone.utc
 
 
 request = Request(config.tetris.proxy.tetrio or config.tetris.proxy.main)
-request.request = limit(timedelta(seconds=1))(request.request)  # type: ignore[method-assign]
+request.request = limit(timedelta(seconds=1))(request.request)  # type: ignore[method-assign]  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class Cache:
@@ -32,7 +32,7 @@ class Cache:
                 logger.debug(f'{url}: Cache hit!')
                 return cached_data
             response_data = await request.request(url, extra_headers, enable_anti_cloudflare=True)
-            parsed_data: SuccessModel | FailedModel = type_validate_json(SuccessModel | FailedModel, response_data)  # type: ignore[arg-type]
+            parsed_data: SuccessModel | FailedModel = type_validate_json(SuccessModel | FailedModel, response_data)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(parsed_data, SuccessModel):
                 await cls.cache.add(
                     url,

@@ -20,7 +20,7 @@ async def by(
     by_type: Literal['league', 'xp', 'ar'], parameter: Parameter, x_session_id: UUID | None = None
 ) -> BySuccessModel:
     model: By = type_validate_json(
-        By,  # type: ignore[arg-type]
+        By,  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
         await get(
             BASE_URL / f'users/by/{by_type}',
             parameter,
@@ -69,7 +69,7 @@ async def records(
     match records_type:
         case '40l' | 'blitz':
             model = type_validate_json(
-                Solo,  # type: ignore[arg-type]
+                Solo,  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
                 await get(
                     BASE_URL / 'records' / f'{records_type}{scope}{revolution_id if revolution_id is not None else ""}',
                     parameter,
@@ -77,17 +77,14 @@ async def records(
             )
         case 'zenith' | 'zenithex':
             model = type_validate_json(
-                Zenith,  # type: ignore[arg-type]
+                Zenith,  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
                 await get(
                     BASE_URL / 'records' / f'{records_type}{scope}{revolution_id if revolution_id is not None else ""}',
                     parameter,
                 ),
             )
-        case _:
-            msg = f'records_type: {records_type} is not supported'
-            raise ValueError(msg)
     if isinstance(model, FailedModel):
-        msg = f'排行榜信息请求错误:\n{model.error}'  # type: ignore[attr-defined]
+        msg = f'排行榜信息请求错误:\n{model.error}'
         raise RequestError(msg)
     return model
 

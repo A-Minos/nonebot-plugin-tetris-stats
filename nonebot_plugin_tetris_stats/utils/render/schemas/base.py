@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Literal
 
@@ -8,7 +8,7 @@ from strenum import StrEnum
 from ...typedefs import Lang, Number
 
 
-class Base(BaseModel):
+class Base(BaseModel, ABC):
     @property
     @abstractmethod
     def path(self) -> str:

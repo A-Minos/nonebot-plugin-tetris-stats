@@ -1,3 +1,4 @@
+from abc import ABC
 from datetime import datetime
 from typing import Literal
 
@@ -61,7 +62,7 @@ class Statistic(BaseModel):
     finesse: Finesse
 
 
-class Record(Base):
+class Record(Base, ABC):
     type: Literal['best', 'personal_best', 'recent', 'disputed']
 
     user: User
