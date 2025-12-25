@@ -67,7 +67,7 @@ def upgrade(name: str = '') -> None:  # noqa: C901
             logger.critical(msg)
             raise RuntimeError(msg)
 
-        from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped]  # noqa: PLC0415
+        from nonebot_plugin_tetris_stats.game_data_processor.schemas import (  # type: ignore[import-untyped]  # pyright: ignore[reportMissingImports]  # noqa: PLC0415
             BaseProcessedData,
         )
 

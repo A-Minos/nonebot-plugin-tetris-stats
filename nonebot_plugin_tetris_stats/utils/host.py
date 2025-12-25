@@ -20,17 +20,17 @@ from .templates import TEMPLATES_DIR
 if TYPE_CHECKING:
     from pydantic import IPvAnyAddress
 
-app: FastAPI = get_app()
+app = get_app()
+
+if not isinstance(app, FastAPI):
+    msg = '本插件需要 FastAPI 驱动器才能运行'
+    raise RuntimeError(msg)  # noqa: TRY004
 
 driver = get_driver()
 
 global_config = driver.config
 
 BASE_URL = URL('https://tetr.io/user-content/')
-
-if not isinstance(app, FastAPI):
-    msg = '本插件需要 FastAPI 驱动器才能运行'
-    raise RuntimeError(msg)  # noqa: TRY004
 
 NOT_FOUND = HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
 

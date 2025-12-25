@@ -28,8 +28,6 @@ async def make_query_image_v1(player: Player) -> bytes:
         gather(player.avatar_revision),
     )
     league_data = get_league_data(league, RatedData)
-    if league_data.vs is None:
-        raise FallbackError
     histories = flow_to_history(leagueflow, handle_history_data)
     values = get_value_bounds([i.score for i in histories])
     split_value, offset = get_split(values, TR_MAX, TR_MIN)

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel
+from typing_extensions import override
 
 from ..utils.typedefs import GameType
 
@@ -13,6 +14,7 @@ class BaseUser(BaseModel, ABC, Generic[T]):
 
     platform: T
 
+    @override
     def __eq__(self, other: object) -> bool:
         if isinstance(other, BaseUser):
             return self.unique_identifier == other.unique_identifier

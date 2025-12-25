@@ -52,12 +52,12 @@ class P(BaseModel):
 
 # fmt: off
 class ArCounts(BaseModel):
-    bronze:   int | None = Field(default=None, alias='1')    # pyright: ignore [reportGeneralTypeIssues]
-    silver:   int | None = Field(default=None, alias='2')    # pyright: ignore [reportGeneralTypeIssues]
-    gold:     int | None = Field(default=None, alias='3')    # pyright: ignore [reportGeneralTypeIssues]
-    platinum: int | None = Field(default=None, alias='4')    # pyright: ignore [reportGeneralTypeIssues]
-    diamond:  int | None = Field(default=None, alias='5')    # pyright: ignore [reportGeneralTypeIssues]
-    issued:   int | None = Field(default=None, alias='100')  # pyright: ignore [reportGeneralTypeIssues]
+    bronze:   int | None = Field(default=None, alias='1')
+    silver:   int | None = Field(default=None, alias='2')
+    gold:     int | None = Field(default=None, alias='3')
+    platinum: int | None = Field(default=None, alias='4')
+    diamond:  int | None = Field(default=None, alias='5')
+    issued:   int | None = Field(default=None, alias='100')
     top3:     int | None = Field(default=None, alias='t3')
     top5:     int | None = Field(default=None, alias='t5')
     top10:    int | None = Field(default=None, alias='t10')

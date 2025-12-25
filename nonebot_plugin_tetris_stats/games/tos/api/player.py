@@ -68,7 +68,7 @@ class Player:
             raw_user_info = await request.failover_request(
                 [i / path % query for i in BASE_URL], failover_code=[502], failover_exc=(TimeoutException,)
             )
-            user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]
+            user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if not isinstance(user_info, UserInfoSuccess):
                 msg = f'用户信息请求错误:\n{user_info.error}'
                 raise RequestError(msg)
