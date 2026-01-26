@@ -20,7 +20,7 @@ from .api import Player
 from .constant import GAME_TYPE
 
 
-@alc.assign('TOP.unbind')
+@alc.assign('TOS.unbind')
 async def _(
     nb_user: User,
     event_session: Uninfo,
@@ -36,7 +36,7 @@ async def _(
         get_session() as session,
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
-            await UniMessage('您还未绑定 TOP 账号').finish()
+            await UniMessage('您还未绑定 TOS 账号').finish()
         resp = await suggest('您确定要解绑吗?', ['是', '否'])
         if resp is None or resp.extract_plain_text() == '否':
             return
