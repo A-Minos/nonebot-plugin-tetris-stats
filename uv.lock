@@ -2752,7 +2752,7 @@ requires-dist = [
     { name = "nonebot-plugin-user", specifier = ">=0.4.4" },
     { name = "nonebot-plugin-waiter", specifier = ">=0.8.0" },
     { name = "nonebot-session-to-uninfo", specifier = ">=0.0.2" },
-    { name = "nonebot2", extras = ["fastapi"], specifier = ">=2.3.3" },
+    { name = "nonebot2", extras = ["fastapi"], specifier = ">=2.4.4" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "pillow", specifier = ">=11.0.0" },
     { name = "playwright", specifier = ">=1.48.0" },

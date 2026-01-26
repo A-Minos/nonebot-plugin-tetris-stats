@@ -25,7 +25,7 @@ dependencies = [
     "nonebot-plugin-user>=0.4.4",
     "nonebot-plugin-waiter>=0.8.0",
     "nonebot-session-to-uninfo>=0.0.2",
-    "nonebot2[fastapi]>=2.3.3",
+    "nonebot2[fastapi]>=2.4.4",
     "pandas>=2.2.3",
     "pillow>=11.0.0",
     "playwright>=1.48.0",
@@ -184,5 +184,6 @@ replace = "version = \"{new_version}\""
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
 
-[tool.nonebot]
-plugins = ["nonebot_plugin_tetris_stats", "nonebot_plugin_tarina_lang_turbo"]
+[tool.nonebot.plugins]
+nonebot-plugin-tetris-stats = ["nonebot_plugin_tetris_stats"]
+nonebot-plugin-tarina-lang-turbo = ["nonebot_plugin_tarina_lang_turbo"]
