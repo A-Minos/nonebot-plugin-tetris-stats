@@ -13,6 +13,7 @@ from yarl import URL
 
 from ...config.config import global_config
 from ...db import create_or_update_bind, query_bind_info, trigger
+from ...i18n import Lang
 from ...utils.host import get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
@@ -46,9 +47,9 @@ try:
             get_session() as session,
         ):
             if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
-                await UniMessage('您还未绑定 TETR.IO 账号').finish()
+                await UniMessage(Lang.bind.no_account(game='TETR.IO')).finish()
             if bind.verify is True:
-                await UniMessage('您已经完成了验证.').finish()
+                await UniMessage(Lang.bind.verify_already()).finish()
             player = Player(user_id=bind.game_account, trust=True)
             user_info = await player.get_info()
             verify = (
@@ -56,7 +57,7 @@ try:
                 and user_info.data.connections.discord.id == event_session.user.id
             )
             if verify is False:
-                await UniMessage('您未通过验证, 请确认目标 TETR.IO 账号绑定了当前 Discord 账号').finish()
+                await UniMessage(Lang.bind.verify_failed(game='TETR.IO')).finish()
             await create_or_update_bind(
                 session=session,
                 user=nb_user,
@@ -90,7 +91,7 @@ try:
                             ),
                             name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                         ),
-                        prompt='io查我',
+                        prompt=Lang.prompt.io_check(),
                         lang=get_lang(),
                     ),
                 )
@@ -107,4 +108,4 @@ async def _(event_session: Uninfo):
         command_type='verify',
         command_args=[],
     ):
-        await UniMessage('目前仅支持 Discord 账号验证').finish()
+        await UniMessage(Lang.bind.only_discord()).finish()

@@ -14,6 +14,7 @@ from yarl import URL
 
 from ...config.config import global_config
 from ...db import BindStatus, create_or_update_bind, trigger
+from ...i18n import Lang
 from ...utils.host import get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
@@ -137,7 +138,7 @@ async def make_bind_image(
                 ),
                 name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
             ),
-            prompt='io查我',
+            prompt=Lang.prompt.io_check(),
             lang=get_lang(),
         ),
     )

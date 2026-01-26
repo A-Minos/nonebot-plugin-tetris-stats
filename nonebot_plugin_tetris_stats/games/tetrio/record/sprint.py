@@ -59,7 +59,7 @@ async def _(
                 game_platform=GAME_TYPE,
             )
         if bind is None:
-            await matcher.finish('未查询到绑定信息')
+            await matcher.finish(Lang.bind.not_found())
         player = Player(user_id=bind.game_account, trust=True)
         await (
             UniMessage.i18n(Lang.interaction.warning.unverified) + UniMessage.image(raw=await make_sprint_image(player))
@@ -80,7 +80,7 @@ async def _(account: Player, event_session: Uninfo):
 async def make_sprint_image(player: Player) -> bytes:
     user, sprint = await gather(player.user, player.sprint)
     if sprint.data.record is None:
-        msg = f'未找到用户 {user.name.upper()} 的 40L 记录'
+        msg = Lang.record.not_found(username=user.name.upper(), mode=Lang.record.sprint())
         raise RecordNotFoundError(msg)
     stats = sprint.data.record.results.stats
     clears = stats.clears

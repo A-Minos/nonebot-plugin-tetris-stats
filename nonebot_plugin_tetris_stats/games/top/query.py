@@ -1,7 +1,7 @@
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import At
-from nonebot_plugin_alconna.uniseg import UniMessage
+from nonebot_plugin_alconna.uniseg import Image, UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
@@ -41,10 +41,19 @@ async def _(event: Event, matcher: Matcher, target: At | Me, event_session: Unin
                 game_platform=GAME_TYPE,
             )
         if bind is None:
-            await matcher.finish('未查询到绑定信息')
+            await matcher.finish(Lang.bind.not_found())
         await (
             UniMessage.i18n(Lang.interaction.warning.unverified)
-            + await make_query_result(await Player(user_name=bind.game_account, trust=True).get_profile())
+            + (
+                UniMessage('\n')
+                if not (
+                    result := await make_query_result(
+                        await Player(user_name=bind.game_account, trust=True).get_profile()
+                    )
+                ).has(Image)
+                else UniMessage()
+            )
+            + result
         ).finish()
 
 
@@ -101,18 +110,18 @@ def make_query_text(profile: UserProfile) -> UniMessage:
     message = ''
     if profile.today is not None:
         today = get_metrics(lpm=profile.today.lpm, apm=profile.today.apm)
-        message += f'用户 {profile.user_name} 24小时内统计数据为: '
-        message += f"\nL'PM: {today.lpm} ( {today.pps} pps )"
-        message += f'\nAPM: {today.apm} ( x{today.apl} )'
+        message += Lang.stats.daily_stats(name=profile.user_name)
+        message += Lang.stats.lpm(lpm=today.lpm, pps=today.pps)
+        message += Lang.stats.apm(apm=today.apm, apl=today.apl)
     else:
-        message += f'用户 {profile.user_name} 暂无24小时内统计数据'
+        message += Lang.stats.no_daily(name=profile.user_name)
     if profile.total is not None:
         total = get_avg_metrics(profile.total)
-        message += '\n历史统计数据为: '
-        message += f"\nL'PM: {total.lpm} ( {total.pps} pps )"
-        message += f'\nAPM: {total.apm} ( x{total.apl} )'
+        message += Lang.stats.history_stats()
+        message += Lang.stats.lpm(lpm=total.lpm, pps=total.pps)
+        message += Lang.stats.apm(apm=total.apm, apl=total.apl)
     else:
-        message += '\n暂无历史统计数据'
+        message += Lang.stats.no_history()
     return UniMessage(message)
 
 

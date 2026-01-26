@@ -12,6 +12,58 @@
       "scope": "error",
       "types": [{ "subtype": "MessageFormatError", "types": ["TETR.IO", "TOS", "TOP"] }]
     },
-    { "scope": "template", "types": ["template_language"] }
+    { "scope": "template", "types": ["template_language"] },
+    {
+      "scope": "bind",
+      "types": [
+        "not_found",
+        "no_account",
+        "confirm_unbind",
+        "config_success",
+        "verify_already",
+        "verify_failed",
+        "only_discord"
+      ]
+    },
+    {
+      "scope": "record",
+      "types": ["not_found", "blitz", "sprint"]
+    },
+    {
+      "scope": "stats",
+      "types": [
+        "user_info",
+        "no_rank",
+        "rank_info",
+        "no_game",
+        "recent_games",
+        "daily_stats",
+        "no_daily",
+        "history_stats",
+        "no_history",
+        "lpm",
+        "apm",
+        "adpm",
+        "sprint_pb",
+        "marathon_pb",
+        "challenge_pb"
+      ]
+    },
+    {
+      "scope": "template_ui",
+      "types": ["invalid_tag", "update_success", "update_failed"]
+    },
+    {
+      "scope": "help",
+      "types": ["usage"]
+    },
+    {
+      "scope": "prompt",
+      "types": ["io_check", "io_bind", "top_check", "top_bind", "tos_check", "tos_bind"]
+    },
+    {
+      "scope": "retry",
+      "types": ["message"]
+    }
   ]
 }

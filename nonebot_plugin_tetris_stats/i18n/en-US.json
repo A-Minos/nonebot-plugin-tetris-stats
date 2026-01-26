@@ -15,5 +15,55 @@
   },
   "template": {
     "template_language": "en-US"
+  },
+  "bind": {
+    "not_found": "No binding information found",
+    "no_account": "You haven't bound a {game} account yet",
+    "confirm_unbind": "Are you sure you want to unbind?",
+    "config_success": "Configuration successful",
+    "verify_already": "You have already completed verification.",
+    "verify_failed": "Verification failed. Please confirm the target {game} account is linked to your current Discord account.",
+    "only_discord": "Currently only Discord account verification is supported"
+  },
+  "record": {
+    "not_found": "No {mode} record found for user {username}",
+    "blitz": "Blitz",
+    "sprint": "40L"
+  },
+  "stats": {
+    "user_info": "User {name} ({id})",
+    "no_rank": "No rank statistics available",
+    "rank_info": ", Rating {rating}±{rd} ({vol})",
+    "no_game": ", No game data available",
+    "recent_games": ", Recent {count} games data",
+    "daily_stats": "User {name} 24h statistics: ",
+    "no_daily": "User {name} has no 24h statistics available",
+    "history_stats": "\nHistorical statistics: ",
+    "no_history": "\nNo historical statistics available",
+    "lpm": "\nL'PM: {lpm} ( {pps} pps )",
+    "apm": "\nAPM: {apm} ( x{apl} )",
+    "adpm": "\nADPM: {adpm} ( x{adpl} ) ( {vs}vs )",
+    "sprint_pb": "\n40L: {time}s",
+    "marathon_pb": "\nMarathon: {score}",
+    "challenge_pb": "\nChallenge: {score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision} is not a valid tag in the template repository",
+    "update_success": "Template updated successfully",
+    "update_failed": "Template update failed"
+  },
+  "help": {
+    "usage": "Type \"{command} --help\" for help"
+  },
+  "prompt": {
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
+  },
+  "retry": {
+    "message": "Retrying: {func} ({i}/{max_attempts})"
   }
 }

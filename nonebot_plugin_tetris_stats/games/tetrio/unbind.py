@@ -13,6 +13,7 @@ from yarl import URL
 
 from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
+from ...i18n import Lang
 from ...utils.host import get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
@@ -44,8 +45,8 @@ async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
         get_session() as session,
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
-            await UniMessage('您还未绑定 TETR.IO 账号').finish()
-        resp = await suggest('您确定要解绑吗?', ['是', '否'])
+            await UniMessage(Lang.bind.no_account(game='TETR.IO')).finish()
+        resp = await suggest(Lang.bind.confirm_unbind(), ['是', '否'])
         if resp is None or resp.extract_plain_text() == '否':
             return
         player = Player(user_id=bind.game_account, trust=True)
@@ -76,7 +77,7 @@ async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
                         ),
                         name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                     ),
-                    prompt='io绑定{游戏ID}',
+                    prompt=Lang.prompt.io_bind(),
                     lang=get_lang(),
                 ),
             )

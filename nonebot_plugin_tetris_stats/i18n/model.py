@@ -31,7 +31,71 @@ class Template:
     template_language: LangItem = LangItem('template', 'template_language')
 
 
+class Bind:
+    not_found: LangItem = LangItem('bind', 'not_found')
+    no_account: LangItem = LangItem('bind', 'no_account')
+    confirm_unbind: LangItem = LangItem('bind', 'confirm_unbind')
+    config_success: LangItem = LangItem('bind', 'config_success')
+    verify_already: LangItem = LangItem('bind', 'verify_already')
+    verify_failed: LangItem = LangItem('bind', 'verify_failed')
+    only_discord: LangItem = LangItem('bind', 'only_discord')
+
+
+class Record:
+    not_found: LangItem = LangItem('record', 'not_found')
+    blitz: LangItem = LangItem('record', 'blitz')
+    sprint: LangItem = LangItem('record', 'sprint')
+
+
+class Stats:
+    user_info: LangItem = LangItem('stats', 'user_info')
+    no_rank: LangItem = LangItem('stats', 'no_rank')
+    rank_info: LangItem = LangItem('stats', 'rank_info')
+    no_game: LangItem = LangItem('stats', 'no_game')
+    recent_games: LangItem = LangItem('stats', 'recent_games')
+    daily_stats: LangItem = LangItem('stats', 'daily_stats')
+    no_daily: LangItem = LangItem('stats', 'no_daily')
+    history_stats: LangItem = LangItem('stats', 'history_stats')
+    no_history: LangItem = LangItem('stats', 'no_history')
+    lpm: LangItem = LangItem('stats', 'lpm')
+    apm: LangItem = LangItem('stats', 'apm')
+    adpm: LangItem = LangItem('stats', 'adpm')
+    sprint_pb: LangItem = LangItem('stats', 'sprint_pb')
+    marathon_pb: LangItem = LangItem('stats', 'marathon_pb')
+    challenge_pb: LangItem = LangItem('stats', 'challenge_pb')
+
+
+class TemplateUi:
+    invalid_tag: LangItem = LangItem('template_ui', 'invalid_tag')
+    update_success: LangItem = LangItem('template_ui', 'update_success')
+    update_failed: LangItem = LangItem('template_ui', 'update_failed')
+
+
+class Help:
+    usage: LangItem = LangItem('help', 'usage')
+
+
+class Prompt:
+    io_check: LangItem = LangItem('prompt', 'io_check')
+    io_bind: LangItem = LangItem('prompt', 'io_bind')
+    top_check: LangItem = LangItem('prompt', 'top_check')
+    top_bind: LangItem = LangItem('prompt', 'top_bind')
+    tos_check: LangItem = LangItem('prompt', 'tos_check')
+    tos_bind: LangItem = LangItem('prompt', 'tos_bind')
+
+
+class Retry:
+    message: LangItem = LangItem('retry', 'message')
+
+
 class Lang(LangModel):
     interaction = Interaction
     error = Error
     template = Template
+    bind = Bind
+    record = Record
+    stats = Stats
+    template_ui = TemplateUi
+    help = Help
+    prompt = Prompt
+    retry = Retry

@@ -9,6 +9,7 @@ from nonebot_plugin_user import User
 
 from ...config.config import global_config
 from ...db import BindStatus, create_or_update_bind, trigger
+from ...i18n import Lang
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
 from ...utils.render import render_image
@@ -60,7 +61,7 @@ async def _(nb_user: User, account: Player, event_session: Uninfo, interface: Qr
                             ),
                             name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                         ),
-                        prompt='top查我',
+                        prompt=Lang.prompt.top_check(),
                         lang=get_lang(),
                     ),
                 )

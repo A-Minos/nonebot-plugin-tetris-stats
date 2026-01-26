@@ -127,7 +127,7 @@ async def _(
                 game_platform=GAME_TYPE,
             )
         if bind is None:
-            await matcher.finish('未查询到绑定信息')
+            await matcher.finish(Lang.bind.not_found())
         message = UniMessage.i18n(Lang.interaction.warning.unverified)
         player = Player(teaid=bind.game_account, trust=True)
         user_info, game_data = await gather(player.get_info(), get_game_data(player))
@@ -142,7 +142,7 @@ async def _(
                     )
                 )
             ).finish()
-        await (message + make_query_text(user_info, game_data)).finish()
+        await (message + UniMessage('\n') + make_query_text(user_info, game_data)).finish()
 
 
 @alc.assign('TOS.query')
@@ -308,19 +308,26 @@ async def make_query_image(user_info: UserInfoSuccess, game_data: GameData, even
 
 def make_query_text(user_info: UserInfoSuccess, game_data: GameData | None) -> UniMessage:
     user_data = user_info.data
-    message = f'用户 {user_data.name} ({user_data.teaid}) '
+    message = Lang.stats.user_info(name=user_data.name, id=user_data.teaid)
     if user_data.ranked_games == '0':
-        message += '暂无段位统计数据'
+        message += Lang.stats.no_rank()
     else:
-        message += f', 段位分 {round(float(user_data.rating_now), 2)}±{round(float(user_data.rd_now), 2)} ({round(float(user_data.vol_now), 2)}) '
+        message += Lang.stats.rank_info(
+            rating=round(float(user_data.rating_now), 2),
+            rd=round(float(user_data.rd_now), 2),
+            vol=round(float(user_data.vol_now), 2),
+        )
     if game_data is None:
-        message += ', 暂无游戏数据'
+        message += Lang.stats.no_game()
     else:
-        message += f', 最近 {game_data.game_num} 局数据'
-        message += f"\nL'PM: {game_data.metrics.lpm} ( {game_data.metrics.pps} pps )"
-        message += f'\nAPM: {game_data.metrics.apm} ( x{game_data.metrics.apl} )'
-        message += f'\nADPM: {game_data.metrics.adpm} ( x{game_data.metrics.adpl} ) ( {game_data.metrics.vs}vs )'
-    message += f'\n40L: {float(user_data.pb_sprint) / 1000:.2f}s' if user_data.pb_sprint != '2147483647' else ''
-    message += f'\nMarathon: {user_data.pb_marathon}' if user_data.pb_marathon != '0' else ''
-    message += f'\nChallenge: {user_data.pb_challenge}' if user_data.pb_challenge != '0' else ''
+        message += Lang.stats.recent_games(count=game_data.game_num)
+        message += Lang.stats.lpm(lpm=game_data.metrics.lpm, pps=game_data.metrics.pps)
+        message += Lang.stats.apm(apm=game_data.metrics.apm, apl=game_data.metrics.apl)
+        message += Lang.stats.adpm(adpm=game_data.metrics.adpm, adpl=game_data.metrics.adpl, vs=game_data.metrics.vs)
+    if user_data.pb_sprint != '2147483647':
+        message += Lang.stats.sprint_pb(time=f'{float(user_data.pb_sprint) / 1000:.2f}')
+    if user_data.pb_marathon != '0':
+        message += Lang.stats.marathon_pb(score=user_data.pb_marathon)
+    if user_data.pb_challenge != '0':
+        message += Lang.stats.challenge_pb(score=user_data.pb_challenge)
     return UniMessage(message)

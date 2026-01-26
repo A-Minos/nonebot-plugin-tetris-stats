@@ -14,6 +14,7 @@ from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
 from rich.progress import Progress
 
 from ..config.config import CACHE_PATH, DATA_PATH, config
+from ..i18n import Lang
 
 driver = get_driver()
 
@@ -115,11 +116,11 @@ async def check_tag(tag: str) -> bool:
 @alc.handle()
 async def _(revision: str | None = None):
     if revision is not None and not await check_tag(revision):
-        await alc.finish(f'{revision} 不是模板仓库中的有效标签')
+        await alc.finish(Lang.template_ui.invalid_tag(revision=revision))
     logger.info('开始更新模板')
     if await init_templates(revision or 'latest'):
-        await alc.finish('更新模板成功')
-    await alc.finish('更新模板失败')
+        await alc.finish(Lang.template_ui.update_success())
+    await alc.finish(Lang.template_ui.update_failed())
 
 
 if config.tetris.dev.enable_template_check:

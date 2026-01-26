@@ -13,5 +13,55 @@
   },
   "template": {
     "template_language": "zh-CN"
+  },
+  "bind": {
+    "not_found": "未查询到绑定信息",
+    "no_account": "您还未绑定 {game} 账号",
+    "confirm_unbind": "您确定要解绑吗?",
+    "config_success": "配置成功",
+    "verify_already": "您已经完成了验证.",
+    "verify_failed": "您未通过验证, 请确认目标 {game} 账号绑定了当前 Discord 账号",
+    "only_discord": "目前仅支持 Discord 账号验证"
+  },
+  "record": {
+    "not_found": "未找到用户 {username} 的 {mode} 记录",
+    "blitz": "Blitz",
+    "sprint": "40L"
+  },
+  "stats": {
+    "user_info": "用户 {name} ({id})",
+    "no_rank": "暂无段位统计数据",
+    "rank_info": ", 段位分 {rating}±{rd} ({vol})",
+    "no_game": ", 暂无游戏数据",
+    "recent_games": ", 最近 {count} 局数据",
+    "daily_stats": "用户 {name} 24小时内统计数据为: ",
+    "no_daily": "用户 {name} 暂无24小时内统计数据",
+    "history_stats": "\n历史统计数据为: ",
+    "no_history": "\n暂无历史统计数据",
+    "lpm": "\nL'PM: {lpm} ( {pps} pps )",
+    "apm": "\nAPM: {apm} ( x{apl} )",
+    "adpm": "\nADPM: {adpm} ( x{adpl} ) ( {vs}vs )",
+    "sprint_pb": "\n40L: {time}s",
+    "marathon_pb": "\nMarathon: {score}",
+    "challenge_pb": "\nChallenge: {score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision} 不是模板仓库中的有效标签",
+    "update_success": "更新模板成功",
+    "update_failed": "更新模板失败"
+  },
+  "help": {
+    "usage": "输入\"{command} --help\"查看帮助"
+  },
+  "prompt": {
+    "io_check": "io查我",
+    "io_bind": "io绑定{{游戏ID}}",
+    "top_check": "top查我",
+    "top_bind": "top绑定{{游戏ID}}",
+    "tos_check": "茶服查我",
+    "tos_bind": "茶服绑定{{游戏ID}}"
+  },
+  "retry": {
+    "message": "Retrying: {func} ({i}/{max_attempts})"
   }
 }

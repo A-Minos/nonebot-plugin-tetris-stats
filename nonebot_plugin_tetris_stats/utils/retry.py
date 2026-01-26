@@ -8,6 +8,8 @@ from typing import Any, ParamSpec, TypeVar
 from nonebot.log import logger
 from nonebot_plugin_alconna.uniseg import SerializeFailed, UniMessage
 
+from ..i18n import Lang
+
 T = TypeVar('T')
 P = ParamSpec('P')
 
@@ -23,7 +25,7 @@ def retry(
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             for i in range(max_attempts + 1):
                 if i > 0:
-                    message = f'Retrying: {func.__name__} ({i}/{max_attempts})'
+                    message = Lang.retry.message(func=func.__name__, i=i, max_attempts=max_attempts)
                     logger.debug(message)
                     with suppress(SerializeFailed):
                         await UniMessage(reply or message).send()
