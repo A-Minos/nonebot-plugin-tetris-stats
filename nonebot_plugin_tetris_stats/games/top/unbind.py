@@ -10,6 +10,7 @@ from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 
 from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
+from ...i18n import Lang
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
 from ...utils.render import render_image
@@ -36,8 +37,8 @@ async def _(
         get_session() as session,
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
-            await UniMessage('您还未绑定 TOP 账号').finish()
-        resp = await suggest('您确定要解绑吗?', ['是', '否'])
+            await UniMessage(Lang.bind.no_account(game='TOP')).finish()
+        resp = await suggest(Lang.bind.confirm_unbind(), ['是', '否'])
         if resp is None or resp.extract_plain_text() == '否':
             return
         player = Player(user_name=bind.game_account, trust=True)
@@ -66,7 +67,7 @@ async def _(
                         ),
                         name=bot_user.nick or bot_user.name or choice(list(global_config.nickname) or ['bot']),
                     ),
-                    prompt='top绑定{游戏ID}',
+                    prompt=Lang.prompt.top_bind(),
                     lang=get_lang(),
                 ),
             )

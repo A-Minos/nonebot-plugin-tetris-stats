@@ -5,7 +5,7 @@ from nonebot import get_driver
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
-from nonebot_plugin_alconna.uniseg import UniMessage
+from nonebot_plugin_alconna.uniseg import Image, UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
@@ -112,10 +112,16 @@ async def _(  # noqa: PLR0913
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
         if bind is None:
-            await matcher.finish('未查询到绑定信息')
+            await matcher.finish(Lang.bind.not_found())
         player = Player(user_id=bind.game_account, trust=True)
         await (
-            UniMessage.i18n(Lang.interaction.warning.unverified) + await make_query_result(player, template or 'v1')
+            UniMessage.i18n(Lang.interaction.warning.unverified)
+            + (
+                UniMessage('\n')
+                if not (result := await make_query_result(player, template or 'v1')).has(Image)
+                else UniMessage()
+            )
+            + result
         ).finish()
 
 

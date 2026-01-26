@@ -7,7 +7,7 @@ from nonebot.typing import T_Handler
 from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alconna
 
 from .. import ns
-from ..i18n.model import Lang
+from ..i18n import Lang
 from ..utils.exception import MessageFormatError, NeedCatchError
 
 command: Alconna = Alconna(
@@ -47,7 +47,7 @@ async def _(matcher: Matcher, matches: AlcMatches):
     if (matches.head_matched and matches.options != {}) or matches.main_args == {}:
         await matcher.finish(
             (f'{matches.error_info!r}\n' if matches.error_info is not None else '')
-            + f'输入"{matches.header_result} --help"查看帮助'
+            + Lang.help.usage(command=matches.header_result)
         )
 
 

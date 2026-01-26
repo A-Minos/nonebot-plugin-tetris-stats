@@ -8,6 +8,7 @@ from nonebot_plugin_user import User
 from sqlalchemy import select
 
 from ...db import trigger
+from ...i18n import Lang
 from . import alc, command
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
@@ -48,4 +49,4 @@ async def _(user: User, session: async_scoped_session, event_session: Uninfo, te
         else:
             config.query_template = template
         await session.commit()
-        await UniMessage('配置成功').finish()
+        await UniMessage(Lang.bind.config_success()).finish()
