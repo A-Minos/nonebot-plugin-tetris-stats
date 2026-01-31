@@ -2,7 +2,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime
 from typing import Any
 
-from nonebot.compat import PYDANTIC_V2, type_validate_json
+from nonebot.compat import PYDANTIC_V2, type_validate_python
 from nonebot_plugin_orm import Model
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import JSON, DateTime, Dialect, String, TypeDecorator
@@ -30,27 +30,27 @@ class PydanticType(TypeDecorator):
     if PYDANTIC_V2:
 
         @override
-        def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
+        def process_bind_param(self, value: Any | None, dialect: Dialect) -> dict | list:
             # 将 Pydantic 模型实例转换为 JSON
             if isinstance(value, tuple(self.models)):
-                return value.model_dump_json(by_alias=True)  # type: ignore[union-attr]
+                return value.model_dump(mode='json', by_alias=True)  # type: ignore[union-attr]
             raise TypeError
     else:
 
         @override
-        def process_bind_param(self, value: Any | None, dialect: Dialect) -> str:
+        def process_bind_param(self, value: Any | None, dialect: Dialect) -> dict | list:
             # 将 Pydantic 模型实例转换为 JSON
             if isinstance(value, tuple(self.models)):
-                return value.json(by_alias=True)  # type: ignore[union-attr]
+                return value.dict(by_alias=True)  # type: ignore[union-attr]
             raise TypeError
 
     @override
     def process_result_value(self, value: Any | None, dialect: Dialect) -> BaseModel:
         # 将 JSON 转换回 Pydantic 模型实例
-        if isinstance(value, str | bytes):
+        if isinstance(value, dict | list):
             for i in self.models:
                 try:
-                    return type_validate_json(i, value)
+                    return type_validate_python(i, value)
                 except ValidationError:  # noqa: PERF203
                     ...
         raise ValueError
