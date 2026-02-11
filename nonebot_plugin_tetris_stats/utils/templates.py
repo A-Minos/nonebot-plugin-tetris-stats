@@ -71,7 +71,7 @@ def unzip_templates(zip_path: Path) -> Path:
 
 async def check_hash(hash_file_path: Path) -> bool:
     logger.info('开始校验模板哈希值')
-    async with aopen(hash_file_path) as f:
+    async with aopen(hash_file_path, encoding='utf-8') as f:
         hash_content = await f.read()
     for i in hash_content.splitlines():
         file_sha256, file_relative_path = i.split(maxsplit=1)
