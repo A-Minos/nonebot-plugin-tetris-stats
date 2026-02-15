@@ -14,6 +14,7 @@ class RankType(IntEnum):
     PERCENTILELAX = 4
     PERCENTILEVLAX = 5
     PERCENTILEMLAX = 6
+    PERCENTILEINVARIANT = 7
 
 
 class ValueType(IntEnum):
