@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from nonebot_plugin_orm import Model
@@ -16,6 +16,7 @@ class TETRIOUserConfig(MappedAsDataclass, Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     query_template: Mapped[Template] = mapped_column(String(2))
+    compare_delta: Mapped[timedelta | None] = mapped_column(Interval(native=True), nullable=True)
 
 
 class TETRIOLeagueStats(MappedAsDataclass, Model):
