@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, Integer, Interval, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from ...db.models import PydanticType
@@ -60,3 +60,21 @@ class TETRIOLeagueStatsField(MappedAsDataclass, Model):
     high_vs: Mapped[Entry] = mapped_column(entry_type)
     stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False)
     stats: Mapped['TETRIOLeagueStats'] = relationship(back_populates='fields')
+
+
+class TETRIOUserUniqueIdentifier(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_uid'
+
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    user_unique_identifier: Mapped[str] = mapped_column(String(24), unique=True, index=True)
+
+
+class TETRIOLeagueUserMap(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_tl_map'
+    __table_args__ = (UniqueConstraint('uid_id', 'hist_id', name='uq_nb_t_io_tl_map_uid_hist'),)
+
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), index=True)
+    uid_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_uid.id'), index=True)
+    hist_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_hist.id'))
+    entry_index: Mapped[int] = mapped_column(Integer)
