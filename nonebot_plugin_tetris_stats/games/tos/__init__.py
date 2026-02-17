@@ -1,6 +1,7 @@
 from arclet.alconna import Arg, ArgFlag
-from nonebot_plugin_alconna import Args, At, Subcommand
+from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
+from ...utils.duration import parse_duration
 from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
@@ -39,6 +40,16 @@ command.add(
             help_text='解除绑定 TOS 账号',
         ),
         Subcommand(
+            'config',
+            Option(
+                '--default-compare',
+                Arg('compare', parse_duration, notice='对比时间距离'),
+                alias=['-DC', 'DefaultCompare'],
+                help_text='设置默认对比时间距离',
+            ),
+            help_text='茶服 查询个性化配置',
+        ),
+        Subcommand(
             'query',
             Args(
                 Arg(
@@ -75,7 +86,12 @@ alc.shortcut(
     command='tstats TOS query',
     humanized='茶服查',
 )
+alc.shortcut(
+    '(?i:tos|茶服)(?i:配置|配|config)',
+    command='tstats TOS config',
+    humanized='茶服配置',
+)
 
 add_block_handlers(alc.assign('TOS.query'))
 
-from . import bind, query, unbind  # noqa: E402, F401
+from . import bind, config, query, unbind  # noqa: E402, F401
