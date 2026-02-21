@@ -299,18 +299,12 @@ def upgrade(name: str = '') -> None:
     with op.batch_alter_table('nb_t_io_tl_map', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_nb_t_io_tl_map_stats_id'), ['stats_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_nb_t_io_tl_map_uid_id'), ['uid_id'], unique=False)
-        batch_op.create_index(
-            batch_op.f('ix_nb_t_io_tl_map_uid_id_stats_id'),
-            ['uid_id', 'stats_id'],
-            unique=False,
-        )
 
 
 def downgrade(name: str = '') -> None:
     if name:
         return
     with op.batch_alter_table('nb_t_io_tl_map', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_nb_t_io_tl_map_uid_id_stats_id'))
         batch_op.drop_index(batch_op.f('ix_nb_t_io_tl_map_uid_id'))
         batch_op.drop_index(batch_op.f('ix_nb_t_io_tl_map_stats_id'))
 
