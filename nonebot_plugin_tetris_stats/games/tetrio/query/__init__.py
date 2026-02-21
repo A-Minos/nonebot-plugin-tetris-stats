@@ -1,4 +1,4 @@
-from datetime import timezone
+from datetime import timedelta, timezone
 
 from arclet.alconna import Arg, ArgFlag
 from nonebot import get_driver
@@ -13,8 +13,9 @@ from nonebot_plugin_user import User as NBUser
 from nonebot_plugin_user import get_user
 from sqlalchemy import select
 
-from ....db import query_bind_info, trigger
+from ....db import query_bind_info, resolve_compare_delta, trigger
 from ....i18n import Lang
+from ....utils.duration import parse_duration
 from ....utils.exception import FallbackError
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc
@@ -53,6 +54,12 @@ command.add(
             alias=['-T'],
             help_text='要使用的查询模板',
         ),
+        Option(
+            '--compare',
+            Arg('compare', parse_duration),
+            alias=['-C'],
+            help_text='指定对比时间距离',
+        ),
         help_text='查询 TETR.IO 游戏信息',
     ),
 )
@@ -73,10 +80,10 @@ alc.shortcut(
 add_block_handlers(alc.assign('TETRIO.query'))
 
 
-async def make_query_result(player: Player, template: Template) -> UniMessage:
+async def make_query_result(player: Player, template: Template, compare_delta: timedelta) -> UniMessage:
     if template == 'v1':
         try:
-            return UniMessage.image(raw=await make_query_image_v1(player))
+            return UniMessage.image(raw=await make_query_image_v1(player, compare_delta))
         except FallbackError:
             template = 'v2'
     if template == 'v2':
@@ -92,12 +99,18 @@ async def _(  # noqa: PLR0913
     target: At | Me,
     event_session: Uninfo,
     template: Template | None = None,
+    compare: timedelta | None = None,
 ):
+    command_args: list[str] = []
+    if template is not None:
+        command_args.append(f'--template {template}')
+    if compare is not None:
+        command_args.append(f'--compare {compare}')
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='query',
-        command_args=[f'--template {template}'] if template is not None else [],
+        command_args=command_args,
     ):
         async with get_session() as session:
             bind = await query_bind_info(
@@ -111,6 +124,7 @@ async def _(  # noqa: PLR0913
                 template = await session.scalar(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
+            compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
         if bind is None:
             await matcher.finish(Lang.bind.not_found())
         player = Player(user_id=bind.game_account, trust=True)
@@ -118,7 +132,7 @@ async def _(  # noqa: PLR0913
             UniMessage.i18n(Lang.interaction.warning.unverified)
             + (
                 UniMessage('\n')
-                if not (result := await make_query_result(player, template or 'v1')).has(Image)
+                if not (result := await make_query_result(player, template or 'v1', compare_delta)).has(Image)
                 else UniMessage()
             )
             + result
@@ -126,16 +140,28 @@ async def _(  # noqa: PLR0913
 
 
 @alc.assign('TETRIO.query')
-async def _(user: NBUser, account: Player, event_session: Uninfo, template: Template | None = None):
+async def _(
+    user: NBUser,
+    account: Player,
+    event_session: Uninfo,
+    template: Template | None = None,
+    compare: timedelta | None = None,
+):
+    command_args: list[str] = []
+    if template is not None:
+        command_args.append(f'--template {template}')
+    if compare is not None:
+        command_args.append(f'--compare {compare}')
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='query',
-        command_args=[f'--template {template}'] if template is not None else [],
+        command_args=command_args,
     ):
         async with get_session() as session:
             if template is None:
                 template = await session.scalar(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
-        await (await make_query_result(account, template or 'v1')).finish()
+            compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
+        await (await make_query_result(account, template or 'v1', compare_delta)).finish()

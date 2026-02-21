@@ -60,6 +60,12 @@ command.add(
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
             ),
+            Option(
+                '--compare',
+                Arg('compare', parse_duration),
+                alias=['-C'],
+                help_text='指定对比时间距离',
+            ),
             help_text='查询 TOP 游戏信息',
         ),
         help_text='TOP 游戏相关指令',
