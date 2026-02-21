@@ -144,7 +144,10 @@ def _backfill_postgresql(conn: Connection, chunk_size: int = 20000) -> None:
                 {'start_id': start_id, 'end_id': end_id},
             )
             progress.update(task, advance=end_id - start_id + 1)
-        logger.warning('PG backfill: Re-adding foreign key constraints (validating)...')
+
+
+def _add_foreign_keys_postgresql(conn: Connection) -> None:
+    logger.warning('PG backfill: Re-adding foreign key constraints (validating)...')
 
     conn.execute(
         text("""
@@ -257,11 +260,11 @@ def _backfill_generic(conn: Connection) -> None:
                 progress.update(total, advance=1)
 
 
-def backfill_mapping() -> None:
-    conn = op.get_bind()
+def backfill_mapping(conn: Connection) -> None:
     if conn.dialect.name == 'postgresql':
         logger.warning('tetris_stats: 检测到 PostgreSQL, 使用快速索引回填...')
         _backfill_postgresql(conn)
+        _add_foreign_keys_postgresql(conn)
         return
     _backfill_generic(conn)
 
@@ -269,6 +272,7 @@ def backfill_mapping() -> None:
 def upgrade(name: str = '') -> None:
     if name:
         return
+    conn = op.get_bind()
     op.create_table(
         'nb_t_io_uid',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -283,18 +287,46 @@ def upgrade(name: str = '') -> None:
             unique=True,
         )
 
-    op.create_table(
-        'nb_t_io_tl_map',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('stats_id', sa.Integer(), nullable=False),
-        sa.Column('uid_id', sa.Integer(), nullable=False),
-        sa.Column('hist_id', sa.Integer(), nullable=False),
-        sa.Column('entry_index', sa.Integer(), nullable=False),
-        sa.PrimaryKeyConstraint('id', name=op.f('pk_nb_t_io_tl_map')),
-        sa.UniqueConstraint('uid_id', 'hist_id', name='uq_nb_t_io_tl_map_uid_hist'),
-        info={'bind_key': 'nonebot_plugin_tetris_stats'},
-    )
-    backfill_mapping()
+    if conn.dialect.name == 'postgresql':
+        op.create_table(
+            'nb_t_io_tl_map',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('stats_id', sa.Integer(), nullable=False),
+            sa.Column('uid_id', sa.Integer(), nullable=False),
+            sa.Column('hist_id', sa.Integer(), nullable=False),
+            sa.Column('entry_index', sa.Integer(), nullable=False),
+            sa.PrimaryKeyConstraint('id', name=op.f('pk_nb_t_io_tl_map')),
+            sa.UniqueConstraint('uid_id', 'hist_id', name='uq_nb_t_io_tl_map_uid_hist'),
+            info={'bind_key': 'nonebot_plugin_tetris_stats'},
+        )
+    else:
+        op.create_table(
+            'nb_t_io_tl_map',
+            sa.Column('id', sa.Integer(), nullable=False),
+            sa.Column('stats_id', sa.Integer(), nullable=False),
+            sa.Column('uid_id', sa.Integer(), nullable=False),
+            sa.Column('hist_id', sa.Integer(), nullable=False),
+            sa.Column('entry_index', sa.Integer(), nullable=False),
+            sa.ForeignKeyConstraint(
+                ['stats_id'],
+                ['nb_t_io_tl_stats.id'],
+                name=op.f('fk_nb_t_io_tl_map_stats_id_nb_t_io_tl_stats'),
+            ),
+            sa.ForeignKeyConstraint(
+                ['uid_id'],
+                ['nb_t_io_uid.id'],
+                name=op.f('fk_nb_t_io_tl_map_uid_id_nb_t_io_uid'),
+            ),
+            sa.ForeignKeyConstraint(
+                ['hist_id'],
+                ['nb_t_io_tl_hist.id'],
+                name=op.f('fk_nb_t_io_tl_map_hist_id_nb_t_io_tl_hist'),
+            ),
+            sa.PrimaryKeyConstraint('id', name=op.f('pk_nb_t_io_tl_map')),
+            sa.UniqueConstraint('uid_id', 'hist_id', name='uq_nb_t_io_tl_map_uid_hist'),
+            info={'bind_key': 'nonebot_plugin_tetris_stats'},
+        )
+    backfill_mapping(conn)
 
     with op.batch_alter_table('nb_t_io_tl_map', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_nb_t_io_tl_map_stats_id'), ['stats_id'], unique=False)
