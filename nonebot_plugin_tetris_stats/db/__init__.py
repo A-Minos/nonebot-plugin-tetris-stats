@@ -1,7 +1,7 @@
 from asyncio import Lock
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Literal, TypeVar, overload
 
@@ -11,6 +11,7 @@ from nonebot_plugin_orm import AsyncSession, get_session
 from nonebot_plugin_user import User
 from sqlalchemy import select
 
+from ..utils.duration import DEFAULT_COMPARE_DELTA
 from ..utils.typedefs import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
 from .models import Bind, TriggerHistoricalDataV2
 
@@ -18,8 +19,11 @@ UTC = timezone.utc
 
 if TYPE_CHECKING:
     from ..games.tetrio.api.models import TETRIOHistoricalData
+    from ..games.tetrio.models import TETRIOUserConfig
     from ..games.top.api.models import TOPHistoricalData
+    from ..games.top.models import TOPUserConfig
     from ..games.tos.api.models import TOSHistoricalData
+    from ..games.tos.models import TOSUserConfig
 
 
 class BindStatus(Enum):
@@ -84,12 +88,12 @@ async def remove_bind(
     return False
 
 
-T = TypeVar('T', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
+T_HistoricalData = TypeVar('T_HistoricalData', 'TETRIOHistoricalData', 'TOPHistoricalData', 'TOSHistoricalData')
 
 lock = Lock()
 
 
-async def anti_duplicate_add(model: T) -> None:
+async def anti_duplicate_add(model: T_HistoricalData) -> None:
     async with lock, get_session() as session:
         result = (
             await session.scalars(
@@ -106,6 +110,19 @@ async def anti_duplicate_add(model: T) -> None:
                     return
         session.add(model)
         await session.commit()
+
+
+T_CONFIG = TypeVar('T_CONFIG', 'TETRIOUserConfig', 'TOPUserConfig', 'TOSUserConfig')
+
+
+async def resolve_compare_delta(
+    config: type[T_CONFIG], session: AsyncSession, user_id: int, compare: timedelta | None
+) -> timedelta:
+    return (
+        compare
+        or await session.scalar(select(config.compare_delta).where(config.id == user_id))
+        or DEFAULT_COMPARE_DELTA
+    )
 
 
 @asynccontextmanager

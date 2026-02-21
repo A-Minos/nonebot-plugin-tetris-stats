@@ -1,6 +1,7 @@
 from arclet.alconna import Arg, ArgFlag
-from nonebot_plugin_alconna import Args, At, Subcommand
+from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
+from ...utils.duration import parse_duration
 from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
@@ -34,6 +35,16 @@ command.add(
             help_text='解除绑定 TOP 账号',
         ),
         Subcommand(
+            'config',
+            Option(
+                '--default-compare',
+                Arg('compare', parse_duration, notice='对比时间距离'),
+                alias=['-DC', 'DefaultCompare'],
+                help_text='设置默认对比时间距离',
+            ),
+            help_text='TOP 查询个性化配置',
+        ),
+        Subcommand(
             'query',
             Args(
                 Arg(
@@ -48,6 +59,12 @@ command.add(
                     notice='TOP 用户名',
                     flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
                 ),
+            ),
+            Option(
+                '--compare',
+                Arg('compare', parse_duration),
+                alias=['-C'],
+                help_text='指定对比时间距离',
             ),
             help_text='查询 TOP 游戏信息',
         ),
@@ -70,7 +87,12 @@ alc.shortcut(
     command='tstats TOP query',
     humanized='top查',
 )
+alc.shortcut(
+    '(?i:top)(?i:配置|配|config)',
+    command='tstats TOP config',
+    humanized='top配置',
+)
 
 add_block_handlers(alc.assign('TOP.query'))
 
-from . import bind, query, unbind  # noqa: E402, F401
+from . import bind, config, query, unbind  # noqa: E402, F401

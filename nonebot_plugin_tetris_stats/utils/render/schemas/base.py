@@ -41,3 +41,11 @@ class Trending(StrEnum):
     UP = 'up'
     KEEP = 'keep'
     DOWN = 'down'
+
+    @classmethod
+    def compare(cls, old: float, new: float) -> 'Trending':
+        if old > new:
+            return cls.DOWN
+        if old < new:
+            return cls.UP
+        return cls.KEEP
