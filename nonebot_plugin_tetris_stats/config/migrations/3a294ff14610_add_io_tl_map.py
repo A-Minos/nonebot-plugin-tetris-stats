@@ -83,11 +83,17 @@ def _backfill_postgresql(conn: Connection, chunk_size: int = 20000) -> None:
     work_mem = os.getenv('TETRIS_STATS_MIGRATION_WORK_MEM', '256MB')
     if not re.fullmatch(r'\d+(kB|MB|GB)', work_mem):
         work_mem = '256MB'
-    conn.execute(text(f"SET LOCAL work_mem = '{work_mem}'"))
+    conn.execute(
+        text("SELECT set_config('work_mem', :work_mem, true)"),
+        {'work_mem': work_mem},
+    )
     temp_buffers = os.getenv('TETRIS_STATS_MIGRATION_TEMP_BUFFERS', '128MB')
     if not re.fullmatch(r'\d+(kB|MB|GB)', temp_buffers):
         temp_buffers = '128MB'
-    conn.execute(text(f"SET LOCAL temp_buffers = '{temp_buffers}'"))
+    conn.execute(
+        text("SELECT set_config('temp_buffers', :temp_buffers, true)"),
+        {'temp_buffers': temp_buffers},
+    )
     conn.execute(text('SET LOCAL synchronous_commit = off'))
 
     logger.warning('tetris_stats: PG backfill synchronous_commit=off')
