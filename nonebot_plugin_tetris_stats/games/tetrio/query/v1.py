@@ -176,7 +176,7 @@ def find_entry(
 ) -> Entry | InvalidEntry | None:
     if 0 <= entry_index < len(entries):
         entry = entries[entry_index]
-        if unique_identifier is not None and entry.id == unique_identifier:
+        if unique_identifier is None or entry.id == unique_identifier:
             return entry
     if unique_identifier is None:
         return None
