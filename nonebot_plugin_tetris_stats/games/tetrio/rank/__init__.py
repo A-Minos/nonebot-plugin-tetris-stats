@@ -144,7 +144,7 @@ async def get_tetra_league_data() -> None:
     ]
     stats.raw = historicals
     stats.fields = fields
-    player_ids = {player.id for player in players}
+    player_ids = {i.id for result in results for i in result.data.entries}
     async with get_session() as session:
         session.add(stats)
         existing_ids: list[TETRIOUserUniqueIdentifier] = []
