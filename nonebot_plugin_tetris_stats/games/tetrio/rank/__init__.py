@@ -1,9 +1,9 @@
 from collections import defaultdict
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from datetime import datetime, timedelta, timezone
 from math import floor
 from statistics import mean
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 from uuid import uuid4
 
 from nonebot import get_driver
@@ -22,7 +22,13 @@ from ..api.schemas.base import P
 from ..api.schemas.leaderboards import Parameter
 from ..api.schemas.leaderboards.by import Entry
 from ..constant import RANK_PERCENTILE
-from ..models import TETRIOLeagueHistorical, TETRIOLeagueStats, TETRIOLeagueStatsField
+from ..models import (
+    TETRIOLeagueHistorical,
+    TETRIOLeagueStats,
+    TETRIOLeagueStatsField,
+    TETRIOLeagueUserMap,
+    TETRIOUserUniqueIdentifier,
+)
 
 if TYPE_CHECKING:
     from ..api.schemas.leaderboards.by import BySuccessModel
@@ -81,6 +87,14 @@ def find_special_player(
     return sort(users, field)
 
 
+T = TypeVar('T')
+
+
+def _chunked(values: list[T], size: int) -> Iterator[list[T]]:
+    for i in range(0, len(values), size):
+        yield values[i : i + size]
+
+
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
 async def get_tetra_league_data() -> None:
     x_session_id = uuid4()
@@ -94,9 +108,7 @@ async def get_tetra_league_data() -> None:
         if len(model.data.entries) < 100:  # 分页值 # noqa: PLR2004
             break
 
-    players: list[Entry] = []
-    for result in results:
-        players.extend([i for i in result.data.entries if isinstance(i, Entry)])
+    players = [i for result in results for i in result.data.entries if isinstance(i, Entry)]
     players.sort(key=lambda x: x.league.tr, reverse=True)
 
     rank_player_mapping: defaultdict[Rank, list[Entry]] = defaultdict(list)
@@ -132,8 +144,37 @@ async def get_tetra_league_data() -> None:
     ]
     stats.raw = historicals
     stats.fields = fields
+    player_ids = {i.id for result in results for i in result.data.entries}
     async with get_session() as session:
         session.add(stats)
+        existing_ids: list[TETRIOUserUniqueIdentifier] = []
+        for chunk in _chunked(list(player_ids), 500):
+            existing_ids.extend(
+                (
+                    await session.scalars(
+                        select(TETRIOUserUniqueIdentifier).filter(
+                            TETRIOUserUniqueIdentifier.user_unique_identifier.in_(chunk)
+                        )
+                    )
+                ).all()
+            )
+        new_ids = [
+            TETRIOUserUniqueIdentifier(user_unique_identifier=i)
+            for i in player_ids - {i.user_unique_identifier for i in existing_ids}
+        ]
+        session.add_all(new_ids)
+        await session.flush()
+        uid_mapping = {i.user_unique_identifier: i.id for i in list(existing_ids) + new_ids}
+        maps: list[TETRIOLeagueUserMap] = []
+        for i in stats.raw:
+            for index, entry in enumerate(i.data.data.entries):
+                maps.append(
+                    TETRIOLeagueUserMap(
+                        stats_id=stats.id, uid_id=uid_mapping[entry.id], hist_id=i.id, entry_index=index
+                    )
+                )
+            session.add_all(maps)
+            maps.clear()
         await session.commit()
 
 
