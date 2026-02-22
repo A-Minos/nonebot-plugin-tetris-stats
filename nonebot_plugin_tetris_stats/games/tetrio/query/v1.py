@@ -29,7 +29,7 @@ UTC = timezone.utc
 class Trends(NamedTuple):
     pps: Trending = Trending.KEEP
     apm: Trending = Trending.KEEP
-    vs: Trending = Trending.KEEP
+    adpm: Trending = Trending.KEEP
 
 
 class HistoricalSnapshot(NamedTuple):
@@ -209,10 +209,11 @@ async def get_trends(player: Player, compare_delta: timedelta) -> Trends:
     selected = min((historical, league_historical), key=lambda x: x.delta if x is not None else timedelta.max)
     if selected is None:
         return Trends()
+    metrics = get_metrics(pps=league.data.pps, apm=league.data.apm, vs=league.data.vs)
     return Trends(
-        pps=Trending.compare(selected.metrics.pps, league.data.pps),
-        apm=Trending.compare(selected.metrics.apm, league.data.apm),
-        vs=Trending.compare(selected.metrics.vs, league.data.vs),
+        pps=Trending.compare(selected.metrics.pps, metrics.pps),
+        apm=Trending.compare(selected.metrics.apm, metrics.apm),
+        adpm=Trending.compare(selected.metrics.adpm, metrics.adpm),
     )
 
 
@@ -274,7 +275,7 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
                 adpm=metrics.adpm,
                 vs=metrics.vs,
                 adpl=metrics.adpl,
-                adpm_trending=trends.vs,
+                adpm_trending=trends.adpm,
                 app=(app := (league_data.apm / (60 * league_data.pps))),
                 dsps=(dsps := ((league_data.vs / 100) - (league_data.apm / 60))),
                 dspp=(dspp := (dsps / league_data.pps)),
