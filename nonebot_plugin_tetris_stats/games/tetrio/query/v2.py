@@ -26,6 +26,7 @@ from ....utils.render.schemas.v2.tetrio.user.info import (
     Zenith,
 )
 from ..api import Player
+from ..api.schemas.summaries.achievements import RankType
 from ..api.schemas.summaries.league import InvalidData, NeverPlayedData, NeverRatedData
 from .tools import flow_to_history, handling_special_value
 
@@ -122,6 +123,7 @@ async def make_query_image_v2(player: Player) -> bytes:
                         total=i.total,
                     )
                     for i in achievements.data
+                    if i.rank_type != RankType.PERCENTILEINVARIANT
                 ],
                 playtime=play_time,
                 join_at=user_info.data.ts,
