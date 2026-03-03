@@ -33,6 +33,11 @@ class Distinguishment(BaseModel):
     type: str
 
 
+class OldUsernames(BaseModel):
+    username: str
+    ts: datetime
+
+
 class Data(BaseModel):
     id: str = Field(default=..., alias='_id')
     username: str
@@ -65,6 +70,7 @@ class Data(BaseModel):
     achievements: list[int]
     ar: int
     ar_counts: ArCounts
+    oldusernames: list[OldUsernames]
 
 
 class UserInfoSuccess(BaseSuccessModel):
