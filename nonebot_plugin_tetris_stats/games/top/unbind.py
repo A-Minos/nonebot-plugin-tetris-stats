@@ -47,7 +47,7 @@ async def _(
             raw=await render_image(
                 Bind(
                     platform='TOP',
-                    type='unlink',
+                    type='unbind',
                     user=People(
                         avatar=await get_avatar(
                             event_session.user,

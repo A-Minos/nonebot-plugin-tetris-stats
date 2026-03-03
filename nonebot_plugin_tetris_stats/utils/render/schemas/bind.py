@@ -12,7 +12,7 @@ class Bind(Base):
         return 'v1/binding'
 
     platform: Literal['TETR.IO', 'TOP', 'TOS']
-    type: Literal['success', 'unknown', 'unlink', 'unverified', 'error']
+    type: Literal['success', 'unknown', 'unbind', 'unverified', 'error']
     user: People
     bot: People
     prompt: str

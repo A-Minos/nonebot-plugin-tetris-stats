@@ -56,7 +56,7 @@ async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
             raw=await render_image(
                 Bind(
                     platform='TETR.IO',
-                    type='unlink',
+                    type='unbind',
                     user=People(
                         avatar=str(
                             URL(f'http://{netloc}/host/resource/tetrio/avatars/{user.ID}')
