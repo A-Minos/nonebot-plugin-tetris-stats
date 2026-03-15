@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from nonebot_plugin_alconna import Args, Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_uninfo import Uninfo
@@ -21,7 +23,13 @@ command.add(
         'list',
         Option('--max-tr', Args['max_tr', float], help_text='TR的上限'),
         Option('--min-tr', Args['min_tr', float], help_text='TR的下限'),
-        Option('--limit', Args['limit', int], help_text='查询数量'),
+        Option(
+            '--limit',
+            Args[
+                'limit', Annotated[int, lambda x: 1 <= x <= 100]  # noqa: PLR2004
+            ],
+            help_text='查询数量',
+        ),
         Option('--country', Args['country', str], help_text='国家代码'),
         help_text='查询 TETR.IO 段位排行榜',
     )
