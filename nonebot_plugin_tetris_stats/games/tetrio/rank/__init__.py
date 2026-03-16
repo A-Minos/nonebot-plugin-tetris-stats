@@ -15,6 +15,7 @@ from sqlalchemy import select
 from ....config.config import config
 from ....utils.exception import RequestError
 from ....utils.retry import retry
+from ....utils.timezone import ensure_utc_datetime
 from .. import alc
 from .. import command as base_command
 from ..api.leaderboards import by
@@ -139,7 +140,12 @@ async def get_tetra_league_data() -> None:
             )
         )
     historicals = [
-        TETRIOLeagueHistorical(request_id=x_session_id, data=model, update_time=model.cache.cached_at, stats=stats)
+        TETRIOLeagueHistorical(
+            request_id=x_session_id,
+            data=model,
+            update_time=ensure_utc_datetime(model.cache.cached_at),
+            stats=stats,
+        )
         for model in results
     ]
     stats.raw = historicals
@@ -186,7 +192,7 @@ if not config.tetris.dev.enabled:
             latest_time = await session.scalar(
                 select(TETRIOLeagueStats.update_time).order_by(TETRIOLeagueStats.id.desc()).limit(1)
             )
-        if latest_time is None or datetime.now(tz=UTC) - latest_time.replace(tzinfo=UTC) > timedelta(hours=6):
+        if latest_time is None or datetime.now(tz=UTC) - latest_time > timedelta(hours=6):
             await get_tetra_league_data()
 
 

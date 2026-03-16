@@ -2,10 +2,11 @@ from datetime import datetime
 from typing import Literal
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import DateTime, String
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from ....db.models import PydanticType
+from ....db.types import UTCDateTime
 from .schemas.user_info import UserInfoSuccess
 from .schemas.user_profile import UserProfile
 
@@ -19,4 +20,4 @@ class TOSHistoricalData(MappedAsDataclass, Model):
     data: Mapped[UserInfoSuccess | UserProfile] = mapped_column(
         PydanticType(get_model=[], models={UserInfoSuccess, UserProfile})
     )
-    update_time: Mapped[datetime] = mapped_column(DateTime, index=True)
+    update_time: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)

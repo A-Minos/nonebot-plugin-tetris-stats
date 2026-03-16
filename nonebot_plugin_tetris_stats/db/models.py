@@ -5,11 +5,12 @@ from typing import Any
 from nonebot.compat import PYDANTIC_V2, type_validate_python
 from nonebot_plugin_orm import Model
 from pydantic import BaseModel, ValidationError
-from sqlalchemy import JSON, DateTime, Dialect, String, TypeDecorator
+from sqlalchemy import JSON, Dialect, String, TypeDecorator
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 from typing_extensions import override
 
 from ..utils.typedefs import AllCommandType, GameType
+from .types import UTCDateTime
 
 
 class PydanticType(TypeDecorator):
@@ -78,9 +79,9 @@ class TriggerHistoricalDataV2(MappedAsDataclass, Model):
     __tablename__ = 'nb_t_trigger_hist_v2'
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    trigger_time: Mapped[datetime] = mapped_column(DateTime)
+    trigger_time: Mapped[datetime] = mapped_column(UTCDateTime())
     session_persist_id: Mapped[int]
     game_platform: Mapped[GameType] = mapped_column(String(32), index=True)
     command_type: Mapped[AllCommandType] = mapped_column(String(16), index=True)
     command_args: Mapped[list[str]] = mapped_column(JSON)
-    finish_time: Mapped[datetime] = mapped_column(DateTime)
+    finish_time: Mapped[datetime] = mapped_column(UTCDateTime())

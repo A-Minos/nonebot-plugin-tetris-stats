@@ -21,6 +21,7 @@ from ...utils.render.avatar import get_avatar
 from ...utils.render.schemas.base import People, Trending
 from ...utils.render.schemas.v1.top.info import Data as InfoData
 from ...utils.render.schemas.v1.top.info import Info
+from ...utils.timezone import ensure_utc_datetime
 from ...utils.typedefs import Me
 from . import alc
 from .api import Player
@@ -33,6 +34,7 @@ UTC = timezone.utc
 
 
 async def get_compare_profile(session: AsyncSession, user_name: str, target_time: datetime) -> UserProfile | None:
+    target_time = ensure_utc_datetime(target_time)
     before = await session.scalar(
         select(TOPHistoricalData)
         .where(

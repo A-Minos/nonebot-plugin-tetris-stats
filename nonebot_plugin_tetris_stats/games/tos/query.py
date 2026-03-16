@@ -29,6 +29,7 @@ from ...utils.render.schemas.base import HistoryData, People, Trending
 from ...utils.render.schemas.v1.base import History
 from ...utils.render.schemas.v1.tos.info import Info, Multiplayer, Singleplayer
 from ...utils.time_it import time_it
+from ...utils.timezone import ensure_utc_datetime
 from ...utils.typedefs import Me, Number
 from . import alc
 from .api import Player
@@ -268,6 +269,7 @@ async def get_game_data(player: Player, query_num: int = 50) -> GameData | None:
 async def get_compare_profile(
     session: AsyncSession, unique_identifier: str, target_time: datetime
 ) -> UserProfile | None:
+    target_time = ensure_utc_datetime(target_time)
     before = await session.scalar(
         select(TOSHistoricalData)
         .where(
@@ -314,10 +316,10 @@ async def get_historical_data(unique_identifier: str) -> list[HistoryData]:
                 .where(TOSHistoricalData.api_type == 'User Info')
                 .where(
                     TOSHistoricalData.update_time
-                    > (
+                    > ensure_utc_datetime(
                         datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
                         - timedelta(days=9)
-                    ).replace(tzinfo=timezone.utc)
+                    )
                 )
                 .order_by(TOSHistoricalData.id.asc())
             )
