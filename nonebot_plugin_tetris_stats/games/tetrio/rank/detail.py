@@ -141,7 +141,7 @@ async def make_image(rank: ValidRank, latest: TETRIOLeagueStats, compare: TETRIO
                 pps_holder=latest_data.high_pps.username.upper(),
                 vs_holder=latest_data.high_vs.username.upper(),
             ),
-            updated_at=latest.update_time.replace(tzinfo=UTC).astimezone(ZoneInfo('Asia/Shanghai')),
+            updated_at=latest.update_time.astimezone(ZoneInfo('Asia/Shanghai')),
             lang=get_lang(),
         ),
     )

@@ -7,6 +7,7 @@ from nonebot.compat import type_validate_json
 
 from ....db import anti_duplicate_add
 from ....utils.exception import RequestError
+from ....utils.timezone import ensure_utc_datetime
 from ..constant import BASE_URL, USER_ID, USER_NAME
 from .cache import Cache
 from .models import TETRIOHistoricalData
@@ -124,7 +125,7 @@ class Player:
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type='User Info',
                     data=user_info,
-                    update_time=user_info.cache.cached_at,
+                    update_time=ensure_utc_datetime(user_info.cache.cached_at),
                 ),
             )
         return self._user_info
@@ -158,7 +159,7 @@ class Player:
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type=summaries_type,
                     data=summaries,
-                    update_time=summaries.cache.cached_at,
+                    update_time=ensure_utc_datetime(summaries.cache.cached_at),
                 ),
             )
         return self._summaries[summaries_type]
@@ -237,7 +238,7 @@ class Player:
                     user_unique_identifier=(await self.user).unique_identifier,
                     api_type=record_key.to_records(),
                     data=records,
-                    update_time=records.cache.cached_at,
+                    update_time=ensure_utc_datetime(records.cache.cached_at),
                 ),
             )
         return self._records[record_key]

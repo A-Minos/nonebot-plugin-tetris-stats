@@ -15,6 +15,7 @@ from ....utils.render import render_image
 from ....utils.render.schemas.base import Avatar, Trending
 from ....utils.render.schemas.v1.base import History
 from ....utils.render.schemas.v1.tetrio.info import Info, Multiplayer, Singleplayer, User
+from ....utils.timezone import ensure_utc_datetime
 from ..api import Player
 from ..api.models import TETRIOHistoricalData
 from ..api.schemas.leaderboards.by import Entry, InvalidEntry
@@ -42,6 +43,7 @@ async def get_nearest_historical(
     unique_identifier: str,
     target_time: datetime,
 ) -> HistoricalSnapshot | None:
+    target_time = ensure_utc_datetime(target_time)
     before = await session.scalar(
         select(TETRIOHistoricalData)
         .where(
@@ -68,7 +70,7 @@ async def get_nearest_historical(
 
     delta_seconds, selected = min(
         (
-            abs((target_time - i.update_time.astimezone(UTC)).total_seconds()),
+            abs((target_time - i.update_time).total_seconds()),
             i,
         )
         for i in candidates
@@ -128,6 +130,7 @@ async def get_nearest_league_historical(
     unique_identifier: str,
     target_time: datetime,
 ) -> HistoricalSnapshot | None:
+    target_time = ensure_utc_datetime(target_time)
     uid_id = await session.scalar(
         select(TETRIOUserUniqueIdentifier.id).where(
             TETRIOUserUniqueIdentifier.user_unique_identifier == unique_identifier
@@ -154,7 +157,7 @@ async def get_nearest_league_historical(
         return None
     delta_seconds, selected = min(
         (
-            abs((target_time - i[1].astimezone(UTC)).total_seconds()),
+            abs((target_time - i[1]).total_seconds()),
             i[0],
         )
         for i in candidates
@@ -193,7 +196,7 @@ async def get_trends(player: Player, compare_delta: timedelta) -> Trends:
     user = await player.user
 
     async with get_session() as session:
-        target_time = (league.cache.cached_at - compare_delta).astimezone(UTC)
+        target_time = ensure_utc_datetime(league.cache.cached_at - compare_delta)
         historical, league_historical = await gather(
             get_nearest_historical(
                 session,
