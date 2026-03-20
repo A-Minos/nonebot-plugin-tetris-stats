@@ -2594,6 +2594,18 @@ wheels = [
 ]
 
 [[package]]
+name = "nonebot-adapter-milky"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "nonebot2" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/36/10/80352714273a310c573fe3aa53f83a5eca1f0d6d74f2a79462f43fe442f1/nonebot_adapter_milky-1.1.0.tar.gz", hash = "sha256:40e735816f099a0b7ab74343a015ec5e825f0f44cfddfb613bfa36e2d7fc20d6", size = 25960, upload-time = "2026-02-14T01:52:06.659Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/b0/b248f4489f4057393254d37efd1344863572a346a70441fe794fd0a21428/nonebot_adapter_milky-1.1.0-py3-none-any.whl", hash = "sha256:a6a1e1653fe8de523c537d875ed8d99e1d0843e071da9847cdc8096158e40f0a", size = 27625, upload-time = "2026-02-14T01:52:05.375Z" },
+]
+
+[[package]]
 name = "nonebot-adapter-onebot"
 version = "2.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -2741,7 +2753,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-tetris-stats"
-version = "1.12.2"
+version = "1.13.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiocache" },
@@ -2784,6 +2796,7 @@ dev = [
     { name = "mypy" },
     { name = "nonebot-adapter-discord" },
     { name = "nonebot-adapter-kaiheila" },
+    { name = "nonebot-adapter-milky" },
     { name = "nonebot-adapter-onebot" },
     { name = "nonebot-adapter-qq" },
     { name = "nonebot-plugin-orm", extra = ["postgresql"] },
@@ -2850,6 +2863,7 @@ dev = [
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "nonebot-adapter-discord", specifier = ">=0.1.8" },
     { name = "nonebot-adapter-kaiheila", specifier = ">=0.3.4" },
+    { name = "nonebot-adapter-milky", specifier = ">=1.1.0" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.4.6" },
     { name = "nonebot-adapter-qq", specifier = ">=1.5.3" },
     { name = "nonebot-plugin-orm", extras = ["postgresql"], specifier = ">=0.8.2" },
