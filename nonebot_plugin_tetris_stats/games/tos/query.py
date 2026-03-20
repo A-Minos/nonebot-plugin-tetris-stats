@@ -90,6 +90,13 @@ except ImportError:
     pass
 
 try:
+    from nonebot.adapters.milky import MessageEvent as MilkyMessageEvent
+
+    add_special_handlers('onebot-', MilkyMessageEvent)
+except ImportError:
+    pass
+
+try:
     from nonebot.adapters.qq.event import GuildMessageEvent as QQGuildMessageEvent
     from nonebot.adapters.qq.event import QQMessageEvent
 
