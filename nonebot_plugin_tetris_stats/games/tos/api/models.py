@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import String
+from sqlalchemy import JSON, String
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from ....db.models import PydanticType
@@ -21,3 +21,4 @@ class TOSHistoricalData(MappedAsDataclass, Model):
         PydanticType(get_model=[], models={UserInfoSuccess, UserProfile})
     )
     update_time: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)
+    query_params: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)

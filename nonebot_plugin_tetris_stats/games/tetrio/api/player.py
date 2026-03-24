@@ -14,7 +14,7 @@ from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
 from .schemas.records import LeagueSuccessModel as RecordsLeagueSuccessModel
-from .schemas.records import RecordsModel
+from .schemas.records import Parameter, RecordsModel
 from .schemas.records import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
     AchievementsSuccessModel,
@@ -234,23 +234,38 @@ class Player:
 
     @overload
     async def get_records(
-        self, mode_type: Literal[RecordModeType.Blitz, RecordModeType.Sprint], records_type: RecordType
+        self,
+        mode_type: Literal[RecordModeType.Blitz, RecordModeType.Sprint],
+        records_type: RecordType,
+        *,
+        parameter: Parameter | None = None,
     ) -> RecordsSoloSuccessModel: ...
     @overload
     async def get_records(
-        self, mode_type: Literal[RecordModeType.League], records_type: RecordType
+        self,
+        mode_type: Literal[RecordModeType.League],
+        records_type: RecordType,
+        *,
+        parameter: Parameter | None = None,
     ) -> RecordsLeagueSuccessModel: ...
-    async def get_records(self, mode_type: RecordModeType, records_type: RecordType) -> RecordsModel:
+    async def get_records(
+        self,
+        mode_type: RecordModeType,
+        records_type: RecordType,
+        *,
+        parameter: Parameter | None = None,
+    ) -> RecordsModel:
         if (record_key := RecordKey(mode_type, records_type)) not in self._records:
-            raw_records = await Cache.get(
-                BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type,
-            )
+            url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
+            if parameter is not None:
+                url = url % parameter.to_params()
+            raw_records = await Cache.get(url)
             records: RecordsModel | FailedModel = type_validate_json(
                 self.__RECORDS_MAPPING[mode_type] | FailedModel,  # type: ignore[assignment, arg-type]  # pyright: ignore[reportArgumentType]
                 raw_records,
             )
             if isinstance(records, FailedModel):
-                msg = f'用户Summaries数据请求错误:\n{records.error}'
+                msg = f'用户Records数据请求错误:\n{records.error}'
                 raise RequestError(msg)
             self._records[record_key] = records
             await anti_duplicate_add(
@@ -259,6 +274,7 @@ class Player:
                     api_type=record_key.to_records(),
                     data=records,
                     update_time=ensure_utc_datetime(records.cache.cached_at),
+                    query_params=parameter.to_params() if parameter is not None else None,
                 ),
             )
         return self._records[record_key]

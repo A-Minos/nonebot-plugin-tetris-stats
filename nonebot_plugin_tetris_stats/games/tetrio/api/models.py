@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import String
+from sqlalchemy import JSON, String
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column
 
 from ....db.models import PydanticType
@@ -19,3 +19,4 @@ class TETRIOHistoricalData(MappedAsDataclass, Model):
     api_type: Mapped[Literal['User Info', Records, Summaries]] = mapped_column(String(32), index=True)
     data: Mapped[SuccessModel] = mapped_column(PydanticType(get_model=[SuccessModel.__subclasses__], models=set()))
     update_time: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)
+    query_params: Mapped[dict | None] = mapped_column(JSON, nullable=True, default=None)
