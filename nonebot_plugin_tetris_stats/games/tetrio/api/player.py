@@ -256,7 +256,7 @@ class Player:
         parameter: Parameter | None = None,
     ) -> RecordsModel:
         if (record_key := RecordKey(mode_type, records_type)) not in self._records:
-            url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
+            url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type.value / records_type.value
             if parameter is not None:
                 url = url % parameter.to_params()
             raw_records = await Cache.get(url)
