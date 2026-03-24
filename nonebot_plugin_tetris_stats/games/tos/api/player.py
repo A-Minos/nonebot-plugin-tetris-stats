@@ -104,6 +104,7 @@ class Player:
                     api_type='User Profile',
                     data=self._user_profile[params],
                     update_time=datetime.now(UTC),
+                    query_params=other_parameter or None,
                 ),
             )
         return self._user_profile[params]

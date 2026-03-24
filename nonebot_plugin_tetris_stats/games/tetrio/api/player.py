@@ -13,6 +13,7 @@ from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
+from .schemas.records import Parameter
 from .schemas.records.solo import Solo as SoloRecord
 from .schemas.records.solo import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
@@ -223,14 +224,21 @@ class Player:
             return user.banner_revision
         return (await self.get_info()).data.banner_revision
 
-    async def get_records(self, mode_type: RecordModeType, records_type: RecordType) -> RecordsSoloSuccessModel:
+    async def get_records(
+        self,
+        mode_type: RecordModeType,
+        records_type: RecordType,
+        *,
+        parameter: Parameter | None = None,
+    ) -> RecordsSoloSuccessModel:
         if (record_key := RecordKey(mode_type, records_type)) not in self._records:
-            raw_records = await Cache.get(
-                BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type,
-            )
+            url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
+            if parameter is not None:
+                url = url % parameter.to_params()
+            raw_records = await Cache.get(url)
             records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(records, FailedModel):
-                msg = f'用户Summaries数据请求错误:\n{records.error}'
+                msg = f'用户Records数据请求错误:\n{records.error}'
                 raise RequestError(msg)
             self._records[record_key] = records
             await anti_duplicate_add(
@@ -239,6 +247,7 @@ class Player:
                     api_type=record_key.to_records(),
                     data=records,
                     update_time=ensure_utc_datetime(records.cache.cached_at),
+                    query_params=parameter.to_params() if parameter is not None else None,
                 ),
             )
         return self._records[record_key]
