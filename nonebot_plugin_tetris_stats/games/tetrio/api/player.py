@@ -13,7 +13,7 @@ from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
-from .schemas.leaderboards import Parameter
+from .schemas.records import Parameter
 from .schemas.records.solo import Solo as SoloRecord
 from .schemas.records.solo import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
