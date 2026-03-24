@@ -13,8 +13,9 @@ from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
-from .schemas.records.solo import Solo as SoloRecord
-from .schemas.records.solo import SoloSuccessModel as RecordsSoloSuccessModel
+from .schemas.records import LeagueSuccessModel as RecordsLeagueSuccessModel
+from .schemas.records import RecordsModel
+from .schemas.records import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
     AchievementsSuccessModel,
     SummariesModel,
@@ -34,6 +35,7 @@ from .typedefs import Records, Summaries
 class RecordModeType(str, Enum):
     Sprint = '40l'
     Blitz = 'blitz'
+    League = 'league'
 
 
 class RecordType(str, Enum):
@@ -62,6 +64,13 @@ class Player:
             'achievements': AchievementsSuccessModel,
         }
     )
+    __RECORDS_MAPPING: MappingProxyType[RecordModeType, type[RecordsModel]] = MappingProxyType(
+        {
+            RecordModeType.Blitz: RecordsSoloSuccessModel,
+            RecordModeType.Sprint: RecordsSoloSuccessModel,
+            RecordModeType.League: RecordsLeagueSuccessModel,
+        }
+    )
 
     @overload
     def __init__(self, *, user_id: str, trust: bool = False): ...
@@ -85,7 +94,7 @@ class Player:
         self.__user: User | None = None
         self._user_info: UserInfoSuccess | None = None
         self._summaries: dict[Summaries, SummariesModel] = {}
-        self._records: dict[RecordKey, RecordsSoloSuccessModel] = {}
+        self._records: dict[RecordKey, RecordsModel] = {}
         self._leagueflow: LeagueFlowSuccess | None = None
 
     @property
@@ -223,12 +232,23 @@ class Player:
             return user.banner_revision
         return (await self.get_info()).data.banner_revision
 
-    async def get_records(self, mode_type: RecordModeType, records_type: RecordType) -> RecordsSoloSuccessModel:
+    @overload
+    async def get_records(
+        self, mode_type: Literal[RecordModeType.Blitz, RecordModeType.Sprint], records_type: RecordType
+    ) -> RecordsSoloSuccessModel: ...
+    @overload
+    async def get_records(
+        self, mode_type: Literal[RecordModeType.League], records_type: RecordType
+    ) -> RecordsLeagueSuccessModel: ...
+    async def get_records(self, mode_type: RecordModeType, records_type: RecordType) -> RecordsModel:
         if (record_key := RecordKey(mode_type, records_type)) not in self._records:
             raw_records = await Cache.get(
                 BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type,
             )
-            records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
+            records: RecordsModel | FailedModel = type_validate_json(
+                self.__RECORDS_MAPPING[mode_type] | FailedModel,  # type: ignore[assignment, arg-type]  # pyright: ignore[reportArgumentType]
+                raw_records,
+            )
             if isinstance(records, FailedModel):
                 msg = f'用户Summaries数据请求错误:\n{records.error}'
                 raise RequestError(msg)
