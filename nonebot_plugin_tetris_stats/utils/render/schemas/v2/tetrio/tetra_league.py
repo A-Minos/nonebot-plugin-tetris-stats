@@ -20,18 +20,11 @@ class User(BaseModel):
     name: str
 
 
-class Handling(BaseModel):
-    arr: Number
-    das: Number
-    sdf: Number
-
-
 class Game(BaseModel):
     user: User
     points: Number
     average_data: StatisticalData
     data: list[StatisticalData]
-    handling: Handling
 
 
 class Data(Base):
