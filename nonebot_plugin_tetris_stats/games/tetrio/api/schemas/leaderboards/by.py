@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from ...typedefs import Rank, ValidRank
+from ...typedefs import Rank
 from ..base import ArCounts, FailedModel, P, SuccessModel
 
 
@@ -13,7 +13,7 @@ class BaseLeague(BaseModel):
     tr: float
     gxe: float
     rank: Rank
-    bestrank: ValidRank
+    bestrank: Rank
     glicko: float
     rd: float
     decaying: bool
