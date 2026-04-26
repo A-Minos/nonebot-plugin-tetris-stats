@@ -9,6 +9,8 @@ from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alco
 from .. import ns
 from ..i18n import Lang
 from ..utils.exception import MessageFormatError, NeedCatchError
+from ..utils.help_extension import HelpImageExtension
+from ..utils.help_formatter import StructuredHelpFormatter
 
 command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
@@ -17,13 +19,22 @@ command: Alconna = Alconna(
         description='俄罗斯方块相关游戏数据查询',
         fuzzy_match=True,
     ),
+    formatter_type=StructuredHelpFormatter,
 )
+# StructuredHelpFormatter needs the root reference to resolve canonical
+# subcommand metadata. Alconna instantiates formatter_type into self.formatter,
+# we just back-fill the root pointer here.
+command.formatter.root = command  # type: ignore[attr-defined]
 
 alc = on_alconna(
     command=command,
     skip_for_unmatch=False,
     auto_send_output=True,
     use_origin=True,
+    # WARNING: only one output_converter Extension may be attached to this
+    # matcher. Future special-output customisation must be merged INTO
+    # HelpImageExtension. See utils/help_extension.py docstring.
+    extensions=[HelpImageExtension()],
 )
 
 
