@@ -184,5 +184,23 @@ class StructuredHelpFormatter(TextFormatter):
             options=options,
             subcommands=subcommands,
         )
-        data = HelpData(lang=get_lang(), command=node, breadcrumb=breadcrumb)
+        # usage / examples / shortcuts only exist on the root Alconna's CommandMeta;
+        # Subcommand has no `meta` attribute. Show them only on the root help page.
+        if not sub_path:
+            usage = self.root.meta.usage
+            example_raw = self.root.meta.example
+            examples = [line for line in (example_raw or '').splitlines() if line.strip()]
+            shortcuts = list(self.root.get_shortcuts())
+        else:
+            usage = None
+            examples = []
+            shortcuts = []
+        data = HelpData(
+            lang=get_lang(),
+            command=node,
+            breadcrumb=breadcrumb,
+            usage=usage,
+            examples=examples,
+            shortcuts=shortcuts,
+        )
         return HELP_JSON_PREFIX + data.model_dump_json(by_alias=True)

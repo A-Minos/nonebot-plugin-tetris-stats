@@ -41,6 +41,9 @@ class HelpData(Base):
     kind: Literal['help'] = 'help'
     command: HelpNode
     breadcrumb: list[str]
+    usage: str | None = None
+    examples: list[str] = []
+    shortcuts: list[str] = []
 
     @property
     @override
