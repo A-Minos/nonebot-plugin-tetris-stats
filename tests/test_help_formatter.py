@@ -162,6 +162,16 @@ def test_resolve_unknown_path_returns_none() -> None:
         command_manager.delete(a)
 
 
+def test_alias_index_built_from_subcommands(alc: Alconna) -> None:
+    """The Extension's alias index must map every alias / dest -> canonical name."""
+    from nonebot_plugin_tetris_stats.utils.help_extension import _build_alias_index  # noqa: PLC0415
+
+    index = _build_alias_index(alc)
+    assert index['tetr.io'] == 'TETR.IO'  # canonical (casefolded)  # noqa: S101
+    assert index['io'] == 'TETR.IO'  # alias  # noqa: S101
+    assert index['tetrio'] == 'TETR.IO'  # alias + dest (casefolded)  # noqa: S101
+
+
 def test_auto_send_output_remains_true() -> None:
     """Lock the v3.1 design dependency on on_alconna(auto_send_output=True).
 
