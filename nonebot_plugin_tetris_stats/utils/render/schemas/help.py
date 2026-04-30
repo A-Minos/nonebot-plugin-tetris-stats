@@ -36,6 +36,18 @@ class HelpNode(BaseModel):
 HelpNode.model_rebuild()
 
 
+class HelpShortcut(BaseModel):
+    """A shortcut binding, resolved to its canonical target path.
+
+    ``key`` is the human-readable trigger (e.g. ``"io查 ...args"``);
+    ``target`` is the canonical breadcrumb of the command it expands to,
+    e.g. ``["tstats", "TETR.IO", "query"]``.
+    """
+
+    key: str
+    target: list[str]
+
+
 class HelpData(Base):
     schema_version: Literal[1] = 1
     kind: Literal['help'] = 'help'
@@ -43,7 +55,7 @@ class HelpData(Base):
     breadcrumb: list[str]
     usage: str | None = None
     examples: list[str] = []
-    shortcuts: list[str] = []
+    shortcuts: list[HelpShortcut] = []
 
     @property
     @override

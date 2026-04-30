@@ -19,6 +19,7 @@ from arclet.alconna import Alconna, Option, Subcommand
 from arclet.alconna.args import Arg
 from arclet.alconna.base import Completion, Help, Shortcut
 from arclet.alconna.formatter import TextFormatter, Trace
+from arclet.alconna.manager import InnerShortcutArgs, command_manager
 from typing_extensions import override
 
 if TYPE_CHECKING:
@@ -81,6 +82,30 @@ def _sub_to_help(sub: Subcommand) -> 'HelpNode':
     )
 
 
+def _is_easter_egg(key: str) -> bool:
+    """Hidden shortcuts use 'easter egg' marker in their humanized key."""
+    return 'easter egg' in key.casefold()
+
+
+def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
+    """Return list of (humanized_key, target_path) pairs, filtering easter eggs.
+
+    target_path is the full canonical breadcrumb starting with the root header.
+    """
+    results: list[tuple[str, list[str]]] = []
+    for key, short in command_manager.get_shortcut(root).items():
+        if _is_easter_egg(key):
+            continue
+        if not isinstance(short, InnerShortcutArgs):
+            # Custom shortcut wrappers: cannot statically resolve target.
+            results.append((key, [root.header_display]))
+            continue
+        rendered = key + (' ...args' if short.fuzzy else '')
+        target = short.command.split() if isinstance(short.command, str) else [root.header_display]
+        results.append((rendered, target))
+    return results
+
+
 def _resolve_current_subcommand(root: Alconna, sub_path: list[str]) -> list[Subcommand] | None:
     """Resolve the canonical subcommand chain along ``sub_path``.
 
@@ -130,7 +155,7 @@ class StructuredHelpFormatter(TextFormatter):
 
     @override
     def format(self, trace: Trace) -> str:
-        from .render.schemas.help import HelpData, HelpNode, HelpOption  # noqa: PLC0415
+        from .render.schemas.help import HelpData, HelpNode, HelpOption, HelpShortcut  # noqa: PLC0415
 
         head = trace.head
         # head['name'] looks like 'tstats TETR.IO|io|TETRIO query' where each
@@ -186,15 +211,16 @@ class StructuredHelpFormatter(TextFormatter):
         )
         # usage / examples / shortcuts only exist on the root Alconna's CommandMeta;
         # Subcommand has no `meta` attribute. Show them only on the root help page.
+        all_shortcuts = _collect_shortcuts(self.root)
         if not sub_path:
             usage = self.root.meta.usage
             example_raw = self.root.meta.example
             examples = [line for line in (example_raw or '').splitlines() if line.strip()]
-            shortcuts = list(self.root.get_shortcuts())
+            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts]
         else:
             usage = None
             examples = []
-            shortcuts = []
+            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t == breadcrumb]
         data = HelpData(
             lang=get_lang(),
             command=node,
