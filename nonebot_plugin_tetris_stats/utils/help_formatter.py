@@ -112,10 +112,53 @@ def _is_path_segment(token: str) -> bool:
     return not token.startswith(('-', '{'))
 
 
+def _render_arg_token(name: str, *, optional: bool) -> str:
+    return f'[{name}]' if optional else f'<{name}>'
+
+
+def _render_target_signature(root: Alconna, target: list[str]) -> str:
+    """Render the args/options accepted by ``target`` as a usage-style suffix.
+
+    e.g. for shortcut ``io查`` whose target is ``tstats TETR.IO query``, this
+    returns ``[--template <template>] [--compare <compare>]``. Hidden args and
+    builtin options (--help / --shortcut / --comp) are skipped.
+    """
+    sub_path = target[1:]
+    if not sub_path:
+        args_iter = list(root.args.argument)
+        children = list(root.options)
+    else:
+        chain = _resolve_current_subcommand(root, sub_path)
+        if chain is None:
+            return ''
+        sub = chain[-1]
+        args_iter = list(sub.args.argument)
+        children = list(sub.options)
+
+    tokens: list[str] = []
+    for a in args_iter:
+        if a.hidden:
+            continue
+        tokens.append(_render_arg_token(a.name, optional=a.optional))
+    for child in children:
+        if isinstance(child, _BUILTINS) or not isinstance(child, Option):
+            continue
+        inner = [child.name]
+        for a in child.args.argument:
+            if a.hidden:
+                continue
+            inner.append(_render_arg_token(a.name, optional=a.optional))
+        tokens.append(f'[{" ".join(inner)}]')
+    return ' '.join(tokens)
+
+
 def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
     """Return list of (humanized_key, target_path) pairs, filtering easter eggs.
 
     target_path is the full canonical breadcrumb starting with the root header.
+    The humanized key is suffixed with the target command's argument signature
+    (rendered in CLI ``<required>`` / ``[optional]`` syntax) so users can see
+    what they may / must supply, instead of the opaque ``...args`` placeholder.
     """
     results: list[tuple[str, list[str]]] = []
     for key, short in command_manager.get_shortcut(root).items():
@@ -125,12 +168,14 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
             # Custom shortcut wrappers: cannot statically resolve target.
             results.append((key, [root.header_display]))
             continue
-        rendered = key + (' ...args' if short.fuzzy else '')
         cmd_text = _extract_command_text(short.command)
-        if cmd_text:
-            target = [tok for tok in cmd_text.split() if _is_path_segment(tok)]
-        else:
-            target = [root.header_display]
+        target = (
+            [tok for tok in cmd_text.split() if _is_path_segment(tok)]
+            if cmd_text
+            else [root.header_display]
+        )
+        suffix = _render_target_signature(root, target)
+        rendered = f'{key} {suffix}' if suffix else key
         results.append((rendered, target))
     return results
 
