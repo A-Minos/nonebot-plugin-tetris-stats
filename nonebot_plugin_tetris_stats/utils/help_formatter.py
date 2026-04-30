@@ -136,18 +136,11 @@ def _render_target_signature(root: Alconna, target: list[str]) -> str:
         children = list(sub.options)
 
     tokens: list[str] = []
-    for a in args_iter:
-        if a.hidden:
-            continue
-        tokens.append(_render_arg_token(a.name, optional=a.optional))
+    tokens.extend(_render_arg_token(a.name, optional=a.optional) for a in args_iter)
     for child in children:
         if isinstance(child, _BUILTINS) or not isinstance(child, Option):
             continue
-        inner = [child.name]
-        for a in child.args.argument:
-            if a.hidden:
-                continue
-            inner.append(_render_arg_token(a.name, optional=a.optional))
+        inner = [child.name, *(_render_arg_token(a.name, optional=a.optional) for a in child.args.argument)]
         tokens.append(f'[{" ".join(inner)}]')
     return ' '.join(tokens)
 
