@@ -87,6 +87,31 @@ def _is_easter_egg(key: str) -> bool:
     return 'easter egg' in key.casefold()
 
 
+def _extract_command_text(command: object) -> str | None:
+    """Extract a plain command path string from InnerShortcutArgs.command.
+
+    The field can be either a raw ``str`` or a list of message segments
+    (e.g. ``[Text(text='tstats TETR.IO query', ...)]``) when the shortcut
+    flowed through nonebot-plugin-alconna's uniseg layer. We concatenate any
+    object that exposes a ``text`` attribute.
+    """
+    if isinstance(command, str):
+        return command
+    if isinstance(command, list):
+        parts: list[str] = []
+        for seg in command:
+            text = getattr(seg, 'text', None)
+            if isinstance(text, str):
+                parts.append(text)
+        return ' '.join(parts) if parts else None
+    return None
+
+
+def _is_path_segment(token: str) -> bool:
+    """Path segments are command/subcommand names; not flags or placeholders."""
+    return not token.startswith(('-', '{'))
+
+
 def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
     """Return list of (humanized_key, target_path) pairs, filtering easter eggs.
 
@@ -101,7 +126,11 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
             results.append((key, [root.header_display]))
             continue
         rendered = key + (' ...args' if short.fuzzy else '')
-        target = short.command.split() if isinstance(short.command, str) else [root.header_display]
+        cmd_text = _extract_command_text(short.command)
+        if cmd_text:
+            target = [tok for tok in cmd_text.split() if _is_path_segment(tok)]
+        else:
+            target = [root.header_display]
         results.append((rendered, target))
     return results
 
