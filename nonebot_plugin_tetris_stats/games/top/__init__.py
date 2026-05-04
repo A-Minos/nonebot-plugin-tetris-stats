@@ -1,4 +1,5 @@
-from arclet.alconna import Arg, ArgFlag
+from arclet.alconna import Arg, ArgFlag, Field
+from arclet.alconna.args import Empty
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
@@ -48,16 +49,10 @@ command.add(
             'query',
             Args(
                 Arg(
-                    'target',
-                    At | Me,
-                    notice='@想要查询的人 / 自己',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-                ),
-                Arg(
-                    'account',
-                    get_player,
-                    notice='TOP 用户名',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                    'who',
+                    At | Me | get_player,
+                    notice='@想要查询的人 / 自己 / TOP 用户名',
+                    field=Field(default=Empty),
                 ),
             ),
             Option(

@@ -84,7 +84,7 @@ async def _(  # noqa: PLR0913
     user: NBUser,
     event: Event,
     matcher: Matcher,
-    target: At | Me,
+    who: At | Me,
     event_session: Uninfo,
     compare: timedelta | None = None,
 ):
@@ -98,7 +98,7 @@ async def _(  # noqa: PLR0913
             bind = await query_bind_info(
                 session=session,
                 user=await get_user(
-                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
+                    event_session.scope, who.target if isinstance(who, At) else event.get_user_id()
                 ),
                 game_platform=GAME_TYPE,
             )
@@ -124,7 +124,7 @@ async def _(  # noqa: PLR0913
 
 
 @alc.assign('TOP.query')
-async def _(user: NBUser, account: Player, event_session: Uninfo, compare: timedelta | None = None):
+async def _(user: NBUser, who: Player, event_session: Uninfo, compare: timedelta | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -133,7 +133,7 @@ async def _(user: NBUser, account: Player, event_session: Uninfo, compare: timed
     ):
         async with get_session() as session:
             compare_delta = await resolve_compare_delta(TOPUserConfig, session, user.id, compare)
-            profile = await account.get_profile()
+            profile = await who.get_profile()
             compare_profile = await get_compare_profile(
                 session,
                 profile.user_name,
