@@ -17,7 +17,7 @@ from sqlalchemy import select
 from ....db import query_bind_info, resolve_compare_delta, trigger
 from ....i18n import Lang
 from ....utils.duration import parse_duration
-from ....utils.exception import FallbackError, MessageFormatError
+from ....utils.exception import FallbackError
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc
 from .. import command, get_player
@@ -27,20 +27,6 @@ from ..models import TETRIOUserConfig
 from ..typedefs import Template
 from .v1 import make_query_image_v1
 from .v2 import make_query_image_v2
-
-
-def _strict_player(s: str) -> Player:
-    """Raising version of ``get_player`` so an unrecognised string lets
-    ``UnionPattern`` fall through to the next alternative (e.g. ``Me``).
-
-    plugin-alconna re-orders union members to put callable patterns before
-    ``Me``'s Literal pattern, so a non-raising callable would short-circuit
-    legitimate self-reference inputs like ``我``.
-    """
-    res = get_player(s)
-    if isinstance(res, MessageFormatError):
-        raise ValueError(str(res))  # noqa: TRY004
-    return res
 
 UTC = timezone.utc
 
@@ -52,7 +38,7 @@ command.add(
         Args(
             Arg(
                 'who',
-                At | Me | _strict_player,
+                At | Me | get_player,
                 notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
                 field=Field(default=Empty),
             ),

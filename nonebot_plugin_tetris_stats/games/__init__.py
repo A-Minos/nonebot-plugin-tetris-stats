@@ -8,7 +8,7 @@ from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alco
 
 from .. import ns
 from ..i18n import Lang
-from ..utils.exception import MessageFormatError, NeedCatchError
+from ..utils.exception import NeedCatchError
 from ..utils.help_extension import HelpImageExtension
 from ..utils.help_formatter import StructuredHelpFormatter
 
@@ -46,11 +46,6 @@ def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:
 
 
 from . import tetrio, top, tos  # noqa: F401, E402
-
-
-@alc.handle()
-async def _(matcher: Matcher, account: MessageFormatError):
-    await matcher.finish(str(account))
 
 
 @alc.handle()
