@@ -41,7 +41,7 @@ alc.shortcut(
 async def _(
     event: Event,
     matcher: Matcher,
-    target: At | Me,
+    who: At | Me,
     event_session: Uninfo,
 ):
     async with trigger(
@@ -54,7 +54,7 @@ async def _(
             bind = await query_bind_info(
                 session=session,
                 user=await get_user(
-                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
+                    event_session.scope, who.target if isinstance(who, At) else event.get_user_id()
                 ),
                 game_platform=GAME_TYPE,
             )
@@ -67,14 +67,14 @@ async def _(
 
 
 @alc.assign('TETRIO.record.sprint')
-async def _(account: Player, event_session: Uninfo):
+async def _(who: Player, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='record',
         command_args=['--40l'],
     ):
-        await UniMessage.image(raw=await make_sprint_image(account)).finish()
+        await UniMessage.image(raw=await make_sprint_image(who)).finish()
 
 
 async def make_sprint_image(player: Player) -> bytes:

@@ -50,7 +50,7 @@ def add_special_handlers(
     async def _(
         user: NBUser,
         event: Event,
-        target: At | Me,
+        who: At | Me,
         event_session: Uninfo,
         compare: timedelta | None = None,
     ):
@@ -62,8 +62,8 @@ def add_special_handlers(
                 command_args=[f'--compare {compare}'] if compare is not None else [],
             ):
                 player = Player(
-                    teaid=f'{teaid_prefix}{target.target}'
-                    if isinstance(target, At)
+                    teaid=f'{teaid_prefix}{who.target}'
+                    if isinstance(who, At)
                     else f'{teaid_prefix}{event.get_user_id()}',
                     trust=True,
                 )
@@ -73,7 +73,7 @@ def add_special_handlers(
                             await make_query_result(
                                 player,
                                 await resolve_compare_delta(TOSUserConfig, session, user.id, compare),
-                                None if isinstance(target, At) else event_session.user,
+                                None if isinstance(who, At) else event_session.user,
                             )
                         ).finish()
                 except RequestError as e:
@@ -125,7 +125,7 @@ async def _(  # noqa: PLR0913
     user: NBUser,
     event: Event,
     matcher: Matcher,
-    target: At | Me,
+    who: At | Me,
     event_session: Uninfo,
     compare: timedelta | None = None,
 ):
@@ -140,7 +140,7 @@ async def _(  # noqa: PLR0913
     ):
         bind = await query_bind_info(
             session=session,
-            user=await get_user(event_session.scope, target.target if isinstance(target, At) else event.get_user_id()),
+            user=await get_user(event_session.scope, who.target if isinstance(who, At) else event.get_user_id()),
             game_platform=GAME_TYPE,
         )
         if bind is None:
@@ -154,7 +154,7 @@ async def _(  # noqa: PLR0913
                     result := await make_query_result(
                         player,
                         await resolve_compare_delta(TOSUserConfig, session, user.id, compare),
-                        None if isinstance(target, At) else event_session.user,
+                        None if isinstance(who, At) else event_session.user,
                     )
                 ).has(Image)
                 else UniMessage()
@@ -164,7 +164,7 @@ async def _(  # noqa: PLR0913
 
 
 @alc.assign('TOS.query')
-async def _(user: NBUser, account: Player, event_session: Uninfo, compare: timedelta | None = None):
+async def _(user: NBUser, who: Player, event_session: Uninfo, compare: timedelta | None = None):
     async with (
         trigger(
             session_persist_id=await get_session_persist_id(event_session),
@@ -176,7 +176,7 @@ async def _(user: NBUser, account: Player, event_session: Uninfo, compare: timed
     ):
         await (
             await make_query_result(
-                account,
+                who,
                 await resolve_compare_delta(TOSUserConfig, session, user.id, compare),
                 None,
             )
