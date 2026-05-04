@@ -1,6 +1,7 @@
 from datetime import timedelta, timezone
 
-from arclet.alconna import Arg, ArgFlag
+from arclet.alconna import Arg, Field
+from arclet.alconna.args import Empty
 from nonebot import get_driver
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -16,7 +17,7 @@ from sqlalchemy import select
 from ....db import query_bind_info, resolve_compare_delta, trigger
 from ....i18n import Lang
 from ....utils.duration import parse_duration
-from ....utils.exception import FallbackError
+from ....utils.exception import FallbackError, MessageFormatError
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc
 from .. import command, get_player
@@ -27,6 +28,20 @@ from ..typedefs import Template
 from .v1 import make_query_image_v1
 from .v2 import make_query_image_v2
 
+
+def _strict_player(s: str) -> Player:
+    """Raising version of ``get_player`` so an unrecognised string lets
+    ``UnionPattern`` fall through to the next alternative (e.g. ``Me``).
+
+    plugin-alconna re-orders union members to put callable patterns before
+    ``Me``'s Literal pattern, so a non-raising callable would short-circuit
+    legitimate self-reference inputs like ``我``.
+    """
+    res = get_player(s)
+    if isinstance(res, MessageFormatError):
+        raise ValueError(str(res))  # noqa: TRY004
+    return res
+
 UTC = timezone.utc
 
 driver = get_driver()
@@ -36,16 +51,10 @@ command.add(
         'query',
         Args(
             Arg(
-                'target',
-                At | Me,
-                notice='@想要查询的人 / 自己',
-                flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-            ),
-            Arg(
-                'account',
-                get_player,
-                notice='TETR.IO 用户名 / ID',
-                flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                'who',
+                At | Me | _strict_player,
+                notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
+                field=Field(default=Empty),
             ),
         ),
         Option(
@@ -96,7 +105,7 @@ async def _(  # noqa: PLR0913
     user: NBUser,
     event: Event,
     matcher: Matcher,
-    target: At | Me,
+    who: At | Me,
     event_session: Uninfo,
     template: Template | None = None,
     compare: timedelta | None = None,
@@ -116,7 +125,7 @@ async def _(  # noqa: PLR0913
             bind = await query_bind_info(
                 session=session,
                 user=await get_user(
-                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
+                    event_session.scope, who.target if isinstance(who, At) else event.get_user_id()
                 ),
                 game_platform=GAME_TYPE,
             )
@@ -142,7 +151,7 @@ async def _(  # noqa: PLR0913
 @alc.assign('TETRIO.query')
 async def _(
     user: NBUser,
-    account: Player,
+    who: Player,
     event_session: Uninfo,
     template: Template | None = None,
     compare: timedelta | None = None,
@@ -164,4 +173,4 @@ async def _(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
             compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
-        await (await make_query_result(account, template or 'v1', compare_delta)).finish()
+        await (await make_query_result(who, template or 'v1', compare_delta)).finish()
