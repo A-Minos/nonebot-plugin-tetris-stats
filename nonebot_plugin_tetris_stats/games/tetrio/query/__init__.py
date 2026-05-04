@@ -43,13 +43,13 @@ command.add(
         ),
         Option(
             '--template',
-            Arg('template', Template),
+            Arg('template', Template, notice='模板版本'),
             alias=['-T'],
             help_text='要使用的查询模板',
         ),
         Option(
             '--compare',
-            Arg('compare', parse_duration),
+            Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
             alias=['-C'],
             help_text='指定对比时间距离',
         ),

@@ -43,7 +43,7 @@ command.add(
             'config',
             Option(
                 '--default-compare',
-                Arg('compare', parse_duration, notice='对比时间距离'),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-DC', 'DefaultCompare'],
                 help_text='设置默认对比时间距离',
             ),
@@ -60,7 +60,7 @@ command.add(
             ),
             Option(
                 '--compare',
-                Arg('compare', parse_duration),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-C'],
                 help_text='指定对比时间距离',
             ),

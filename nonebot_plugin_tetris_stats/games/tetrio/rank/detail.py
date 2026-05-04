@@ -25,7 +25,7 @@ UTC = timezone.utc
 
 driver = get_driver()
 
-command.add(Subcommand('--detail', Arg('rank', ValidRank), alias=['-D'], dest='detail', help_text='查询指定段位的详细信息'))
+command.add(Subcommand('--detail', Arg('rank', ValidRank, notice='段位名 (如 s+, x, b-)'), alias=['-D'], dest='detail', help_text='查询指定段位的详细信息'))
 
 
 @alc.assign('TETRIO.rank.detail')
