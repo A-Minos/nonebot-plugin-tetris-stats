@@ -287,7 +287,7 @@ class StructuredHelpFormatter(TextFormatter):
         else:
             usage = None
             examples = []
-            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t == breadcrumb]
+            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1:len(breadcrumb)] == breadcrumb[1:]]
         data = HelpData(
             lang=get_lang(),
             command=node,
