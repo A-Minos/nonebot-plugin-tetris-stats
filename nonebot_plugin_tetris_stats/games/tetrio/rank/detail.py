@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 
 from arclet.alconna import Arg
 from nonebot import get_driver
-from nonebot_plugin_alconna import Option, UniMessage
+from nonebot_plugin_alconna import Subcommand, UniMessage
 from nonebot_plugin_orm import get_session
 from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
@@ -25,10 +25,10 @@ UTC = timezone.utc
 
 driver = get_driver()
 
-command.add(Option('--detail', Arg('rank', ValidRank), alias=['-D']))
+command.add(Subcommand('--detail', Arg('rank', ValidRank), alias=['-D'], dest='detail', help_text='查询指定段位的详细信息'))
 
 
-@alc.assign('TETRIO.rank')
+@alc.assign('TETRIO.rank.detail')
 async def _(rank: ValidRank, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
