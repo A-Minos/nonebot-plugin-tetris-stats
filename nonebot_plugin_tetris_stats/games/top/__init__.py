@@ -1,5 +1,4 @@
-from arclet.alconna import Arg, ArgFlag, Field
-from arclet.alconna.args import Empty
+from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
@@ -52,7 +51,6 @@ command.add(
                     'who',
                     At | Me | get_player,
                     notice='@想要查询的人 / 自己 / TOP 用户名',
-                    field=Field(default=Empty),
                 ),
             ),
             Option(

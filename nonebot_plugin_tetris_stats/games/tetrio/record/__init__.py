@@ -1,5 +1,4 @@
-from arclet.alconna import Arg, Field
-from arclet.alconna.args import Empty
+from arclet.alconna import Arg
 from nonebot_plugin_alconna import Args, At, Subcommand
 
 from ....utils.typedefs import Me
@@ -13,7 +12,6 @@ command = Subcommand(
             'who',
             At | Me | get_player,
             notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
-            field=Field(default=Empty),
         ),
     ),
 )

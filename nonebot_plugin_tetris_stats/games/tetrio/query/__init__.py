@@ -1,7 +1,6 @@
 from datetime import timedelta, timezone
 
-from arclet.alconna import Arg, Field
-from arclet.alconna.args import Empty
+from arclet.alconna import Arg
 from nonebot import get_driver
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -40,7 +39,6 @@ command.add(
                 'who',
                 At | Me | get_player,
                 notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
-                field=Field(default=Empty),
             ),
         ),
         Option(
