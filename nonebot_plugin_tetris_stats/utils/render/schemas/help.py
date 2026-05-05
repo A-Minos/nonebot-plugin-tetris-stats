@@ -1,5 +1,3 @@
-from typing import Literal
-
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel
 from typing_extensions import override
@@ -53,7 +51,6 @@ class HelpShortcut(BaseModel):
 
 
 class HelpData(Base):
-    schema_version: Literal[1] = 1
     command: HelpNode
     breadcrumb: list[str]
     usage: str | None = None
