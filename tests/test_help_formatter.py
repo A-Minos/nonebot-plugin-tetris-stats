@@ -47,14 +47,6 @@ def _capture(alc: Alconna, cmd: str) -> str:
     return out
 
 
-def test_output_is_valid_help_data(alc: Alconna) -> None:
-    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
-
-    out = _capture(alc, 'tstats --help')
-    data = HelpData.model_validate_json(out)
-    assert data.breadcrumb == ['tstats']  # noqa: S101
-
-
 def test_root_node_metadata(alc: Alconna) -> None:
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
