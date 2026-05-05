@@ -34,6 +34,32 @@ HELP_JSON_PREFIX = '__NBPTS_HELP_V1__:'
 _BUILTINS = (Help, Completion, Shortcut)
 _EMPTY = Signature.empty
 
+# Alconna 把多别名拼进同一个名字 token, 用 U+2502 BOX DRAWINGS LIGHT VERTICAL
+# 作为分隔符 (e.g. 'TETR.IO|io|TETRIO'). 我们对外暴露 schema 时只保留主名,
+# 把剩余别名合并到 aliases 列表, 让前端不再需要做 split。
+_ALIAS_SEP = '\u2502'
+
+
+def _split_name(name: str) -> tuple[str, list[str]]:
+    """Split a U+2502-joined name into (canonical, extra_aliases)."""
+    parts = [p for p in name.split(_ALIAS_SEP) if p]
+    if not parts:
+        return name, []
+    return parts[0], parts[1:]
+
+
+def _merge_aliases(canonical: str, *alias_sources: list[str] | tuple[str, ...]) -> list[str]:
+    """Merge alias lists, drop duplicates, drop the canonical name itself."""
+    seen: set[str] = {canonical}
+    result: list[str] = []
+    for src in alias_sources:
+        for a in src:
+            if a in seen:
+                continue
+            seen.add(a)
+            result.append(a)
+    return result
+
 
 def _arg_to_help(arg: Arg) -> 'HelpArg':
     from .render.schemas.help import HelpArg  # noqa: PLC0415
@@ -73,10 +99,11 @@ def _sub_to_help(sub: Subcommand) -> 'HelpNode':
             subcommands.append(_sub_to_help(child))
         elif isinstance(child, Option):
             options.append(_opt_to_help(child))
+    canonical, name_aliases = _split_name(sub.name)
     return HelpNode(
-        name=sub.name,
+        name=canonical,
         dest=sub.dest,
-        aliases=[a for a in sub.aliases if a != sub.name],
+        aliases=_merge_aliases(canonical, name_aliases, list(sub.aliases)),
         help_text=sub.help_text,
         args=[_arg_to_help(a) for a in sub.args.argument],
         options=options,
@@ -156,15 +183,16 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
     what they may / must supply, instead of the opaque ``...args`` placeholder.
     """
     results: list[tuple[str, list[str]]] = []
+    root_canonical, _ = _split_name(root.header_display)
     for key, short in command_manager.get_shortcut(root).items():
         if _is_easter_egg(key):
             continue
         if not isinstance(short, InnerShortcutArgs):
             # Custom shortcut wrappers: cannot statically resolve target.
-            results.append((key, [root.header_display]))
+            results.append((key, [root_canonical]))
             continue
         cmd_text = _extract_command_text(short.command)
-        target = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else [root.header_display]
+        target = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else [root_canonical]
         suffix = _render_target_signature(root, target)
         rendered = f'{key} {suffix}' if suffix else key
         results.append((rendered, target))
@@ -245,20 +273,27 @@ class StructuredHelpFormatter(TextFormatter):
             raise RuntimeError(msg)
 
         if not sub_path:
-            cur_name = self.root.header_display
+            root_canonical, root_name_aliases = _split_name(self.root.header_display)
+            cur_name = root_canonical
             cur_dest = self.root.path
-            cur_aliases = [str(p) for p in self.root.prefixes if p != cur_name]
-            breadcrumb = [cur_name]
+            cur_aliases = _merge_aliases(
+                root_canonical,
+                root_name_aliases,
+                [str(p) for p in self.root.prefixes],
+            )
+            breadcrumb = [root_canonical]
         else:
             chain = _resolve_current_subcommand(self.root, sub_path)
             if chain is None:
                 msg = f'cannot resolve subcommand for path {sub_path!r}'
                 raise RuntimeError(msg)
             sub = chain[-1]
-            cur_name = sub.name
+            sub_canonical, sub_name_aliases = _split_name(sub.name)
+            cur_name = sub_canonical
             cur_dest = sub.dest
-            cur_aliases = [a for a in sub.aliases if a != sub.name]
-            breadcrumb = [self.root.header_display, *(s.name for s in chain)]
+            cur_aliases = _merge_aliases(sub_canonical, sub_name_aliases, list(sub.aliases))
+            root_canonical, _ = _split_name(self.root.header_display)
+            breadcrumb = [root_canonical, *(_split_name(s.name)[0] for s in chain)]
 
         # Lazy import avoids circular dependency with games/* (render/__init__.py
         # -> host.py -> games.tetrio.api.cache -> back into games/__init__.py).
