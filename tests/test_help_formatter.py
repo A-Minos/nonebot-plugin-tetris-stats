@@ -48,24 +48,19 @@ def _capture(alc: Alconna, cmd: str) -> str:
     return out
 
 
-def test_envelope_prefix_and_schema(alc: Alconna) -> None:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import HELP_JSON_PREFIX  # noqa: PLC0415
+def test_output_is_valid_help_data(alc: Alconna) -> None:
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats --help')
-    assert out.startswith(HELP_JSON_PREFIX)  # noqa: S101
-    data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
-    assert data.schema_version == 1  # noqa: S101
-    assert data.kind == 'help'  # noqa: S101
+    data = HelpData.model_validate_json(out)
     assert data.breadcrumb == ['tstats']  # noqa: S101
 
 
 def test_root_node_metadata(alc: Alconna) -> None:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import HELP_JSON_PREFIX  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats --help')
-    data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
+    data = HelpData.model_validate_json(out)
     assert data.command.name == 'tstats'  # noqa: S101
     assert data.command.help_text == 'Tetris stats root command'  # noqa: S101
     sub_names = {s.name for s in data.command.subcommands}
@@ -80,11 +75,10 @@ def test_subcommand_metadata_includes_aliases(alc: Alconna) -> None:
     subcommand). We therefore trigger via the canonical name, but the schema
     must still expose all aliases.
     """
-    from nonebot_plugin_tetris_stats.utils.help_formatter import HELP_JSON_PREFIX  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats TETR.IO --help')
-    data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
+    data = HelpData.model_validate_json(out)
     assert data.command.name == 'TETR.IO'  # noqa: S101
     assert set(data.command.aliases) == {'io', 'TETRIO'}  # noqa: S101
     assert data.command.help_text == 'TETR.IO related'  # noqa: S101
@@ -92,11 +86,10 @@ def test_subcommand_metadata_includes_aliases(alc: Alconna) -> None:
 
 
 def test_deep_subcommand(alc: Alconna) -> None:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import HELP_JSON_PREFIX  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats TETR.IO query --help')
-    data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
+    data = HelpData.model_validate_json(out)
     assert data.breadcrumb == ['tstats', 'TETR.IO', 'query']  # noqa: S101
     assert data.command.name == 'query'  # noqa: S101
     assert data.command.help_text == 'query account'  # noqa: S101
@@ -104,10 +97,7 @@ def test_deep_subcommand(alc: Alconna) -> None:
 
 
 def test_args_metadata() -> None:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import (  # noqa: PLC0415
-        HELP_JSON_PREFIX,
-        StructuredHelpFormatter,
-    )
+    from nonebot_plugin_tetris_stats.utils.help_formatter import StructuredHelpFormatter  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     a = Alconna(
@@ -122,7 +112,7 @@ def test_args_metadata() -> None:
     a.formatter.root = a  # type: ignore[attr-defined]
     try:
         out = _capture(a, 't sub --help')
-        data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
+        data = HelpData.model_validate_json(out)
         args_by_name = {arg.name: arg for arg in data.command.args}
         x = args_by_name['x']
         assert x.optional is True  # noqa: S101
@@ -136,11 +126,10 @@ def test_args_metadata() -> None:
 
 def test_builtins_filtered(alc: Alconna) -> None:
     """Help / Completion / Shortcut nodes must not appear in options."""
-    from nonebot_plugin_tetris_stats.utils.help_formatter import HELP_JSON_PREFIX  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats --help')
-    data = HelpData.model_validate_json(out[len(HELP_JSON_PREFIX) :])
+    data = HelpData.model_validate_json(out)
     opt_names = {o.name for o in data.command.options}
     assert '--help' not in opt_names  # noqa: S101
     assert '--shortcut' not in opt_names  # noqa: S101
