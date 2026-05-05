@@ -21,6 +21,7 @@ from arclet.alconna.base import Completion, Help, Shortcut
 from arclet.alconna.formatter import TextFormatter, Trace
 from arclet.alconna.manager import command_manager
 from arclet.alconna.typing import InnerShortcutArgs
+from nonebot.compat import PYDANTIC_V2
 from typing_extensions import Self, override
 
 if TYPE_CHECKING:
@@ -294,4 +295,6 @@ class StructuredHelpFormatter(TextFormatter):
             examples=examples,
             shortcuts=shortcuts,
         )
-        return HELP_JSON_PREFIX + data.model_dump_json(by_alias=True)
+        return HELP_JSON_PREFIX + (
+            data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True)
+        )

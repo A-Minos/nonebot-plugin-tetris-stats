@@ -15,6 +15,7 @@ ever turned off, help images will silently stop being sent.
 
 from arclet.alconna import Alconna, Subcommand
 from nonebot.adapters import Bot, Event
+from nonebot.compat import type_validate_json
 from nonebot_plugin_alconna import Extension, UniMessage
 from nonebot_plugin_alconna.extension import OutputType
 from typing_extensions import override
@@ -105,7 +106,7 @@ class HelpImageExtension(Extension):
         from .render.schemas.help import HelpData  # noqa: PLC0415
 
         try:
-            data = HelpData.model_validate_json(content[len(HELP_JSON_PREFIX) :])
+            data = type_validate_json(HelpData, content[len(HELP_JSON_PREFIX) :])
             img = await render_image(data)
         except Exception as e:
             # Extension/render-stage exceptions do NOT land in arp.error_info;
