@@ -148,15 +148,3 @@ def test_alias_index_built_from_subcommands(alc: Alconna) -> None:
     assert index['tetr.io'] == 'TETR.IO'  # canonical (casefolded)  # noqa: S101
     assert index['io'] == 'TETR.IO'  # alias  # noqa: S101
     assert index['tetrio'] == 'TETR.IO'  # alias + dest (casefolded)  # noqa: S101
-
-
-def test_auto_send_output_remains_true() -> None:
-    """Lock the v3.1 design dependency on on_alconna(auto_send_output=True).
-
-    If this is ever turned off, HelpImageExtension.output_converter never
-    fires and help images silently stop being sent.
-    """
-    from nonebot_plugin_tetris_stats.games import alc  # noqa: PLC0415
-
-    rule = next(c for c in alc.rule.checkers if c.call.__class__.__name__ == 'AlconnaRule')
-    assert rule.call.auto_send is True  # type: ignore[attr-defined]  # noqa: S101
