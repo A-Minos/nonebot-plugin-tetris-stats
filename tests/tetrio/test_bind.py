@@ -15,5 +15,4 @@ async def test_invalid_name(app: App) -> None:
     async with app.test_matcher(alc) as ctx:
         bot = ctx.create_bot()
         ctx.receive_event(bot, event)
-        ctx.should_finished(alc)
         ctx.should_call_send(event, '用户名/ID不合法', result=None)

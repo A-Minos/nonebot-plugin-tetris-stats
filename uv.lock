@@ -2535,15 +2535,15 @@ wheels = [
 
 [[package]]
 name = "nepattern"
-version = "0.7.7"
+version = "0.7.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "tarina" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/35/36/6b551ad46d6d90341c059aade07cdaf7754838fa870da2631c1d0dd53bad/nepattern-0.7.7.tar.gz", hash = "sha256:6667f888457e78937998f9412eb70ad16d220464d2d77850dd2b05e9ecfb3207", size = 20968, upload-time = "2024-11-21T11:03:16.076Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/06/22/1c6443bdb0b8d121ef66e011d7b3826e119e68c89b41c1ebc8651b773cb6/nepattern-0.7.8.tar.gz", hash = "sha256:a2e20440be72a500ed7d57f28d010ac3654ae691c189b757f1ae01e33b3df57b", size = 21097, upload-time = "2026-05-04T16:53:04.237Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/74/d2ea0ed5eed9efb00e54ae2f2cb67878e64ed997cfcdc616b88d9213b373/nepattern-0.7.7-py3-none-any.whl", hash = "sha256:2d66f964333f42df7971390da4fb98dfed1e8b769236f305c28a83c0bcda849a", size = 25992, upload-time = "2024-11-21T11:03:14.202Z" },
+    { url = "https://files.pythonhosted.org/packages/73/39/9dccdc7d9a3d9966b9502122b381efda198d6de36a9c508c48a28986202b/nepattern-0.7.8-py3-none-any.whl", hash = "sha256:59fe29954b2bf8661ebca089a90977d7ca743cd6a696f4c829f97efe6fe59004", size = 26126, upload-time = "2026-05-04T16:53:02.695Z" },
 ]
 
 [[package]]
@@ -2759,6 +2759,7 @@ dependencies = [
     { name = "jinja2" },
     { name = "lxml" },
     { name = "msgspec" },
+    { name = "nepattern" },
     { name = "nonebot-plugin-alconna" },
     { name = "nonebot-plugin-apscheduler" },
     { name = "nonebot-plugin-localstore" },
@@ -2827,6 +2828,7 @@ requires-dist = [
     { name = "jinja2", specifier = ">=3.1.4" },
     { name = "lxml", specifier = ">=5.3.0" },
     { name = "msgspec", specifier = ">=0.18.6" },
+    { name = "nepattern", specifier = ">=0.7.8" },
     { name = "nonebot-plugin-alconna", specifier = ">=0.53.1" },
     { name = "nonebot-plugin-apscheduler", specifier = ">=0.5.0" },
     { name = "nonebot-plugin-localstore", specifier = ">=0.7.1" },

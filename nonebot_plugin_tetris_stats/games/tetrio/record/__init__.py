@@ -1,4 +1,4 @@
-from arclet.alconna import Arg, ArgFlag
+from arclet.alconna import Arg
 from nonebot_plugin_alconna import Args, At, Subcommand
 
 from ....utils.typedefs import Me
@@ -9,16 +9,9 @@ command = Subcommand(
     'record',
     Args(
         Arg(
-            'target',
-            At | Me,
-            notice='@想要查询的人 / 自己',
-            flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-        ),
-        Arg(
-            'account',
-            get_player,
-            notice='TETR.IO 用户名 / ID',
-            flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+            'who',
+            At | Me | get_player,
+            notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
         ),
     ),
 )

@@ -8,7 +8,9 @@ from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alco
 
 from .. import ns
 from ..i18n import Lang
-from ..utils.exception import MessageFormatError, NeedCatchError
+from ..utils.exception import NeedCatchError
+from ..utils.help_extension import HelpImageExtension
+from ..utils.help_formatter import StructuredHelpFormatter
 
 command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
@@ -17,6 +19,7 @@ command: Alconna = Alconna(
         description='俄罗斯方块相关游戏数据查询',
         fuzzy_match=True,
     ),
+    formatter_type=StructuredHelpFormatter,
 )
 
 alc = on_alconna(
@@ -24,6 +27,7 @@ alc = on_alconna(
     skip_for_unmatch=False,
     auto_send_output=True,
     use_origin=True,
+    extensions=[HelpImageExtension()],
 )
 
 
@@ -35,11 +39,6 @@ def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:
 
 
 from . import tetrio, top, tos  # noqa: F401, E402
-
-
-@alc.handle()
-async def _(matcher: Matcher, account: MessageFormatError):
-    await matcher.finish(str(account))
 
 
 @alc.handle()

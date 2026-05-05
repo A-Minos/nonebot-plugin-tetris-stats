@@ -44,15 +44,17 @@ command = Subcommand('rank', help_text='查询 TETR.IO 段位信息')
 
 
 def wrapper(slot: int | str, content: str | None) -> str | None:
-    if slot == 'rank' and not content:
-        return '--all'
-    if content is not None:
+    if slot == 'rank':
+        if not content:
+            return '--all'
+        if content.lower() in ('--help', '-h'):
+            return content
         return f'--detail {content.lower()}'
     return content
 
 
 alc.shortcut(
-    r'(?i:io)(?i:段位|段|rank)\s*(?P<rank>[a-zA-Z+-]{0,2})',
+    r'(?i:io)(?i:段位|段|rank)\s*(?P<rank>[a-zA-Z][a-zA-Z+-]?|--help|-h)?',
     command='tstats TETR.IO rank {rank}',
     humanized='iorank',
     fuzzy=False,

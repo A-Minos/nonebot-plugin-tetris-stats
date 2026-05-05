@@ -2,14 +2,13 @@ from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
-from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
 from .api import Player
 from .constant import USER_NAME
 
 
-def get_player(teaid_or_name: str) -> Player | MessageFormatError:
+def get_player(teaid_or_name: str) -> Player:
     if (
         teaid_or_name.startswith(('onebot-', 'qqguild-', 'kook-', 'discord-'))
         and teaid_or_name.split('-', maxsplit=1)[1].isdigit()
@@ -17,7 +16,8 @@ def get_player(teaid_or_name: str) -> Player | MessageFormatError:
         return Player(teaid=teaid_or_name, trust=True)
     if USER_NAME.match(teaid_or_name) and not teaid_or_name.isdigit() and 2 <= len(teaid_or_name) <= 18:  # noqa: PLR2004
         return Player(user_name=teaid_or_name, trust=True)
-    return MessageFormatError('用户名/ID不合法')
+    msg = '用户名/ID不合法'
+    raise ValueError(msg)
 
 
 command.add(
@@ -43,7 +43,7 @@ command.add(
             'config',
             Option(
                 '--default-compare',
-                Arg('compare', parse_duration, notice='对比时间距离'),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-DC', 'DefaultCompare'],
                 help_text='设置默认对比时间距离',
             ),
@@ -53,21 +53,14 @@ command.add(
             'query',
             Args(
                 Arg(
-                    'target',
-                    At | Me,
-                    notice='@想要查询的人 / 自己',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-                ),
-                Arg(
-                    'account',
-                    get_player,
-                    notice='茶服 用户名 / TeaID',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                    'who',
+                    At | Me | get_player,
+                    notice='@想要查询的人 / 自己 / 茶服 用户名 / TeaID',
                 ),
             ),
             Option(
                 '--compare',
-                Arg('compare', parse_duration),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-C'],
                 help_text='指定对比时间距离',
             ),

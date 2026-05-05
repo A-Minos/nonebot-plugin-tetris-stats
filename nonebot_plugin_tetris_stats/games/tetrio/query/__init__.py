@@ -1,6 +1,6 @@
 from datetime import timedelta, timezone
 
-from arclet.alconna import Arg, ArgFlag
+from arclet.alconna import Arg
 from nonebot import get_driver
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -36,27 +36,20 @@ command.add(
         'query',
         Args(
             Arg(
-                'target',
-                At | Me,
-                notice='@想要查询的人 / 自己',
-                flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-            ),
-            Arg(
-                'account',
-                get_player,
-                notice='TETR.IO 用户名 / ID',
-                flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                'who',
+                At | Me | get_player,
+                notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
             ),
         ),
         Option(
             '--template',
-            Arg('template', Template),
+            Arg('template', Template, notice='模板版本'),
             alias=['-T'],
             help_text='要使用的查询模板',
         ),
         Option(
             '--compare',
-            Arg('compare', parse_duration),
+            Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
             alias=['-C'],
             help_text='指定对比时间距离',
         ),
@@ -96,7 +89,7 @@ async def _(  # noqa: PLR0913
     user: NBUser,
     event: Event,
     matcher: Matcher,
-    target: At | Me,
+    who: At | Me,
     event_session: Uninfo,
     template: Template | None = None,
     compare: timedelta | None = None,
@@ -115,9 +108,7 @@ async def _(  # noqa: PLR0913
         async with get_session() as session:
             bind = await query_bind_info(
                 session=session,
-                user=await get_user(
-                    event_session.scope, target.target if isinstance(target, At) else event.get_user_id()
-                ),
+                user=await get_user(event_session.scope, who.target if isinstance(who, At) else event.get_user_id()),
                 game_platform=GAME_TYPE,
             )
             if template is None:
@@ -142,7 +133,7 @@ async def _(  # noqa: PLR0913
 @alc.assign('TETRIO.query')
 async def _(
     user: NBUser,
-    account: Player,
+    who: Player,
     event_session: Uninfo,
     template: Template | None = None,
     compare: timedelta | None = None,
@@ -164,4 +155,4 @@ async def _(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
             compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
-        await (await make_query_result(account, template or 'v1', compare_delta)).finish()
+        await (await make_query_result(who, template or 'v1', compare_delta)).finish()

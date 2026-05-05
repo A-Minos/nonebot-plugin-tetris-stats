@@ -2,17 +2,17 @@ from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
-from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
 from .api import Player
 from .constant import USER_NAME
 
 
-def get_player(name: str) -> Player | MessageFormatError:
+def get_player(name: str) -> Player:
     if USER_NAME.match(name):
         return Player(user_name=name, trust=True)
-    return MessageFormatError('用户名/ID不合法')
+    msg = '用户名/ID不合法'
+    raise ValueError(msg)
 
 
 command.add(
@@ -38,7 +38,7 @@ command.add(
             'config',
             Option(
                 '--default-compare',
-                Arg('compare', parse_duration, notice='对比时间距离'),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-DC', 'DefaultCompare'],
                 help_text='设置默认对比时间距离',
             ),
@@ -48,21 +48,14 @@ command.add(
             'query',
             Args(
                 Arg(
-                    'target',
-                    At | Me,
-                    notice='@想要查询的人 / 自己',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
-                ),
-                Arg(
-                    'account',
-                    get_player,
-                    notice='TOP 用户名',
-                    flags=[ArgFlag.HIDDEN, ArgFlag.OPTIONAL],
+                    'who',
+                    At | Me | get_player,
+                    notice='@想要查询的人 / 自己 / TOP 用户名',
                 ),
             ),
             Option(
                 '--compare',
-                Arg('compare', parse_duration),
+                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
                 alias=['-C'],
                 help_text='指定对比时间距离',
             ),

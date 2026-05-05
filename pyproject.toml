@@ -11,6 +11,7 @@ dependencies = [
     "aiocache>=0.12.3",
     "aiofiles>=24.1.0",
     "arclet-alconna<2",
+    "nepattern>=0.7.8",
     "async-lru>=2.0.4",
     "fake-useragent>=2.0.3",
     "httpx>=0.27.2",

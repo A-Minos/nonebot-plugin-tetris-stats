@@ -25,7 +25,10 @@ from . import command
 
 command.add(
     Subcommand(
-        '--all', Option('--template', Arg('template', Template), alias=['-T'], help_text='要使用的查询模板'), dest='all'
+        '--all',
+        Option('--template', Arg('template', Template, notice='模板版本'), alias=['-T'], help_text='要使用的查询模板'),
+        dest='all',
+        help_text='查询所有段位概览',
     )
 )
 
