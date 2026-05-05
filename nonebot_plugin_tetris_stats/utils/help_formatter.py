@@ -163,11 +163,7 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
             results.append((key, [root.header_display]))
             continue
         cmd_text = _extract_command_text(short.command)
-        target = (
-            [tok for tok in cmd_text.split() if _is_path_segment(tok)]
-            if cmd_text
-            else [root.header_display]
-        )
+        target = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else [root.header_display]
         suffix = _render_target_signature(root, target)
         rendered = f'{key} {suffix}' if suffix else key
         results.append((rendered, target))
@@ -287,7 +283,9 @@ class StructuredHelpFormatter(TextFormatter):
         else:
             usage = None
             examples = []
-            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1:len(breadcrumb)] == breadcrumb[1:]]
+            shortcuts = [
+                HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1 : len(breadcrumb)] == breadcrumb[1:]
+            ]
         data = HelpData(
             lang=get_lang(),
             command=node,

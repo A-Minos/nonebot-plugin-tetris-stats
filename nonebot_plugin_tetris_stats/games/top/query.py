@@ -97,9 +97,7 @@ async def _(  # noqa: PLR0913
         async with get_session() as session:
             bind = await query_bind_info(
                 session=session,
-                user=await get_user(
-                    event_session.scope, who.target if isinstance(who, At) else event.get_user_id()
-                ),
+                user=await get_user(event_session.scope, who.target if isinstance(who, At) else event.get_user_id()),
                 game_platform=GAME_TYPE,
             )
             if bind is None:
