@@ -19,7 +19,8 @@ from arclet.alconna import Alconna, Option, Subcommand
 from arclet.alconna.args import Arg
 from arclet.alconna.base import Completion, Help, Shortcut
 from arclet.alconna.formatter import TextFormatter, Trace
-from arclet.alconna.manager import InnerShortcutArgs, command_manager
+from arclet.alconna.manager import command_manager
+from arclet.alconna.typing import InnerShortcutArgs
 from typing_extensions import Self, override
 
 if TYPE_CHECKING:
@@ -249,7 +250,7 @@ class StructuredHelpFormatter(TextFormatter):
         if not sub_path:
             cur_name = self.root.header_display
             cur_dest = self.root.path
-            cur_aliases = [p for p in self.root.prefixes if p != cur_name]
+            cur_aliases = [str(p) for p in self.root.prefixes if p != cur_name]
             breadcrumb = [cur_name]
         else:
             chain = _resolve_current_subcommand(self.root, sub_path)
