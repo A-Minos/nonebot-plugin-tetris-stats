@@ -1,9 +1,9 @@
 """Structured help formatter for Alconna.
 
 Overrides Alconna's built-in --help output. ``StructuredHelpFormatter.format()``
-returns a prefixed ``HelpData`` JSON string instead of human-readable text;
-``HelpImageExtension.output_converter`` later intercepts it and renders an
-image message.
+returns a ``HelpData`` JSON string instead of human-readable text;
+``HelpImageExtension.output_converter`` later intercepts it (when
+``output_type == 'help'``) and renders an image message.
 
 fail-fast: this formatter does NOT try/except internally. If node extraction
 fails, the exception is wrapped by nonebot-plugin-alconna into
@@ -26,10 +26,6 @@ from typing_extensions import Self, override
 
 if TYPE_CHECKING:
     from .render.schemas.help import HelpArg, HelpNode, HelpOption
-
-# Namespaced + versioned envelope. Both the formatter and the extension match
-# on this prefix. Future schema bumps go to V2 / V3 for graceful migration.
-HELP_JSON_PREFIX = '__NBPTS_HELP_V1__:'
 
 _BUILTINS = (Help, Completion, Shortcut)
 _EMPTY = Signature.empty
@@ -330,4 +326,4 @@ class StructuredHelpFormatter(TextFormatter):
             examples=examples,
             shortcuts=shortcuts,
         )
-        return HELP_JSON_PREFIX + (data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True))
+        return data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True)

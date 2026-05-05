@@ -54,7 +54,6 @@ class HelpShortcut(BaseModel):
 
 class HelpData(Base):
     schema_version: Literal[1] = 1
-    kind: Literal['help'] = 'help'
     command: HelpNode
     breadcrumb: list[str]
     usage: str | None = None

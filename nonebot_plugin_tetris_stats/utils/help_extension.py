@@ -20,8 +20,6 @@ from nonebot_plugin_alconna import Extension, UniMessage
 from nonebot_plugin_alconna.extension import OutputType
 from typing_extensions import override
 
-from .help_formatter import HELP_JSON_PREFIX
-
 # Built-in option names that trigger help. Mirrors Alconna's default
 # namespace.builtin_option_name['help'] (-h / --help). We rewrite alias
 # subcommand tokens only when one of these is present, to avoid touching
@@ -94,11 +92,10 @@ class HelpImageExtension(Extension):
 
     @override
     async def output_converter(self, output_type: OutputType, content: str) -> UniMessage:
-        # Non-help types or content that is not our private envelope: return
-        # an empty UniMessage so nbp-alc rule.py:372 (`if not msg`) falls back
-        # to the original text. This keeps shortcut / completion / error
-        # outputs working unchanged.
-        if output_type != 'help' or not content.startswith(HELP_JSON_PREFIX):
+        # Non-help types: return an empty UniMessage so nbp-alc rule.py:372
+        # (`if not msg`) falls back to the original text. This keeps shortcut /
+        # completion / error outputs working unchanged.
+        if output_type != 'help':
             return UniMessage()
         # Lazy import avoids circular dependency with games/* during plugin load
         # (render/__init__.py -> host.py -> games.tetrio.api.cache).
@@ -106,7 +103,7 @@ class HelpImageExtension(Extension):
         from .render.schemas.help import HelpData  # noqa: PLC0415
 
         try:
-            data = type_validate_json(HelpData, content[len(HELP_JSON_PREFIX) :])
+            data = type_validate_json(HelpData, content)
             img = await render_image(data)
         except Exception as e:
             # Extension/render-stage exceptions do NOT land in arp.error_info;
