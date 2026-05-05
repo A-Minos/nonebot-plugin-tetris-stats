@@ -27,7 +27,6 @@ def alc() -> Iterator[Alconna]:
         meta=CommandMeta(description='Tetris stats root command'),
         formatter_type=StructuredHelpFormatter,
     )
-    a.formatter.root = a  # type: ignore[attr-defined]
     yield a
     command_manager.delete(a)
 
@@ -109,7 +108,6 @@ def test_args_metadata() -> None:
         ),
         formatter_type=StructuredHelpFormatter,
     )
-    a.formatter.root = a  # type: ignore[attr-defined]
     try:
         out = _capture(a, 't sub --help')
         data = HelpData.model_validate_json(out)
@@ -144,7 +142,6 @@ def test_resolve_unknown_path_returns_none() -> None:
     )
 
     a = Alconna(['x'], Subcommand('a'), formatter_type=StructuredHelpFormatter)
-    a.formatter.root = a  # type: ignore[attr-defined]
     try:
         assert _resolve_current_subcommand(a, ['nonexist']) is None  # noqa: S101
     finally:
