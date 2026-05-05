@@ -1,5 +1,6 @@
 from typing import Literal
 
+from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel
 from typing_extensions import override
 
@@ -33,7 +34,10 @@ class HelpNode(BaseModel):
     subcommands: list['HelpNode']
 
 
-HelpNode.model_rebuild()
+if PYDANTIC_V2:
+    HelpNode.model_rebuild()
+else:
+    HelpNode.update_forward_refs()
 
 
 class HelpShortcut(BaseModel):
