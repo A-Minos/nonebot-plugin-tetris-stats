@@ -27,9 +27,6 @@ alc = on_alconna(
     skip_for_unmatch=False,
     auto_send_output=True,
     use_origin=True,
-    # WARNING: only one output_converter Extension may be attached to this
-    # matcher. Future special-output customisation must be merged INTO
-    # HelpImageExtension. See utils/help_extension.py docstring.
     extensions=[HelpImageExtension()],
 )
 
