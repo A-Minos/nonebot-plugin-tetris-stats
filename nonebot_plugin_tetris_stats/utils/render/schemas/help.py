@@ -1,5 +1,5 @@
 from nonebot.compat import PYDANTIC_V2
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import override
 
 from .base import Base
@@ -54,8 +54,8 @@ class HelpData(Base):
     command: HelpNode
     breadcrumb: list[str]
     usage: str | None = None
-    examples: list[str] = []
-    shortcuts: list[HelpShortcut] = []
+    examples: list[str] = Field(default_factory=list)
+    shortcuts: list[HelpShortcut] = Field(default_factory=list)
 
     @property
     @override
