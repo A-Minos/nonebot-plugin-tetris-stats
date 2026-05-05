@@ -295,6 +295,4 @@ class StructuredHelpFormatter(TextFormatter):
             examples=examples,
             shortcuts=shortcuts,
         )
-        return HELP_JSON_PREFIX + (
-            data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True)
-        )
+        return HELP_JSON_PREFIX + (data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True))
