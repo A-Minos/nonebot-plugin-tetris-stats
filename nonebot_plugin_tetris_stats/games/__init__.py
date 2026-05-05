@@ -21,10 +21,6 @@ command: Alconna = Alconna(
     ),
     formatter_type=StructuredHelpFormatter,
 )
-# StructuredHelpFormatter needs the root reference to resolve canonical
-# subcommand metadata. Alconna instantiates formatter_type into self.formatter,
-# we just back-fill the root pointer here.
-command.formatter.root = command  # type: ignore[attr-defined]
 
 alc = on_alconna(
     command=command,

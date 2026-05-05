@@ -20,7 +20,7 @@ from arclet.alconna.args import Arg
 from arclet.alconna.base import Completion, Help, Shortcut
 from arclet.alconna.formatter import TextFormatter, Trace
 from arclet.alconna.manager import InnerShortcutArgs, command_manager
-from typing_extensions import override
+from typing_extensions import Self, override
 
 if TYPE_CHECKING:
     from .render.schemas.help import HelpArg, HelpNode, HelpOption
@@ -210,15 +210,14 @@ def _resolve_current_subcommand(root: Alconna, sub_path: list[str]) -> list[Subc
 
 
 class StructuredHelpFormatter(TextFormatter):
-    """Returns a HelpData JSON string instead of plain text help.
-
-    Caller MUST back-fill ``root`` after Alconna instantiation::
-
-        command = Alconna(..., formatter_type=StructuredHelpFormatter)
-        command.formatter.root = command  # type: ignore[attr-defined]
-    """
+    """Returns a HelpData JSON string instead of plain text help."""
 
     root: Alconna | None = None
+
+    @override
+    def add(self, base: Alconna) -> Self:
+        self.root = base
+        return super().add(base)
 
     @override
     def format(self, trace: Trace) -> str:
