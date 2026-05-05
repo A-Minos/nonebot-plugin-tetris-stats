@@ -28,7 +28,7 @@ driver = get_driver()
 command.add(
     Subcommand(
         '--detail',
-        Arg('rank', ValidRank, notice='段位名 (如 s+, x, b-)'),
+        Arg('rank', ValidRank, notice='段位名'),
         alias=['-D'],
         dest='detail',
         help_text='查询指定段位的详细信息',
