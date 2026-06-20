@@ -1,6 +1,6 @@
 from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from nonebot.compat import PYDANTIC_V2, type_validate_python
 from nonebot_plugin_orm import Model
@@ -34,7 +34,8 @@ class PydanticType(TypeDecorator):
         def process_bind_param(self, value: Any | None, dialect: Dialect) -> dict | list:
             # 将 Pydantic 模型实例转换为 JSON
             if isinstance(value, tuple(self.models)):
-                return value.model_dump(mode='json', by_alias=True)  # type: ignore[union-attr]
+                model = cast('BaseModel', value)
+                return model.model_dump(mode='json', by_alias=True)
             raise TypeError
     else:
 
@@ -42,7 +43,8 @@ class PydanticType(TypeDecorator):
         def process_bind_param(self, value: Any | None, dialect: Dialect) -> dict | list:
             # 将 Pydantic 模型实例转换为 JSON
             if isinstance(value, tuple(self.models)):
-                return value.dict(by_alias=True)  # type: ignore[union-attr]
+                model = cast('BaseModel', value)
+                return model.dict(by_alias=True)
             raise TypeError
 
     @override
