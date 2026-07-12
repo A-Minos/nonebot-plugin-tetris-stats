@@ -4,6 +4,11 @@ from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
 from ...typedefs import Prisecter
+from .league import League, LeagueSuccessModel
+from .solo import Solo, SoloSuccessModel
+
+Records = League | Solo
+RecordsModel = LeagueSuccessModel | SoloSuccessModel
 
 
 class Parameter(BaseModel):
@@ -15,3 +20,14 @@ class Parameter(BaseModel):
         if PYDANTIC_V2:
             return self.model_dump(exclude_defaults=True)
         return self.dict(exclude_defaults=True)
+
+
+__all__ = [
+    'League',
+    'LeagueSuccessModel',
+    'Parameter',
+    'Records',
+    'RecordsModel',
+    'Solo',
+    'SoloSuccessModel',
+]
