@@ -10,6 +10,7 @@ from .base import SuccessModel as BaseSuccessModel
 class Badge(BaseModel):
     id: str
     label: str
+    desc: str | None = None
     group: str | None = None
     ts: datetime | Literal[False] | None = None
 

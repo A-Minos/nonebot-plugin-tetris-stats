@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
+from typing_extensions import override
 
 from ...typedefs import Prisecter
 
@@ -78,6 +79,14 @@ class SuccessModel(BaseModel):
     cache: Cache
 
 
+class Error(BaseModel):
+    msg: str
+
+    @override
+    def __str__(self) -> str:
+        return self.msg
+
+
 class FailedModel(BaseModel):
     success: Literal[False]
-    error: str
+    error: Error
