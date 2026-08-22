@@ -80,7 +80,7 @@ def compare_metrics(
 
 
 @alc.assign('TOP.query')
-async def _(  # noqa: PLR0913
+async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
     matcher: Matcher,

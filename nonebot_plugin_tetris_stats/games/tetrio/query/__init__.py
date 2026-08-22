@@ -85,7 +85,7 @@ async def make_query_result(player: Player, template: Template, compare_delta: t
 
 
 @alc.assign('TETRIO.query')
-async def _(  # noqa: PLR0913
+async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
     matcher: Matcher,
