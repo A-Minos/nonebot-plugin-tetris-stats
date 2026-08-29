@@ -122,7 +122,7 @@ async def _(  # noqa: PLR0913, PLR0917
         result = await make_query_result(player, template or 'v1', compare_delta)
         warning = UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage()
         if not bind.verify and not result.has(Image):
-            warning += UniMessage('\n')
+            warning += '\n'
         await (warning + result).finish()
 
 
