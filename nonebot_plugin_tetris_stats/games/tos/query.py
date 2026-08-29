@@ -146,21 +146,15 @@ async def _(  # noqa: PLR0913, PLR0917
         if bind is None:
             await matcher.finish(Lang.bind.not_found())
         player = Player(teaid=bind.game_account, trust=True)
-        await (
-            UniMessage.i18n(Lang.interaction.warning.unverified)
-            + (
-                UniMessage('\n')
-                if not (
-                    result := await make_query_result(
-                        player,
-                        await resolve_compare_delta(TOSUserConfig, session, user.id, compare),
-                        None if isinstance(who, At) else event_session.user,
-                    )
-                ).has(Image)
-                else UniMessage()
-            )
-            + result
-        ).finish()
+        result = await make_query_result(
+            player,
+            await resolve_compare_delta(TOSUserConfig, session, user.id, compare),
+            None if isinstance(who, At) else event_session.user,
+        )
+        warning = UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage()
+        if not bind.verify and not result.has(Image):
+            warning += UniMessage('\n')
+        await (warning + result).finish()
 
 
 @alc.assign('TOS.query')

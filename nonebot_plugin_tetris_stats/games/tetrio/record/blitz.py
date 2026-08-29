@@ -60,7 +60,8 @@ async def _(
             await matcher.finish(Lang.bind.not_found())
         player = Player(user_id=bind.game_account, trust=True)
         await (
-            UniMessage.i18n(Lang.interaction.warning.unverified) + UniMessage.image(raw=await make_blitz_image(player))
+            (UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage())
+            + UniMessage.image(raw=await make_blitz_image(player))
         ).finish()
 
 
