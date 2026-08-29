@@ -110,15 +110,11 @@ async def _(  # noqa: PLR0913, PLR0917
                 profile.user_name,
                 datetime.now(tz=UTC) - compare_delta,
             )
-        await (
-            UniMessage.i18n(Lang.interaction.warning.unverified)
-            + (
-                UniMessage('\n')
-                if not (result := await make_query_result(profile, compare_profile)).has(Image)
-                else UniMessage()
-            )
-            + result
-        ).finish()
+        result = await make_query_result(profile, compare_profile)
+        warning = UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage()
+        if not bind.verify and not result.has(Image):
+            warning += '\n'
+        await (warning + result).finish()
 
 
 @alc.assign('TOP.query')
