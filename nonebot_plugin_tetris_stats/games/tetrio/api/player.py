@@ -13,7 +13,7 @@ from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
-from .schemas.records import Parameter
+from .schemas.records import Parameter, RecordQueryParams
 from .schemas.records.solo import Solo as SoloRecord
 from .schemas.records.solo import SoloSuccessModel as RecordsSoloSuccessModel
 from .schemas.summaries import (
@@ -29,7 +29,7 @@ from .schemas.summaries.base import User as SummariesUser
 from .schemas.summaries.league import LeagueSuccessModel
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
-from .typedefs import Records, Summaries
+from .typedefs import Prisecter, Records, Summaries
 
 
 class RecordModeType(str, Enum):
@@ -46,6 +46,9 @@ class RecordType(str, Enum):
 class RecordKey(NamedTuple):
     mode_type: RecordModeType
     record_type: RecordType
+    after: Prisecter | None
+    before: Prisecter | None
+    limit: int
 
     def to_records(self) -> Records:
         return cast('Records', f'{self.mode_type.value}_{self.record_type.value}')
@@ -231,10 +234,13 @@ class Player:
         *,
         parameter: Parameter | None = None,
     ) -> RecordsSoloSuccessModel:
-        if (record_key := RecordKey(mode_type, records_type)) not in self._records:
+        request = parameter or Parameter()
+        query_params: RecordQueryParams = request.to_params()
+        record_key = RecordKey(mode_type, records_type, request.after, request.before, request.limit)
+        if record_key not in self._records:
             url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
-            if parameter is not None:
-                url = url % parameter.to_params()
+            if query_params:
+                url = url % query_params
             raw_records = await Cache.get(url)
             records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(records, FailedModel):
@@ -247,7 +253,7 @@ class Player:
                     api_type=record_key.to_records(),
                     data=records,
                     update_time=ensure_utc_datetime(records.cache.cached_at),
-                    query_params=parameter.to_params() if parameter is not None else None,
+                    query_params=query_params or None,
                 ),
             )
         return self._records[record_key]
