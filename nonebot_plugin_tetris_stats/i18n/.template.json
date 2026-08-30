@@ -30,6 +30,10 @@
       "types": ["not_found", "blitz", "sprint"]
     },
     {
+      "scope": "list",
+      "types": ["no_snapshot"]
+    },
+    {
       "scope": "stats",
       "types": [
         "user_info",

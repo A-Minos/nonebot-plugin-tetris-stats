@@ -47,6 +47,10 @@ class Record:
     sprint: LangItem = LangItem('record', 'sprint')
 
 
+class List:
+    no_snapshot: LangItem = LangItem('list', 'no_snapshot')
+
+
 class Stats:
     user_info: LangItem = LangItem('stats', 'user_info')
     no_rank: LangItem = LangItem('stats', 'no_rank')
@@ -94,6 +98,7 @@ class Lang(LangModel):
     template = Template
     bind = Bind
     record = Record
+    list = List
     stats = Stats
     template_ui = TemplateUi
     help = Help

@@ -80,6 +80,255 @@
           "type": "string"
         }
       }
+    },
+    "bind": {
+      "title": "Bind",
+      "description": "Scope 'bind' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "not_found": {
+          "title": "not_found",
+          "description": "value of lang item type 'not_found'",
+          "type": "string"
+        },
+        "no_account": {
+          "title": "no_account",
+          "description": "value of lang item type 'no_account'",
+          "type": "string"
+        },
+        "confirm_unbind": {
+          "title": "confirm_unbind",
+          "description": "value of lang item type 'confirm_unbind'",
+          "type": "string"
+        },
+        "config_success": {
+          "title": "config_success",
+          "description": "value of lang item type 'config_success'",
+          "type": "string"
+        },
+        "verify_already": {
+          "title": "verify_already",
+          "description": "value of lang item type 'verify_already'",
+          "type": "string"
+        },
+        "verify_failed": {
+          "title": "verify_failed",
+          "description": "value of lang item type 'verify_failed'",
+          "type": "string"
+        },
+        "only_discord": {
+          "title": "only_discord",
+          "description": "value of lang item type 'only_discord'",
+          "type": "string"
+        }
+      }
+    },
+    "record": {
+      "title": "Record",
+      "description": "Scope 'record' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "not_found": {
+          "title": "not_found",
+          "description": "value of lang item type 'not_found'",
+          "type": "string"
+        },
+        "blitz": {
+          "title": "blitz",
+          "description": "value of lang item type 'blitz'",
+          "type": "string"
+        },
+        "sprint": {
+          "title": "sprint",
+          "description": "value of lang item type 'sprint'",
+          "type": "string"
+        }
+      }
+    },
+    "list": {
+      "title": "List",
+      "description": "Scope 'list' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "no_snapshot": {
+          "title": "no_snapshot",
+          "description": "value of lang item type 'no_snapshot'",
+          "type": "string"
+        }
+      }
+    },
+    "stats": {
+      "title": "Stats",
+      "description": "Scope 'stats' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "user_info": {
+          "title": "user_info",
+          "description": "value of lang item type 'user_info'",
+          "type": "string"
+        },
+        "no_rank": {
+          "title": "no_rank",
+          "description": "value of lang item type 'no_rank'",
+          "type": "string"
+        },
+        "rank_info": {
+          "title": "rank_info",
+          "description": "value of lang item type 'rank_info'",
+          "type": "string"
+        },
+        "no_game": {
+          "title": "no_game",
+          "description": "value of lang item type 'no_game'",
+          "type": "string"
+        },
+        "recent_games": {
+          "title": "recent_games",
+          "description": "value of lang item type 'recent_games'",
+          "type": "string"
+        },
+        "daily_stats": {
+          "title": "daily_stats",
+          "description": "value of lang item type 'daily_stats'",
+          "type": "string"
+        },
+        "no_daily": {
+          "title": "no_daily",
+          "description": "value of lang item type 'no_daily'",
+          "type": "string"
+        },
+        "history_stats": {
+          "title": "history_stats",
+          "description": "value of lang item type 'history_stats'",
+          "type": "string"
+        },
+        "no_history": {
+          "title": "no_history",
+          "description": "value of lang item type 'no_history'",
+          "type": "string"
+        },
+        "lpm": {
+          "title": "lpm",
+          "description": "value of lang item type 'lpm'",
+          "type": "string"
+        },
+        "apm": {
+          "title": "apm",
+          "description": "value of lang item type 'apm'",
+          "type": "string"
+        },
+        "adpm": {
+          "title": "adpm",
+          "description": "value of lang item type 'adpm'",
+          "type": "string"
+        },
+        "sprint_pb": {
+          "title": "sprint_pb",
+          "description": "value of lang item type 'sprint_pb'",
+          "type": "string"
+        },
+        "marathon_pb": {
+          "title": "marathon_pb",
+          "description": "value of lang item type 'marathon_pb'",
+          "type": "string"
+        },
+        "challenge_pb": {
+          "title": "challenge_pb",
+          "description": "value of lang item type 'challenge_pb'",
+          "type": "string"
+        }
+      }
+    },
+    "template_ui": {
+      "title": "Template_ui",
+      "description": "Scope 'template_ui' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "invalid_tag": {
+          "title": "invalid_tag",
+          "description": "value of lang item type 'invalid_tag'",
+          "type": "string"
+        },
+        "update_success": {
+          "title": "update_success",
+          "description": "value of lang item type 'update_success'",
+          "type": "string"
+        },
+        "update_failed": {
+          "title": "update_failed",
+          "description": "value of lang item type 'update_failed'",
+          "type": "string"
+        }
+      }
+    },
+    "help": {
+      "title": "Help",
+      "description": "Scope 'help' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "usage": {
+          "title": "usage",
+          "description": "value of lang item type 'usage'",
+          "type": "string"
+        }
+      }
+    },
+    "prompt": {
+      "title": "Prompt",
+      "description": "Scope 'prompt' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "io_check": {
+          "title": "io_check",
+          "description": "value of lang item type 'io_check'",
+          "type": "string"
+        },
+        "io_bind": {
+          "title": "io_bind",
+          "description": "value of lang item type 'io_bind'",
+          "type": "string"
+        },
+        "top_check": {
+          "title": "top_check",
+          "description": "value of lang item type 'top_check'",
+          "type": "string"
+        },
+        "top_bind": {
+          "title": "top_bind",
+          "description": "value of lang item type 'top_bind'",
+          "type": "string"
+        },
+        "tos_check": {
+          "title": "tos_check",
+          "description": "value of lang item type 'tos_check'",
+          "type": "string"
+        },
+        "tos_bind": {
+          "title": "tos_bind",
+          "description": "value of lang item type 'tos_bind'",
+          "type": "string"
+        }
+      }
+    },
+    "retry": {
+      "title": "Retry",
+      "description": "Scope 'retry' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "title": "message",
+          "description": "value of lang item type 'message'",
+          "type": "string"
+        }
+      }
     }
   }
 }
