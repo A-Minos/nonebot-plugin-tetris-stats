@@ -20,7 +20,7 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import Avatar, People
 from ...utils.render.schemas.bind import Bind
-from . import alc, command
+from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
 
@@ -33,7 +33,7 @@ alc.shortcut(
 )
 
 
-@alc.assign('TETRIO.unbind')
+@assign('TETRIO.unbind')
 async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
     async with (
         trigger(

@@ -3,7 +3,7 @@ from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
 from ...utils.typedefs import Me
-from .. import add_block_handlers, alc, command
+from .. import add_block_handlers, alc, assign, command
 from .api import Player
 from .constant import USER_NAME
 
@@ -86,6 +86,6 @@ alc.shortcut(
     humanized='top配置',
 )
 
-add_block_handlers(alc.assign('TOP.query'))
+add_block_handlers(assign('TOP.query'))
 
 from . import bind, config, query, unbind  # noqa: E402, F401

@@ -20,7 +20,7 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import Avatar, People
 from ...utils.render.schemas.bind import Bind
-from . import alc, command
+from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
 
@@ -35,7 +35,7 @@ alc.shortcut(
 try:
     from nonebot.adapters.discord import MessageCreateEvent
 
-    @alc.assign('TETRIO.verify')
+    @assign('TETRIO.verify')
     async def _(_: MessageCreateEvent, nb_user: User, event_session: Uninfo, interface: QryItrface):
         async with (
             trigger(
@@ -100,7 +100,7 @@ except ImportError:
     pass
 
 
-@alc.assign('TETRIO.verify')
+@assign('TETRIO.verify')
 async def _(event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

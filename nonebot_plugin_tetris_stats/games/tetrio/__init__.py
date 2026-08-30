@@ -1,6 +1,6 @@
 from nonebot_plugin_alconna import Subcommand
 
-from .. import alc
+from .. import alc, assign
 from .. import command as main_command
 from .api import Player
 from .constant import USER_ID, USER_NAME
@@ -29,6 +29,7 @@ main_command.add(command)
 
 __all__ = [
     'alc',
+    'assign',
     'bind',
     'config',
     'list',

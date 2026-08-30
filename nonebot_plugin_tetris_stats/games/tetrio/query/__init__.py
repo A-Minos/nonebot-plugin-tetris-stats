@@ -18,7 +18,7 @@ from ....i18n import Lang
 from ....utils.duration import parse_duration
 from ....utils.exception import FallbackError
 from ....utils.typedefs import Me
-from ... import add_block_handlers, alc
+from ... import add_block_handlers, alc, assign
 from .. import command, get_player
 from ..api import Player
 from ..constant import GAME_TYPE
@@ -70,7 +70,7 @@ alc.shortcut(
     humanized='An Easter egg!',
 )
 
-add_block_handlers(alc.assign('TETRIO.query'))
+add_block_handlers(assign('TETRIO.query'))
 
 
 async def make_query_result(player: Player, template: Template, compare_delta: timedelta) -> UniMessage:
@@ -84,7 +84,7 @@ async def make_query_result(player: Player, template: Template, compare_delta: t
     return None
 
 
-@alc.assign('TETRIO.query')
+@assign('TETRIO.query')
 async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
@@ -126,7 +126,7 @@ async def _(  # noqa: PLR0913, PLR0917
         await (warning + result).finish()
 
 
-@alc.assign('TETRIO.query')
+@assign('TETRIO.query')
 async def _(
     user: NBUser,
     who: Player,

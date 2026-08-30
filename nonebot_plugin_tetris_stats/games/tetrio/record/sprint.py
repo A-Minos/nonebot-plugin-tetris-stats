@@ -23,7 +23,7 @@ from ....utils.render.schemas.base import Avatar
 from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, Statistic, Tspins, User
 from ....utils.render.schemas.v2.tetrio.record.sprint import Record
 from ....utils.typedefs import Me
-from .. import alc
+from .. import alc, assign
 from ..api.player import Player
 from ..constant import GAME_TYPE
 from . import command
@@ -37,7 +37,7 @@ alc.shortcut(
 )
 
 
-@alc.assign('TETRIO.record.sprint')
+@assign('TETRIO.record.sprint')
 async def _(
     event: Event,
     matcher: Matcher,
@@ -65,7 +65,7 @@ async def _(
         ).finish()
 
 
-@alc.assign('TETRIO.record.sprint')
+@assign('TETRIO.record.sprint')
 async def _(who: Player, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

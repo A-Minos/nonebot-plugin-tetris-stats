@@ -31,7 +31,7 @@ from ...utils.render.schemas.v1.tos.info import Info, Multiplayer, Singleplayer
 from ...utils.time_it import time_it
 from ...utils.timezone import ensure_utc_datetime
 from ...utils.typedefs import Me, Number
-from . import alc
+from . import assign
 from .api import Player
 from .api.models import TOSHistoricalData
 from .api.schemas.user_info import UserInfoSuccess
@@ -46,7 +46,7 @@ UTC = timezone.utc
 def add_special_handlers(
     teaid_prefix: Literal['onebot-', 'kook-', 'discord-', 'qqguild-'], match_event: type[Event]
 ) -> None:
-    @alc.assign('TOS.query')
+    @assign('TOS.query')
     async def _(
         user: NBUser,
         event: Event,
@@ -120,7 +120,7 @@ except ImportError:
     pass
 
 
-@alc.assign('TOS.query')
+@assign('TOS.query')
 async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
@@ -157,7 +157,7 @@ async def _(  # noqa: PLR0913, PLR0917
         await (warning + result).finish()
 
 
-@alc.assign('TOS.query')
+@assign('TOS.query')
 async def _(user: NBUser, who: Player, event_session: Uninfo, compare: timedelta | None = None):
     async with (
         trigger(

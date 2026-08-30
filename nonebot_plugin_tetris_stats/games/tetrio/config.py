@@ -12,7 +12,7 @@ from sqlalchemy import select
 from ...db import trigger
 from ...i18n import Lang
 from ...utils.duration import parse_duration
-from . import alc, command
+from . import alc, assign, command
 from .constant import GAME_TYPE
 from .models import TETRIOUserConfig
 from .typedefs import Template
@@ -43,7 +43,7 @@ alc.shortcut(
 )
 
 
-@alc.assign('TETRIO.config')
+@assign('TETRIO.config')
 async def _(
     user: User,
     session: async_scoped_session,

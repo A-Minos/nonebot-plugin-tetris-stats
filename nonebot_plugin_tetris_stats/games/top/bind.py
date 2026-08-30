@@ -15,12 +15,12 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import People
 from ...utils.render.schemas.bind import Bind
-from . import alc
+from . import assign
 from .api import Player
 from .constant import GAME_TYPE
 
 
-@alc.assign('TOP.bind')
+@assign('TOP.bind')
 async def _(nb_user: User, account: Player, event_session: Uninfo, interface: QryItrface):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
