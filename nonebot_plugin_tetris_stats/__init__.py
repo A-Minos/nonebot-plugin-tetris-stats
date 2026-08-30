@@ -6,6 +6,7 @@ require_plugins = {
     'nonebot_plugin_apscheduler',
     'nonebot_plugin_localstore',
     'nonebot_plugin_orm',
+    'nonebot_plugin_permission',
     'nonebot_plugin_uninfo',
     'nonebot_plugin_user',
     'nonebot_plugin_waiter',

@@ -10,7 +10,7 @@ from ...utils.lang import get_lang
 from ...utils.metrics import get_metrics
 from ...utils.render import render_image
 from ...utils.render.schemas.v2.tetrio.user.list import Data, List, TetraLeague, User
-from .. import alc
+from .. import assign
 from . import command
 from .api.leaderboards import by
 from .api.schemas.base import P
@@ -36,7 +36,7 @@ command.add(
 )
 
 
-@alc.assign('TETRIO.list')
+@assign('TETRIO.list')
 async def _(
     event_session: Uninfo,
     max_tr: float | None = None,

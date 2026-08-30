@@ -17,7 +17,7 @@ from ....utils.render.schemas.v1.tetrio.rank import ItemData as ItemDataV1
 from ....utils.render.schemas.v2.tetrio.rank import AverageData as AverageDataV2
 from ....utils.render.schemas.v2.tetrio.rank import Data as DataV2
 from ....utils.render.schemas.v2.tetrio.rank import ItemData as ItemDataV2
-from .. import alc
+from .. import assign
 from ..constant import GAME_TYPE
 from ..models import TETRIOLeagueStats
 from ..typedefs import Template
@@ -33,7 +33,7 @@ command.add(
 )
 
 
-@alc.assign('TETRIO.rank.all')
+@assign('TETRIO.rank.all')
 async def _(event_session: Uninfo, template: Template | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
