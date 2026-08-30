@@ -1,7 +1,9 @@
 from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
+from ...i18n import Lang
 from ...utils.duration import parse_duration
+from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
 from .api import Player
@@ -11,8 +13,7 @@ from .constant import USER_NAME
 def get_player(name: str) -> Player:
     if USER_NAME.match(name):
         return Player(user_name=name, trust=True)
-    msg = '用户名/ID不合法'
-    raise ValueError(msg)
+    raise MessageFormatError(Lang.error.MessageFormatError.TOP)
 
 
 command.add(

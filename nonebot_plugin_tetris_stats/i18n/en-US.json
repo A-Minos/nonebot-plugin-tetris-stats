@@ -10,7 +10,27 @@
     "MessageFormatError": {
       "TETR.IO": "Username/ID is invalid",
       "TOS": "Username/ID is invalid",
-      "TOP": "Username is invalid"
+      "TOP": "Username is invalid",
+      "duration": "Invalid duration format"
+    },
+    "RequestError": {
+      "request": {
+        "api": "API request failed",
+        "cloudflare": "Failed to bypass Cloudflare verification",
+        "response": "Request error code: {status_code} {reason}\n{body}",
+        "transport": "Request error\n{detail}",
+        "failover": "All addresses are unavailable\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "Leaderboard request error:\n{detail}",
+        "user_info": "User information request error:\n{detail}",
+        "summaries": "User summaries request error:\n{detail}",
+        "league_history": "League history request error:\n{detail}",
+        "records": "User records request error:\n{detail}"
+      },
+      "TOS": {
+        "user_info": "User information request error:\n{detail}"
+      }
     }
   },
   "template": {
@@ -20,6 +40,8 @@
     "not_found": "No binding information found",
     "no_account": "You haven't bound a {game} account yet",
     "confirm_unbind": "Are you sure you want to unbind?",
+    "confirm_yes": "Yes",
+    "confirm_no": "No",
     "config_success": "Configuration successful",
     "verify_already": "You have already completed verification.",
     "verify_failed": "Verification failed. Please confirm the target {game} account is linked to your current Discord account.",
@@ -64,6 +86,172 @@
     "tos_bind": "tos bind {{gameID}}"
   },
   "retry": {
-    "message": "Retrying: {func} ({i}/{max_attempts})"
+    "message": "Retrying: {func} ({i}/{max_attempts})",
+    "screenshot": "Screenshot failed, retrying"
+  },
+  "command": {
+    "root": {
+      "description": "Query player data for Tetris-related games",
+      "plugin_description": "A plugin for querying player data from Tetris-related games",
+      "plugin_usage": "Send tstats --help for usage"
+    },
+    "tetrio": {
+      "description": "TETR.IO game commands",
+      "bind": {
+        "description": "Bind a TETR.IO account",
+        "args": { "account": { "notice": "TETR.IO username / ID" } },
+        "shortcut": "iobind"
+      },
+      "config": {
+        "description": "Configure TETR.IO queries",
+        "options": {
+          "default_template": {
+            "help": "Set the default query template",
+            "args": { "template": { "notice": "Template version" } }
+          },
+          "default_compare": {
+            "help": "Set the default comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "ioconfig"
+      },
+      "list": {
+        "description": "Query the TETR.IO ranked leaderboard",
+        "options": {
+          "max_tr": { "help": "Maximum TR" },
+          "min_tr": { "help": "Minimum TR" },
+          "limit": { "help": "Number of results" },
+          "country": { "help": "Country code" },
+          "sort": {
+            "help": "Ranking metric",
+            "args": { "sort": { "notice": "Ranking metric (league, pps, apm, adpm, apl, or adpl)" } }
+          }
+        }
+      },
+      "query": {
+        "description": "Query TETR.IO game information",
+        "args": { "who": { "notice": "@person to query / me / TETR.IO username / ID" } },
+        "options": {
+          "template": {
+            "help": "Select the query template",
+            "args": { "template": { "notice": "Template version" } }
+          },
+          "compare": {
+            "help": "Specify a comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "ioquery"
+      },
+      "rank": {
+        "description": "Query TETR.IO rank information",
+        "all": {
+          "description": "Query an overview of all ranks",
+          "options": {
+            "template": {
+              "help": "Select the query template",
+              "args": { "template": { "notice": "Template version" } }
+            }
+          }
+        },
+        "detail": {
+          "description": "Query details for a specific rank",
+          "args": { "rank": { "notice": "Rank name" } }
+        },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "@person to query / me / TETR.IO username / ID" } },
+        "options": {
+          "type": {
+            "help": "Record type",
+            "args": { "record_type": { "notice": "Record type (top, recent, or progression)" } }
+          },
+          "index": {
+            "help": "Record index",
+            "args": { "index": { "notice": "Record index" } }
+          }
+        },
+        "shortcuts": {
+          "blitz": "iorecordblitz",
+          "sprint": "iorecord40l"
+        }
+      },
+      "unbind": {
+        "description": "Unbind the TETR.IO account",
+        "shortcut": "iounbind"
+      },
+      "verify": {
+        "description": "Verify the TETR.IO account",
+        "shortcut": "ioverify"
+      }
+    },
+    "top": {
+      "description": "TOP game commands",
+      "bind": {
+        "description": "Bind a TOP account",
+        "args": { "account": { "notice": "TOP username / ID" } },
+        "shortcut": "topbind"
+      },
+      "unbind": {
+        "description": "Unbind the TOP account",
+        "shortcut": "topunbind"
+      },
+      "config": {
+        "description": "Configure TOP queries",
+        "options": {
+          "default_compare": {
+            "help": "Set the default comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "topconfig"
+      },
+      "query": {
+        "description": "Query TOP game information",
+        "args": { "who": { "notice": "@person to query / me / TOP username" } },
+        "options": {
+          "compare": {
+            "help": "Specify a comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "topquery"
+      }
+    },
+    "tos": {
+      "description": "TOS game commands",
+      "bind": {
+        "description": "Bind a TOS account",
+        "args": { "account": { "notice": "TOS username / ID" } },
+        "shortcut": "tosbind"
+      },
+      "unbind": {
+        "description": "Unbind the TOS account",
+        "shortcut": "tosunbind"
+      },
+      "config": {
+        "description": "Configure TOS queries",
+        "options": {
+          "default_compare": {
+            "help": "Set the default comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "tosconfig"
+      },
+      "query": {
+        "description": "Query TOS game information",
+        "args": { "who": { "notice": "@person to query / me / TOS username / TeaID" } },
+        "options": {
+          "compare": {
+            "help": "Specify a comparison time span",
+            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "tosquery"
+      }
+    }
   }
 }

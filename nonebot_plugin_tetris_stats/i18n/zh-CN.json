@@ -8,7 +8,27 @@
     "MessageFormatError": {
       "TETR.IO": "用户名/ID不合法",
       "TOS": "用户名/ID不合法",
-      "TOP": "用户名不合法"
+      "TOP": "用户名不合法",
+      "duration": "时间格式不正确"
+    },
+    "RequestError": {
+      "request": {
+        "api": "API 请求失败",
+        "cloudflare": "绕过 Cloudflare 验证失败",
+        "response": "请求错误 code: {status_code} {reason}\n{body}",
+        "transport": "请求错误\n{detail}",
+        "failover": "所有地址皆不可用\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "排行榜信息请求错误:\n{detail}",
+        "user_info": "用户信息请求错误:\n{detail}",
+        "summaries": "用户 Summaries 数据请求错误:\n{detail}",
+        "league_history": "League 历史记录请求错误:\n{detail}",
+        "records": "用户 Records 数据请求错误:\n{detail}"
+      },
+      "TOS": {
+        "user_info": "用户信息请求错误:\n{detail}"
+      }
     }
   },
   "template": {
@@ -18,6 +38,8 @@
     "not_found": "未查询到绑定信息",
     "no_account": "您还未绑定 {game} 账号",
     "confirm_unbind": "您确定要解绑吗?",
+    "confirm_yes": "是",
+    "confirm_no": "否",
     "config_success": "配置成功",
     "verify_already": "您已经完成了验证.",
     "verify_failed": "您未通过验证, 请确认目标 {game} 账号绑定了当前 Discord 账号",
@@ -62,6 +84,172 @@
     "tos_bind": "茶服绑定{{游戏ID}}"
   },
   "retry": {
-    "message": "Retrying: {func} ({i}/{max_attempts})"
+    "message": "正在重试：{func}（{i}/{max_attempts}）",
+    "screenshot": "截图失败，正在重试"
+  },
+  "command": {
+    "root": {
+      "description": "俄罗斯方块相关游戏数据查询",
+      "plugin_description": "一个用于查询 Tetris 相关游戏玩家数据的插件",
+      "plugin_usage": "发送 tstats --help 查询使用方法"
+    },
+    "tetrio": {
+      "description": "TETR.IO 游戏相关指令",
+      "bind": {
+        "description": "绑定 TETR.IO 账号",
+        "args": { "account": { "notice": "TETR.IO 用户名 / ID" } },
+        "shortcut": "io绑定"
+      },
+      "config": {
+        "description": "TETR.IO 查询个性化配置",
+        "options": {
+          "default_template": {
+            "help": "设置默认查询模板",
+            "args": { "template": { "notice": "模板版本" } }
+          },
+          "default_compare": {
+            "help": "设置默认对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "io配置"
+      },
+      "list": {
+        "description": "查询 TETR.IO 段位排行榜",
+        "options": {
+          "max_tr": { "help": "TR的上限" },
+          "min_tr": { "help": "TR的下限" },
+          "limit": { "help": "查询数量" },
+          "country": { "help": "国家代码" },
+          "sort": {
+            "help": "排名指标",
+            "args": { "sort": { "notice": "排名指标 (league、pps、apm、adpm、apl 或 adpl)" } }
+          }
+        }
+      },
+      "query": {
+        "description": "查询 TETR.IO 游戏信息",
+        "args": { "who": { "notice": "@想要查询的人 / 自己 / TETR.IO 用户名 / ID" } },
+        "options": {
+          "template": {
+            "help": "要使用的查询模板",
+            "args": { "template": { "notice": "模板版本" } }
+          },
+          "compare": {
+            "help": "指定对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "io查"
+      },
+      "rank": {
+        "description": "查询 TETR.IO 段位信息",
+        "all": {
+          "description": "查询所有段位概览",
+          "options": {
+            "template": {
+              "help": "要使用的查询模板",
+              "args": { "template": { "notice": "模板版本" } }
+            }
+          }
+        },
+        "detail": {
+          "description": "查询指定段位的详细信息",
+          "args": { "rank": { "notice": "段位名" } }
+        },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "@想要查询的人 / 自己 / TETR.IO 用户名 / ID" } },
+        "options": {
+          "type": {
+            "help": "记录类型",
+            "args": { "record_type": { "notice": "记录类型 (top、recent、progression)" } }
+          },
+          "index": {
+            "help": "记录序号",
+            "args": { "index": { "notice": "记录序号" } }
+          }
+        },
+        "shortcuts": {
+          "blitz": "io记录blitz",
+          "sprint": "io记录40l"
+        }
+      },
+      "unbind": {
+        "description": "解除绑定 TETR.IO 账号",
+        "shortcut": "io解绑"
+      },
+      "verify": {
+        "description": "验证 TETR.IO 账号",
+        "shortcut": "io验证"
+      }
+    },
+    "top": {
+      "description": "TOP 游戏相关指令",
+      "bind": {
+        "description": "绑定 TOP 账号",
+        "args": { "account": { "notice": "TOP 用户名 / ID" } },
+        "shortcut": "top绑定"
+      },
+      "unbind": {
+        "description": "解除绑定 TOP 账号",
+        "shortcut": "top解绑"
+      },
+      "config": {
+        "description": "TOP 查询个性化配置",
+        "options": {
+          "default_compare": {
+            "help": "设置默认对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "top配置"
+      },
+      "query": {
+        "description": "查询 TOP 游戏信息",
+        "args": { "who": { "notice": "@想要查询的人 / 自己 / TOP 用户名" } },
+        "options": {
+          "compare": {
+            "help": "指定对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "top查"
+      }
+    },
+    "tos": {
+      "description": "茶服 游戏相关指令",
+      "bind": {
+        "description": "绑定 茶服 账号",
+        "args": { "account": { "notice": "茶服 用户名 / ID" } },
+        "shortcut": "茶服绑定"
+      },
+      "unbind": {
+        "description": "解除绑定 TOS 账号",
+        "shortcut": "茶服解绑"
+      },
+      "config": {
+        "description": "茶服 查询个性化配置",
+        "options": {
+          "default_compare": {
+            "help": "设置默认对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "茶服配置"
+      },
+      "query": {
+        "description": "查询 茶服 游戏信息",
+        "args": { "who": { "notice": "@想要查询的人 / 自己 / 茶服 用户名 / TeaID" } },
+        "options": {
+          "compare": {
+            "help": "指定对比时间距离",
+            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "茶服查"
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ from nonebot import __version__ as __nonebot_version__
 from nonebot.compat import type_validate_json
 from yarl import URL
 
+from ....i18n import Lang
 from ....utils.exception import RequestError
 from ....version import __version__
 from ..constant import BASE_URL
@@ -33,8 +34,7 @@ async def by(
         ),
     )
     if isinstance(model, FailedModel):
-        msg = f'排行榜信息请求错误:\n{model.error}'
-        raise RequestError(msg)
+        raise RequestError(Lang.error.RequestError.TETR_IO.leaderboard, detail=model.error)
     return model
 
 
@@ -84,8 +84,7 @@ async def records(
                 ),
             )
     if isinstance(model, FailedModel):
-        msg = f'排行榜信息请求错误:\n{model.error}'
-        raise RequestError(msg)
+        raise RequestError(Lang.error.RequestError.TETR_IO.leaderboard, detail=model.error)
     return model
 
 
