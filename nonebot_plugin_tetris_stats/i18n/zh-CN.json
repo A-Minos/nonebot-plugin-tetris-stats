@@ -28,6 +28,9 @@
     "blitz": "Blitz",
     "sprint": "40L"
   },
+  "list": {
+    "no_snapshot": "暂无 TETR.IO 段位排行榜快照，请稍后再试"
+  },
   "stats": {
     "user_info": "用户 {name} ({id})",
     "no_rank": "暂无段位统计数据",
