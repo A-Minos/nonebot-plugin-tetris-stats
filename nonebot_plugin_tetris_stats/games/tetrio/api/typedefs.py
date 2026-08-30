@@ -41,6 +41,9 @@ Records = Literal[
     'blitz_top',
     'blitz_recent',
     'blitz_progression',
+    'league_top',
+    'league_recent',
+    'league_progression',
 ]
 
 Prisecter = NewType('Prisecter', str)
