@@ -12,7 +12,7 @@ from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
 from ...i18n import Lang
 from ...utils.image import get_avatar
-from ...utils.lang import get_lang
+from ...utils.lang import get_lang, get_unbind_choices
 from ...utils.render import render_image
 from ...utils.render.schemas.base import People
 from ...utils.render.schemas.bind import Bind
@@ -38,8 +38,9 @@ async def _(
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
             await UniMessage(Lang.bind.no_account(game='TOP')).finish()
-        resp = await suggest(Lang.bind.confirm_unbind(), ['是', '否'])
-        if resp is None or resp.extract_plain_text() == '否':
+        choices = get_unbind_choices()
+        resp = await suggest(Lang.bind.confirm_unbind(), list(choices))
+        if choices.is_cancelled(resp.extract_plain_text() if resp is not None else None):
             return
         player = Player(user_name=bind.game_account, trust=True)
         user = await player.user

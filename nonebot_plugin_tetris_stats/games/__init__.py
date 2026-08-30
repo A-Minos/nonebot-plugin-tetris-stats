@@ -58,4 +58,4 @@ async def _(matcher: Matcher, matches: AlcMatches):
 
 @run_postprocessor
 async def _(matcher: Matcher, exception: NeedCatchError):
-    await matcher.send(str(exception))
+    await matcher.send(exception.render())

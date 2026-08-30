@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from ..i18n import Lang
 from .exception import MessageFormatError
 
 DEFAULT_COMPARE_DELTA = timedelta(days=7)
@@ -18,11 +19,11 @@ def parse_duration(value: str) -> timedelta | MessageFormatError:
     if raw.isdigit():
         return timedelta(days=int(raw))
     if len(raw) < _MIN_DURATION_LEN or not raw[:-1].isdigit():
-        return MessageFormatError('时间格式不正确')
+        return MessageFormatError(Lang.error.MessageFormatError.duration)
     amount = int(raw[:-1])
     if amount <= 0:
-        return MessageFormatError('时间格式不正确')
+        return MessageFormatError(Lang.error.MessageFormatError.duration)
     unit = _DURATION_UNITS.get(raw[-1])
     if unit is None:
-        return MessageFormatError('时间格式不正确')
+        return MessageFormatError(Lang.error.MessageFormatError.duration)
     return timedelta(**{unit: amount})
