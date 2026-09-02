@@ -6,9 +6,7 @@ from typing import cast
 import pytest
 
 
-def _flatten_resource(
-    value: object, prefix: tuple[str, ...] = ()
-) -> dict[tuple[str, ...], str]:
+def _flatten_resource(value: object, prefix: tuple[str, ...] = ()) -> dict[tuple[str, ...], str]:
     data = cast('dict[str, object]', value)
     flattened: dict[tuple[str, ...], str] = {}
     for key, item in data.items():
@@ -22,18 +20,12 @@ def _flatten_resource(
 
 
 def _placeholders(message: str) -> set[str]:
-    return {
-        field_name
-        for _, field_name, _, _ in Formatter().parse(message)
-        if field_name is not None
-    }
+    return {field_name for _, field_name, _, _ in Formatter().parse(message) if field_name is not None}
 
 
 def test_every_locale_matches_the_canonical_resource_contract() -> None:
     resource_dir = Path(__file__).parents[1] / 'nonebot_plugin_tetris_stats' / 'i18n'
-    resources = sorted(
-        path for path in resource_dir.glob('*.json') if not path.name.startswith('.')
-    )
+    resources = sorted(path for path in resource_dir.glob('*.json') if not path.name.startswith('.'))
     canonical = _flatten_resource(json.loads((resource_dir / 'en-US.json').read_text()))
 
     for resource in resources:
