@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 Breadcrumb = tuple[str, ...]
 FieldKind = Literal['description', 'arg', 'option', 'option_arg']
-Locale = Literal['zh-CN', 'en-US']
+Locale = Literal['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR']
 
 
 @dataclass(frozen=True)
