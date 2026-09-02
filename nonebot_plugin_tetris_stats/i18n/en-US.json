@@ -1,9 +1,9 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
-    "wrong": { "query_bot": "Can't query bot's information" },
+    "wrong": { "query_bot": "Can't look up information for a bot" },
     "warning": {
-      "unverified": "* Because I can't verify account linking information, I can't guarantee the info I found is yourself/themself."
+      "unverified": "* The linked account could not be verified, so this information may not belong to the intended user."
     }
   },
   "error": {
@@ -16,20 +16,20 @@
     "RequestError": {
       "request": {
         "api": "API request failed",
-        "cloudflare": "Failed to bypass Cloudflare verification",
-        "response": "Request error code: {status_code} {reason}\n{body}",
+        "cloudflare": "Cloudflare verification failed",
+        "response": "Request failed with status {status_code} {reason}\n{body}",
         "transport": "Request error\n{detail}",
-        "failover": "All addresses are unavailable\n{errors}"
+        "failover": "All endpoints are unavailable\n{errors}"
       },
       "TETR.IO": {
-        "leaderboard": "Leaderboard request error:\n{detail}",
-        "user_info": "User information request error:\n{detail}",
-        "summaries": "User summaries request error:\n{detail}",
-        "league_history": "League history request error:\n{detail}",
-        "records": "User records request error:\n{detail}"
+        "leaderboard": "Failed to fetch leaderboard data:\n{detail}",
+        "user_info": "Failed to fetch user information:\n{detail}",
+        "summaries": "Failed to fetch user summaries:\n{detail}",
+        "league_history": "Failed to fetch league history:\n{detail}",
+        "records": "Failed to fetch user records:\n{detail}"
       },
       "TOS": {
-        "user_info": "User information request error:\n{detail}"
+        "user_info": "Failed to fetch user information:\n{detail}"
       }
     }
   },
@@ -37,35 +37,35 @@
     "template_language": "en-US"
   },
   "bind": {
-    "not_found": "No binding information found",
-    "no_account": "You haven't bound a {game} account yet",
-    "confirm_unbind": "Are you sure you want to unbind?",
+    "not_found": "No linked account found",
+    "no_account": "You haven't linked a {game} account yet",
+    "confirm_unbind": "Are you sure you want to unlink this account?",
     "confirm_yes": "Yes",
     "confirm_no": "No",
-    "config_success": "Configuration successful",
-    "verify_already": "You have already completed verification.",
-    "verify_failed": "Verification failed. Please confirm the target {game} account is linked to your current Discord account.",
-    "only_discord": "Currently only Discord account verification is supported"
+    "config_success": "Settings saved",
+    "verify_already": "You've already completed verification.",
+    "verify_failed": "Verification failed. Make sure the target {game} account is linked to your current Discord account.",
+    "only_discord": "Currently, only Discord account verification is supported"
   },
   "record": {
-    "not_found": "No {mode} record found for user {username}",
+    "not_found": "No {mode} record found for {username}",
     "blitz": "Blitz",
-    "sprint": "40L"
+    "sprint": "Sprint"
   },
   "stats": {
     "user_info": "User {name} ({id})",
-    "no_rank": "No rank statistics available",
-    "rank_info": ", Rating {rating}±{rd} ({vol})",
+    "no_rank": "No rank stats available",
+    "rank_info": ", Rating: {rating}±{rd} ({vol})",
     "no_game": ", No game data available",
-    "recent_games": ", Recent {count} games data",
-    "daily_stats": "User {name} 24h statistics: ",
-    "no_daily": "User {name} has no 24h statistics available",
-    "history_stats": "\nHistorical statistics: ",
-    "no_history": "\nNo historical statistics available",
-    "lpm": "\nL'PM: {lpm} ( {pps} pps )",
-    "apm": "\nAPM: {apm} ( x{apl} )",
-    "adpm": "\nADPM: {adpm} ( x{adpl} ) ( {vs}vs )",
-    "sprint_pb": "\n40L: {time}s",
+    "recent_games": ", Recent games analyzed: {count}",
+    "daily_stats": "24-hour stats for {name}: ",
+    "no_daily": "No stats are available for {name} from the past 24 hours",
+    "history_stats": "\nHistorical stats: ",
+    "no_history": "\nNo historical stats available",
+    "lpm": "\nL'PM: {lpm} ({pps} PPS)",
+    "apm": "\nAPM: {apm} (x{apl})",
+    "adpm": "\nADPM: {adpm} (x{adpl}) ({vs} VS)",
+    "sprint_pb": "\nSprint: {time}s",
     "marathon_pb": "\nMarathon: {score}",
     "challenge_pb": "\nChallenge: {score}"
   },
@@ -92,32 +92,32 @@
   "command": {
     "root": {
       "description": "Query player data for Tetris-related games",
-      "plugin_description": "A plugin for querying player data from Tetris-related games",
+      "plugin_description": "A plugin for looking up player data from Tetris-related games",
       "plugin_usage": "Send tstats --help for usage"
     },
     "tetrio": {
       "description": "TETR.IO game commands",
       "bind": {
-        "description": "Bind a TETR.IO account",
-        "args": { "account": { "notice": "TETR.IO username / ID" } },
+        "description": "Link a TETR.IO account",
+        "args": { "account": { "notice": "TETR.IO username or ID" } },
         "shortcut": "iobind"
       },
       "config": {
-        "description": "Configure TETR.IO queries",
+        "description": "Configure TETR.IO query settings",
         "options": {
           "default_template": {
             "help": "Set the default query template",
             "args": { "template": { "notice": "Template version" } }
           },
           "default_compare": {
-            "help": "Set the default comparison time span",
-            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+            "help": "Set the default comparison period",
+            "args": { "compare": { "notice": "Comparison period (e.g., 7d, 2w, 24h)" } }
           }
         },
         "shortcut": "ioconfig"
       },
       "list": {
-        "description": "Query the TETR.IO ranked leaderboard",
+        "description": "View the TETR.IO ranked leaderboard",
         "options": {
           "max_tr": { "help": "Maximum TR" },
           "min_tr": { "help": "Minimum TR" },
@@ -145,9 +145,9 @@
         "shortcut": "ioquery"
       },
       "rank": {
-        "description": "Query TETR.IO rank information",
+        "description": "View TETR.IO rank information",
         "all": {
-          "description": "Query an overview of all ranks",
+          "description": "View an overview of all ranks",
           "options": {
             "template": {
               "help": "Select the query template",
@@ -156,13 +156,13 @@
           }
         },
         "detail": {
-          "description": "Query details for a specific rank",
+          "description": "View details for a specific rank",
           "args": { "rank": { "notice": "Rank name" } }
         },
         "shortcut": "iorank"
       },
       "record": {
-        "args": { "who": { "notice": "@person to query / me / TETR.IO username / ID" } },
+        "args": { "who": { "notice": "@mention, me, TETR.IO username, or ID" } },
         "options": {
           "type": {
             "help": "Record type",
@@ -179,42 +179,42 @@
         }
       },
       "unbind": {
-        "description": "Unbind the TETR.IO account",
+        "description": "Unlink your TETR.IO account",
         "shortcut": "iounbind"
       },
       "verify": {
-        "description": "Verify the TETR.IO account",
+        "description": "Verify your TETR.IO account",
         "shortcut": "ioverify"
       }
     },
     "top": {
       "description": "TOP game commands",
       "bind": {
-        "description": "Bind a TOP account",
-        "args": { "account": { "notice": "TOP username / ID" } },
+        "description": "Link a TOP account",
+        "args": { "account": { "notice": "TOP username or ID" } },
         "shortcut": "topbind"
       },
       "unbind": {
-        "description": "Unbind the TOP account",
+        "description": "Unlink your TOP account",
         "shortcut": "topunbind"
       },
       "config": {
-        "description": "Configure TOP queries",
+        "description": "Configure TOP query settings",
         "options": {
           "default_compare": {
-            "help": "Set the default comparison time span",
-            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+            "help": "Set the default comparison period",
+            "args": { "compare": { "notice": "Comparison period (e.g., 7d, 2w, 24h)" } }
           }
         },
         "shortcut": "topconfig"
       },
       "query": {
-        "description": "Query TOP game information",
-        "args": { "who": { "notice": "@person to query / me / TOP username" } },
+        "description": "Look up TOP player data",
+        "args": { "who": { "notice": "@mention, me, or TOP username" } },
         "options": {
           "compare": {
-            "help": "Specify a comparison time span",
-            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+            "help": "Set the comparison period",
+            "args": { "compare": { "notice": "Comparison period (e.g., 7d, 2w, 24h)" } }
           }
         },
         "shortcut": "topquery"
@@ -223,31 +223,31 @@
     "tos": {
       "description": "TOS game commands",
       "bind": {
-        "description": "Bind a TOS account",
-        "args": { "account": { "notice": "TOS username / ID" } },
+        "description": "Link a TOS account",
+        "args": { "account": { "notice": "TOS username or ID" } },
         "shortcut": "tosbind"
       },
       "unbind": {
-        "description": "Unbind the TOS account",
+        "description": "Unlink your TOS account",
         "shortcut": "tosunbind"
       },
       "config": {
-        "description": "Configure TOS queries",
+        "description": "Configure TOS query settings",
         "options": {
           "default_compare": {
-            "help": "Set the default comparison time span",
-            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+            "help": "Set the default comparison period",
+            "args": { "compare": { "notice": "Comparison period (e.g., 7d, 2w, 24h)" } }
           }
         },
         "shortcut": "tosconfig"
       },
       "query": {
-        "description": "Query TOS game information",
-        "args": { "who": { "notice": "@person to query / me / TOS username / TeaID" } },
+        "description": "Look up TOS player data",
+        "args": { "who": { "notice": "@mention, me, TOS username, or TeaID" } },
         "options": {
           "compare": {
-            "help": "Specify a comparison time span",
-            "args": { "compare": { "notice": "Comparison time span (e.g. 7d, 2w, 24h)" } }
+            "help": "Set the comparison period",
+            "args": { "compare": { "notice": "Comparison period (e.g., 7d, 2w, 24h)" } }
           }
         },
         "shortcut": "tosquery"
