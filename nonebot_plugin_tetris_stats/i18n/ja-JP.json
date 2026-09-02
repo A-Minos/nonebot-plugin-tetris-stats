@@ -1,0 +1,221 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "ボットの情報は検索できません" },
+    "warning": {
+      "unverified": "* アカウント連携情報を確認できないため、取得した情報が対象ユーザー本人のものとは保証できません。"
+    }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "ユーザー名またはIDが無効です",
+      "TOS": "ユーザー名またはIDが無効です",
+      "TOP": "ユーザー名が無効です",
+      "duration": "期間の形式が正しくありません"
+    },
+    "RequestError": {
+      "request": {
+        "api": "APIリクエストに失敗しました",
+        "cloudflare": "Cloudflareの認証を通過できませんでした",
+        "response": "リクエストエラーコード: {status_code} {reason}\n{body}",
+        "transport": "通信エラー\n{detail}",
+        "failover": "すべての接続先が利用できません\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "ランキングの取得エラー:\n{detail}",
+        "user_info": "ユーザー情報の取得エラー:\n{detail}",
+        "summaries": "ユーザー概要の取得エラー:\n{detail}",
+        "league_history": "リーグ履歴の取得エラー:\n{detail}",
+        "records": "ユーザー記録の取得エラー:\n{detail}"
+      },
+      "TOS": { "user_info": "ユーザー情報の取得エラー:\n{detail}" }
+    }
+  },
+  "template": { "template_language": "ja-JP" },
+  "bind": {
+    "not_found": "アカウント連携情報が見つかりません",
+    "no_account": "{game}アカウントはまだ連携されていません",
+    "confirm_unbind": "アカウント連携を解除しますか？",
+    "confirm_yes": "はい",
+    "confirm_no": "いいえ",
+    "config_success": "設定しました",
+    "verify_already": "認証はすでに完了しています。",
+    "verify_failed": "認証に失敗しました。対象の{game}アカウントが現在のDiscordアカウントに連携されているか確認してください。",
+    "only_discord": "現在、Discordアカウントの認証のみ対応しています"
+  },
+  "record": {
+    "not_found": "ユーザー{username}の{mode}記録が見つかりません",
+    "blitz": "ブリッツ",
+    "sprint": "スプリント"
+  },
+  "stats": {
+    "user_info": "ユーザー {name} ({id})",
+    "no_rank": "ランク統計がありません",
+    "rank_info": "、レーティング {rating}±{rd} ({vol})",
+    "no_game": "、対戦データがありません",
+    "recent_games": "、直近{count}試合のデータ",
+    "daily_stats": "ユーザー {name} の24時間統計: ",
+    "no_daily": "ユーザー {name} の24時間統計はありません",
+    "history_stats": "\n履歴統計: ",
+    "no_history": "\n履歴統計はありません",
+    "lpm": "\nL'PM: {lpm} ({pps} PPS)",
+    "apm": "\nAPM: {apm} (x{apl})",
+    "adpm": "\nADPM: {adpm} (x{adpl}) ({vs} VS)",
+    "sprint_pb": "\nスプリント: {time}s",
+    "marathon_pb": "\nマラソン: {score}",
+    "challenge_pb": "\nチャレンジ: {score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision} はテンプレートリポジトリの有効なタグではありません",
+    "update_success": "テンプレートを更新しました",
+    "update_failed": "テンプレートの更新に失敗しました"
+  },
+  "help": { "usage": "ヘルプを表示するには「{command} --help」と入力してください" },
+  "prompt": {
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
+  },
+  "retry": {
+    "message": "再試行中: {func} ({i}/{max_attempts})",
+    "screenshot": "スクリーンショットに失敗しました。再試行します"
+  },
+  "command": {
+    "root": {
+      "description": "テトリス系ゲームのプレイヤーデータを検索します",
+      "plugin_description": "テトリス系ゲームのプレイヤーデータを検索するプラグイン",
+      "plugin_usage": "使い方を表示するには tstats --help を送信してください"
+    },
+    "tetrio": {
+      "description": "TETR.IOのゲームコマンド",
+      "bind": {
+        "description": "TETR.IOのアカウント連携",
+        "args": { "account": { "notice": "TETR.IO ユーザー名 / ID" } },
+        "shortcut": "iobind"
+      },
+      "config": {
+        "description": "TETR.IOの検索設定",
+        "options": {
+          "default_template": {
+            "help": "デフォルトの検索テンプレートを設定",
+            "args": { "template": { "notice": "テンプレートのバージョン" } }
+          },
+          "default_compare": {
+            "help": "デフォルトの比較期間を設定",
+            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "ioconfig"
+      },
+      "list": {
+        "description": "TETR.IOのランク戦ランキングを表示",
+        "options": {
+          "max_tr": { "help": "最大TR" },
+          "min_tr": { "help": "最小TR" },
+          "limit": { "help": "結果件数" },
+          "country": { "help": "国コード" },
+          "sort": {
+            "help": "ランキング指標",
+            "args": { "sort": { "notice": "ランキング指標（league、pps、apm、adpm、apl、adplのいずれか）" } }
+          }
+        }
+      },
+      "query": {
+        "description": "TETR.IOのプレイヤー情報を検索",
+        "args": { "who": { "notice": "@対象ユーザー / me / TETR.IO ユーザー名 / ID" } },
+        "options": {
+          "template": {
+            "help": "検索テンプレートを選択",
+            "args": { "template": { "notice": "テンプレートのバージョン" } }
+          },
+          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+        },
+        "shortcut": "ioquery"
+      },
+      "rank": {
+        "description": "TETR.IOのランク情報を表示",
+        "all": {
+          "description": "全ランクの概要を表示",
+          "options": {
+            "template": {
+              "help": "検索テンプレートを選択",
+              "args": { "template": { "notice": "テンプレートのバージョン" } }
+            }
+          }
+        },
+        "detail": { "description": "指定したランクの詳細を表示", "args": { "rank": { "notice": "ランク名" } } },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "@対象ユーザー / me / TETR.IO ユーザー名 / ID" } },
+        "options": {
+          "type": {
+            "help": "記録種別",
+            "args": { "record_type": { "notice": "記録種別（top、recent、progressionのいずれか）" } }
+          },
+          "index": { "help": "記録番号", "args": { "index": { "notice": "記録番号" } } }
+        },
+        "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
+      },
+      "unbind": { "description": "TETR.IOアカウントの連携を解除", "shortcut": "iounbind" },
+      "verify": { "description": "TETR.IOアカウントを認証", "shortcut": "ioverify" }
+    },
+    "top": {
+      "description": "TOPのゲームコマンド",
+      "bind": {
+        "description": "TOPのアカウント連携",
+        "args": { "account": { "notice": "TOP ユーザー名 / ID" } },
+        "shortcut": "topbind"
+      },
+      "unbind": { "description": "TOPアカウントの連携を解除", "shortcut": "topunbind" },
+      "config": {
+        "description": "TOPの検索設定",
+        "options": {
+          "default_compare": {
+            "help": "デフォルトの比較期間を設定",
+            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "topconfig"
+      },
+      "query": {
+        "description": "TOPのプレイヤー情報を検索",
+        "args": { "who": { "notice": "@対象ユーザー / me / TOP ユーザー名" } },
+        "options": {
+          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+        },
+        "shortcut": "topquery"
+      }
+    },
+    "tos": {
+      "description": "TOSのゲームコマンド",
+      "bind": {
+        "description": "TOSのアカウント連携",
+        "args": { "account": { "notice": "TOS ユーザー名 / ID" } },
+        "shortcut": "tosbind"
+      },
+      "unbind": { "description": "TOSアカウントの連携を解除", "shortcut": "tosunbind" },
+      "config": {
+        "description": "TOSの検索設定",
+        "options": {
+          "default_compare": {
+            "help": "デフォルトの比較期間を設定",
+            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "tosconfig"
+      },
+      "query": {
+        "description": "TOSのプレイヤー情報を検索",
+        "args": { "who": { "notice": "@対象ユーザー / me / TOS ユーザー名 / TeaID" } },
+        "options": {
+          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+        },
+        "shortcut": "tosquery"
+      }
+    }
+  }
+}
