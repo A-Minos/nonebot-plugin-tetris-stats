@@ -47,6 +47,29 @@ def _capture(alc: Alconna, cmd: str) -> str:
     return out
 
 
+@pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
+def test_help_schema_accepts_supported_locales(locale: str) -> None:
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
+
+    data = HelpData.model_validate(
+        {
+            'lang': locale,
+            'command': {
+                'name': 'tstats',
+                'dest': 'tstats',
+                'aliases': [],
+                'help_text': None,
+                'args': [],
+                'options': [],
+                'subcommands': [],
+            },
+            'breadcrumb': ['tstats'],
+        }
+    )
+
+    assert data.lang == locale  # noqa: S101
+
+
 def test_root_node_metadata(alc: Alconna) -> None:
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
