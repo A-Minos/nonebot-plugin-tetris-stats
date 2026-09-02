@@ -1,0 +1,233 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "No se puede consultar la información del bot" },
+    "warning": {
+      "unverified": "* No se ha podido verificar la cuenta vinculada, por lo que la información podría no pertenecer al usuario indicado."
+    }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "Nombre de usuario/ID no válido",
+      "TOS": "Nombre de usuario/ID no válido",
+      "TOP": "Nombre de usuario no válido",
+      "duration": "Formato de duración no válido"
+    },
+    "RequestError": {
+      "request": {
+        "api": "La solicitud a la API ha fallado",
+        "cloudflare": "No se ha podido superar la verificación de Cloudflare",
+        "response": "Código de error de la solicitud: {status_code} {reason}\n{body}",
+        "transport": "Error de solicitud\n{detail}",
+        "failover": "No hay ninguna dirección disponible\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "Error al solicitar la clasificación:\n{detail}",
+        "user_info": "Error al solicitar la información del usuario:\n{detail}",
+        "summaries": "Error al solicitar los resúmenes del usuario:\n{detail}",
+        "league_history": "Error al solicitar el historial de liga:\n{detail}",
+        "records": "Error al solicitar los récords del usuario:\n{detail}"
+      },
+      "TOS": { "user_info": "Error al solicitar la información del usuario:\n{detail}" }
+    }
+  },
+  "template": { "template_language": "es-ES" },
+  "bind": {
+    "not_found": "No se ha encontrado información de vinculación",
+    "no_account": "Aún no has vinculado una cuenta de {game}",
+    "confirm_unbind": "¿Seguro que quieres desvincularla?",
+    "confirm_yes": "Sí",
+    "confirm_no": "No",
+    "config_success": "Configuración completada",
+    "verify_already": "Ya has completado la verificación.",
+    "verify_failed": "La verificación ha fallado. Confirma que la cuenta de {game} indicada esté vinculada a tu cuenta actual de Discord.",
+    "only_discord": "Actualmente solo se admite la verificación de cuentas de Discord"
+  },
+  "record": {
+    "not_found": "No se ha encontrado ningún récord de {mode} para el usuario {username}",
+    "blitz": "Blitz",
+    "sprint": "Sprint"
+  },
+  "stats": {
+    "user_info": "Usuario {name} ({id})",
+    "no_rank": "No hay estadísticas de rango disponibles",
+    "rank_info": ", Valoración {rating}±{rd} ({vol})",
+    "no_game": ", No hay datos de partidas disponibles",
+    "recent_games": ", Datos de las últimas {count} partidas",
+    "daily_stats": "Estadísticas de 24 h del usuario {name}: ",
+    "no_daily": "El usuario {name} no tiene estadísticas de las últimas 24 h",
+    "history_stats": "\nEstadísticas históricas: ",
+    "no_history": "\nNo hay estadísticas históricas disponibles",
+    "lpm": "\nL'PM: {lpm} ({pps} PPS)",
+    "apm": "\nAPM: {apm} (x{apl})",
+    "adpm": "\nADPM: {adpm} (x{adpl}) ({vs} VS)",
+    "sprint_pb": "\nSprint: {time}s",
+    "marathon_pb": "\nMaratón: {score}",
+    "challenge_pb": "\nDesafío: {score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision} no es una etiqueta válida del repositorio de plantillas",
+    "update_success": "Plantilla actualizada correctamente",
+    "update_failed": "No se ha podido actualizar la plantilla"
+  },
+  "help": { "usage": "Escribe \"{command} --help\" para obtener ayuda" },
+  "prompt": {
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
+  },
+  "retry": {
+    "message": "Reintentando: {func} ({i}/{max_attempts})",
+    "screenshot": "La captura de pantalla ha fallado; reintentando"
+  },
+  "command": {
+    "root": {
+      "description": "Consultar datos de jugadores de juegos relacionados con Tetris",
+      "plugin_description": "Un complemento para consultar datos de jugadores de juegos relacionados con Tetris",
+      "plugin_usage": "Envía tstats --help para ver cómo usarlo"
+    },
+    "tetrio": {
+      "description": "Comandos de TETR.IO",
+      "bind": {
+        "description": "Vincular una cuenta de TETR.IO",
+        "args": { "account": { "notice": "Nombre de usuario/ID de TETR.IO" } },
+        "shortcut": "iobind"
+      },
+      "config": {
+        "description": "Configurar las consultas de TETR.IO",
+        "options": {
+          "default_template": {
+            "help": "Establecer la plantilla de consulta predeterminada",
+            "args": { "template": { "notice": "Versión de la plantilla" } }
+          },
+          "default_compare": {
+            "help": "Establecer el intervalo de comparación predeterminado",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "ioconfig"
+      },
+      "list": {
+        "description": "Consultar la clasificación competitiva de TETR.IO",
+        "options": {
+          "max_tr": { "help": "TR máximo" },
+          "min_tr": { "help": "TR mínimo" },
+          "limit": { "help": "Número de resultados" },
+          "country": { "help": "Código de país" },
+          "sort": {
+            "help": "Métrica de clasificación",
+            "args": { "sort": { "notice": "Métrica de clasificación (league, pps, apm, adpm, apl o adpl)" } }
+          }
+        }
+      },
+      "query": {
+        "description": "Consultar información de TETR.IO",
+        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
+        "options": {
+          "template": {
+            "help": "Seleccionar la plantilla de consulta",
+            "args": { "template": { "notice": "Versión de la plantilla" } }
+          },
+          "compare": {
+            "help": "Indicar un intervalo de comparación",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "ioquery"
+      },
+      "rank": {
+        "description": "Consultar información de rangos de TETR.IO",
+        "all": {
+          "description": "Consultar un resumen de todos los rangos",
+          "options": {
+            "template": {
+              "help": "Seleccionar la plantilla de consulta",
+              "args": { "template": { "notice": "Versión de la plantilla" } }
+            }
+          }
+        },
+        "detail": {
+          "description": "Consultar los detalles de un rango concreto",
+          "args": { "rank": { "notice": "Nombre del rango" } }
+        },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
+        "options": {
+          "type": {
+            "help": "Tipo de récord",
+            "args": { "record_type": { "notice": "Tipo de récord (top, recent o progression)" } }
+          },
+          "index": { "help": "Índice del récord", "args": { "index": { "notice": "Índice del récord" } } }
+        },
+        "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
+      },
+      "unbind": { "description": "Desvincular la cuenta de TETR.IO", "shortcut": "iounbind" },
+      "verify": { "description": "Verificar la cuenta de TETR.IO", "shortcut": "ioverify" }
+    },
+    "top": {
+      "description": "Comandos de TOP",
+      "bind": {
+        "description": "Vincular una cuenta de TOP",
+        "args": { "account": { "notice": "Nombre de usuario/ID de TOP" } },
+        "shortcut": "topbind"
+      },
+      "unbind": { "description": "Desvincular la cuenta de TOP", "shortcut": "topunbind" },
+      "config": {
+        "description": "Configurar las consultas de TOP",
+        "options": {
+          "default_compare": {
+            "help": "Establecer el intervalo de comparación predeterminado",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "topconfig"
+      },
+      "query": {
+        "description": "Consultar información de TOP",
+        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario de TOP" } },
+        "options": {
+          "compare": {
+            "help": "Indicar un intervalo de comparación",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "topquery"
+      }
+    },
+    "tos": {
+      "description": "Comandos de TOS",
+      "bind": {
+        "description": "Vincular una cuenta de TOS",
+        "args": { "account": { "notice": "Nombre de usuario/ID de TOS" } },
+        "shortcut": "tosbind"
+      },
+      "unbind": { "description": "Desvincular la cuenta de TOS", "shortcut": "tosunbind" },
+      "config": {
+        "description": "Configurar las consultas de TOS",
+        "options": {
+          "default_compare": {
+            "help": "Establecer el intervalo de comparación predeterminado",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "tosconfig"
+      },
+      "query": {
+        "description": "Consultar información de TOS",
+        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/TeaID de TOS" } },
+        "options": {
+          "compare": {
+            "help": "Indicar un intervalo de comparación",
+            "args": { "compare": { "notice": "Intervalo de comparación (p. ej., 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "tosquery"
+      }
+    }
+  }
+}
