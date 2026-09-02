@@ -1,0 +1,210 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "無法查詢機器人的資訊" },
+    "warning": { "unverified": "* 因為無法驗證帳號綁定資訊，無法保證查詢結果屬於目標使用者。" }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "使用者名稱／ID 無效",
+      "TOS": "使用者名稱／ID 無效",
+      "TOP": "使用者名稱無效",
+      "duration": "時間長度格式無效"
+    },
+    "RequestError": {
+      "request": {
+        "api": "API 請求失敗",
+        "cloudflare": "無法通過 Cloudflare 驗證",
+        "response": "請求錯誤碼：{status_code} {reason}\n{body}",
+        "transport": "請求錯誤\n{detail}",
+        "failover": "所有位址皆無法使用\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "排行榜請求錯誤：\n{detail}",
+        "user_info": "使用者資訊請求錯誤：\n{detail}",
+        "summaries": "使用者摘要請求錯誤：\n{detail}",
+        "league_history": "聯賽歷史請求錯誤：\n{detail}",
+        "records": "使用者紀錄請求錯誤：\n{detail}"
+      },
+      "TOS": { "user_info": "使用者資訊請求錯誤：\n{detail}" }
+    }
+  },
+  "template": { "template_language": "zh-TW" },
+  "bind": {
+    "not_found": "找不到綁定資訊",
+    "no_account": "您尚未綁定 {game} 帳號",
+    "confirm_unbind": "確定要解除綁定嗎？",
+    "confirm_yes": "是",
+    "confirm_no": "否",
+    "config_success": "設定成功",
+    "verify_already": "您已完成驗證。",
+    "verify_failed": "驗證失敗。請確認目標 {game} 帳號已綁定至您目前的 Discord 帳號。",
+    "only_discord": "目前僅支援 Discord 帳號驗證"
+  },
+  "record": { "not_found": "找不到使用者 {username} 的「{mode}」紀錄", "blitz": "閃電戰", "sprint": "40行" },
+  "stats": {
+    "user_info": "使用者 {name}（{id}）",
+    "no_rank": "沒有可用的段位統計資料",
+    "rank_info": "，評分 {rating}±{rd}（{vol}）",
+    "no_game": "，沒有可用的遊戲資料",
+    "recent_games": "，最近 {count} 場遊戲的資料",
+    "daily_stats": "使用者 {name} 的 24 小時統計資料：",
+    "no_daily": "使用者 {name} 沒有可用的 24 小時統計資料",
+    "history_stats": "\n歷史統計資料：",
+    "no_history": "\n沒有可用的歷史統計資料",
+    "lpm": "\nL'PM：{lpm}（{pps} PPS）",
+    "apm": "\nAPM：{apm}（x{apl}）",
+    "adpm": "\nADPM：{adpm}（x{adpl}）（{vs} VS）",
+    "sprint_pb": "\n40行：{time}s",
+    "marathon_pb": "\n馬拉松：{score}",
+    "challenge_pb": "\n挑戰：{score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision} 不是範本儲存庫中的有效標籤",
+    "update_success": "範本更新成功",
+    "update_failed": "範本更新失敗"
+  },
+  "help": { "usage": "輸入「{command} --help」查看說明" },
+  "prompt": {
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
+  },
+  "retry": { "message": "正在重試：{func}（{i}/{max_attempts}）", "screenshot": "截圖失敗，正在重試" },
+  "command": {
+    "root": {
+      "description": "查詢俄羅斯方塊相關遊戲的玩家資料",
+      "plugin_description": "用於查詢俄羅斯方塊相關遊戲玩家資料的外掛",
+      "plugin_usage": "傳送 tstats --help 查看用法"
+    },
+    "tetrio": {
+      "description": "TETR.IO 遊戲指令",
+      "bind": {
+        "description": "綁定 TETR.IO 帳號",
+        "args": { "account": { "notice": "TETR.IO 使用者名稱／ID" } },
+        "shortcut": "iobind"
+      },
+      "config": {
+        "description": "設定 TETR.IO 查詢",
+        "options": {
+          "default_template": { "help": "設定預設查詢範本", "args": { "template": { "notice": "範本版本" } } },
+          "default_compare": {
+            "help": "設定預設比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "ioconfig"
+      },
+      "list": {
+        "description": "查詢 TETR.IO 排名榜",
+        "options": {
+          "max_tr": { "help": "TR 上限" },
+          "min_tr": { "help": "TR 下限" },
+          "limit": { "help": "結果數量" },
+          "country": { "help": "國家代碼" },
+          "sort": {
+            "help": "排名指標",
+            "args": { "sort": { "notice": "排名指標（league、pps、apm、adpm、apl 或 adpl）" } }
+          }
+        }
+      },
+      "query": {
+        "description": "查詢 TETR.IO 遊戲資訊",
+        "args": { "who": { "notice": "@要查詢的使用者 / me / TETR.IO 使用者名稱 / ID" } },
+        "options": {
+          "template": { "help": "選擇查詢範本", "args": { "template": { "notice": "範本版本" } } },
+          "compare": {
+            "help": "指定比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "ioquery"
+      },
+      "rank": {
+        "description": "查詢 TETR.IO 段位資訊",
+        "all": {
+          "description": "查詢所有段位總覽",
+          "options": { "template": { "help": "選擇查詢範本", "args": { "template": { "notice": "範本版本" } } } }
+        },
+        "detail": { "description": "查詢特定段位的詳細資訊", "args": { "rank": { "notice": "段位名稱" } } },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "@要查詢的使用者 / me / TETR.IO 使用者名稱 / ID" } },
+        "options": {
+          "type": {
+            "help": "紀錄類型",
+            "args": { "record_type": { "notice": "紀錄類型（top、recent 或 progression）" } }
+          },
+          "index": { "help": "紀錄序號", "args": { "index": { "notice": "紀錄序號" } } }
+        },
+        "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
+      },
+      "unbind": { "description": "解除綁定 TETR.IO 帳號", "shortcut": "iounbind" },
+      "verify": { "description": "驗證 TETR.IO 帳號", "shortcut": "ioverify" }
+    },
+    "top": {
+      "description": "TOP 遊戲指令",
+      "bind": {
+        "description": "綁定 TOP 帳號",
+        "args": { "account": { "notice": "TOP 使用者名稱／ID" } },
+        "shortcut": "topbind"
+      },
+      "unbind": { "description": "解除綁定 TOP 帳號", "shortcut": "topunbind" },
+      "config": {
+        "description": "設定 TOP 查詢",
+        "options": {
+          "default_compare": {
+            "help": "設定預設比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "topconfig"
+      },
+      "query": {
+        "description": "查詢 TOP 遊戲資訊",
+        "args": { "who": { "notice": "@要查詢的使用者 / me / TOP 使用者名稱" } },
+        "options": {
+          "compare": {
+            "help": "指定比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "topquery"
+      }
+    },
+    "tos": {
+      "description": "TOS 遊戲指令",
+      "bind": {
+        "description": "綁定 TOS 帳號",
+        "args": { "account": { "notice": "TOS 使用者名稱／ID" } },
+        "shortcut": "tosbind"
+      },
+      "unbind": { "description": "解除綁定 TOS 帳號", "shortcut": "tosunbind" },
+      "config": {
+        "description": "設定 TOS 查詢",
+        "options": {
+          "default_compare": {
+            "help": "設定預設比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "tosconfig"
+      },
+      "query": {
+        "description": "查詢 TOS 遊戲資訊",
+        "args": { "who": { "notice": "@要查詢的使用者 / me / TOS 使用者名稱 / TeaID" } },
+        "options": {
+          "compare": {
+            "help": "指定比較時間範圍",
+            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+          }
+        },
+        "shortcut": "tosquery"
+      }
+    }
+  }
+}
