@@ -1,0 +1,210 @@
+{
+  "$schema": ".lang.schema.json",
+  "interaction": {
+    "wrong": { "query_bot": "봇 정보를 조회할 수 없습니다" },
+    "warning": {
+      "unverified": "* 계정 연동 정보를 확인할 수 없어, 조회 결과가 대상 사용자의 것임을 보장할 수 없습니다."
+    }
+  },
+  "error": {
+    "MessageFormatError": {
+      "TETR.IO": "사용자명/ID가 올바르지 않습니다",
+      "TOS": "사용자명/ID가 올바르지 않습니다",
+      "TOP": "사용자명이 올바르지 않습니다",
+      "duration": "기간 형식이 올바르지 않습니다"
+    },
+    "RequestError": {
+      "request": {
+        "api": "API 요청에 실패했습니다",
+        "cloudflare": "Cloudflare 인증을 통과하지 못했습니다",
+        "response": "요청 오류 코드: {status_code} {reason}\n{body}",
+        "transport": "요청 오류\n{detail}",
+        "failover": "사용 가능한 연결 주소가 없습니다\n{errors}"
+      },
+      "TETR.IO": {
+        "leaderboard": "리더보드 요청 오류:\n{detail}",
+        "user_info": "사용자 정보 요청 오류:\n{detail}",
+        "summaries": "사용자 요약 정보 요청 오류:\n{detail}",
+        "league_history": "리그 기록 요청 오류:\n{detail}",
+        "records": "사용자 기록 요청 오류:\n{detail}"
+      },
+      "TOS": { "user_info": "사용자 정보 요청 오류:\n{detail}" }
+    }
+  },
+  "template": { "template_language": "ko-KR" },
+  "bind": {
+    "not_found": "계정 연동 정보가 없습니다",
+    "no_account": "아직 {game} 계정을 연동하지 않았습니다",
+    "confirm_unbind": "계정 연동을 해제하시겠습니까?",
+    "confirm_yes": "예",
+    "confirm_no": "아니요",
+    "config_success": "설정이 완료되었습니다",
+    "verify_already": "이미 인증을 완료했습니다.",
+    "verify_failed": "인증에 실패했습니다. 대상 {game} 계정이 현재 Discord 계정에 연동되어 있는지 확인하세요.",
+    "only_discord": "현재 Discord 계정 인증만 지원합니다"
+  },
+  "record": {
+    "not_found": "{username} 사용자의 {mode} 기록을 찾을 수 없습니다",
+    "blitz": "블리츠",
+    "sprint": "스프린트"
+  },
+  "stats": {
+    "user_info": "사용자 {name} ({id})",
+    "no_rank": "랭크 통계 없음",
+    "rank_info": ", 레이팅 {rating}±{rd} ({vol})",
+    "no_game": ", 게임 데이터 없음",
+    "recent_games": ", 최근 {count}경기 데이터",
+    "daily_stats": "사용자 {name}의 24시간 통계: ",
+    "no_daily": "사용자 {name}의 24시간 통계가 없습니다",
+    "history_stats": "\n과거 통계: ",
+    "no_history": "\n과거 통계 없음",
+    "lpm": "\nL'PM: {lpm} ({pps} PPS)",
+    "apm": "\nAPM: {apm} (x{apl})",
+    "adpm": "\nADPM: {adpm} (x{adpl}) ({vs} VS)",
+    "sprint_pb": "\n스프린트: {time}s",
+    "marathon_pb": "\n마라톤: {score}",
+    "challenge_pb": "\n챌린지: {score}"
+  },
+  "template_ui": {
+    "invalid_tag": "{revision}: 템플릿 저장소의 유효한 태그가 아닙니다",
+    "update_success": "템플릿을 업데이트했습니다",
+    "update_failed": "템플릿 업데이트에 실패했습니다"
+  },
+  "help": { "usage": "도움말을 보려면 \"{command} --help\"를 입력하세요" },
+  "prompt": {
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
+  },
+  "retry": {
+    "message": "재시도 중: {func} ({i}/{max_attempts})",
+    "screenshot": "스크린샷 생성에 실패하여 재시도합니다"
+  },
+  "command": {
+    "root": {
+      "description": "테트리스 관련 게임의 플레이어 데이터 조회",
+      "plugin_description": "테트리스 관련 게임의 플레이어 데이터를 조회하는 플러그인",
+      "plugin_usage": "사용법을 보려면 tstats --help를 보내세요"
+    },
+    "tetrio": {
+      "description": "TETR.IO 게임 명령어",
+      "bind": {
+        "description": "TETR.IO 계정 연동",
+        "args": { "account": { "notice": "TETR.IO 사용자명 / ID" } },
+        "shortcut": "iobind"
+      },
+      "config": {
+        "description": "TETR.IO 조회 설정",
+        "options": {
+          "default_template": { "help": "기본 조회 템플릿 설정", "args": { "template": { "notice": "템플릿 버전" } } },
+          "default_compare": {
+            "help": "기본 비교 기간 설정",
+            "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "ioconfig"
+      },
+      "list": {
+        "description": "TETR.IO 랭크 리더보드 조회",
+        "options": {
+          "max_tr": { "help": "최대 TR" },
+          "min_tr": { "help": "최소 TR" },
+          "limit": { "help": "결과 수" },
+          "country": { "help": "국가 코드" },
+          "sort": {
+            "help": "랭킹 기준",
+            "args": { "sort": { "notice": "랭킹 기준(league, pps, apm, adpm, apl 또는 adpl)" } }
+          }
+        }
+      },
+      "query": {
+        "description": "TETR.IO 플레이어 정보 조회",
+        "args": { "who": { "notice": "조회할 @사용자 / me / TETR.IO 사용자명 / ID" } },
+        "options": {
+          "template": { "help": "조회 템플릿 선택", "args": { "template": { "notice": "템플릿 버전" } } },
+          "compare": { "help": "비교 기간 지정", "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } } }
+        },
+        "shortcut": "ioquery"
+      },
+      "rank": {
+        "description": "TETR.IO 랭크 정보 조회",
+        "all": {
+          "description": "모든 랭크 개요 조회",
+          "options": { "template": { "help": "조회 템플릿 선택", "args": { "template": { "notice": "템플릿 버전" } } } }
+        },
+        "detail": { "description": "특정 랭크의 상세 정보 조회", "args": { "rank": { "notice": "랭크 이름" } } },
+        "shortcut": "iorank"
+      },
+      "record": {
+        "args": { "who": { "notice": "조회할 @사용자 / me / TETR.IO 사용자명 / ID" } },
+        "options": {
+          "type": {
+            "help": "기록 유형",
+            "args": { "record_type": { "notice": "기록 유형(top, recent 또는 progression)" } }
+          },
+          "index": { "help": "기록 번호", "args": { "index": { "notice": "기록 번호" } } }
+        },
+        "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
+      },
+      "unbind": { "description": "TETR.IO 계정 연동 해제", "shortcut": "iounbind" },
+      "verify": { "description": "TETR.IO 계정 인증", "shortcut": "ioverify" }
+    },
+    "top": {
+      "description": "TOP 게임 명령어",
+      "bind": {
+        "description": "TOP 계정 연동",
+        "args": { "account": { "notice": "TOP 사용자명 / ID" } },
+        "shortcut": "topbind"
+      },
+      "unbind": { "description": "TOP 계정 연동 해제", "shortcut": "topunbind" },
+      "config": {
+        "description": "TOP 조회 설정",
+        "options": {
+          "default_compare": {
+            "help": "기본 비교 기간 설정",
+            "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "topconfig"
+      },
+      "query": {
+        "description": "TOP 플레이어 정보 조회",
+        "args": { "who": { "notice": "조회할 @사용자 / me / TOP 사용자명" } },
+        "options": {
+          "compare": { "help": "비교 기간 지정", "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } } }
+        },
+        "shortcut": "topquery"
+      }
+    },
+    "tos": {
+      "description": "TOS 게임 명령어",
+      "bind": {
+        "description": "TOS 계정 연동",
+        "args": { "account": { "notice": "TOS 사용자명 / ID" } },
+        "shortcut": "tosbind"
+      },
+      "unbind": { "description": "TOS 계정 연동 해제", "shortcut": "tosunbind" },
+      "config": {
+        "description": "TOS 조회 설정",
+        "options": {
+          "default_compare": {
+            "help": "기본 비교 기간 설정",
+            "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } }
+          }
+        },
+        "shortcut": "tosconfig"
+      },
+      "query": {
+        "description": "TOS 플레이어 정보 조회",
+        "args": { "who": { "notice": "조회할 @사용자 / me / TOS 사용자명 / TeaID" } },
+        "options": {
+          "compare": { "help": "비교 기간 지정", "args": { "compare": { "notice": "비교 기간(예: 7d, 2w, 24h)" } } }
+        },
+        "shortcut": "tosquery"
+      }
+    }
+  }
+}
