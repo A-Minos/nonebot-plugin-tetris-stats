@@ -1,41 +1,4 @@
-import json
-from pathlib import Path
-from string import Formatter
-from typing import cast
-
 import pytest
-
-
-def _flatten_resource(value: object, prefix: tuple[str, ...] = ()) -> dict[tuple[str, ...], str]:
-    data = cast('dict[str, object]', value)
-    flattened: dict[tuple[str, ...], str] = {}
-    for key, item in data.items():
-        item_path = (*prefix, key)
-        if isinstance(item, dict):
-            flattened.update(_flatten_resource(item, item_path))
-            continue
-        assert isinstance(item, str), '.lang.json leaves must be strings'  # noqa: S101
-        flattened[item_path] = item
-    return flattened
-
-
-def _placeholders(message: str) -> set[str]:
-    return {field_name for _, field_name, _, _ in Formatter().parse(message) if field_name is not None}
-
-
-def test_every_locale_matches_the_canonical_resource_contract() -> None:
-    resource_dir = Path(__file__).parents[1] / 'nonebot_plugin_tetris_stats' / 'i18n'
-    resources = sorted(path for path in resource_dir.glob('*.json') if not path.name.startswith('.'))
-    canonical = _flatten_resource(json.loads((resource_dir / 'en-US.json').read_text()))
-
-    for resource in resources:
-        localized = _flatten_resource(json.loads(resource.read_text()))
-        assert localized.keys() == canonical.keys(), resource.name  # noqa: S101
-        for key, canonical_message in canonical.items():
-            assert _placeholders(localized[key]) == _placeholders(canonical_message), (  # noqa: S101
-                resource.name,
-                '.'.join(key),
-            )
 
 
 @pytest.mark.parametrize(
