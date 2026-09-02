@@ -1,8 +1,8 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
-    "wrong": { "query_bot": "不能查询bot的信息" },
-    "warning": { "unverified": "* 由于无法验证绑定信息, 不能保证查询到的用户为本人" }
+    "wrong": { "query_bot": "无法查询机器人信息" },
+    "warning": { "unverified": "* 由于无法验证账号绑定信息，无法保证查询结果属于目标用户。" }
   },
   "error": {
     "MessageFormatError": {
@@ -14,20 +14,20 @@
     "RequestError": {
       "request": {
         "api": "API 请求失败",
-        "cloudflare": "绕过 Cloudflare 验证失败",
-        "response": "请求错误 code: {status_code} {reason}\n{body}",
+        "cloudflare": "无法通过 Cloudflare 验证",
+        "response": "请求错误代码：{status_code} {reason}\n{body}",
         "transport": "请求错误\n{detail}",
-        "failover": "所有地址皆不可用\n{errors}"
+        "failover": "所有地址均不可用\n{errors}"
       },
       "TETR.IO": {
-        "leaderboard": "排行榜信息请求错误:\n{detail}",
-        "user_info": "用户信息请求错误:\n{detail}",
-        "summaries": "用户 Summaries 数据请求错误:\n{detail}",
-        "league_history": "League 历史记录请求错误:\n{detail}",
-        "records": "用户 Records 数据请求错误:\n{detail}"
+        "leaderboard": "排行榜请求错误：\n{detail}",
+        "user_info": "用户信息请求错误：\n{detail}",
+        "summaries": "用户摘要信息请求错误：\n{detail}",
+        "league_history": "段位历史记录请求错误：\n{detail}",
+        "records": "用户记录请求错误：\n{detail}"
       },
       "TOS": {
-        "user_info": "用户信息请求错误:\n{detail}"
+        "user_info": "用户信息请求错误：\n{detail}"
       }
     }
   },
@@ -35,53 +35,53 @@
     "template_language": "zh-CN"
   },
   "bind": {
-    "not_found": "未查询到绑定信息",
-    "no_account": "您还未绑定 {game} 账号",
-    "confirm_unbind": "您确定要解绑吗?",
+    "not_found": "未找到绑定信息",
+    "no_account": "你尚未绑定 {game} 账号",
+    "confirm_unbind": "确定要解绑吗？",
     "confirm_yes": "是",
     "confirm_no": "否",
     "config_success": "配置成功",
-    "verify_already": "您已经完成了验证.",
-    "verify_failed": "您未通过验证, 请确认目标 {game} 账号绑定了当前 Discord 账号",
+    "verify_already": "你已完成验证。",
+    "verify_failed": "验证失败，请确认目标 {game} 账号已绑定到当前 Discord 账号。",
     "only_discord": "目前仅支持 Discord 账号验证"
   },
   "record": {
-    "not_found": "未找到用户 {username} 的 {mode} 记录",
+    "not_found": "未找到用户 {username} 的“{mode}”记录",
     "blitz": "Blitz",
-    "sprint": "40L"
+    "sprint": "40行"
   },
   "stats": {
-    "user_info": "用户 {name} ({id})",
+    "user_info": "用户 {name}（{id}）",
     "no_rank": "暂无段位统计数据",
-    "rank_info": ", 段位分 {rating}±{rd} ({vol})",
-    "no_game": ", 暂无游戏数据",
-    "recent_games": ", 最近 {count} 局数据",
-    "daily_stats": "用户 {name} 24小时内统计数据为: ",
-    "no_daily": "用户 {name} 暂无24小时内统计数据",
-    "history_stats": "\n历史统计数据为: ",
+    "rank_info": "，段位分 {rating}±{rd}（{vol}）",
+    "no_game": "，暂无游戏数据",
+    "recent_games": "，最近 {count} 局数据",
+    "daily_stats": "用户 {name} 的 24 小时统计：",
+    "no_daily": "用户 {name} 暂无 24 小时统计数据",
+    "history_stats": "\n历史统计：",
     "no_history": "\n暂无历史统计数据",
-    "lpm": "\nL'PM: {lpm} ( {pps} pps )",
-    "apm": "\nAPM: {apm} ( x{apl} )",
-    "adpm": "\nADPM: {adpm} ( x{adpl} ) ( {vs}vs )",
-    "sprint_pb": "\n40L: {time}s",
-    "marathon_pb": "\nMarathon: {score}",
-    "challenge_pb": "\nChallenge: {score}"
+    "lpm": "\nL'PM：{lpm}（{pps} PPS）",
+    "apm": "\nAPM：{apm}（x{apl}）",
+    "adpm": "\nADPM：{adpm}（x{adpl}）（{vs} VS）",
+    "sprint_pb": "\n40行：{time}s",
+    "marathon_pb": "\n马拉松：{score}",
+    "challenge_pb": "\n挑战：{score}"
   },
   "template_ui": {
     "invalid_tag": "{revision} 不是模板仓库中的有效标签",
-    "update_success": "更新模板成功",
-    "update_failed": "更新模板失败"
+    "update_success": "模板更新成功",
+    "update_failed": "模板更新失败"
   },
   "help": {
-    "usage": "输入\"{command} --help\"查看帮助"
+    "usage": "输入“{command} --help”查看帮助"
   },
   "prompt": {
-    "io_check": "io查我",
-    "io_bind": "io绑定{{游戏ID}}",
-    "top_check": "top查我",
-    "top_bind": "top绑定{{游戏ID}}",
-    "tos_check": "茶服查我",
-    "tos_bind": "茶服绑定{{游戏ID}}"
+    "io_check": "io check me",
+    "io_bind": "io bind {{gameID}}",
+    "top_check": "top check me",
+    "top_bind": "top bind {{gameID}}",
+    "tos_check": "tos check me",
+    "tos_bind": "tos bind {{gameID}}"
   },
   "retry": {
     "message": "正在重试：{func}（{i}/{max_attempts}）",
@@ -90,26 +90,26 @@
   "command": {
     "root": {
       "description": "俄罗斯方块相关游戏数据查询",
-      "plugin_description": "一个用于查询 Tetris 相关游戏玩家数据的插件",
-      "plugin_usage": "发送 tstats --help 查询使用方法"
+      "plugin_description": "用于查询俄罗斯方块相关游戏玩家数据的插件",
+      "plugin_usage": "发送 tstats --help 查看用法"
     },
     "tetrio": {
-      "description": "TETR.IO 游戏相关指令",
+      "description": "TETR.IO 游戏命令",
       "bind": {
         "description": "绑定 TETR.IO 账号",
         "args": { "account": { "notice": "TETR.IO 用户名 / ID" } },
         "shortcut": "io绑定"
       },
       "config": {
-        "description": "TETR.IO 查询个性化配置",
+        "description": "配置 TETR.IO 查询",
         "options": {
           "default_template": {
             "help": "设置默认查询模板",
             "args": { "template": { "notice": "模板版本" } }
           },
           "default_compare": {
-            "help": "设置默认对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "设置默认对比时间范围",
+            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "io配置"
@@ -117,9 +117,9 @@
       "list": {
         "description": "查询 TETR.IO 段位排行榜",
         "options": {
-          "max_tr": { "help": "TR的上限" },
-          "min_tr": { "help": "TR的下限" },
-          "limit": { "help": "查询数量" },
+          "max_tr": { "help": "最高 TR" },
+          "min_tr": { "help": "最低 TR" },
+          "limit": { "help": "结果数量" },
           "country": { "help": "国家代码" },
           "sort": {
             "help": "排名指标",
@@ -132,7 +132,7 @@
         "args": { "who": { "notice": "@想要查询的人 / 自己 / TETR.IO 用户名 / ID" } },
         "options": {
           "template": {
-            "help": "要使用的查询模板",
+            "help": "选择查询模板",
             "args": { "template": { "notice": "模板版本" } }
           },
           "compare": {
@@ -148,19 +148,19 @@
           "description": "查询所有段位概览",
           "options": {
             "template": {
-              "help": "要使用的查询模板",
+              "help": "选择查询模板",
               "args": { "template": { "notice": "模板版本" } }
             }
           }
         },
         "detail": {
           "description": "查询指定段位的详细信息",
-          "args": { "rank": { "notice": "段位名" } }
+          "args": { "rank": { "notice": "段位名称" } }
         },
         "shortcut": "iorank"
       },
       "record": {
-        "args": { "who": { "notice": "@想要查询的人 / 自己 / TETR.IO 用户名 / ID" } },
+        "args": { "who": { "notice": "@要查询的用户 / me / TETR.IO 用户名 / ID" } },
         "options": {
           "type": {
             "help": "记录类型",
@@ -177,7 +177,7 @@
         }
       },
       "unbind": {
-        "description": "解除绑定 TETR.IO 账号",
+        "description": "解绑 TETR.IO 账号",
         "shortcut": "io解绑"
       },
       "verify": {
@@ -186,66 +186,66 @@
       }
     },
     "top": {
-      "description": "TOP 游戏相关指令",
+      "description": "TOP 游戏命令",
       "bind": {
         "description": "绑定 TOP 账号",
         "args": { "account": { "notice": "TOP 用户名 / ID" } },
         "shortcut": "top绑定"
       },
       "unbind": {
-        "description": "解除绑定 TOP 账号",
+        "description": "解绑 TOP 账号",
         "shortcut": "top解绑"
       },
       "config": {
-        "description": "TOP 查询个性化配置",
+        "description": "配置 TOP 查询",
         "options": {
           "default_compare": {
-            "help": "设置默认对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "设置默认对比时间范围",
+            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "top配置"
       },
       "query": {
         "description": "查询 TOP 游戏信息",
-        "args": { "who": { "notice": "@想要查询的人 / 自己 / TOP 用户名" } },
+        "args": { "who": { "notice": "@要查询的用户 / me / TOP 用户名" } },
         "options": {
           "compare": {
-            "help": "指定对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "指定对比时间范围",
+            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "top查"
       }
     },
     "tos": {
-      "description": "茶服 游戏相关指令",
+      "description": "TOS 游戏命令",
       "bind": {
-        "description": "绑定 茶服 账号",
-        "args": { "account": { "notice": "茶服 用户名 / ID" } },
+        "description": "绑定 TOS 账号",
+        "args": { "account": { "notice": "TOS 用户名 / ID" } },
         "shortcut": "茶服绑定"
       },
       "unbind": {
-        "description": "解除绑定 TOS 账号",
+        "description": "解绑 TOS 账号",
         "shortcut": "茶服解绑"
       },
       "config": {
-        "description": "茶服 查询个性化配置",
+        "description": "配置 TOS 查询",
         "options": {
           "default_compare": {
-            "help": "设置默认对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "设置默认对比时间范围",
+            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "茶服配置"
       },
       "query": {
-        "description": "查询 茶服 游戏信息",
-        "args": { "who": { "notice": "@想要查询的人 / 自己 / 茶服 用户名 / TeaID" } },
+        "description": "查询 TOS 游戏信息",
+        "args": { "who": { "notice": "@要查询的用户 / me / TOS 用户名 / TeaID" } },
         "options": {
           "compare": {
-            "help": "指定对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "指定对比时间范围",
+            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "茶服查"
