@@ -188,7 +188,11 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
             results.append((key, [root_canonical]))
             continue
         cmd_text = _extract_command_text(short.command)
-        target = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else [root_canonical]
+        path_tokens = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else []
+        chain = _resolve_current_subcommand(root, path_tokens[1:]) if path_tokens else None
+        target = (
+            [root_canonical, *(_split_name(sub.name)[0] for sub in chain)] if chain is not None else [root_canonical]
+        )
         suffix = _render_target_signature(root, target)
         rendered = f'{key} {suffix}' if suffix else key
         results.append((rendered, target))
@@ -291,8 +295,9 @@ class StructuredHelpFormatter(TextFormatter):
             root_canonical, _ = _split_name(self.root.header_display)
             breadcrumb = [root_canonical, *(_split_name(s.name)[0] for s in chain)]
 
-        # Lazy import avoids circular dependency with games/* (render/__init__.py
-        # -> host.py -> games.tetrio.api.cache -> back into games/__init__.py).
+        # Lazy imports avoid circular dependencies with games/*
+        # (render/__init__.py -> host.py -> games.tetrio.api.cache).
+        from .help_catalog import localize_help  # noqa: PLC0415
         from .lang import get_lang  # noqa: PLC0415
 
         node = HelpNode(
@@ -318,12 +323,14 @@ class StructuredHelpFormatter(TextFormatter):
             shortcuts = [
                 HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1 : len(breadcrumb)] == breadcrumb[1:]
             ]
+        locale = get_lang()
         data = HelpData(
-            lang=get_lang(),
+            lang=locale,
             command=node,
             breadcrumb=breadcrumb,
             usage=usage,
             examples=examples,
             shortcuts=shortcuts,
         )
+        data = localize_help(data, locale)
         return data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True)

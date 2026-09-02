@@ -1,7 +1,9 @@
 from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
+from ...i18n import Lang
 from ...utils.duration import parse_duration
+from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, command
 from .api import Player
@@ -16,8 +18,7 @@ def get_player(teaid_or_name: str) -> Player:
         return Player(teaid=teaid_or_name, trust=True)
     if USER_NAME.match(teaid_or_name) and not teaid_or_name.isdigit() and 2 <= len(teaid_or_name) <= 18:  # noqa: PLR2004
         return Player(user_name=teaid_or_name, trust=True)
-    msg = '用户名/ID不合法'
-    raise ValueError(msg)
+    raise MessageFormatError(Lang.error.MessageFormatError.TOS)
 
 
 command.add(
