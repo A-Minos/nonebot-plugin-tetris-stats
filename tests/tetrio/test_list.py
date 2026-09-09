@@ -362,11 +362,11 @@ async def test_league_list_reads_only_the_latest_persisted_snapshot(
 async def test_league_list_reports_missing_snapshot(
     league_sessionmaker: async_sessionmaker[AsyncSession],
 ) -> None:
+    from nonebot_plugin_tetris_stats.games.tetrio.exception import LeagueSnapshotNotFoundError  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import (  # noqa: PLC0415
         LeagueListQuery,
         query_league_list,
     )
-    from nonebot_plugin_tetris_stats.utils.exception import LeagueSnapshotNotFoundError  # noqa: PLC0415
 
     async with league_sessionmaker() as session:
         with pytest.raises(LeagueSnapshotNotFoundError):

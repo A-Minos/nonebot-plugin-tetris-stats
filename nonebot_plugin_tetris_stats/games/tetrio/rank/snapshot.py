@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ....i18n import Lang
-from ....utils.exception import LeagueSnapshotNotFoundError
 from ....utils.metrics import get_metrics
 from ..api.schemas.leaderboards.by import Entry
+from ..exception import LeagueSnapshotNotFoundError
 from ..models import TETRIOLeagueStats
 from ..typedefs import ListSort
 
