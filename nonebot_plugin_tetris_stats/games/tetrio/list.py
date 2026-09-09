@@ -18,7 +18,8 @@ from .api.schemas.base import P
 from .api.schemas.leaderboards import Parameter
 from .api.schemas.leaderboards.by import Entry, InvalidEntry
 from .constant import GAME_TYPE
-from .rank.snapshot import LeagueListQuery, ListSort, query_league_list
+from .rank.snapshot import LeagueListQuery, query_league_list
+from .typedefs import ListSort
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

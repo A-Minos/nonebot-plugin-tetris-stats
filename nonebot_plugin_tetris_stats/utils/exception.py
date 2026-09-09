@@ -36,6 +36,10 @@ class RecordNotFoundError(NeedCatchError):
     """找不到用户的某种记录"""
 
 
+class LeagueSnapshotNotFoundError(NeedCatchError):
+    """No persisted TETR.IO league snapshot is available."""
+
+
 class FallbackError(NeedCatchError):
     """需要回滚至更通用的方法"""
 

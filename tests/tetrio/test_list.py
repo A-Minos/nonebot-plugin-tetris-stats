@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 
     from nonebot_plugin_tetris_stats.games.tetrio.api.schemas.leaderboards.by import Entry, InvalidEntry
     from nonebot_plugin_tetris_stats.games.tetrio.models import TETRIOLeagueStats
-    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import LeagueListQuery, ListSort
+    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import LeagueListQuery
+    from nonebot_plugin_tetris_stats.games.tetrio.typedefs import ListSort
 
 
 UTC = timezone.utc
@@ -363,9 +364,9 @@ async def test_league_list_reports_missing_snapshot(
 ) -> None:
     from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import (  # noqa: PLC0415
         LeagueListQuery,
-        LeagueSnapshotNotFoundError,
         query_league_list,
     )
+    from nonebot_plugin_tetris_stats.utils.exception import LeagueSnapshotNotFoundError  # noqa: PLC0415
 
     async with league_sessionmaker() as session:
         with pytest.raises(LeagueSnapshotNotFoundError):

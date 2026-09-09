@@ -1,21 +1,15 @@
 from dataclasses import dataclass
-from typing import Literal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ....i18n import Lang
-from ....utils.exception import NeedCatchError
+from ....utils.exception import LeagueSnapshotNotFoundError
 from ....utils.metrics import get_metrics
 from ..api.schemas.leaderboards.by import Entry
 from ..models import TETRIOLeagueStats
-
-ListSort = Literal['league', 'pps', 'apm', 'adpm', 'apl', 'adpl']
-
-
-class LeagueSnapshotNotFoundError(NeedCatchError):
-    """No persisted TETR.IO league snapshot is available."""
+from ..typedefs import ListSort
 
 
 @dataclass(frozen=True)
@@ -86,7 +80,5 @@ async def query_league_list(session: AsyncSession, query: LeagueListQuery) -> li
 
 __all__ = [
     'LeagueListQuery',
-    'LeagueSnapshotNotFoundError',
-    'ListSort',
     'query_league_list',
 ]
