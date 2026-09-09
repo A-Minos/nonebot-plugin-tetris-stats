@@ -30,6 +30,9 @@
     "blitz": "Blitz",
     "sprint": "40L"
   },
+  "list": {
+    "no_snapshot": "No TETR.IO league ranking snapshot is available yet. Please try again later."
+  },
   "stats": {
     "user_info": "User {name} ({id})",
     "no_rank": "No rank statistics available",
