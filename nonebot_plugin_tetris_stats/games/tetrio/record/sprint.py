@@ -24,9 +24,9 @@ from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, S
 from ....utils.render.schemas.v2.tetrio.record.sprint import Record
 from ....utils.typedefs import Me
 from .. import alc
-from ..api.player import Player
+from ..api.player import Player, RecordModeType, RecordType
 from ..constant import GAME_TYPE
-from . import command
+from . import RecordSource, command, get_command_args, select_record
 
 command.add(Option('--40l', dest='sprint'))
 
@@ -38,17 +38,19 @@ alc.shortcut(
 
 
 @alc.assign('TETRIO.record.sprint')
-async def _(
+async def _(  # noqa: PLR0913, PLR0917
     event: Event,
     matcher: Matcher,
     who: At | Me,
     event_session: Uninfo,
+    record_type: RecordType | None = None,
+    index: int | None = None,
 ):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='record',
-        command_args=['--40l'],
+        command_args=get_command_args('--40l', record_type, index),
     ):
         async with get_session() as session:
             bind = await query_bind_info(
@@ -61,27 +63,40 @@ async def _(
         player = Player(user_id=bind.game_account, trust=True)
         await (
             (UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage())
-            + UniMessage.image(raw=await make_sprint_image(player))
+            + UniMessage.image(raw=await make_sprint_image(player, record_type, index))
         ).finish()
 
 
 @alc.assign('TETRIO.record.sprint')
-async def _(who: Player, event_session: Uninfo):
+async def _(
+    who: Player,
+    event_session: Uninfo,
+    record_type: RecordType | None = None,
+    index: int | None = None,
+):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='record',
-        command_args=['--40l'],
+        command_args=get_command_args('--40l', record_type, index),
     ):
-        await UniMessage.image(raw=await make_sprint_image(who)).finish()
+        await UniMessage.image(raw=await make_sprint_image(who, record_type, index)).finish()
 
 
-async def make_sprint_image(player: Player) -> bytes:
-    user, sprint = await gather(player.user, player.sprint)
-    if sprint.data.record is None:
+async def make_sprint_image(
+    player: RecordSource,
+    record_type: RecordType | None = None,
+    index: int | None = None,
+) -> bytes:
+    user, selected = await gather(
+        player.user,
+        select_record(player, RecordModeType.Sprint, record_type, index),
+    )
+    if selected is None:
         msg = Lang.record.not_found(username=user.name.upper(), mode=Lang.record.sprint())
         raise RecordNotFoundError(msg)
-    stats = sprint.data.record.results.stats
+    record = selected.record
+    stats = record.results.stats
     clears = stats.clears
     duration = timedelta(milliseconds=stats.finaltime).total_seconds()
     sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
@@ -89,7 +104,7 @@ async def make_sprint_image(player: Player) -> bytes:
     netloc = get_self_netloc()
     return await render_image(
         Record(
-            type='best',
+            type=selected.type,
             user=User(
                 id=user.ID,
                 name=user.name.upper(),
@@ -103,9 +118,9 @@ async def make_sprint_image(player: Player) -> bytes:
                 ),
             ),
             time=sprint_value,
-            replay_id=sprint.data.record.replayid,
-            rank=sprint.data.rank,
-            personal_rank=1,
+            replay_id=record.replayid,
+            rank=selected.rank,
+            personal_rank=selected.personal_rank,
             statistic=Statistic(
                 keys=stats.inputs,
                 kpp=round(stats.inputs / stats.piecesplaced, 2),
@@ -141,7 +156,7 @@ async def make_sprint_image(player: Player) -> bytes:
                     accuracy=round(stats.finesse.perfectpieces / stats.piecesplaced * 100, 2),
                 ),
             ),
-            play_at=sprint.data.record.ts,
+            play_at=record.ts,
             lang=get_lang(),
         ),
     )
