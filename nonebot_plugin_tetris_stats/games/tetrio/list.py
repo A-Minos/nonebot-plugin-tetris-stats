@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from nonebot_plugin_alconna import Args, Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
@@ -13,8 +13,15 @@ from ...utils.render import render_image
 from ...utils.render.schemas.v2.tetrio.user.list import Data, List, TetraLeague, User
 from .. import alc
 from . import command
+from .api.leaderboards import by
+from .api.schemas.base import P
+from .api.schemas.leaderboards import Parameter
+from .api.schemas.leaderboards.by import Entry, InvalidEntry
 from .constant import GAME_TYPE
 from .rank.snapshot import LeagueListQuery, ListSort, query_league_list
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 command.add(
     Subcommand(
@@ -45,6 +52,7 @@ async def _(  # noqa: PLR0913, PLR0917
     sort: ListSort | None = None,
 ):
     country = country.upper() if country is not None else None
+    sort_value = sort or 'league'
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
@@ -59,17 +67,28 @@ async def _(  # noqa: PLR0913, PLR0917
             if value is not None
         ],
     ):
-        async with get_session() as session:
-            entries = await query_league_list(
-                session,
-                LeagueListQuery(
-                    sort=sort or 'league',
-                    max_tr=max_tr,
-                    min_tr=min_tr,
-                    limit=limit or 25,
-                    country=country,
-                ),
+        entries: Sequence[Entry | InvalidEntry]
+        if sort_value == 'league':
+            parameter = Parameter(
+                # ?: 似乎是只需要 pri 至少 league 榜的返回值只有 pri
+                after=P(pri=max_tr, sec=0, ter=0).to_prisecter() if max_tr is not None else None,
+                before=P(pri=min_tr, sec=0, ter=0).to_prisecter() if min_tr is not None else None,
+                limit=limit or 25,
+                country=country,
             )
+            entries = (await by('league', parameter)).data.entries
+        else:
+            async with get_session() as session:
+                entries = await query_league_list(
+                    session,
+                    LeagueListQuery(
+                        sort=sort_value,
+                        max_tr=max_tr,
+                        min_tr=min_tr,
+                        limit=limit or 25,
+                        country=country,
+                    ),
+                )
         await UniMessage.image(
             raw=await render_image(
                 List(
@@ -103,6 +122,7 @@ async def _(  # noqa: PLR0913, PLR0917
                             ),
                         )
                         for entry in entries
+                        if isinstance(entry, Entry)
                     ],
                     lang=get_lang(),
                 ),

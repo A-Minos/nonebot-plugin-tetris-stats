@@ -1,16 +1,20 @@
 from collections.abc import AsyncIterator, Sequence
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, cast
 from uuid import UUID
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 if TYPE_CHECKING:
+    from nonebot_plugin_uninfo.model import Session as UninfoSession
+
     from nonebot_plugin_tetris_stats.games.tetrio.api.schemas.leaderboards.by import Entry, InvalidEntry
     from nonebot_plugin_tetris_stats.games.tetrio.models import TETRIOLeagueStats
-    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import ListSort
+    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import LeagueListQuery, ListSort
 
 
 UTC = timezone.utc
@@ -134,6 +138,67 @@ def test_list_defaults_to_league_sort() -> None:
 
     assert result.matched  # noqa: S101
     assert 'sort' not in result.all_matched_args  # noqa: S101
+
+
+@pytest.mark.parametrize('sort', [None, 'league', 'pps'])
+@pytest.mark.asyncio
+async def test_list_uses_live_api_only_for_league_sort(
+    monkeypatch: pytest.MonkeyPatch,
+    sort: str | None,
+) -> None:
+    from nonebot_plugin_alconna.uniseg import UniMessage  # noqa: PLC0415
+
+    from nonebot_plugin_tetris_stats.games import alc  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.games.tetrio import list as list_module  # noqa: PLC0415
+
+    api_calls: list[object] = []
+    snapshot_sorts: list[str] = []
+
+    @asynccontextmanager
+    async def fake_trigger(**_: object) -> AsyncIterator[None]:
+        yield
+
+    @asynccontextmanager
+    async def fake_get_session() -> AsyncIterator[object]:
+        yield object()
+
+    async def fake_get_session_persist_id(_: object) -> int:
+        return 1
+
+    async def fake_by(*args: object, **kwargs: object) -> SimpleNamespace:
+        api_calls.append((args, kwargs))
+        return SimpleNamespace(data=SimpleNamespace(entries=[]))
+
+    async def fake_query_league_list(_: object, query: 'LeagueListQuery') -> list[object]:
+        snapshot_sorts.append(query.sort)
+        return []
+
+    async def fake_render_image(*_: object, **__: object) -> bytes:
+        return b''
+
+    async def capture_finish(*_: object, **__: object) -> None:
+        return None
+
+    monkeypatch.setattr(list_module, 'trigger', fake_trigger)
+    monkeypatch.setattr(list_module, 'get_session', fake_get_session)
+    monkeypatch.setattr(list_module, 'get_session_persist_id', fake_get_session_persist_id)
+    monkeypatch.setattr(list_module, 'by', fake_by)
+    monkeypatch.setattr(list_module, 'query_league_list', fake_query_league_list)
+    monkeypatch.setattr(list_module, 'render_image', fake_render_image)
+    monkeypatch.setattr(UniMessage, 'finish', capture_finish)
+
+    list_handler = next(handler.call for handler in alc.handlers if handler.call.__module__ == list_module.__name__)
+    await list_handler(
+        event_session=cast('UninfoSession', SimpleNamespace(scope='qq')),
+        sort=sort,
+    )
+
+    if sort in (None, 'league'):
+        assert len(api_calls) == 1  # noqa: S101
+        assert snapshot_sorts == []  # noqa: S101
+    else:
+        assert api_calls == []  # noqa: S101
+        assert snapshot_sorts == [sort]  # noqa: S101
 
 
 @pytest.mark.asyncio
