@@ -21,23 +21,6 @@ class LeagueListQuery:
     country: str | None = None
 
 
-def _metric(entry: Entry, sort: ListSort) -> float | int | None:
-    league = entry.league
-    if sort == 'league':
-        return round(league.tr, 2)
-    if sort in ('apl', 'adpl') and not league.pps:
-        return None
-
-    metrics = get_metrics(pps=league.pps, apm=league.apm, vs=league.vs)
-    return {
-        'pps': metrics.pps,
-        'apm': metrics.apm,
-        'adpm': metrics.adpm,
-        'apl': metrics.apl,
-        'adpl': metrics.adpl,
-    }[sort]
-
-
 async def query_league_list(session: AsyncSession, query: LeagueListQuery) -> list[Entry]:
     """Read and rank players from the latest persisted league snapshot."""
     latest = (
@@ -64,21 +47,26 @@ async def query_league_list(session: AsyncSession, query: LeagueListQuery) -> li
 
     # League order is the deterministic tie-breaker for every metric.
     entries.sort(key=lambda entry: entry.league.tr, reverse=True)
-    if query.sort == 'league':
+    sort = query.sort
+    if sort == 'league':
         if query.min_tr is not None:
             return entries[-query.limit :] if query.limit else []
         return entries[: query.limit]
 
     ranked_entries: list[tuple[float | int, Entry]] = []
     for entry in entries:
-        metric = _metric(entry, query.sort)
-        if metric is not None:
-            ranked_entries.append((metric, entry))
+        league = entry.league
+        if sort in ('apl', 'adpl') and not league.pps:
+            continue
+
+        metrics = get_metrics(pps=league.pps, apm=league.apm, vs=league.vs)
+        metric = {
+            'pps': metrics.pps,
+            'apm': metrics.apm,
+            'adpm': metrics.adpm,
+            'apl': metrics.apl,
+            'adpl': metrics.adpl,
+        }[sort]
+        ranked_entries.append((metric, entry))
     ranked_entries.sort(key=lambda ranked_entry: ranked_entry[0], reverse=True)
     return [entry for _, entry in ranked_entries[: query.limit]]
-
-
-__all__ = [
-    'LeagueListQuery',
-    'query_league_list',
-]
