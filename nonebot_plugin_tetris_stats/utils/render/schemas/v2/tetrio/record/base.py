@@ -4,11 +4,11 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from ....base import Base, People
+from ....base import Base, People, TETRIOPlayer
 
 
-class User(People):
-    id: str
+class User(People, TETRIOPlayer):
+    pass
 
 
 class Max(BaseModel):

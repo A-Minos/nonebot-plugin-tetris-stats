@@ -10,8 +10,8 @@ def permission_name(game: str, command: str) -> str:
     return f'tetris.{game.upper()}.{command.lower()}'
 
 
-def command_permission(game: str, command: str) -> tuple[DependsInner]:
-    check = require_permission(permission_name(game, command), default_available=True)
+def command_permission(game: str, command: str, *, default_available: bool = True) -> tuple[DependsInner]:
+    check = require_permission(permission_name(game, command), default_available=default_available)
 
     async def check_permission(matcher: Matcher, *, allowed: bool = Depends(check)) -> None:
         if not allowed:

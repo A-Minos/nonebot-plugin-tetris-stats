@@ -254,6 +254,7 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
                     hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                 ),
                 name=user.name.upper(),
+                id=user.ID,
                 bio=user_info.data.bio,
             ),
             multiplayer=Multiplayer(

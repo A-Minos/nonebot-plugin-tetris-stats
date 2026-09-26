@@ -334,6 +334,39 @@
           "type": "string"
         }
       }
+    },
+    "mask": {
+      "title": "Mask",
+      "description": "Scope 'mask' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "name",
+          "description": "value of lang item type 'name'",
+          "type": "string"
+        },
+        "updated": {
+          "title": "updated",
+          "description": "value of lang item type 'updated'",
+          "type": "string"
+        },
+        "none": {
+          "title": "none",
+          "description": "value of lang item type 'none'",
+          "type": "string"
+        },
+        "empty": {
+          "title": "empty",
+          "description": "value of lang item type 'empty'",
+          "type": "string"
+        },
+        "invalid_field": {
+          "title": "invalid_field",
+          "description": "value of lang item type 'invalid_field'",
+          "type": "string"
+        }
+      }
     }
   }
 }

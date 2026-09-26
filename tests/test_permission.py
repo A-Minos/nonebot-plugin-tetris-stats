@@ -234,3 +234,24 @@ async def test_non_discord_verify_still_requires_permission(app: App, permission
 
     await system.suset(subject, 'tetris.TETRIO.verify', Permission.NONE, deny=True)
     await send_command(app, platform_id, 'io验证', Message('目前仅支持 Discord 账号验证'))
+
+
+async def test_mask_commands_require_explicit_permission(app: App, permission_user: tuple[int, User]) -> None:
+    from nonebot_plugin_permission import system  # noqa: PLC0415
+
+    uid = '0123456789abcdef01234567'
+    platform_id, subject = permission_user
+    await send_command(app, platform_id, f'io屏蔽 {uid}', DENIED)
+
+    await system.assign(subject, 'tetris.TETRIO.mask.*', Permission.VISIT | Permission.AVAILABLE)
+    await send_command(app, platform_id, f'io屏蔽 {uid} 头像 bio', Message(f'{uid} 当前屏蔽字段: avatar, bio'))
+    await send_command(app, platform_id, 'io屏蔽列表', Message(f'{uid}: avatar, bio'))
+    await send_command(app, platform_id, f'io解屏蔽 {uid} avatar', Message(f'{uid} 当前屏蔽字段: bio'))
+    await send_command(
+        app,
+        platform_id,
+        f'io屏蔽 {uid} 脚',
+        Message('未知字段: 脚\n可用字段: name/avatar/banner/bio/country (名字/头像/横幅/简介/国旗)'),
+    )
+    await send_command(app, platform_id, f'io解屏蔽 {uid}', Message(f'{uid} 当前屏蔽字段: 无'))
+    await send_command(app, platform_id, 'io屏蔽列表', Message('暂无被屏蔽的玩家'))

@@ -93,6 +93,14 @@ class Retry:
     message: LangItem = LangItem('retry', 'message')
 
 
+class Mask:
+    name: LangItem = LangItem('mask', 'name')
+    updated: LangItem = LangItem('mask', 'updated')
+    none: LangItem = LangItem('mask', 'none')
+    empty: LangItem = LangItem('mask', 'empty')
+    invalid_field: LangItem = LangItem('mask', 'invalid_field')
+
+
 class Lang(LangModel):
     interaction = Interaction
     error = Error
@@ -105,3 +113,4 @@ class Lang(LangModel):
     help = Help
     prompt = Prompt
     retry = Retry
+    mask = Mask

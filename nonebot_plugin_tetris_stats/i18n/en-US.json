@@ -69,5 +69,12 @@
   },
   "retry": {
     "message": "Retrying: {func} ({i}/{max_attempts})"
+  },
+  "mask": {
+    "name": "Masked",
+    "updated": "Masked fields of {uid}: {fields}",
+    "none": "none",
+    "empty": "No masked players.",
+    "invalid_field": "Unknown fields: {fields}\nAvailable fields: name/avatar/banner/bio/country"
   }
 }

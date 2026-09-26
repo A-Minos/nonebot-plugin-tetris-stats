@@ -69,6 +69,10 @@
     {
       "scope": "retry",
       "types": ["message"]
+    },
+    {
+      "scope": "mask",
+      "types": ["name", "updated", "none", "empty", "invalid_field"]
     }
   ]
 }
