@@ -24,9 +24,9 @@ from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, T
 from ....utils.render.schemas.v2.tetrio.record.blitz import Record, Statistic
 from ....utils.typedefs import Me
 from .. import alc
-from ..api.player import Player
+from ..api.player import Player, RecordModeType, RecordType
 from ..constant import GAME_TYPE
-from . import command
+from . import RecordSource, command, get_command_args, select_record
 
 command.add(Option('--blitz', dest='blitz'))
 
@@ -38,17 +38,19 @@ alc.shortcut(
 
 
 @alc.assign('TETRIO.record.blitz')
-async def _(
+async def _(  # noqa: PLR0913, PLR0917
     event: Event,
     matcher: Matcher,
     who: At | Me,
     event_session: Uninfo,
+    record_type: RecordType | None = None,
+    index: int | None = None,
 ):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='record',
-        command_args=['--blitz'],
+        command_args=get_command_args('--blitz', record_type, index),
     ):
         async with get_session() as session:
             bind = await query_bind_info(
@@ -61,34 +63,47 @@ async def _(
         player = Player(user_id=bind.game_account, trust=True)
         await (
             (UniMessage.i18n(Lang.interaction.warning.unverified) if not bind.verify else UniMessage())
-            + UniMessage.image(raw=await make_blitz_image(player))
+            + UniMessage.image(raw=await make_blitz_image(player, record_type, index))
         ).finish()
 
 
 @alc.assign('TETRIO.record.blitz')
-async def _(who: Player, event_session: Uninfo):
+async def _(
+    who: Player,
+    event_session: Uninfo,
+    record_type: RecordType | None = None,
+    index: int | None = None,
+):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
         game_platform=GAME_TYPE,
         command_type='record',
-        command_args=['--blitz'],
+        command_args=get_command_args('--blitz', record_type, index),
     ):
-        await UniMessage.image(raw=await make_blitz_image(who)).finish()
+        await UniMessage.image(raw=await make_blitz_image(who, record_type, index)).finish()
 
 
-async def make_blitz_image(player: Player) -> bytes:
-    user, blitz = await gather(player.user, player.blitz)
-    if blitz.data.record is None:
+async def make_blitz_image(
+    player: RecordSource,
+    record_type: RecordType | None = None,
+    index: int | None = None,
+) -> bytes:
+    user, selected = await gather(
+        player.user,
+        select_record(player, RecordModeType.Blitz, record_type, index),
+    )
+    if selected is None:
         msg = Lang.record.not_found(username=user.name.upper(), mode=Lang.record.blitz())
         raise RecordNotFoundError(msg)
-    stats = blitz.data.record.results.stats
+    record = selected.record
+    stats = record.results.stats
     clears = stats.clears
     duration = timedelta(milliseconds=stats.finaltime).total_seconds()
     metrics = get_metrics(pps=stats.piecesplaced / duration)
     netloc = get_self_netloc()
     return await render_image(
         Record(
-            type='best',
+            type=selected.type,
             user=User(
                 id=user.ID,
                 name=user.name.upper(),
@@ -101,9 +116,9 @@ async def make_blitz_image(player: Player) -> bytes:
                     hash=md5(user.ID.encode()).hexdigest(),  # noqa: S324
                 ),
             ),
-            replay_id=blitz.data.record.replayid,
-            rank=blitz.data.rank,
-            personal_rank=1,
+            replay_id=record.replayid,
+            rank=selected.rank,
+            personal_rank=selected.personal_rank,
             statistic=Statistic(
                 keys=stats.inputs,
                 kpp=round(stats.inputs / stats.piecesplaced, 2),
@@ -141,7 +156,7 @@ async def make_blitz_image(player: Player) -> bytes:
                 ),
                 level=stats.level,
             ),
-            play_at=blitz.data.record.ts,
+            play_at=record.ts,
             lang=get_lang(),
         ),
     )

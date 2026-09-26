@@ -1,10 +1,12 @@
 from abc import ABC
 from datetime import datetime
-from typing import Literal
+from typing import Literal, TypeAlias
 
 from pydantic import BaseModel
 
 from ....base import Base, People
+
+RecordRenderType: TypeAlias = Literal['best', 'personal_best', 'recent', 'disputed']
 
 
 class User(People):
@@ -63,7 +65,7 @@ class Statistic(BaseModel):
 
 
 class Record(Base, ABC):
-    type: Literal['best', 'personal_best', 'recent', 'disputed']
+    type: RecordRenderType
 
     user: User
 
