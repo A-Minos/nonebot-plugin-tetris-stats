@@ -15,12 +15,12 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import People
 from ...utils.render.schemas.bind import Bind
-from . import alc
+from . import assign
 from .api import Player
 from .constant import GAME_TYPE
 
 
-@alc.assign('TOS.bind')
+@assign('TOS.bind')
 async def _(
     nb_user: User,
     account: Player,

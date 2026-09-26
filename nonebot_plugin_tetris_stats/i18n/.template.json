@@ -4,6 +4,7 @@
     {
       "scope": "interaction",
       "types": [
+        "permission_denied",
         { "subtype": "wrong", "types": ["query_bot"] },
         { "subtype": "warning", "types": ["unverified"] }
       ]

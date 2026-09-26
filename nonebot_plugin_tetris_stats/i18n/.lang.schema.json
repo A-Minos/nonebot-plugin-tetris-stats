@@ -9,6 +9,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "permission_denied": {
+          "title": "permission_denied",
+          "description": "value of lang item type 'permission_denied'",
+          "type": "string"
+        },
         "wrong": {
           "title": "Wrong",
           "description": "Scope 'wrong' of lang item",

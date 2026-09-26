@@ -3,7 +3,7 @@ from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
 from ...utils.duration import parse_duration
 from ...utils.typedefs import Me
-from .. import add_block_handlers, alc, command
+from .. import add_block_handlers, alc, assign, command
 from .api import Player
 from .constant import USER_NAME
 
@@ -91,6 +91,6 @@ alc.shortcut(
     humanized='茶服配置',
 )
 
-add_block_handlers(alc.assign('TOS.query'))
+add_block_handlers(assign('TOS.query'))
 
 from . import bind, config, query, unbind  # noqa: E402, F401

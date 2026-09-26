@@ -23,7 +23,7 @@ from ...utils.render.schemas.v1.top.info import Data as InfoData
 from ...utils.render.schemas.v1.top.info import Info
 from ...utils.timezone import ensure_utc_datetime
 from ...utils.typedefs import Me
-from . import alc
+from . import assign
 from .api import Player
 from .api.models import TOPHistoricalData
 from .api.schemas.user_profile import Data, UserProfile
@@ -79,7 +79,7 @@ def compare_metrics(
     return Trending.compare(compare.lpm, current.lpm), Trending.compare(compare.apm, current.apm)
 
 
-@alc.assign('TOP.query')
+@assign('TOP.query')
 async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
@@ -117,7 +117,7 @@ async def _(  # noqa: PLR0913, PLR0917
         await (warning + result).finish()
 
 
-@alc.assign('TOP.query')
+@assign('TOP.query')
 async def _(user: NBUser, who: Player, event_session: Uninfo, compare: timedelta | None = None):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
