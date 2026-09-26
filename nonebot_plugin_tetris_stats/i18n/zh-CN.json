@@ -73,6 +73,7 @@
     "updated": "{uid} 当前屏蔽字段: {fields}",
     "none": "无",
     "empty": "暂无被屏蔽的玩家",
-    "invalid_field": "未知字段: {fields}\n可用字段: name/avatar/banner/bio/country (名字/头像/横幅/简介/国旗)"
+    "invalid_field": "未知字段: {fields}\n可用字段: {available}",
+    "fields": { "name": "名字", "avatar": "头像", "banner": "横幅", "bio": "简介", "country": "国旗" }
   }
 }

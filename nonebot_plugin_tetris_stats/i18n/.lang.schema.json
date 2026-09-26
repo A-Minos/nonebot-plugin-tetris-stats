@@ -365,6 +365,39 @@
           "title": "invalid_field",
           "description": "value of lang item type 'invalid_field'",
           "type": "string"
+        },
+        "fields": {
+          "title": "Fields",
+          "description": "Scope 'fields' of lang item",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "title": "name",
+              "description": "value of lang item type 'name'",
+              "type": "string"
+            },
+            "avatar": {
+              "title": "avatar",
+              "description": "value of lang item type 'avatar'",
+              "type": "string"
+            },
+            "banner": {
+              "title": "banner",
+              "description": "value of lang item type 'banner'",
+              "type": "string"
+            },
+            "bio": {
+              "title": "bio",
+              "description": "value of lang item type 'bio'",
+              "type": "string"
+            },
+            "country": {
+              "title": "country",
+              "description": "value of lang item type 'country'",
+              "type": "string"
+            }
+          }
         }
       }
     }

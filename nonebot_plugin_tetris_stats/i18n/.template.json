@@ -72,7 +72,14 @@
     },
     {
       "scope": "mask",
-      "types": ["name", "updated", "none", "empty", "invalid_field"]
+      "types": [
+        "name",
+        "updated",
+        "none",
+        "empty",
+        "invalid_field",
+        { "subtype": "fields", "types": ["name", "avatar", "banner", "bio", "country"] }
+      ]
     }
   ]
 }

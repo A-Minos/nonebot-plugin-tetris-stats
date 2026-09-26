@@ -244,14 +244,14 @@ async def test_mask_commands_require_explicit_permission(app: App, permission_us
     await send_command(app, platform_id, f'io屏蔽 {uid}', DENIED)
 
     await system.assign(subject, 'tetris.TETRIO.mask.*', Permission.VISIT | Permission.AVAILABLE)
-    await send_command(app, platform_id, f'io屏蔽 {uid} 头像 bio', Message(f'{uid} 当前屏蔽字段: avatar, bio'))
-    await send_command(app, platform_id, 'io屏蔽列表', Message(f'{uid}: avatar, bio'))
-    await send_command(app, platform_id, f'io解屏蔽 {uid} avatar', Message(f'{uid} 当前屏蔽字段: bio'))
+    await send_command(app, platform_id, f'io屏蔽 {uid} 头像 bio', Message(f'{uid} 当前屏蔽字段: 头像, 简介'))
+    await send_command(app, platform_id, 'io屏蔽列表', Message(f'{uid}: 头像, 简介'))
+    await send_command(app, platform_id, f'io解屏蔽 {uid} avatar', Message(f'{uid} 当前屏蔽字段: 简介'))
     await send_command(
         app,
         platform_id,
         f'io屏蔽 {uid} 脚',
-        Message('未知字段: 脚\n可用字段: name/avatar/banner/bio/country (名字/头像/横幅/简介/国旗)'),
+        Message('未知字段: 脚\n可用字段: name (名字), avatar (头像), banner (横幅), bio (简介), country (国旗)'),
     )
     await send_command(app, platform_id, f'io解屏蔽 {uid}', Message(f'{uid} 当前屏蔽字段: 无'))
     await send_command(app, platform_id, 'io屏蔽列表', Message('暂无被屏蔽的玩家'))

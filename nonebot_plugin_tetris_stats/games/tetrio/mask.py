@@ -8,6 +8,7 @@ from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
 from pydantic import BaseModel
 from sqlalchemy import delete, select
+from tarina.lang.model import LangItem
 
 from ...i18n import Lang
 from ...utils.render import pre_render
@@ -18,15 +19,12 @@ from .models import TETRIODisplayMask
 from .typedefs import DisplayField
 
 DISPLAY_FIELDS: tuple[DisplayField, ...] = get_args(DisplayField)
-FIELD_ALIASES: dict[str, DisplayField] = {
-    **{field: field for field in DISPLAY_FIELDS},
-    '名字': 'name',
-    '昵称': 'name',
-    '头像': 'avatar',
-    '横幅': 'banner',
-    '简介': 'bio',
-    '国旗': 'country',
-    '国家': 'country',
+FIELD_LABELS: dict[DisplayField, LangItem] = {
+    'name': Lang.mask.fields.name,
+    'avatar': Lang.mask.fields.avatar,
+    'banner': Lang.mask.fields.banner,
+    'bio': Lang.mask.fields.bio,
+    'country': Lang.mask.fields.country,
 }
 
 command.add(
@@ -120,13 +118,20 @@ async def _(data: Base) -> None:
 
 
 def format_fields(fields: Collection[DisplayField]) -> str:
-    return ', '.join(field for field in DISPLAY_FIELDS if field in fields) or Lang.mask.none()
+    return ', '.join(FIELD_LABELS[field]() for field in DISPLAY_FIELDS if field in fields) or Lang.mask.none()
 
 
-async def parse_fields(fields: tuple[str, ...]) -> frozenset[DisplayField]:
-    if unknown := [field for field in fields if field not in FIELD_ALIASES]:
-        await UniMessage(Lang.mask.invalid_field(fields=', '.join(unknown))).finish()
-    return frozenset(FIELD_ALIASES[field] for field in fields) or frozenset(DISPLAY_FIELDS)
+async def parse_fields(texts: tuple[str, ...]) -> frozenset[DisplayField]:
+    """英文字段名始终可用, 另外接受当前语言的字段名"""
+    lookup: dict[str, DisplayField] = {key: field for field in DISPLAY_FIELDS for key in (field, FIELD_LABELS[field]())}
+    if unknown := [text for text in texts if text not in lookup]:
+        await UniMessage(
+            Lang.mask.invalid_field(
+                fields=', '.join(unknown),
+                available=', '.join(f'{field} ({FIELD_LABELS[field]()})' for field in DISPLAY_FIELDS),
+            )
+        ).finish()
+    return frozenset(lookup[text] for text in texts) or frozenset(DISPLAY_FIELDS)
 
 
 @assign('TETRIO.mask.add', default_available=False)
