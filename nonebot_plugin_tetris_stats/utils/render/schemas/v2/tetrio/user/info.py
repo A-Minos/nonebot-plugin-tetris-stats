@@ -8,7 +8,7 @@ from .......games.tetrio.api.schemas.summaries.achievements import ArType, RankT
 from .......games.tetrio.api.schemas.summaries.achievements import Rank as AchievementRank
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
-from ....base import Avatar, Base, HistoryData
+from ....base import Avatar, Base, HistoryData, TETRIOPlayer
 
 
 class Badge(BaseModel):
@@ -30,8 +30,7 @@ class Achievement(BaseModel):
     total: int | None
 
 
-class User(BaseModel):
-    id: str
+class User(TETRIOPlayer):
     name: str
     country: str | None
 

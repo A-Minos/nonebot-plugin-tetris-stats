@@ -26,6 +26,7 @@ from ....utils.typedefs import Me
 from .. import alc, assign
 from ..api.player import Player
 from ..constant import GAME_TYPE
+from ..mask import display_name, get_mask
 from . import command
 
 command.add(Option('--blitz', dest='blitz'))
@@ -79,7 +80,9 @@ async def _(who: Player, event_session: Uninfo):
 async def make_blitz_image(player: Player) -> bytes:
     user, blitz = await gather(player.user, player.blitz)
     if blitz.data.record is None:
-        msg = Lang.record.not_found(username=user.name.upper(), mode=Lang.record.blitz())
+        msg = Lang.record.not_found(
+            username=display_name(user.name.upper(), await get_mask(user.ID)), mode=Lang.record.blitz()
+        )
         raise RecordNotFoundError(msg)
     stats = blitz.data.record.results.stats
     clears = stats.clears

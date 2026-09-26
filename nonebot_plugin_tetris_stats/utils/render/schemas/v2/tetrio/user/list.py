@@ -3,7 +3,7 @@ from typing_extensions import override
 
 from .......games.tetrio.api.typedefs import Rank
 from ......typedefs import Number
-from ....base import Avatar, Base
+from ....base import Avatar, Base, TETRIOPlayer
 
 
 class TetraLeague(BaseModel):
@@ -21,8 +21,7 @@ class TetraLeague(BaseModel):
     decaying: bool
 
 
-class User(BaseModel):
-    id: str
+class User(TETRIOPlayer):
     name: str
     avatar: str | Avatar
     country: str | None

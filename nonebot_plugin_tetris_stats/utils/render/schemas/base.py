@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from strenum import StrEnum
 
 from ...typedefs import Lang, Number
@@ -25,6 +25,16 @@ class Avatar(BaseModel):
 class People(BaseModel):
     avatar: str | Avatar
     name: str
+
+
+class TETRIOPlayer(BaseModel):
+    """TETR.IO 玩家, 渲染前会按 id 应用展示信息屏蔽"""
+
+    id: str
+
+
+class TETRIOPeople(People, TETRIOPlayer):
+    id: str = Field(exclude=True)
 
 
 class Ranking(BaseModel):

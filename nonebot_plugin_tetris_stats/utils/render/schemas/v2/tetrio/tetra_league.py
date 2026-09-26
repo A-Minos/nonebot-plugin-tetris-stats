@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing_extensions import override
 
 from .....typedefs import Number
-from ...base import Base
+from ...base import Base, TETRIOPlayer
 
 
 class StatisticalData(BaseModel):
@@ -15,8 +15,7 @@ class StatisticalData(BaseModel):
     adpl: Number
 
 
-class User(BaseModel):
-    id: str
+class User(TETRIOPlayer):
     name: str
 
 

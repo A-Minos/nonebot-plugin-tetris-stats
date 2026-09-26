@@ -26,6 +26,7 @@ from ....utils.typedefs import Me
 from .. import alc, assign
 from ..api.player import Player
 from ..constant import GAME_TYPE
+from ..mask import display_name, get_mask
 from . import command
 
 command.add(Option('--40l', dest='sprint'))
@@ -79,7 +80,9 @@ async def _(who: Player, event_session: Uninfo):
 async def make_sprint_image(player: Player) -> bytes:
     user, sprint = await gather(player.user, player.sprint)
     if sprint.data.record is None:
-        msg = Lang.record.not_found(username=user.name.upper(), mode=Lang.record.sprint())
+        msg = Lang.record.not_found(
+            username=display_name(user.name.upper(), await get_mask(user.ID)), mode=Lang.record.sprint()
+        )
         raise RecordNotFoundError(msg)
     stats = sprint.data.record.results.stats
     clears = stats.clears

@@ -3,11 +3,11 @@ from typing_extensions import override
 
 from ......games.tetrio.api.typedefs import Rank
 from .....typedefs import Number
-from ...base import Base, People, Trending
+from ...base import Base, TETRIOPeople, Trending
 from ..base import History
 
 
-class User(People):
+class User(TETRIOPeople):
     bio: str | None
 
 

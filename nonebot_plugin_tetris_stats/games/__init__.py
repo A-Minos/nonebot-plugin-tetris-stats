@@ -32,9 +32,9 @@ alc = on_alconna(
 )
 
 
-def assign(path: str) -> Callable[[T_Handler], T_Handler]:
+def assign(path: str, *, default_available: bool = True) -> Callable[[T_Handler], T_Handler]:
     game, command_name = path.split('.', maxsplit=1)
-    return alc.assign(path, parameterless=command_permission(game, command_name))
+    return alc.assign(path, parameterless=command_permission(game, command_name, default_available=default_available))
 
 
 def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:

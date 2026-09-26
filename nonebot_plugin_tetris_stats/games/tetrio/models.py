@@ -9,7 +9,14 @@ from ...db.models import PydanticType
 from ...db.types import UTCDateTime
 from .api.schemas.leaderboards.by import BySuccessModel, Entry
 from .api.typedefs import ValidRank
-from .typedefs import Template
+from .typedefs import DisplayField, Template
+
+
+class TETRIODisplayMask(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_mask'
+
+    uid: Mapped[str] = mapped_column(String(24), primary_key=True)
+    field: Mapped[DisplayField] = mapped_column(String(7), primary_key=True)
 
 
 class TETRIOUserConfig(MappedAsDataclass, Model):

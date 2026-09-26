@@ -18,7 +18,7 @@ from ...utils.host import get_self_netloc
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
 from ...utils.render import render_image
-from ...utils.render.schemas.base import Avatar, People
+from ...utils.render.schemas.base import Avatar, People, TETRIOPeople
 from ...utils.render.schemas.bind import Bind
 from . import alc, assign, command
 from .api import Player
@@ -71,7 +71,7 @@ try:
                     Bind(
                         platform='TETR.IO',
                         type='success',
-                        user=People(
+                        user=TETRIOPeople(
                             avatar=str(
                                 URL(f'http://{get_self_netloc()}/host/resource/tetrio/avatars/{user.ID}')
                                 % {'revision': avatar_revision}
@@ -79,6 +79,7 @@ try:
                             if avatar_revision is not None and avatar_revision != 0
                             else Avatar(type='identicon', hash=md5(user.ID.encode()).hexdigest()),  # noqa: S324
                             name=user.name.upper(),
+                            id=user.ID,
                         ),
                         bot=People(
                             avatar=await get_avatar(

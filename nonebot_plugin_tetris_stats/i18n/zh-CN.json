@@ -67,5 +67,13 @@
   },
   "retry": {
     "message": "Retrying: {func} ({i}/{max_attempts})"
+  },
+  "mask": {
+    "name": "已屏蔽",
+    "updated": "{uid} 当前屏蔽字段: {fields}",
+    "none": "无",
+    "empty": "暂无被屏蔽的玩家",
+    "invalid_field": "未知字段: {fields}\n可用字段: {available}",
+    "fields": { "name": "名字", "avatar": "头像", "banner": "横幅", "bio": "简介", "country": "国旗" }
   }
 }
