@@ -13,6 +13,7 @@ class InteractionWarning:
 
 
 class Interaction:
+    permission_denied: LangItem = LangItem('interaction', 'permission_denied')
     wrong = InteractionWrong
     warning = InteractionWarning
 

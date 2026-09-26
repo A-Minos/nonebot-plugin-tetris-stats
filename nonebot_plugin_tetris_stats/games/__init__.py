@@ -8,6 +8,7 @@ from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alco
 
 from .. import ns
 from ..i18n import Lang
+from ..permission import command_permission
 from ..utils.exception import NeedCatchError
 from ..utils.help_extension import HelpImageExtension
 from ..utils.help_formatter import StructuredHelpFormatter
@@ -29,6 +30,11 @@ alc = on_alconna(
     use_origin=True,
     extensions=[HelpImageExtension()],
 )
+
+
+def assign(path: str) -> Callable[[T_Handler], T_Handler]:
+    game, command_name = path.split('.', maxsplit=1)
+    return alc.assign(path, parameterless=command_permission(game, command_name))
 
 
 def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:

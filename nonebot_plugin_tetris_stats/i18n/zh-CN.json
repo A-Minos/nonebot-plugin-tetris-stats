@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "你没有执行此命令的权限",
     "wrong": { "query_bot": "不能查询bot的信息" },
     "warning": { "unverified": "* 由于无法验证绑定信息, 不能保证查询到的用户为本人" }
   },

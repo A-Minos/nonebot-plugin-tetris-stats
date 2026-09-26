@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "You do not have permission to execute this command.",
     "wrong": { "query_bot": "Can't query bot's information" },
     "warning": {
       "unverified": "* Because I can't verify account linking information, I can't guarantee the info I found is yourself/themself."

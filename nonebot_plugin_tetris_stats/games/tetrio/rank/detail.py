@@ -15,7 +15,7 @@ from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render_image
 from ....utils.render.schemas.v2.tetrio.rank.detail import Data, SpecialData
-from .. import alc
+from .. import assign
 from ..api.typedefs import ValidRank
 from ..constant import GAME_TYPE
 from ..models import TETRIOLeagueStats
@@ -36,7 +36,7 @@ command.add(
 )
 
 
-@alc.assign('TETRIO.rank.detail')
+@assign('TETRIO.rank.detail')
 async def _(rank: ValidRank, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),

@@ -9,12 +9,12 @@ from sqlalchemy import select
 
 from ...db import trigger
 from ...i18n import Lang
-from . import alc
+from . import assign
 from .constant import GAME_TYPE
 from .models import TOPUserConfig
 
 
-@alc.assign('TOP.config')
+@assign('TOP.config')
 async def _(user: User, session: async_scoped_session, event_session: Uninfo, compare: timedelta):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
