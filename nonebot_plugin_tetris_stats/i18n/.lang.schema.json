@@ -1168,6 +1168,141 @@
                   "type": "string"
                 }
               }
+            },
+            "mask": {
+              "title": "Mask",
+              "description": "Scope 'mask' of lang item",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "title": "description",
+                  "description": "value of lang item type 'description'",
+                  "type": "string"
+                },
+                "add": {
+                  "title": "Add",
+                  "description": "Scope 'add' of lang item",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "title": "description",
+                      "description": "value of lang item type 'description'",
+                      "type": "string"
+                    },
+                    "args": {
+                      "title": "Args",
+                      "description": "Scope 'args' of lang item",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "account": {
+                          "title": "Account",
+                          "description": "Scope 'account' of lang item",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "notice": {
+                              "title": "notice",
+                              "description": "value of lang item type 'notice'",
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "fields": {
+                          "title": "Fields",
+                          "description": "Scope 'fields' of lang item",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "notice": {
+                              "title": "notice",
+                              "description": "value of lang item type 'notice'",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "shortcut": {
+                      "title": "shortcut",
+                      "description": "value of lang item type 'shortcut'",
+                      "type": "string"
+                    }
+                  }
+                },
+                "remove": {
+                  "title": "Remove",
+                  "description": "Scope 'remove' of lang item",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "title": "description",
+                      "description": "value of lang item type 'description'",
+                      "type": "string"
+                    },
+                    "args": {
+                      "title": "Args",
+                      "description": "Scope 'args' of lang item",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "account": {
+                          "title": "Account",
+                          "description": "Scope 'account' of lang item",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "notice": {
+                              "title": "notice",
+                              "description": "value of lang item type 'notice'",
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "fields": {
+                          "title": "Fields",
+                          "description": "Scope 'fields' of lang item",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "properties": {
+                            "notice": {
+                              "title": "notice",
+                              "description": "value of lang item type 'notice'",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "shortcut": {
+                      "title": "shortcut",
+                      "description": "value of lang item type 'shortcut'",
+                      "type": "string"
+                    }
+                  }
+                },
+                "list": {
+                  "title": "List",
+                  "description": "Scope 'list' of lang item",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "title": "description",
+                      "description": "value of lang item type 'description'",
+                      "type": "string"
+                    },
+                    "shortcut": {
+                      "title": "shortcut",
+                      "description": "value of lang item type 'shortcut'",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
             }
           }
         },

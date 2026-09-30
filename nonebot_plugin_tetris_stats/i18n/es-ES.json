@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "No tienes permiso para ejecutar este comando",
     "wrong": { "query_bot": "No se puede consultar la información del bot" },
     "warning": {
       "unverified": "* La vinculación de la cuenta no está verificada, por lo que la información podría no pertenecer al usuario indicado."
@@ -48,6 +49,9 @@
     "blitz": "Blitz",
     "sprint": "Sprint"
   },
+  "list": {
+    "no_snapshot": "No hay una instantánea de la clasificación de TETR.IO disponible. Inténtalo de nuevo más tarde"
+  },
   "stats": {
     "user_info": "Usuario {name} ({id})",
     "no_rank": ", no hay estadísticas de rango disponibles",
@@ -83,6 +87,20 @@
     "message": "Reintentando: {func} ({i}/{max_attempts})",
     "screenshot": "La captura de pantalla ha fallado; reintentando"
   },
+  "mask": {
+    "name": "Oculto",
+    "updated": "Campos ocultos de {uid}: {fields}",
+    "none": "ninguno",
+    "empty": "No hay jugadores con información oculta.",
+    "invalid_field": "Campos desconocidos: {fields}\nCampos disponibles: {available}",
+    "fields": {
+      "name": "Nombre",
+      "avatar": "Avatar",
+      "banner": "Banner",
+      "bio": "Biografía",
+      "country": "País"
+    }
+  },
   "command": {
     "root": {
       "description": "Consultar datos de jugadores de juegos relacionados con Tetris",
@@ -90,6 +108,37 @@
       "plugin_usage": "Envía tstats --help para ver cómo usarlo"
     },
     "tetrio": {
+      "mask": {
+        "description": "Gestionar la ocultación de información visible de jugadores de TETR.IO",
+        "add": {
+          "description": "Ocultar información visible de un jugador",
+          "args": {
+            "account": {
+              "notice": "Nombre de usuario / ID de TETR.IO"
+            },
+            "fields": {
+              "notice": "Campos que ocultar, todos por defecto"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "Mostrar la información oculta de un jugador",
+          "args": {
+            "account": {
+              "notice": "Nombre de usuario / ID de TETR.IO"
+            },
+            "fields": {
+              "notice": "Campos que mostrar, todos por defecto"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "Listar jugadores con información oculta",
+          "shortcut": "io屏蔽列表"
+        }
+      },
       "description": "Comandos de TETR.IO",
       "bind": {
         "description": "Vincular una cuenta de TETR.IO",

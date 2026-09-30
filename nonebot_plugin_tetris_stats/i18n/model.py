@@ -449,6 +449,66 @@ class CommandTetrioVerify:
 
 
 
+class CommandTetrioMaskAddArgsAccount:
+    notice: LangItem = LangItem("command", "tetrio.mask.add.args.account.notice")
+
+
+
+class CommandTetrioMaskAddArgsFields:
+    notice: LangItem = LangItem("command", "tetrio.mask.add.args.fields.notice")
+
+
+
+class CommandTetrioMaskAddArgs:
+    account = CommandTetrioMaskAddArgsAccount
+    fields = CommandTetrioMaskAddArgsFields
+
+
+
+class CommandTetrioMaskAdd:
+    description: LangItem = LangItem("command", "tetrio.mask.add.description")
+    args = CommandTetrioMaskAddArgs
+    shortcut: LangItem = LangItem("command", "tetrio.mask.add.shortcut")
+
+
+
+class CommandTetrioMaskRemoveArgsAccount:
+    notice: LangItem = LangItem("command", "tetrio.mask.remove.args.account.notice")
+
+
+
+class CommandTetrioMaskRemoveArgsFields:
+    notice: LangItem = LangItem("command", "tetrio.mask.remove.args.fields.notice")
+
+
+
+class CommandTetrioMaskRemoveArgs:
+    account = CommandTetrioMaskRemoveArgsAccount
+    fields = CommandTetrioMaskRemoveArgsFields
+
+
+
+class CommandTetrioMaskRemove:
+    description: LangItem = LangItem("command", "tetrio.mask.remove.description")
+    args = CommandTetrioMaskRemoveArgs
+    shortcut: LangItem = LangItem("command", "tetrio.mask.remove.shortcut")
+
+
+
+class CommandTetrioMaskList:
+    description: LangItem = LangItem("command", "tetrio.mask.list.description")
+    shortcut: LangItem = LangItem("command", "tetrio.mask.list.shortcut")
+
+
+
+class CommandTetrioMask:
+    description: LangItem = LangItem("command", "tetrio.mask.description")
+    add = CommandTetrioMaskAdd
+    remove = CommandTetrioMaskRemove
+    list = CommandTetrioMaskList
+
+
+
 class CommandTetrio:
     description: LangItem = LangItem("command", "tetrio.description")
     bind = CommandTetrioBind
@@ -459,6 +519,7 @@ class CommandTetrio:
     record = CommandTetrioRecord
     unbind = CommandTetrioUnbind
     verify = CommandTetrioVerify
+    mask = CommandTetrioMask
 
 
 

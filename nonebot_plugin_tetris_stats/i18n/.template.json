@@ -485,6 +485,67 @@
                 "description",
                 "shortcut"
               ]
+            },
+            {
+              "subtype": "mask",
+              "types": [
+                "description",
+                {
+                  "subtype": "add",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "args",
+                      "types": [
+                        {
+                          "subtype": "account",
+                          "types": [
+                            "notice"
+                          ]
+                        },
+                        {
+                          "subtype": "fields",
+                          "types": [
+                            "notice"
+                          ]
+                        }
+                      ]
+                    },
+                    "shortcut"
+                  ]
+                },
+                {
+                  "subtype": "remove",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "args",
+                      "types": [
+                        {
+                          "subtype": "account",
+                          "types": [
+                            "notice"
+                          ]
+                        },
+                        {
+                          "subtype": "fields",
+                          "types": [
+                            "notice"
+                          ]
+                        }
+                      ]
+                    },
+                    "shortcut"
+                  ]
+                },
+                {
+                  "subtype": "list",
+                  "types": [
+                    "description",
+                    "shortcut"
+                  ]
+                }
+              ]
             }
           ]
         },

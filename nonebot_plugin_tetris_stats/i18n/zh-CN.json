@@ -261,6 +261,37 @@
       "verify": {
         "description": "验证 TETR.IO 账号",
         "shortcut": "io验证"
+      },
+      "mask": {
+        "description": "管理 TETR.IO 玩家展示信息屏蔽",
+        "add": {
+          "description": "屏蔽玩家的展示信息",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 用户名 / ID"
+            },
+            "fields": {
+              "notice": "屏蔽字段, 默认全部"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "解除玩家的展示信息屏蔽",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 用户名 / ID"
+            },
+            "fields": {
+              "notice": "解除字段, 默认全部"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "列出被屏蔽的玩家",
+          "shortcut": "io屏蔽列表"
+        }
       }
     },
     "top": {
