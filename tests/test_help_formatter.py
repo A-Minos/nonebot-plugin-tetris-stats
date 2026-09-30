@@ -140,13 +140,13 @@ def test_production_help_is_request_local_and_does_not_mutate_tree(monkeypatch: 
     assert zh.breadcrumb == en.breadcrumb == ['tetris-stats', 'TETR.IO', 'query']  # noqa: S101
     assert zh.command.help_text == '查询 TETR.IO 游戏信息'  # noqa: S101
     assert en.command.help_text == 'Look up TETR.IO player data'  # noqa: S101
-    assert zh.command.args[0].notice == '@想要查询的人 / 自己 / TETR.IO 用户名 / ID'  # noqa: S101
+    assert zh.command.args[0].notice == '@要查询的用户 / 我 / TETR.IO 用户名 / ID'  # noqa: S101
     assert en.command.args[0].notice == '@mention, me, TETR.IO username, or ID'  # noqa: S101
     zh_compare = next(option for option in zh.command.options if option.name == '--compare')
     en_compare = next(option for option in en.command.options if option.name == '--compare')
-    assert zh_compare.help_text == '指定对比时间距离'  # noqa: S101
+    assert zh_compare.help_text == '与多久之前的数据对比'  # noqa: S101
     assert en_compare.help_text == 'Set how far back to compare'  # noqa: S101
-    assert zh_compare.args[0].notice == '对比时间距离 (如 7d, 2w, 24h)'  # noqa: S101
+    assert zh_compare.args[0].notice == '对比时间间隔\uff08如 7d, 2w, 24h\uff09'  # noqa: S101
     assert en_compare.args[0].notice == 'How far back to compare (e.g., 7d, 2w, 24h)'  # noqa: S101
     assert any(shortcut.key.startswith('io查 ') for shortcut in zh.shortcuts)  # noqa: S101
     assert any(shortcut.key.startswith('ioquery ') for shortcut in en.shortcuts)  # noqa: S101
@@ -275,7 +275,7 @@ def test_future_option_catalog_entries_apply_when_the_fields_exist() -> None:
     )
     record_type, index = localized_record.command.options
     assert record_type.help_text == '记录类型'  # noqa: S101
-    assert record_type.args[0].notice == '记录类型 (top、recent、progression)'  # noqa: S101
+    assert record_type.args[0].notice == '记录类型\uff08top、recent、progression\uff09'  # noqa: S101
     assert index.help_text == '记录序号'  # noqa: S101
     assert index.args[0].notice == '记录序号'  # noqa: S101
 
