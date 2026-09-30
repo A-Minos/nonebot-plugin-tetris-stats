@@ -37,8 +37,8 @@ def _capture(alc: Alconna, cmd: str) -> str:
     def action(text: str) -> None:
         captured.append(text)
 
-    with output_manager.capture(alc.header_display) as cap:
-        output_manager.set_action(action, command=alc.header_display)
+    with output_manager.capture(alc.name) as cap:
+        output_manager.set_action(action, command=alc.name)
         alc.parse(cmd)
     if captured:
         return captured[-1]
@@ -159,6 +159,38 @@ def test_production_help_is_request_local_and_does_not_mutate_tree(monkeypatch: 
     assert tuple(command_manager.get_shortcut(command)) == shortcuts_before  # noqa: S101
 
 
+@pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
+def test_production_help_uses_each_supported_locale(locale: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.i18n import Lang  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils import lang  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
+
+    monkeypatch.setattr(lang, 'get_lang', lambda: locale)
+    data = HelpData.model_validate_json(_capture(command, 'tstats --help'))
+
+    assert data.lang == locale  # noqa: S101
+    assert data.command.help_text == Lang.command.root.description(locale)  # noqa: S101
+    tetrio = next(node for node in data.command.subcommands if node.name == 'TETR.IO')
+    mask = next(node for node in tetrio.subcommands if node.name == 'mask')
+    assert mask.help_text == Lang.command.tetrio.mask.description(locale)  # noqa: S101
+    for action in ('add', 'remove'):
+        node = next(child for child in mask.subcommands if child.name == action)
+        resource = getattr(Lang.command.tetrio.mask, action)
+        assert node.help_text == resource.description(locale)  # noqa: S101
+        assert {arg.name: arg.notice for arg in node.args} == {  # noqa: S101
+            'account': resource.args.account.notice(locale),
+            'fields': resource.args.fields.notice(locale),
+        }
+    listing = next(node for node in mask.subcommands if node.name == 'list')
+    assert listing.help_text == Lang.command.tetrio.mask.list.description(locale)  # noqa: S101
+
+    mask_data = HelpData.model_validate_json(_capture(command, 'tstats TETR.IO mask --help'))
+    assert mask_data.lang == locale  # noqa: S101
+    assert mask_data.breadcrumb == ['tetris-stats', 'TETR.IO', 'mask']  # noqa: S101
+    assert mask_data.command.help_text == Lang.command.tetrio.mask.description(locale)  # noqa: S101
+
+
 def test_production_help_catalog_is_complete() -> None:
     from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.help_catalog import validate_help_catalog  # noqa: PLC0415
@@ -199,6 +231,9 @@ def test_every_english_shortcut_is_displayed_and_matches(monkeypatch: pytest.Mon
     cases = (
         ('iobind', 'iobind testuser', 'TETRIO.bind'),
         ('ioconfig', 'ioconfig', 'TETRIO.config'),
+        ('io屏蔽', 'io屏蔽 testuser name', 'TETRIO.mask.add'),
+        ('io解屏蔽', 'io解屏蔽 testuser name', 'TETRIO.mask.remove'),
+        ('io屏蔽列表', 'io屏蔽列表', 'TETRIO.mask.list'),
         ('ioquery', 'ioquery me', 'TETRIO.query'),
         ('iorank', 'iorank', 'TETRIO.rank'),
         ('iorecordblitz', 'iorecordblitz me', 'TETRIO.record'),

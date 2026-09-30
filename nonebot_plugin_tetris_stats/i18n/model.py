@@ -5,50 +5,44 @@ from tarina.lang.model import LangItem, LangModel
 
 
 class InteractionWrong:
-    query_bot: LangItem = LangItem("interaction", "wrong.query_bot")
-
+    query_bot: LangItem = LangItem('interaction', 'wrong.query_bot')
 
 
 class InteractionWarning:
-    unverified: LangItem = LangItem("interaction", "warning.unverified")
-
+    unverified: LangItem = LangItem('interaction', 'warning.unverified')
 
 
 class Interaction:
-    permission_denied: LangItem = LangItem("interaction", "permission_denied")
+    permission_denied: LangItem = LangItem('interaction', 'permission_denied')
     wrong = InteractionWrong
     warning = InteractionWarning
 
 
 class ErrorMessageformaterror:
-    TETR_IO: LangItem = LangItem("error", "MessageFormatError.TETR.IO")
-    TOS: LangItem = LangItem("error", "MessageFormatError.TOS")
-    TOP: LangItem = LangItem("error", "MessageFormatError.TOP")
-    duration: LangItem = LangItem("error", "MessageFormatError.duration")
-
+    TETR_IO: LangItem = LangItem('error', 'MessageFormatError.TETR.IO')
+    TOS: LangItem = LangItem('error', 'MessageFormatError.TOS')
+    TOP: LangItem = LangItem('error', 'MessageFormatError.TOP')
+    duration: LangItem = LangItem('error', 'MessageFormatError.duration')
 
 
 class ErrorRequesterrorRequest:
-    api: LangItem = LangItem("error", "RequestError.request.api")
-    cloudflare: LangItem = LangItem("error", "RequestError.request.cloudflare")
-    response: LangItem = LangItem("error", "RequestError.request.response")
-    transport: LangItem = LangItem("error", "RequestError.request.transport")
-    failover: LangItem = LangItem("error", "RequestError.request.failover")
-
+    api: LangItem = LangItem('error', 'RequestError.request.api')
+    cloudflare: LangItem = LangItem('error', 'RequestError.request.cloudflare')
+    response: LangItem = LangItem('error', 'RequestError.request.response')
+    transport: LangItem = LangItem('error', 'RequestError.request.transport')
+    failover: LangItem = LangItem('error', 'RequestError.request.failover')
 
 
 class ErrorRequesterrorTetrIo:
-    leaderboard: LangItem = LangItem("error", "RequestError.TETR.IO.leaderboard")
-    user_info: LangItem = LangItem("error", "RequestError.TETR.IO.user_info")
-    summaries: LangItem = LangItem("error", "RequestError.TETR.IO.summaries")
-    league_history: LangItem = LangItem("error", "RequestError.TETR.IO.league_history")
-    records: LangItem = LangItem("error", "RequestError.TETR.IO.records")
-
+    leaderboard: LangItem = LangItem('error', 'RequestError.TETR.IO.leaderboard')
+    user_info: LangItem = LangItem('error', 'RequestError.TETR.IO.user_info')
+    summaries: LangItem = LangItem('error', 'RequestError.TETR.IO.summaries')
+    league_history: LangItem = LangItem('error', 'RequestError.TETR.IO.league_history')
+    records: LangItem = LangItem('error', 'RequestError.TETR.IO.records')
 
 
 class ErrorRequesterrorTos:
-    user_info: LangItem = LangItem("error", "RequestError.TOS.user_info")
-
+    user_info: LangItem = LangItem('error', 'RequestError.TOS.user_info')
 
 
 class ErrorRequesterror:
@@ -57,152 +51,140 @@ class ErrorRequesterror:
     TOS = ErrorRequesterrorTos
 
 
-
 class Error:
     MessageFormatError = ErrorMessageformaterror
     RequestError = ErrorRequesterror
 
 
 class Template:
-    template_language: LangItem = LangItem("template", "template_language")
+    template_language: LangItem = LangItem('template', 'template_language')
 
 
 class Bind:
-    not_found: LangItem = LangItem("bind", "not_found")
-    no_account: LangItem = LangItem("bind", "no_account")
-    confirm_unbind: LangItem = LangItem("bind", "confirm_unbind")
-    config_success: LangItem = LangItem("bind", "config_success")
-    verify_already: LangItem = LangItem("bind", "verify_already")
-    verify_failed: LangItem = LangItem("bind", "verify_failed")
-    only_discord: LangItem = LangItem("bind", "only_discord")
-    confirm_yes: LangItem = LangItem("bind", "confirm_yes")
-    confirm_no: LangItem = LangItem("bind", "confirm_no")
+    not_found: LangItem = LangItem('bind', 'not_found')
+    no_account: LangItem = LangItem('bind', 'no_account')
+    confirm_unbind: LangItem = LangItem('bind', 'confirm_unbind')
+    config_success: LangItem = LangItem('bind', 'config_success')
+    verify_already: LangItem = LangItem('bind', 'verify_already')
+    verify_failed: LangItem = LangItem('bind', 'verify_failed')
+    only_discord: LangItem = LangItem('bind', 'only_discord')
+    confirm_yes: LangItem = LangItem('bind', 'confirm_yes')
+    confirm_no: LangItem = LangItem('bind', 'confirm_no')
 
 
 class Record:
-    not_found: LangItem = LangItem("record", "not_found")
-    blitz: LangItem = LangItem("record", "blitz")
-    sprint: LangItem = LangItem("record", "sprint")
+    not_found: LangItem = LangItem('record', 'not_found')
+    blitz: LangItem = LangItem('record', 'blitz')
+    sprint: LangItem = LangItem('record', 'sprint')
 
 
 class List:
-    no_snapshot: LangItem = LangItem("list", "no_snapshot")
+    no_snapshot: LangItem = LangItem('list', 'no_snapshot')
 
 
 class Stats:
-    user_info: LangItem = LangItem("stats", "user_info")
-    no_rank: LangItem = LangItem("stats", "no_rank")
-    rank_info: LangItem = LangItem("stats", "rank_info")
-    no_game: LangItem = LangItem("stats", "no_game")
-    recent_games: LangItem = LangItem("stats", "recent_games")
-    daily_stats: LangItem = LangItem("stats", "daily_stats")
-    no_daily: LangItem = LangItem("stats", "no_daily")
-    history_stats: LangItem = LangItem("stats", "history_stats")
-    no_history: LangItem = LangItem("stats", "no_history")
-    lpm: LangItem = LangItem("stats", "lpm")
-    apm: LangItem = LangItem("stats", "apm")
-    adpm: LangItem = LangItem("stats", "adpm")
-    sprint_pb: LangItem = LangItem("stats", "sprint_pb")
-    marathon_pb: LangItem = LangItem("stats", "marathon_pb")
-    challenge_pb: LangItem = LangItem("stats", "challenge_pb")
+    user_info: LangItem = LangItem('stats', 'user_info')
+    no_rank: LangItem = LangItem('stats', 'no_rank')
+    rank_info: LangItem = LangItem('stats', 'rank_info')
+    no_game: LangItem = LangItem('stats', 'no_game')
+    recent_games: LangItem = LangItem('stats', 'recent_games')
+    daily_stats: LangItem = LangItem('stats', 'daily_stats')
+    no_daily: LangItem = LangItem('stats', 'no_daily')
+    history_stats: LangItem = LangItem('stats', 'history_stats')
+    no_history: LangItem = LangItem('stats', 'no_history')
+    lpm: LangItem = LangItem('stats', 'lpm')
+    apm: LangItem = LangItem('stats', 'apm')
+    adpm: LangItem = LangItem('stats', 'adpm')
+    sprint_pb: LangItem = LangItem('stats', 'sprint_pb')
+    marathon_pb: LangItem = LangItem('stats', 'marathon_pb')
+    challenge_pb: LangItem = LangItem('stats', 'challenge_pb')
 
 
 class TemplateUi:
-    invalid_tag: LangItem = LangItem("template_ui", "invalid_tag")
-    update_success: LangItem = LangItem("template_ui", "update_success")
-    update_failed: LangItem = LangItem("template_ui", "update_failed")
+    invalid_tag: LangItem = LangItem('template_ui', 'invalid_tag')
+    update_success: LangItem = LangItem('template_ui', 'update_success')
+    update_failed: LangItem = LangItem('template_ui', 'update_failed')
 
 
 class Help:
-    usage: LangItem = LangItem("help", "usage")
+    usage: LangItem = LangItem('help', 'usage')
 
 
 class Prompt:
-    io_check: LangItem = LangItem("prompt", "io_check")
-    io_bind: LangItem = LangItem("prompt", "io_bind")
-    top_check: LangItem = LangItem("prompt", "top_check")
-    top_bind: LangItem = LangItem("prompt", "top_bind")
-    tos_check: LangItem = LangItem("prompt", "tos_check")
-    tos_bind: LangItem = LangItem("prompt", "tos_bind")
+    io_check: LangItem = LangItem('prompt', 'io_check')
+    io_bind: LangItem = LangItem('prompt', 'io_bind')
+    top_check: LangItem = LangItem('prompt', 'top_check')
+    top_bind: LangItem = LangItem('prompt', 'top_bind')
+    tos_check: LangItem = LangItem('prompt', 'tos_check')
+    tos_bind: LangItem = LangItem('prompt', 'tos_bind')
 
 
 class Retry:
-    message: LangItem = LangItem("retry", "message")
-    screenshot: LangItem = LangItem("retry", "screenshot")
+    message: LangItem = LangItem('retry', 'message')
+    screenshot: LangItem = LangItem('retry', 'screenshot')
 
 
 class MaskFields:
-    name: LangItem = LangItem("mask", "fields.name")
-    avatar: LangItem = LangItem("mask", "fields.avatar")
-    banner: LangItem = LangItem("mask", "fields.banner")
-    bio: LangItem = LangItem("mask", "fields.bio")
-    country: LangItem = LangItem("mask", "fields.country")
-
+    name: LangItem = LangItem('mask', 'fields.name')
+    avatar: LangItem = LangItem('mask', 'fields.avatar')
+    banner: LangItem = LangItem('mask', 'fields.banner')
+    bio: LangItem = LangItem('mask', 'fields.bio')
+    country: LangItem = LangItem('mask', 'fields.country')
 
 
 class Mask:
-    name: LangItem = LangItem("mask", "name")
-    updated: LangItem = LangItem("mask", "updated")
-    none: LangItem = LangItem("mask", "none")
-    empty: LangItem = LangItem("mask", "empty")
-    invalid_field: LangItem = LangItem("mask", "invalid_field")
+    name: LangItem = LangItem('mask', 'name')
+    updated: LangItem = LangItem('mask', 'updated')
+    none: LangItem = LangItem('mask', 'none')
+    empty: LangItem = LangItem('mask', 'empty')
+    invalid_field: LangItem = LangItem('mask', 'invalid_field')
     fields = MaskFields
 
 
 class CommandRoot:
-    description: LangItem = LangItem("command", "root.description")
-    plugin_description: LangItem = LangItem("command", "root.plugin_description")
-    plugin_usage: LangItem = LangItem("command", "root.plugin_usage")
-
+    description: LangItem = LangItem('command', 'root.description')
+    plugin_description: LangItem = LangItem('command', 'root.plugin_description')
+    plugin_usage: LangItem = LangItem('command', 'root.plugin_usage')
 
 
 class CommandTetrioBindArgsAccount:
-    notice: LangItem = LangItem("command", "tetrio.bind.args.account.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.bind.args.account.notice')
 
 
 class CommandTetrioBindArgs:
     account = CommandTetrioBindArgsAccount
 
 
-
 class CommandTetrioBind:
-    description: LangItem = LangItem("command", "tetrio.bind.description")
+    description: LangItem = LangItem('command', 'tetrio.bind.description')
     args = CommandTetrioBindArgs
-    shortcut: LangItem = LangItem("command", "tetrio.bind.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.bind.shortcut')
 
 
 class CommandTetrioConfigOptionsDefaultTemplateArgsTemplate:
-    notice: LangItem = LangItem("command", "tetrio.config.options.default_template.args.template.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.config.options.default_template.args.template.notice')
 
 
 class CommandTetrioConfigOptionsDefaultTemplateArgs:
     template = CommandTetrioConfigOptionsDefaultTemplateArgsTemplate
 
 
-
 class CommandTetrioConfigOptionsDefaultTemplate:
-    help: LangItem = LangItem("command", "tetrio.config.options.default_template.help")
+    help: LangItem = LangItem('command', 'tetrio.config.options.default_template.help')
     args = CommandTetrioConfigOptionsDefaultTemplateArgs
 
 
-
 class CommandTetrioConfigOptionsDefaultCompareArgsCompare:
-    notice: LangItem = LangItem("command", "tetrio.config.options.default_compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.config.options.default_compare.args.compare.notice')
 
 
 class CommandTetrioConfigOptionsDefaultCompareArgs:
     compare = CommandTetrioConfigOptionsDefaultCompareArgsCompare
 
 
-
 class CommandTetrioConfigOptionsDefaultCompare:
-    help: LangItem = LangItem("command", "tetrio.config.options.default_compare.help")
+    help: LangItem = LangItem('command', 'tetrio.config.options.default_compare.help')
     args = CommandTetrioConfigOptionsDefaultCompareArgs
-
 
 
 class CommandTetrioConfigOptions:
@@ -210,48 +192,39 @@ class CommandTetrioConfigOptions:
     default_compare = CommandTetrioConfigOptionsDefaultCompare
 
 
-
 class CommandTetrioConfig:
-    description: LangItem = LangItem("command", "tetrio.config.description")
+    description: LangItem = LangItem('command', 'tetrio.config.description')
     options = CommandTetrioConfigOptions
-    shortcut: LangItem = LangItem("command", "tetrio.config.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.config.shortcut')
 
 
 class CommandTetrioListOptionsMaxTr:
-    help: LangItem = LangItem("command", "tetrio.list.options.max_tr.help")
-
+    help: LangItem = LangItem('command', 'tetrio.list.options.max_tr.help')
 
 
 class CommandTetrioListOptionsMinTr:
-    help: LangItem = LangItem("command", "tetrio.list.options.min_tr.help")
-
+    help: LangItem = LangItem('command', 'tetrio.list.options.min_tr.help')
 
 
 class CommandTetrioListOptionsLimit:
-    help: LangItem = LangItem("command", "tetrio.list.options.limit.help")
-
+    help: LangItem = LangItem('command', 'tetrio.list.options.limit.help')
 
 
 class CommandTetrioListOptionsCountry:
-    help: LangItem = LangItem("command", "tetrio.list.options.country.help")
-
+    help: LangItem = LangItem('command', 'tetrio.list.options.country.help')
 
 
 class CommandTetrioListOptionsSortArgsSort:
-    notice: LangItem = LangItem("command", "tetrio.list.options.sort.args.sort.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.list.options.sort.args.sort.notice')
 
 
 class CommandTetrioListOptionsSortArgs:
     sort = CommandTetrioListOptionsSortArgsSort
 
 
-
 class CommandTetrioListOptionsSort:
-    help: LangItem = LangItem("command", "tetrio.list.options.sort.help")
+    help: LangItem = LangItem('command', 'tetrio.list.options.sort.help')
     args = CommandTetrioListOptionsSortArgs
-
 
 
 class CommandTetrioListOptions:
@@ -262,53 +235,43 @@ class CommandTetrioListOptions:
     sort = CommandTetrioListOptionsSort
 
 
-
 class CommandTetrioList:
-    description: LangItem = LangItem("command", "tetrio.list.description")
+    description: LangItem = LangItem('command', 'tetrio.list.description')
     options = CommandTetrioListOptions
 
 
-
 class CommandTetrioQueryArgsWho:
-    notice: LangItem = LangItem("command", "tetrio.query.args.who.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.query.args.who.notice')
 
 
 class CommandTetrioQueryArgs:
     who = CommandTetrioQueryArgsWho
 
 
-
 class CommandTetrioQueryOptionsTemplateArgsTemplate:
-    notice: LangItem = LangItem("command", "tetrio.query.options.template.args.template.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.query.options.template.args.template.notice')
 
 
 class CommandTetrioQueryOptionsTemplateArgs:
     template = CommandTetrioQueryOptionsTemplateArgsTemplate
 
 
-
 class CommandTetrioQueryOptionsTemplate:
-    help: LangItem = LangItem("command", "tetrio.query.options.template.help")
+    help: LangItem = LangItem('command', 'tetrio.query.options.template.help')
     args = CommandTetrioQueryOptionsTemplateArgs
 
 
-
 class CommandTetrioQueryOptionsCompareArgsCompare:
-    notice: LangItem = LangItem("command", "tetrio.query.options.compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.query.options.compare.args.compare.notice')
 
 
 class CommandTetrioQueryOptionsCompareArgs:
     compare = CommandTetrioQueryOptionsCompareArgsCompare
 
 
-
 class CommandTetrioQueryOptionsCompare:
-    help: LangItem = LangItem("command", "tetrio.query.options.compare.help")
+    help: LangItem = LangItem('command', 'tetrio.query.options.compare.help')
     args = CommandTetrioQueryOptionsCompareArgs
-
 
 
 class CommandTetrioQueryOptions:
@@ -316,106 +279,87 @@ class CommandTetrioQueryOptions:
     compare = CommandTetrioQueryOptionsCompare
 
 
-
 class CommandTetrioQuery:
-    description: LangItem = LangItem("command", "tetrio.query.description")
+    description: LangItem = LangItem('command', 'tetrio.query.description')
     args = CommandTetrioQueryArgs
     options = CommandTetrioQueryOptions
-    shortcut: LangItem = LangItem("command", "tetrio.query.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.query.shortcut')
 
 
 class CommandTetrioRankAllOptionsTemplateArgsTemplate:
-    notice: LangItem = LangItem("command", "tetrio.rank.all.options.template.args.template.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.rank.all.options.template.args.template.notice')
 
 
 class CommandTetrioRankAllOptionsTemplateArgs:
     template = CommandTetrioRankAllOptionsTemplateArgsTemplate
 
 
-
 class CommandTetrioRankAllOptionsTemplate:
-    help: LangItem = LangItem("command", "tetrio.rank.all.options.template.help")
+    help: LangItem = LangItem('command', 'tetrio.rank.all.options.template.help')
     args = CommandTetrioRankAllOptionsTemplateArgs
-
 
 
 class CommandTetrioRankAllOptions:
     template = CommandTetrioRankAllOptionsTemplate
 
 
-
 class CommandTetrioRankAll:
-    description: LangItem = LangItem("command", "tetrio.rank.all.description")
+    description: LangItem = LangItem('command', 'tetrio.rank.all.description')
     options = CommandTetrioRankAllOptions
 
 
-
 class CommandTetrioRankDetailArgsRank:
-    notice: LangItem = LangItem("command", "tetrio.rank.detail.args.rank.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.rank.detail.args.rank.notice')
 
 
 class CommandTetrioRankDetailArgs:
     rank = CommandTetrioRankDetailArgsRank
 
 
-
 class CommandTetrioRankDetail:
-    description: LangItem = LangItem("command", "tetrio.rank.detail.description")
+    description: LangItem = LangItem('command', 'tetrio.rank.detail.description')
     args = CommandTetrioRankDetailArgs
 
 
-
 class CommandTetrioRank:
-    description: LangItem = LangItem("command", "tetrio.rank.description")
+    description: LangItem = LangItem('command', 'tetrio.rank.description')
     all = CommandTetrioRankAll
     detail = CommandTetrioRankDetail
-    shortcut: LangItem = LangItem("command", "tetrio.rank.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.rank.shortcut')
 
 
 class CommandTetrioRecordArgsWho:
-    notice: LangItem = LangItem("command", "tetrio.record.args.who.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.record.args.who.notice')
 
 
 class CommandTetrioRecordArgs:
     who = CommandTetrioRecordArgsWho
 
 
-
 class CommandTetrioRecordOptionsTypeArgsRecordType:
-    notice: LangItem = LangItem("command", "tetrio.record.options.type.args.record_type.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.record.options.type.args.record_type.notice')
 
 
 class CommandTetrioRecordOptionsTypeArgs:
     record_type = CommandTetrioRecordOptionsTypeArgsRecordType
 
 
-
 class CommandTetrioRecordOptionsType:
-    help: LangItem = LangItem("command", "tetrio.record.options.type.help")
+    help: LangItem = LangItem('command', 'tetrio.record.options.type.help')
     args = CommandTetrioRecordOptionsTypeArgs
 
 
-
 class CommandTetrioRecordOptionsIndexArgsIndex:
-    notice: LangItem = LangItem("command", "tetrio.record.options.index.args.index.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.record.options.index.args.index.notice')
 
 
 class CommandTetrioRecordOptionsIndexArgs:
     index = CommandTetrioRecordOptionsIndexArgsIndex
 
 
-
 class CommandTetrioRecordOptionsIndex:
-    help: LangItem = LangItem("command", "tetrio.record.options.index.help")
+    help: LangItem = LangItem('command', 'tetrio.record.options.index.help')
     args = CommandTetrioRecordOptionsIndexArgs
-
 
 
 class CommandTetrioRecordOptions:
@@ -423,11 +367,9 @@ class CommandTetrioRecordOptions:
     index = CommandTetrioRecordOptionsIndex
 
 
-
 class CommandTetrioRecordShortcuts:
-    blitz: LangItem = LangItem("command", "tetrio.record.shortcuts.blitz")
-    sprint: LangItem = LangItem("command", "tetrio.record.shortcuts.sprint")
-
+    blitz: LangItem = LangItem('command', 'tetrio.record.shortcuts.blitz')
+    sprint: LangItem = LangItem('command', 'tetrio.record.shortcuts.sprint')
 
 
 class CommandTetrioRecord:
@@ -436,27 +378,22 @@ class CommandTetrioRecord:
     shortcuts = CommandTetrioRecordShortcuts
 
 
-
 class CommandTetrioUnbind:
-    description: LangItem = LangItem("command", "tetrio.unbind.description")
-    shortcut: LangItem = LangItem("command", "tetrio.unbind.shortcut")
-
+    description: LangItem = LangItem('command', 'tetrio.unbind.description')
+    shortcut: LangItem = LangItem('command', 'tetrio.unbind.shortcut')
 
 
 class CommandTetrioVerify:
-    description: LangItem = LangItem("command", "tetrio.verify.description")
-    shortcut: LangItem = LangItem("command", "tetrio.verify.shortcut")
-
+    description: LangItem = LangItem('command', 'tetrio.verify.description')
+    shortcut: LangItem = LangItem('command', 'tetrio.verify.shortcut')
 
 
 class CommandTetrioMaskAddArgsAccount:
-    notice: LangItem = LangItem("command", "tetrio.mask.add.args.account.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.mask.add.args.account.notice')
 
 
 class CommandTetrioMaskAddArgsFields:
-    notice: LangItem = LangItem("command", "tetrio.mask.add.args.fields.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.mask.add.args.fields.notice')
 
 
 class CommandTetrioMaskAddArgs:
@@ -464,22 +401,18 @@ class CommandTetrioMaskAddArgs:
     fields = CommandTetrioMaskAddArgsFields
 
 
-
 class CommandTetrioMaskAdd:
-    description: LangItem = LangItem("command", "tetrio.mask.add.description")
+    description: LangItem = LangItem('command', 'tetrio.mask.add.description')
     args = CommandTetrioMaskAddArgs
-    shortcut: LangItem = LangItem("command", "tetrio.mask.add.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.mask.add.shortcut')
 
 
 class CommandTetrioMaskRemoveArgsAccount:
-    notice: LangItem = LangItem("command", "tetrio.mask.remove.args.account.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.mask.remove.args.account.notice')
 
 
 class CommandTetrioMaskRemoveArgsFields:
-    notice: LangItem = LangItem("command", "tetrio.mask.remove.args.fields.notice")
-
+    notice: LangItem = LangItem('command', 'tetrio.mask.remove.args.fields.notice')
 
 
 class CommandTetrioMaskRemoveArgs:
@@ -487,30 +420,26 @@ class CommandTetrioMaskRemoveArgs:
     fields = CommandTetrioMaskRemoveArgsFields
 
 
-
 class CommandTetrioMaskRemove:
-    description: LangItem = LangItem("command", "tetrio.mask.remove.description")
+    description: LangItem = LangItem('command', 'tetrio.mask.remove.description')
     args = CommandTetrioMaskRemoveArgs
-    shortcut: LangItem = LangItem("command", "tetrio.mask.remove.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tetrio.mask.remove.shortcut')
 
 
 class CommandTetrioMaskList:
-    description: LangItem = LangItem("command", "tetrio.mask.list.description")
-    shortcut: LangItem = LangItem("command", "tetrio.mask.list.shortcut")
-
+    description: LangItem = LangItem('command', 'tetrio.mask.list.description')
+    shortcut: LangItem = LangItem('command', 'tetrio.mask.list.shortcut')
 
 
 class CommandTetrioMask:
-    description: LangItem = LangItem("command", "tetrio.mask.description")
+    description: LangItem = LangItem('command', 'tetrio.mask.description')
     add = CommandTetrioMaskAdd
     remove = CommandTetrioMaskRemove
     list = CommandTetrioMaskList
 
 
-
 class CommandTetrio:
-    description: LangItem = LangItem("command", "tetrio.description")
+    description: LangItem = LangItem('command', 'tetrio.description')
     bind = CommandTetrioBind
     config = CommandTetrioConfig
     list = CommandTetrioList
@@ -522,203 +451,168 @@ class CommandTetrio:
     mask = CommandTetrioMask
 
 
-
 class CommandTopBindArgsAccount:
-    notice: LangItem = LangItem("command", "top.bind.args.account.notice")
-
+    notice: LangItem = LangItem('command', 'top.bind.args.account.notice')
 
 
 class CommandTopBindArgs:
     account = CommandTopBindArgsAccount
 
 
-
 class CommandTopBind:
-    description: LangItem = LangItem("command", "top.bind.description")
+    description: LangItem = LangItem('command', 'top.bind.description')
     args = CommandTopBindArgs
-    shortcut: LangItem = LangItem("command", "top.bind.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'top.bind.shortcut')
 
 
 class CommandTopUnbind:
-    description: LangItem = LangItem("command", "top.unbind.description")
-    shortcut: LangItem = LangItem("command", "top.unbind.shortcut")
-
+    description: LangItem = LangItem('command', 'top.unbind.description')
+    shortcut: LangItem = LangItem('command', 'top.unbind.shortcut')
 
 
 class CommandTopConfigOptionsDefaultCompareArgsCompare:
-    notice: LangItem = LangItem("command", "top.config.options.default_compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'top.config.options.default_compare.args.compare.notice')
 
 
 class CommandTopConfigOptionsDefaultCompareArgs:
     compare = CommandTopConfigOptionsDefaultCompareArgsCompare
 
 
-
 class CommandTopConfigOptionsDefaultCompare:
-    help: LangItem = LangItem("command", "top.config.options.default_compare.help")
+    help: LangItem = LangItem('command', 'top.config.options.default_compare.help')
     args = CommandTopConfigOptionsDefaultCompareArgs
-
 
 
 class CommandTopConfigOptions:
     default_compare = CommandTopConfigOptionsDefaultCompare
 
 
-
 class CommandTopConfig:
-    description: LangItem = LangItem("command", "top.config.description")
+    description: LangItem = LangItem('command', 'top.config.description')
     options = CommandTopConfigOptions
-    shortcut: LangItem = LangItem("command", "top.config.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'top.config.shortcut')
 
 
 class CommandTopQueryArgsWho:
-    notice: LangItem = LangItem("command", "top.query.args.who.notice")
-
+    notice: LangItem = LangItem('command', 'top.query.args.who.notice')
 
 
 class CommandTopQueryArgs:
     who = CommandTopQueryArgsWho
 
 
-
 class CommandTopQueryOptionsCompareArgsCompare:
-    notice: LangItem = LangItem("command", "top.query.options.compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'top.query.options.compare.args.compare.notice')
 
 
 class CommandTopQueryOptionsCompareArgs:
     compare = CommandTopQueryOptionsCompareArgsCompare
 
 
-
 class CommandTopQueryOptionsCompare:
-    help: LangItem = LangItem("command", "top.query.options.compare.help")
+    help: LangItem = LangItem('command', 'top.query.options.compare.help')
     args = CommandTopQueryOptionsCompareArgs
-
 
 
 class CommandTopQueryOptions:
     compare = CommandTopQueryOptionsCompare
 
 
-
 class CommandTopQuery:
-    description: LangItem = LangItem("command", "top.query.description")
+    description: LangItem = LangItem('command', 'top.query.description')
     args = CommandTopQueryArgs
     options = CommandTopQueryOptions
-    shortcut: LangItem = LangItem("command", "top.query.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'top.query.shortcut')
 
 
 class CommandTop:
-    description: LangItem = LangItem("command", "top.description")
+    description: LangItem = LangItem('command', 'top.description')
     bind = CommandTopBind
     unbind = CommandTopUnbind
     config = CommandTopConfig
     query = CommandTopQuery
 
 
-
 class CommandTosBindArgsAccount:
-    notice: LangItem = LangItem("command", "tos.bind.args.account.notice")
-
+    notice: LangItem = LangItem('command', 'tos.bind.args.account.notice')
 
 
 class CommandTosBindArgs:
     account = CommandTosBindArgsAccount
 
 
-
 class CommandTosBind:
-    description: LangItem = LangItem("command", "tos.bind.description")
+    description: LangItem = LangItem('command', 'tos.bind.description')
     args = CommandTosBindArgs
-    shortcut: LangItem = LangItem("command", "tos.bind.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tos.bind.shortcut')
 
 
 class CommandTosUnbind:
-    description: LangItem = LangItem("command", "tos.unbind.description")
-    shortcut: LangItem = LangItem("command", "tos.unbind.shortcut")
-
+    description: LangItem = LangItem('command', 'tos.unbind.description')
+    shortcut: LangItem = LangItem('command', 'tos.unbind.shortcut')
 
 
 class CommandTosConfigOptionsDefaultCompareArgsCompare:
-    notice: LangItem = LangItem("command", "tos.config.options.default_compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'tos.config.options.default_compare.args.compare.notice')
 
 
 class CommandTosConfigOptionsDefaultCompareArgs:
     compare = CommandTosConfigOptionsDefaultCompareArgsCompare
 
 
-
 class CommandTosConfigOptionsDefaultCompare:
-    help: LangItem = LangItem("command", "tos.config.options.default_compare.help")
+    help: LangItem = LangItem('command', 'tos.config.options.default_compare.help')
     args = CommandTosConfigOptionsDefaultCompareArgs
-
 
 
 class CommandTosConfigOptions:
     default_compare = CommandTosConfigOptionsDefaultCompare
 
 
-
 class CommandTosConfig:
-    description: LangItem = LangItem("command", "tos.config.description")
+    description: LangItem = LangItem('command', 'tos.config.description')
     options = CommandTosConfigOptions
-    shortcut: LangItem = LangItem("command", "tos.config.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tos.config.shortcut')
 
 
 class CommandTosQueryArgsWho:
-    notice: LangItem = LangItem("command", "tos.query.args.who.notice")
-
+    notice: LangItem = LangItem('command', 'tos.query.args.who.notice')
 
 
 class CommandTosQueryArgs:
     who = CommandTosQueryArgsWho
 
 
-
 class CommandTosQueryOptionsCompareArgsCompare:
-    notice: LangItem = LangItem("command", "tos.query.options.compare.args.compare.notice")
-
+    notice: LangItem = LangItem('command', 'tos.query.options.compare.args.compare.notice')
 
 
 class CommandTosQueryOptionsCompareArgs:
     compare = CommandTosQueryOptionsCompareArgsCompare
 
 
-
 class CommandTosQueryOptionsCompare:
-    help: LangItem = LangItem("command", "tos.query.options.compare.help")
+    help: LangItem = LangItem('command', 'tos.query.options.compare.help')
     args = CommandTosQueryOptionsCompareArgs
-
 
 
 class CommandTosQueryOptions:
     compare = CommandTosQueryOptionsCompare
 
 
-
 class CommandTosQuery:
-    description: LangItem = LangItem("command", "tos.query.description")
+    description: LangItem = LangItem('command', 'tos.query.description')
     args = CommandTosQueryArgs
     options = CommandTosQueryOptions
-    shortcut: LangItem = LangItem("command", "tos.query.shortcut")
-
+    shortcut: LangItem = LangItem('command', 'tos.query.shortcut')
 
 
 class CommandTos:
-    description: LangItem = LangItem("command", "tos.description")
+    description: LangItem = LangItem('command', 'tos.description')
     bind = CommandTosBind
     unbind = CommandTosUnbind
     config = CommandTosConfig
     query = CommandTosQuery
-
 
 
 class Command:
