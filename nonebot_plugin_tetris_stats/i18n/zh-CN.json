@@ -76,12 +76,12 @@
     "usage": "输入“{command} --help”查看帮助"
   },
   "prompt": {
-    "io_check": "io check me",
-    "io_bind": "io bind {{gameID}}",
-    "top_check": "top check me",
-    "top_bind": "top bind {{gameID}}",
-    "tos_check": "tos check me",
-    "tos_bind": "tos bind {{gameID}}"
+    "io_check": "ioquery me",
+    "io_bind": "iobind {{gameID}}",
+    "top_check": "topquery me",
+    "top_bind": "topbind {{gameID}}",
+    "tos_check": "tosquery me",
+    "tos_bind": "tosbind {{gameID}}"
   },
   "retry": {
     "message": "正在重试：{func}（{i}/{max_attempts}）",
