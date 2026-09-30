@@ -14,8 +14,8 @@
     "RequestError": {
       "request": {
         "api": "API 请求失败",
-        "cloudflare": "无法通过 Cloudflare 验证",
-        "response": "请求错误代码：{status_code} {reason}\n{body}",
+        "cloudflare": "无法绕过 Cloudflare 防护",
+        "response": "请求失败，状态码：{status_code} {reason}\n{body}",
         "transport": "请求错误\n{detail}",
         "failover": "所有地址均不可用\n{errors}"
       },
@@ -52,7 +52,7 @@
   },
   "stats": {
     "user_info": "用户 {name}（{id}）",
-    "no_rank": "暂无段位统计数据",
+    "no_rank": "，暂无段位统计数据",
     "rank_info": "，段位分 {rating}±{rd}（{vol}）",
     "no_game": "，暂无游戏数据",
     "recent_games": "，最近 {count} 局数据",
@@ -76,11 +76,11 @@
     "usage": "输入“{command} --help”查看帮助"
   },
   "prompt": {
-    "io_check": "ioquery me",
+    "io_check": "io查我",
     "io_bind": "iobind {{gameID}}",
-    "top_check": "topquery me",
+    "top_check": "top查我",
     "top_bind": "topbind {{gameID}}",
-    "tos_check": "tosquery me",
+    "tos_check": "茶服查我",
     "tos_bind": "tosbind {{gameID}}"
   },
   "retry": {
@@ -108,8 +108,8 @@
             "args": { "template": { "notice": "模板版本" } }
           },
           "default_compare": {
-            "help": "设置默认对比时间范围",
-            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
+            "help": "设置默认对比时间间隔",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "io配置"
@@ -123,21 +123,21 @@
           "country": { "help": "国家代码" },
           "sort": {
             "help": "排名指标",
-            "args": { "sort": { "notice": "排名指标 (league、pps、apm、adpm、apl 或 adpl)" } }
+            "args": { "sort": { "notice": "排名指标（league、pps、apm、adpm、apl 或 adpl）" } }
           }
         }
       },
       "query": {
         "description": "查询 TETR.IO 游戏信息",
-        "args": { "who": { "notice": "@想要查询的人 / 自己 / TETR.IO 用户名 / ID" } },
+        "args": { "who": { "notice": "@要查询的用户 / 我 / TETR.IO 用户名 / ID" } },
         "options": {
           "template": {
             "help": "选择查询模板",
             "args": { "template": { "notice": "模板版本" } }
           },
           "compare": {
-            "help": "指定对比时间距离",
-            "args": { "compare": { "notice": "对比时间距离 (如 7d, 2w, 24h)" } }
+            "help": "与多久之前的数据对比",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "io查"
@@ -160,11 +160,11 @@
         "shortcut": "iorank"
       },
       "record": {
-        "args": { "who": { "notice": "@要查询的用户 / me / TETR.IO 用户名 / ID" } },
+        "args": { "who": { "notice": "@要查询的用户 / 我 / TETR.IO 用户名 / ID" } },
         "options": {
           "type": {
             "help": "记录类型",
-            "args": { "record_type": { "notice": "记录类型 (top、recent、progression)" } }
+            "args": { "record_type": { "notice": "记录类型（top、recent、progression）" } }
           },
           "index": {
             "help": "记录序号",
@@ -200,19 +200,19 @@
         "description": "配置 TOP 查询",
         "options": {
           "default_compare": {
-            "help": "设置默认对比时间范围",
-            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
+            "help": "设置默认对比时间间隔",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "top配置"
       },
       "query": {
         "description": "查询 TOP 游戏信息",
-        "args": { "who": { "notice": "@要查询的用户 / me / TOP 用户名" } },
+        "args": { "who": { "notice": "@要查询的用户 / 我 / TOP 用户名" } },
         "options": {
           "compare": {
-            "help": "指定对比时间范围",
-            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
+            "help": "与多久之前的数据对比",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "top查"
@@ -233,19 +233,19 @@
         "description": "配置 TOS 查询",
         "options": {
           "default_compare": {
-            "help": "设置默认对比时间范围",
-            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
+            "help": "设置默认对比时间间隔",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "茶服配置"
       },
       "query": {
         "description": "查询 TOS 游戏信息",
-        "args": { "who": { "notice": "@要查询的用户 / me / TOS 用户名 / TeaID" } },
+        "args": { "who": { "notice": "@要查询的用户 / 我 / TOS 用户名 / TeaID" } },
         "options": {
           "compare": {
-            "help": "指定对比时间范围",
-            "args": { "compare": { "notice": "对比时间范围（如 7d, 2w, 24h）" } }
+            "help": "与多久之前的数据对比",
+            "args": { "compare": { "notice": "对比时间间隔（如 7d, 2w, 24h）" } }
           }
         },
         "shortcut": "茶服查"
