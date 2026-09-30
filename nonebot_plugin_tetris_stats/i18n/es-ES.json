@@ -3,7 +3,7 @@
   "interaction": {
     "wrong": { "query_bot": "No se puede consultar la información del bot" },
     "warning": {
-      "unverified": "* No se ha podido verificar la cuenta vinculada, por lo que la información podría no pertenecer al usuario indicado."
+      "unverified": "* La vinculación de la cuenta no está verificada, por lo que la información podría no pertenecer al usuario indicado."
     }
   },
   "error": {
@@ -16,7 +16,7 @@
     "RequestError": {
       "request": {
         "api": "La solicitud a la API ha fallado",
-        "cloudflare": "No se ha podido superar la verificación de Cloudflare",
+        "cloudflare": "No se ha podido sortear la protección de Cloudflare",
         "response": "Código de error de la solicitud: {status_code} {reason}\n{body}",
         "transport": "Error de solicitud\n{detail}",
         "failover": "No hay ninguna dirección disponible\n{errors}"
@@ -33,14 +33,14 @@
   },
   "template": { "template_language": "es-ES" },
   "bind": {
-    "not_found": "No se ha encontrado información de vinculación",
+    "not_found": "No se ha encontrado ninguna cuenta vinculada",
     "no_account": "Aún no has vinculado una cuenta de {game}",
-    "confirm_unbind": "¿Seguro que quieres desvincularla?",
+    "confirm_unbind": "¿Seguro que quieres desvincular la cuenta?",
     "confirm_yes": "Sí",
     "confirm_no": "No",
-    "config_success": "Configuración completada",
+    "config_success": "Configuración guardada",
     "verify_already": "Ya has completado la verificación.",
-    "verify_failed": "La verificación ha fallado. Confirma que la cuenta de {game} indicada esté vinculada a tu cuenta actual de Discord.",
+    "verify_failed": "La verificación ha fallado. Comprueba que la cuenta de {game} indicada esté vinculada a tu cuenta actual de Discord.",
     "only_discord": "Actualmente solo se admite la verificación de cuentas de Discord"
   },
   "record": {
@@ -50,10 +50,10 @@
   },
   "stats": {
     "user_info": "Usuario {name} ({id})",
-    "no_rank": "No hay estadísticas de rango disponibles",
-    "rank_info": ", Valoración {rating}±{rd} ({vol})",
-    "no_game": ", No hay datos de partidas disponibles",
-    "recent_games": ", Datos de las últimas {count} partidas",
+    "no_rank": ", no hay estadísticas de rango disponibles",
+    "rank_info": ", valoración {rating}±{rd} ({vol})",
+    "no_game": ", no hay datos de partidas disponibles",
+    "recent_games": ", datos de las últimas {count} partidas",
     "daily_stats": "Estadísticas de 24 h del usuario {name}: ",
     "no_daily": "El usuario {name} no tiene estadísticas de las últimas 24 h",
     "history_stats": "\nEstadísticas históricas: ",
