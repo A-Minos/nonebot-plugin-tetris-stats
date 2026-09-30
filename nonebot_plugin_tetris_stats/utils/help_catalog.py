@@ -68,11 +68,22 @@ _FIELDS: Mapping[_FieldIdentity, LangItem] = MappingProxyType(
         _FieldIdentity((*_TETRIO, 'list'), 'option', '--min-tr'): Lang.command.tetrio.list.options.min_tr.help,
         _FieldIdentity((*_TETRIO, 'list'), 'option', '--limit'): Lang.command.tetrio.list.options.limit.help,
         _FieldIdentity((*_TETRIO, 'list'), 'option', '--country'): Lang.command.tetrio.list.options.country.help,
-        # Pre-seeded for #452. No matching option means no output change.
         _FieldIdentity((*_TETRIO, 'list'), 'option', '--sort'): Lang.command.tetrio.list.options.sort.help,
         _FieldIdentity(
             (*_TETRIO, 'list'), 'option_arg', '--sort', 'sort'
         ): Lang.command.tetrio.list.options.sort.args.sort.notice,
+        _FieldIdentity((*_TETRIO, 'mask'), 'description'): Lang.command.tetrio.mask.description,
+        _FieldIdentity((*_TETRIO, 'mask', 'add'), 'description'): Lang.command.tetrio.mask.add.description,
+        _FieldIdentity((*_TETRIO, 'mask', 'add'), 'arg', 'account'): Lang.command.tetrio.mask.add.args.account.notice,
+        _FieldIdentity((*_TETRIO, 'mask', 'add'), 'arg', 'fields'): Lang.command.tetrio.mask.add.args.fields.notice,
+        _FieldIdentity((*_TETRIO, 'mask', 'remove'), 'description'): Lang.command.tetrio.mask.remove.description,
+        _FieldIdentity(
+            (*_TETRIO, 'mask', 'remove'), 'arg', 'account'
+        ): Lang.command.tetrio.mask.remove.args.account.notice,
+        _FieldIdentity(
+            (*_TETRIO, 'mask', 'remove'), 'arg', 'fields'
+        ): Lang.command.tetrio.mask.remove.args.fields.notice,
+        _FieldIdentity((*_TETRIO, 'mask', 'list'), 'description'): Lang.command.tetrio.mask.list.description,
         _FieldIdentity((*_TETRIO, 'query'), 'description'): Lang.command.tetrio.query.description,
         _FieldIdentity((*_TETRIO, 'query'), 'arg', 'who'): Lang.command.tetrio.query.args.who.notice,
         _FieldIdentity((*_TETRIO, 'query'), 'option', '--template'): Lang.command.tetrio.query.options.template.help,
@@ -156,6 +167,9 @@ _SHORTCUTS: Mapping[_ShortcutIdentity, LangItem] = MappingProxyType(
     {
         _ShortcutIdentity((*_TETRIO, 'bind'), 'io绑定'): Lang.command.tetrio.bind.shortcut,
         _ShortcutIdentity((*_TETRIO, 'config'), 'io配置'): Lang.command.tetrio.config.shortcut,
+        _ShortcutIdentity((*_TETRIO, 'mask', 'add'), 'io屏蔽'): Lang.command.tetrio.mask.add.shortcut,
+        _ShortcutIdentity((*_TETRIO, 'mask', 'remove'), 'io解屏蔽'): Lang.command.tetrio.mask.remove.shortcut,
+        _ShortcutIdentity((*_TETRIO, 'mask', 'list'), 'io屏蔽列表'): Lang.command.tetrio.mask.list.shortcut,
         _ShortcutIdentity((*_TETRIO, 'query'), 'io查'): Lang.command.tetrio.query.shortcut,
         _ShortcutIdentity((*_TETRIO, 'rank'), 'iorank'): Lang.command.tetrio.rank.shortcut,
         _ShortcutIdentity((*_TETRIO, 'record'), 'io记录blitz'): Lang.command.tetrio.record.shortcuts.blitz,
@@ -180,6 +194,10 @@ _LOCALES: Mapping[str, Locale] = MappingProxyType(
         'zh': 'zh-CN',
         'zh-cn': 'zh-CN',
         'zh-hans': 'zh-CN',
+        'zh-tw': 'zh-TW',
+        'es-es': 'es-ES',
+        'ja-jp': 'ja-JP',
+        'ko-kr': 'ko-KR',
     }
 )
 
