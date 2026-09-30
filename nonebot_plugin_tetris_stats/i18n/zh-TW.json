@@ -14,8 +14,8 @@
     "RequestError": {
       "request": {
         "api": "API 請求失敗",
-        "cloudflare": "無法通過 Cloudflare 驗證",
-        "response": "請求錯誤碼：{status_code} {reason}\n{body}",
+        "cloudflare": "無法繞過 Cloudflare 防護",
+        "response": "請求失敗，狀態碼：{status_code} {reason}\n{body}",
         "transport": "請求錯誤\n{detail}",
         "failover": "所有位址皆無法使用\n{errors}"
       },
@@ -44,14 +44,14 @@
   "record": { "not_found": "找不到使用者 {username} 的「{mode}」紀錄", "blitz": "閃電戰", "sprint": "40行" },
   "stats": {
     "user_info": "使用者 {name}（{id}）",
-    "no_rank": "沒有可用的段位統計資料",
+    "no_rank": "，暫無段位統計資料",
     "rank_info": "，評分 {rating}±{rd}（{vol}）",
-    "no_game": "，沒有可用的遊戲資料",
+    "no_game": "，暫無遊戲資料",
     "recent_games": "，最近 {count} 場遊戲的資料",
     "daily_stats": "使用者 {name} 的 24 小時統計資料：",
-    "no_daily": "使用者 {name} 沒有可用的 24 小時統計資料",
+    "no_daily": "使用者 {name} 暫無 24 小時統計資料",
     "history_stats": "\n歷史統計資料：",
-    "no_history": "\n沒有可用的歷史統計資料",
+    "no_history": "\n暫無歷史統計資料",
     "lpm": "\nL'PM：{lpm}（{pps} PPS）",
     "apm": "\nAPM：{apm}（x{apl}）",
     "adpm": "\nADPM：{adpm}（x{adpl}）（{vs} VS）",
@@ -66,11 +66,11 @@
   },
   "help": { "usage": "輸入「{command} --help」查看說明" },
   "prompt": {
-    "io_check": "ioquery me",
+    "io_check": "io查我",
     "io_bind": "iobind {{gameID}}",
-    "top_check": "topquery me",
+    "top_check": "top查我",
     "top_bind": "topbind {{gameID}}",
-    "tos_check": "tosquery me",
+    "tos_check": "tos查我",
     "tos_bind": "tosbind {{gameID}}"
   },
   "retry": { "message": "正在重試：{func}（{i}/{max_attempts}）", "screenshot": "截圖失敗，正在重試" },
@@ -92,14 +92,14 @@
         "options": {
           "default_template": { "help": "設定預設查詢範本", "args": { "template": { "notice": "範本版本" } } },
           "default_compare": {
-            "help": "設定預設比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "設定預設比較時間間隔",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "ioconfig"
       },
       "list": {
-        "description": "查詢 TETR.IO 排名榜",
+        "description": "查詢 TETR.IO 段位排行榜",
         "options": {
           "max_tr": { "help": "TR 上限" },
           "min_tr": { "help": "TR 下限" },
@@ -113,12 +113,12 @@
       },
       "query": {
         "description": "查詢 TETR.IO 遊戲資訊",
-        "args": { "who": { "notice": "@要查詢的使用者 / me / TETR.IO 使用者名稱 / ID" } },
+        "args": { "who": { "notice": "@要查詢的使用者 / 我 / TETR.IO 使用者名稱 / ID" } },
         "options": {
           "template": { "help": "選擇查詢範本", "args": { "template": { "notice": "範本版本" } } },
           "compare": {
-            "help": "指定比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "與多久之前的資料比較",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "ioquery"
@@ -133,7 +133,7 @@
         "shortcut": "iorank"
       },
       "record": {
-        "args": { "who": { "notice": "@要查詢的使用者 / me / TETR.IO 使用者名稱 / ID" } },
+        "args": { "who": { "notice": "@要查詢的使用者 / 我 / TETR.IO 使用者名稱 / ID" } },
         "options": {
           "type": {
             "help": "紀錄類型",
@@ -158,19 +158,19 @@
         "description": "設定 TOP 查詢",
         "options": {
           "default_compare": {
-            "help": "設定預設比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "設定預設比較時間間隔",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "topconfig"
       },
       "query": {
         "description": "查詢 TOP 遊戲資訊",
-        "args": { "who": { "notice": "@要查詢的使用者 / me / TOP 使用者名稱" } },
+        "args": { "who": { "notice": "@要查詢的使用者 / 我 / TOP 使用者名稱" } },
         "options": {
           "compare": {
-            "help": "指定比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "與多久之前的資料比較",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "topquery"
@@ -188,19 +188,19 @@
         "description": "設定 TOS 查詢",
         "options": {
           "default_compare": {
-            "help": "設定預設比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "設定預設比較時間間隔",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "tosconfig"
       },
       "query": {
         "description": "查詢 TOS 遊戲資訊",
-        "args": { "who": { "notice": "@要查詢的使用者 / me / TOS 使用者名稱 / TeaID" } },
+        "args": { "who": { "notice": "@要查詢的使用者 / 我 / TOS 使用者名稱 / TeaID" } },
         "options": {
           "compare": {
-            "help": "指定比較時間範圍",
-            "args": { "compare": { "notice": "比較時間範圍（例如 7d、2w、24h）" } }
+            "help": "與多久之前的資料比較",
+            "args": { "compare": { "notice": "比較時間間隔（例如 7d、2w、24h）" } }
           }
         },
         "shortcut": "tosquery"
