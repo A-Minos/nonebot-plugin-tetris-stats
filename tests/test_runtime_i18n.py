@@ -31,6 +31,29 @@ def test_parser_errors_follow_locale(locale: str, expected: tuple[str, str, str,
     assert tuple(error.render(locale) for error in errors) == expected  # noqa: S101
 
 
+@pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
+@pytest.mark.parametrize(
+    ('prompt_key', 'target'),
+    [
+        ('io_check', 'TETRIO.query'),
+        ('io_bind', 'TETRIO.bind'),
+        ('top_check', 'TOP.query'),
+        ('top_bind', 'TOP.bind'),
+        ('tos_check', 'TOS.query'),
+        ('tos_bind', 'TOS.bind'),
+    ],
+)
+def test_prompt_commands_reach_the_expected_handler(locale: str, prompt_key: str, target: str) -> None:
+    from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.i18n import Lang  # noqa: PLC0415
+
+    command_text = getattr(Lang.prompt, prompt_key)(locale).replace('{gameID}', 'testuser')
+    result = command.parse(command_text)
+
+    assert result.matched, result.error_info  # noqa: S101
+    assert result.find(target)  # noqa: S101
+
+
 def test_request_error_is_rendered_lazily_without_losing_detail() -> None:
     from nonebot_plugin_tetris_stats.i18n import Lang  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.exception import RequestError  # noqa: PLC0415
