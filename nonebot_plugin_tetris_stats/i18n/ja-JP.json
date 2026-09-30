@@ -16,7 +16,7 @@
     "RequestError": {
       "request": {
         "api": "APIリクエストに失敗しました",
-        "cloudflare": "Cloudflareの認証を通過できませんでした",
+        "cloudflare": "Cloudflareの保護を回避できませんでした",
         "response": "リクエストエラーコード: {status_code} {reason}\n{body}",
         "transport": "通信エラー\n{detail}",
         "failover": "すべての接続先が利用できません\n{errors}"
@@ -50,7 +50,7 @@
   },
   "stats": {
     "user_info": "ユーザー {name} ({id})",
-    "no_rank": "ランク統計がありません",
+    "no_rank": "、ランク統計がありません",
     "rank_info": "、レーティング {rating}±{rd} ({vol})",
     "no_game": "、対戦データがありません",
     "recent_games": "、直近{count}試合のデータ",
@@ -104,8 +104,8 @@
             "args": { "template": { "notice": "テンプレートのバージョン" } }
           },
           "default_compare": {
-            "help": "デフォルトの比較期間を設定",
-            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+            "help": "デフォルトの比較時間差を設定",
+            "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } }
           }
         },
         "shortcut": "ioconfig"
@@ -131,7 +131,7 @@
             "help": "検索テンプレートを選択",
             "args": { "template": { "notice": "テンプレートのバージョン" } }
           },
-          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+          "compare": { "help": "比較の時間差を指定", "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } } }
         },
         "shortcut": "ioquery"
       },
@@ -175,8 +175,8 @@
         "description": "TOPの検索設定",
         "options": {
           "default_compare": {
-            "help": "デフォルトの比較期間を設定",
-            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+            "help": "デフォルトの比較時間差を設定",
+            "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } }
           }
         },
         "shortcut": "topconfig"
@@ -185,7 +185,7 @@
         "description": "TOPのプレイヤー情報を検索",
         "args": { "who": { "notice": "@対象ユーザー / me / TOP ユーザー名" } },
         "options": {
-          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+          "compare": { "help": "比較の時間差を指定", "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } } }
         },
         "shortcut": "topquery"
       }
@@ -202,8 +202,8 @@
         "description": "TOSの検索設定",
         "options": {
           "default_compare": {
-            "help": "デフォルトの比較期間を設定",
-            "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } }
+            "help": "デフォルトの比較時間差を設定",
+            "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } }
           }
         },
         "shortcut": "tosconfig"
@@ -212,7 +212,7 @@
         "description": "TOSのプレイヤー情報を検索",
         "args": { "who": { "notice": "@対象ユーザー / me / TOS ユーザー名 / TeaID" } },
         "options": {
-          "compare": { "help": "比較期間を指定", "args": { "compare": { "notice": "比較期間（例: 7d、2w、24h）" } } }
+          "compare": { "help": "比較の時間差を指定", "args": { "compare": { "notice": "比較の時間差（例: 7d、2w、24h）" } } }
         },
         "shortcut": "tosquery"
       }
