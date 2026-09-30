@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "你沒有執行此命令的權限",
     "wrong": { "query_bot": "無法查詢機器人的資訊" },
     "warning": { "unverified": "* 因為無法驗證帳號綁定資訊，無法保證查詢結果屬於目標使用者。" }
   },
@@ -42,6 +43,9 @@
     "only_discord": "目前僅支援 Discord 帳號驗證"
   },
   "record": { "not_found": "找不到使用者 {username} 的「{mode}」紀錄", "blitz": "閃電戰", "sprint": "40行" },
+  "list": {
+    "no_snapshot": "暫無 TETR.IO 段位排行榜快照，請稍後再試"
+  },
   "stats": {
     "user_info": "使用者 {name}（{id}）",
     "no_rank": "，暫無段位統計資料",
@@ -74,6 +78,20 @@
     "tos_bind": "tosbind {{gameID}}"
   },
   "retry": { "message": "正在重試：{func}（{i}/{max_attempts}）", "screenshot": "截圖失敗，正在重試" },
+  "mask": {
+    "name": "已屏蔽",
+    "updated": "{uid} 目前屏蔽欄位: {fields}",
+    "none": "無",
+    "empty": "暫無被屏蔽的玩家",
+    "invalid_field": "未知欄位: {fields}\n可用欄位: {available}",
+    "fields": {
+      "name": "名字",
+      "avatar": "頭像",
+      "banner": "橫幅",
+      "bio": "簡介",
+      "country": "國旗"
+    }
+  },
   "command": {
     "root": {
       "description": "查詢俄羅斯方塊相關遊戲的玩家資料",
@@ -81,6 +99,37 @@
       "plugin_usage": "傳送 tstats --help 查看用法"
     },
     "tetrio": {
+      "mask": {
+        "description": "管理 TETR.IO 玩家展示資訊屏蔽",
+        "add": {
+          "description": "屏蔽玩家的展示資訊",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 使用者名稱 / ID"
+            },
+            "fields": {
+              "notice": "屏蔽欄位, 預設全部"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "解除玩家的展示資訊屏蔽",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 使用者名稱 / ID"
+            },
+            "fields": {
+              "notice": "解除欄位, 預設全部"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "列出被屏蔽的玩家",
+          "shortcut": "io屏蔽列表"
+        }
+      },
       "description": "TETR.IO 遊戲指令",
       "bind": {
         "description": "綁定 TETR.IO 帳號",

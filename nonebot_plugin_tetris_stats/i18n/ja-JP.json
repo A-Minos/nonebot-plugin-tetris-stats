@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "このコマンドを実行する権限がありません",
     "wrong": { "query_bot": "ボットの情報は検索できません" },
     "warning": {
       "unverified": "* アカウント連携情報を確認できないため、取得した情報が対象ユーザー本人のものとは保証できません。"
@@ -48,6 +49,9 @@
     "blitz": "ブリッツ",
     "sprint": "スプリント"
   },
+  "list": {
+    "no_snapshot": "TETR.IO のランクランキングのスナップショットがありません。しばらくしてからもう一度お試しください"
+  },
   "stats": {
     "user_info": "ユーザー {name} ({id})",
     "no_rank": "、ランク統計がありません",
@@ -83,6 +87,20 @@
     "message": "再試行中: {func} ({i}/{max_attempts})",
     "screenshot": "スクリーンショットに失敗しました。再試行します"
   },
+  "mask": {
+    "name": "非表示",
+    "updated": "{uid} の非表示項目: {fields}",
+    "none": "なし",
+    "empty": "表示情報が非表示になっているプレイヤーはいません",
+    "invalid_field": "不明な項目: {fields}\n使用可能な項目: {available}",
+    "fields": {
+      "name": "名前",
+      "avatar": "アバター",
+      "banner": "バナー",
+      "bio": "自己紹介",
+      "country": "国旗"
+    }
+  },
   "command": {
     "root": {
       "description": "テトリス系ゲームのプレイヤーデータを検索します",
@@ -90,6 +108,37 @@
       "plugin_usage": "使い方を表示するには tstats --help を送信してください"
     },
     "tetrio": {
+      "mask": {
+        "description": "TETR.IO プレイヤーの表示情報の非表示設定を管理",
+        "add": {
+          "description": "プレイヤーの表示情報を非表示にする",
+          "args": {
+            "account": {
+              "notice": "TETR.IO ユーザー名 / ID"
+            },
+            "fields": {
+              "notice": "非表示にする項目（デフォルトはすべて）"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "プレイヤーの表示情報の非表示を解除する",
+          "args": {
+            "account": {
+              "notice": "TETR.IO ユーザー名 / ID"
+            },
+            "fields": {
+              "notice": "非表示を解除する項目（デフォルトはすべて）"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "表示情報が非表示になっているプレイヤーを一覧表示",
+          "shortcut": "io屏蔽列表"
+        }
+      },
       "description": "TETR.IOのゲームコマンド",
       "bind": {
         "description": "TETR.IOのアカウント連携",

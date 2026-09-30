@@ -1,6 +1,7 @@
 {
   "$schema": ".lang.schema.json",
   "interaction": {
+    "permission_denied": "이 명령을 실행할 권한이 없습니다",
     "wrong": { "query_bot": "봇 정보를 조회할 수 없습니다" },
     "warning": {
       "unverified": "* 계정 연동 정보를 확인할 수 없어, 조회 결과가 대상 사용자의 것임을 보장할 수 없습니다."
@@ -48,6 +49,9 @@
     "blitz": "블리츠",
     "sprint": "스프린트"
   },
+  "list": {
+    "no_snapshot": "TETR.IO 랭크 순위표 스냅샷이 없습니다. 잠시 후 다시 시도해 주세요"
+  },
   "stats": {
     "user_info": "사용자 {name} ({id})",
     "no_rank": ", 랭크 통계 없음",
@@ -83,6 +87,20 @@
     "message": "재시도 중: {func} ({i}/{max_attempts})",
     "screenshot": "스크린샷 생성에 실패하여 재시도합니다"
   },
+  "mask": {
+    "name": "숨김",
+    "updated": "{uid}의 숨김 항목: {fields}",
+    "none": "없음",
+    "empty": "표시 정보가 숨겨진 플레이어가 없습니다",
+    "invalid_field": "알 수 없는 항목: {fields}\n사용 가능한 항목: {available}",
+    "fields": {
+      "name": "이름",
+      "avatar": "아바타",
+      "banner": "배너",
+      "bio": "소개",
+      "country": "국기"
+    }
+  },
   "command": {
     "root": {
       "description": "테트리스 관련 게임의 플레이어 데이터 조회",
@@ -90,6 +108,37 @@
       "plugin_usage": "사용법을 보려면 tstats --help를 보내세요"
     },
     "tetrio": {
+      "mask": {
+        "description": "TETR.IO 플레이어 표시 정보의 숨김 설정 관리",
+        "add": {
+          "description": "플레이어의 표시 정보 숨기기",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 사용자명 / ID"
+            },
+            "fields": {
+              "notice": "숨길 항목, 기본값은 전체"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "플레이어의 표시 정보 숨김 해제",
+          "args": {
+            "account": {
+              "notice": "TETR.IO 사용자명 / ID"
+            },
+            "fields": {
+              "notice": "숨김을 해제할 항목, 기본값은 전체"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "표시 정보가 숨겨진 플레이어 목록 보기",
+          "shortcut": "io屏蔽列表"
+        }
+      },
       "description": "TETR.IO 게임 명령어",
       "bind": {
         "description": "TETR.IO 계정 연동",

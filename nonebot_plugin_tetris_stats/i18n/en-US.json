@@ -261,6 +261,37 @@
       "verify": {
         "description": "Verify your TETR.IO account",
         "shortcut": "ioverify"
+      },
+      "mask": {
+        "description": "Manage masking of TETR.IO player display information",
+        "add": {
+          "description": "Mask player display information",
+          "args": {
+            "account": {
+              "notice": "TETR.IO username / ID"
+            },
+            "fields": {
+              "notice": "Fields to mask, all by default"
+            }
+          },
+          "shortcut": "io屏蔽"
+        },
+        "remove": {
+          "description": "Unmask player display information",
+          "args": {
+            "account": {
+              "notice": "TETR.IO username / ID"
+            },
+            "fields": {
+              "notice": "Fields to unmask, all by default"
+            }
+          },
+          "shortcut": "io解屏蔽"
+        },
+        "list": {
+          "description": "List masked players",
+          "shortcut": "io屏蔽列表"
+        }
       }
     },
     "top": {
