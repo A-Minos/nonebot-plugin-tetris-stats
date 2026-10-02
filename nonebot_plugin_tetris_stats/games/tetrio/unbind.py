@@ -24,12 +24,12 @@ from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
 
-command.add(Subcommand('unbind', help_text='解除绑定 TETR.IO 账号'))
+command.add(Subcommand('unbind', help_text=Lang.command.tetrio.unbind.description.cast()))
 
 alc.shortcut(
     '(?i:io)(?i:解除绑定|解绑|unbind)',
     command='tstats TETR.IO unbind',
-    humanized='io解绑',
+    humanized=Lang.command.tetrio.unbind.shortcut.cast(),
 )
 
 
@@ -46,8 +46,8 @@ async def _(nb_user: User, event_session: Uninfo, interface: QryItrface):
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
             await UniMessage(Lang.bind.no_account(game='TETR.IO')).finish()
-        resp = await suggest(Lang.bind.confirm_unbind(), ['是', '否'])
-        if resp is None or resp.extract_plain_text() == '否':
+        resp = await suggest(Lang.bind.confirm_unbind(), [Lang.bind.confirm_yes(), Lang.bind.confirm_no()])
+        if resp is None or resp.extract_plain_text() == Lang.bind.confirm_no():
             return
         player = Player(user_id=bind.game_account, trust=True)
         user = await player.user

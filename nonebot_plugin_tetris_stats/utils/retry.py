@@ -7,6 +7,7 @@ from typing import Any, ParamSpec, TypeVar
 
 from nonebot.log import logger
 from nonebot_plugin_alconna.uniseg import SerializeFailed, UniMessage
+from tarina.lang.model import LangItem
 
 from ..i18n import Lang
 
@@ -18,7 +19,7 @@ def retry(
     max_attempts: int = 3,
     exception_type: type[BaseException] | tuple[type[BaseException], ...] = Exception,
     delay: timedelta | None = None,
-    reply: str | UniMessage | None = None,
+    reply: str | LangItem | UniMessage | None = None,
 ) -> Callable[[Callable[P, Coroutine[Any, Any, T]]], Callable[P, Coroutine[Any, Any, T]]]:
     def decorator(func: Callable[P, Coroutine[Any, Any, T]]) -> Callable[P, Coroutine[Any, Any, T]]:
         @wraps(func)
@@ -27,8 +28,9 @@ def retry(
                 if i > 0:
                     message = Lang.retry.message(func=func.__name__, i=i, max_attempts=max_attempts)
                     logger.debug(message)
+                    retry_reply = reply() if isinstance(reply, LangItem) else reply
                     with suppress(SerializeFailed):
-                        await UniMessage(reply or message).send()
+                        await UniMessage(retry_reply if retry_reply is not None else message).send()
                 if i == max_attempts:
                     break
                 try:

@@ -1,5 +1,7 @@
 from nonebot_plugin_alconna import Subcommand
 
+from ...i18n import Lang
+from ...utils.exception import MessageFormatError
 from .. import alc, assign
 from .. import command as main_command
 from .api import Player
@@ -11,15 +13,14 @@ def get_player(user_id_or_name: str) -> Player:
         return Player(user_id=user_id_or_name, trust=True)
     if USER_NAME.match(user_id_or_name):
         return Player(user_name=user_id_or_name, trust=True)
-    msg = '用户名/ID不合法'
-    raise ValueError(msg)
+    raise MessageFormatError(Lang.error.MessageFormatError.TETR_IO)
 
 
 command = Subcommand(
     'TETR.IO',
     alias=['TETRIO', 'tetr.io', 'tetrio', 'io'],
     dest='TETRIO',
-    help_text='TETR.IO 游戏相关指令',
+    help_text=Lang.command.tetrio.description.cast(),
 )
 
 

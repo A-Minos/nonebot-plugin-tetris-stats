@@ -5,15 +5,71 @@
       "scope": "interaction",
       "types": [
         "permission_denied",
-        { "subtype": "wrong", "types": ["query_bot"] },
-        { "subtype": "warning", "types": ["unverified"] }
+        {
+          "subtype": "wrong",
+          "types": [
+            "query_bot"
+          ]
+        },
+        {
+          "subtype": "warning",
+          "types": [
+            "unverified"
+          ]
+        }
       ]
     },
     {
       "scope": "error",
-      "types": [{ "subtype": "MessageFormatError", "types": ["TETR.IO", "TOS", "TOP"] }]
+      "types": [
+        {
+          "subtype": "MessageFormatError",
+          "types": [
+            "TETR.IO",
+            "TOS",
+            "TOP",
+            "duration"
+          ]
+        },
+        {
+          "subtype": "RequestError",
+          "types": [
+            {
+              "subtype": "request",
+              "types": [
+                "api",
+                "cloudflare",
+                "response",
+                "transport",
+                "failover"
+              ]
+            },
+            {
+              "subtype": "TETR.IO",
+              "types": [
+                "leaderboard",
+                "user_info",
+                "summaries",
+                "league_history",
+                "records"
+              ]
+            },
+            {
+              "subtype": "TOS",
+              "types": [
+                "user_info"
+              ]
+            }
+          ]
+        }
+      ]
     },
-    { "scope": "template", "types": ["template_language"] },
+    {
+      "scope": "template",
+      "types": [
+        "template_language"
+      ]
+    },
     {
       "scope": "bind",
       "types": [
@@ -23,16 +79,24 @@
         "config_success",
         "verify_already",
         "verify_failed",
-        "only_discord"
+        "only_discord",
+        "confirm_yes",
+        "confirm_no"
       ]
     },
     {
       "scope": "record",
-      "types": ["not_found", "blitz", "sprint"]
+      "types": [
+        "not_found",
+        "blitz",
+        "sprint"
+      ]
     },
     {
       "scope": "list",
-      "types": ["no_snapshot"]
+      "types": [
+        "no_snapshot"
+      ]
     },
     {
       "scope": "stats",
@@ -56,19 +120,35 @@
     },
     {
       "scope": "template_ui",
-      "types": ["invalid_tag", "update_success", "update_failed"]
+      "types": [
+        "invalid_tag",
+        "update_success",
+        "update_failed"
+      ]
     },
     {
       "scope": "help",
-      "types": ["usage"]
+      "types": [
+        "usage"
+      ]
     },
     {
       "scope": "prompt",
-      "types": ["io_check", "io_bind", "top_check", "top_bind", "tos_check", "tos_bind"]
+      "types": [
+        "io_check",
+        "io_bind",
+        "top_check",
+        "top_bind",
+        "tos_check",
+        "tos_bind"
+      ]
     },
     {
       "scope": "retry",
-      "types": ["message"]
+      "types": [
+        "message",
+        "screenshot"
+      ]
     },
     {
       "scope": "mask",
@@ -78,7 +158,612 @@
         "none",
         "empty",
         "invalid_field",
-        { "subtype": "fields", "types": ["name", "avatar", "banner", "bio", "country"] }
+        {
+          "subtype": "fields",
+          "types": [
+            "name",
+            "avatar",
+            "banner",
+            "bio",
+            "country"
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "command",
+      "types": [
+        {
+          "subtype": "root",
+          "types": [
+            "description",
+            "usage",
+            "examples",
+            "plugin_description",
+            "plugin_usage"
+          ]
+        },
+        {
+          "subtype": "tetrio",
+          "types": [
+            "description",
+            {
+              "subtype": "bind",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "account",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "config",
+              "types": [
+                "description",
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "default_template",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "template",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "subtype": "default_compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "list",
+              "types": [
+                "description",
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "max_tr",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "min_tr",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "limit",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "country",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "sort",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "sort",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "subtype": "query",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "who",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "template",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "template",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "subtype": "compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "rank",
+              "types": [
+                "description",
+                {
+                  "subtype": "all",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "options",
+                      "types": [
+                        {
+                          "subtype": "template",
+                          "types": [
+                            "help",
+                            {
+                              "subtype": "args",
+                              "types": [
+                                {
+                                  "subtype": "template",
+                                  "types": [
+                                    "notice"
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "detail",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "args",
+                      "types": [
+                        {
+                          "subtype": "rank",
+                          "types": [
+                            "notice"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "record",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "who",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "blitz",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "sprint",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "type",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "record_type",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "subtype": "index",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "index",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "shortcuts",
+                  "types": [
+                    "blitz",
+                    "sprint"
+                  ]
+                }
+              ]
+            },
+            {
+              "subtype": "unbind",
+              "types": [
+                "description",
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "verify",
+              "types": [
+                "description",
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "mask",
+              "types": [
+                "description",
+                {
+                  "subtype": "add",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "args",
+                      "types": [
+                        {
+                          "subtype": "account",
+                          "types": [
+                            "notice"
+                          ]
+                        },
+                        {
+                          "subtype": "fields",
+                          "types": [
+                            "notice"
+                          ]
+                        }
+                      ]
+                    },
+                    "shortcut"
+                  ]
+                },
+                {
+                  "subtype": "remove",
+                  "types": [
+                    "description",
+                    {
+                      "subtype": "args",
+                      "types": [
+                        {
+                          "subtype": "account",
+                          "types": [
+                            "notice"
+                          ]
+                        },
+                        {
+                          "subtype": "fields",
+                          "types": [
+                            "notice"
+                          ]
+                        }
+                      ]
+                    },
+                    "shortcut"
+                  ]
+                },
+                {
+                  "subtype": "list",
+                  "types": [
+                    "description",
+                    "shortcut"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "subtype": "top",
+          "types": [
+            "description",
+            {
+              "subtype": "bind",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "account",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "unbind",
+              "types": [
+                "description",
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "config",
+              "types": [
+                "description",
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "default_compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "query",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "who",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            }
+          ]
+        },
+        {
+          "subtype": "tos",
+          "types": [
+            "description",
+            {
+              "subtype": "bind",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "account",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "unbind",
+              "types": [
+                "description",
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "config",
+              "types": [
+                "description",
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "default_compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            },
+            {
+              "subtype": "query",
+              "types": [
+                "description",
+                {
+                  "subtype": "args",
+                  "types": [
+                    {
+                      "subtype": "who",
+                      "types": [
+                        "notice"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "subtype": "options",
+                  "types": [
+                    {
+                      "subtype": "compare",
+                      "types": [
+                        "help",
+                        {
+                          "subtype": "args",
+                          "types": [
+                            {
+                              "subtype": "compare",
+                              "types": [
+                                "notice"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "shortcut"
+              ]
+            }
+          ]
+        }
       ]
     }
   ]

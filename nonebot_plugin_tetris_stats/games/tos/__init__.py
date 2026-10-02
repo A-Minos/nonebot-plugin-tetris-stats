@@ -1,7 +1,9 @@
 from arclet.alconna import Arg, ArgFlag
 from nonebot_plugin_alconna import Args, At, Option, Subcommand
 
+from ...i18n import Lang
 from ...utils.duration import parse_duration
+from ...utils.exception import MessageFormatError
 from ...utils.typedefs import Me
 from .. import add_block_handlers, alc, assign, command
 from .api import Player
@@ -16,8 +18,7 @@ def get_player(teaid_or_name: str) -> Player:
         return Player(teaid=teaid_or_name, trust=True)
     if USER_NAME.match(teaid_or_name) and not teaid_or_name.isdigit() and 2 <= len(teaid_or_name) <= 18:  # noqa: PLR2004
         return Player(user_name=teaid_or_name, trust=True)
-    msg = '用户名/ID不合法'
-    raise ValueError(msg)
+    raise MessageFormatError(Lang.error.MessageFormatError.TOS)
 
 
 command.add(
@@ -29,25 +30,29 @@ command.add(
                 Arg(
                     'account',
                     get_player,
-                    notice='茶服 用户名 / ID',
+                    notice=Lang.command.tos.bind.args.account.notice.cast(),
                     flags=[ArgFlag.HIDDEN],
                 )
             ),
-            help_text='绑定 茶服 账号',
+            help_text=Lang.command.tos.bind.description.cast(),
         ),
         Subcommand(
             'unbind',
-            help_text='解除绑定 TOS 账号',
+            help_text=Lang.command.tos.unbind.description.cast(),
         ),
         Subcommand(
             'config',
             Option(
                 '--default-compare',
-                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
+                Arg(
+                    'compare',
+                    parse_duration,
+                    notice=Lang.command.tos.config.options.default_compare.args.compare.notice.cast(),
+                ),
                 alias=['-DC', 'DefaultCompare'],
-                help_text='设置默认对比时间距离',
+                help_text=Lang.command.tos.config.options.default_compare.help.cast(),
             ),
-            help_text='茶服 查询个性化配置',
+            help_text=Lang.command.tos.config.description.cast(),
         ),
         Subcommand(
             'query',
@@ -55,40 +60,42 @@ command.add(
                 Arg(
                     'who',
                     At | Me | get_player,
-                    notice='@想要查询的人 / 自己 / 茶服 用户名 / TeaID',
+                    notice=Lang.command.tos.query.args.who.notice.cast(),
                 ),
             ),
             Option(
                 '--compare',
-                Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
+                Arg(
+                    'compare', parse_duration, notice=Lang.command.tos.query.options.compare.args.compare.notice.cast()
+                ),
                 alias=['-C'],
-                help_text='指定对比时间距离',
+                help_text=Lang.command.tos.query.options.compare.help.cast(),
             ),
-            help_text='查询 茶服 游戏信息',
+            help_text=Lang.command.tos.query.description.cast(),
         ),
-        help_text='茶服 游戏相关指令',
+        help_text=Lang.command.tos.description.cast(),
     )
 )
 
 alc.shortcut(
     '(?i:tos|茶服)(?i:绑定|绑|bind)',
     command='tstats TOS bind',
-    humanized='茶服绑定',
+    humanized=Lang.command.tos.bind.shortcut.cast(),
 )
 alc.shortcut(
     '(?i:tos|茶服)(?i:解除绑定|解绑|unbind)',
     command='tstats TOS unbind',
-    humanized='茶服解绑',
+    humanized=Lang.command.tos.unbind.shortcut.cast(),
 )
 alc.shortcut(
     '(?i:tos|茶服)(?i:查询|查|query|stats)',
     command='tstats TOS query',
-    humanized='茶服查',
+    humanized=Lang.command.tos.query.shortcut.cast(),
 )
 alc.shortcut(
     '(?i:tos|茶服)(?i:配置|配|config)',
     command='tstats TOS config',
-    humanized='茶服配置',
+    humanized=Lang.command.tos.config.shortcut.cast(),
 )
 
 add_block_handlers(assign('TOS.query'))

@@ -22,24 +22,32 @@ command.add(
         'config',
         Option(
             '--default-template',
-            Arg('template', Template, notice='模板版本'),
+            Arg(
+                'template',
+                Template,
+                notice=Lang.command.tetrio.config.options.default_template.args.template.notice.cast(),
+            ),
             alias=['-DT', 'DefaultTemplate'],
-            help_text='设置默认查询模板',
+            help_text=Lang.command.tetrio.config.options.default_template.help.cast(),
         ),
         Option(
             '--default-compare',
-            Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
+            Arg(
+                'compare',
+                parse_duration,
+                notice=Lang.command.tetrio.config.options.default_compare.args.compare.notice.cast(),
+            ),
             alias=['-DC', 'DefaultCompare'],
-            help_text='设置默认对比时间距离',
+            help_text=Lang.command.tetrio.config.options.default_compare.help.cast(),
         ),
-        help_text='TETR.IO 查询个性化配置',
+        help_text=Lang.command.tetrio.config.description.cast(),
     ),
 )
 
 alc.shortcut(
     '(?i:io)(?i:配置|配|config)',
     command='tstats TETR.IO config',
-    humanized='io配置',
+    humanized=Lang.command.tetrio.config.shortcut.cast(),
 )
 
 

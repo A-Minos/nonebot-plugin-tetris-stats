@@ -24,12 +24,12 @@ from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
 
-command.add(Subcommand('verify', help_text='验证 TETR.IO 账号'))
+command.add(Subcommand('verify', help_text=Lang.command.tetrio.verify.description.cast()))
 
 alc.shortcut(
     '(?i:io)(?i:验证|verify)',
     command='tstats TETR.IO verify',
-    humanized='io验证',
+    humanized=Lang.command.tetrio.verify.shortcut.cast(),
 )
 
 try:
