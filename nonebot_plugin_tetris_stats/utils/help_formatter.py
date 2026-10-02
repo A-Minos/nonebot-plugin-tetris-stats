@@ -57,13 +57,14 @@ def _merge_aliases(canonical: str, *alias_sources: list[str] | tuple[str, ...]) 
     return result
 
 
+# 命令定义里的 help_text / notice / humanized 可以是 LangItem, str() 按当前 locale 取文案。
 def _arg_to_help(arg: Arg) -> 'HelpArg':
     from .render.schemas.help import HelpArg  # noqa: PLC0415
 
     default = arg.field.default
     return HelpArg(
         name=arg.name,
-        notice=arg.notice,
+        notice=None if arg.notice is None else str(arg.notice),
         type_repr=getattr(arg.value, '__name__', None) or repr(arg.value),
         optional=arg.optional,
         hidden=arg.hidden,
@@ -79,7 +80,7 @@ def _opt_to_help(opt: Option) -> 'HelpOption':
         aliases=[a for a in opt.aliases if a != opt.name],
         dest=opt.dest,
         args=[_arg_to_help(a) for a in opt.args.argument],
-        help_text=opt.help_text,
+        help_text=str(opt.help_text),
     )
 
 
@@ -100,7 +101,7 @@ def _sub_to_help(sub: Subcommand) -> 'HelpNode':
         name=canonical,
         dest=sub.dest,
         aliases=_merge_aliases(canonical, name_aliases, list(sub.aliases)),
-        help_text=sub.help_text,
+        help_text=str(sub.help_text),
         args=[_arg_to_help(a) for a in sub.args.argument],
         options=options,
         subcommands=subcommands,
@@ -180,7 +181,8 @@ def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
     """
     results: list[tuple[str, list[str]]] = []
     root_canonical, _ = _split_name(root.header_display)
-    for key, short in command_manager.get_shortcut(root).items():
+    for humanized, short in command_manager.get_shortcut(root).items():
+        key = str(humanized)
         if _is_easter_egg(key):
             continue
         if not isinstance(short, InnerShortcutArgs):
@@ -297,14 +299,13 @@ class StructuredHelpFormatter(TextFormatter):
 
         # Lazy imports avoid circular dependencies with games/*
         # (render/__init__.py -> host.py -> games.tetrio.api.cache).
-        from .help_catalog import localize_help  # noqa: PLC0415
         from .lang import get_lang  # noqa: PLC0415
 
         node = HelpNode(
             name=cur_name,
             dest=cur_dest,
             aliases=cur_aliases,
-            help_text=head.get('description'),
+            help_text=str(head['description']),
             args=[_arg_to_help(a) for a in trace.args],
             options=options,
             subcommands=subcommands,
@@ -323,14 +324,12 @@ class StructuredHelpFormatter(TextFormatter):
             shortcuts = [
                 HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1 : len(breadcrumb)] == breadcrumb[1:]
             ]
-        locale = get_lang()
         data = HelpData(
-            lang=locale,
+            lang=get_lang(),
             command=node,
             breadcrumb=breadcrumb,
             usage=usage,
             examples=examples,
             shortcuts=shortcuts,
         )
-        data = localize_help(data, locale)
         return data.model_dump_json(by_alias=True) if PYDANTIC_V2 else data.json(by_alias=True)
