@@ -228,12 +228,15 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "View TETR.IO solo records",
         "args": {
           "who": {
             "notice": "@mention, me, TETR.IO username, or ID"
           }
         },
         "options": {
+          "blitz": { "help": "View Blitz record" },
+          "sprint": { "help": "View Sprint record" },
           "type": {
             "help": "Record type",
             "args": {

@@ -29,7 +29,7 @@ from ..constant import GAME_TYPE
 from ..mask import display_name, get_mask
 from . import command
 
-command.add(Option('--blitz', dest='blitz'))
+command.add(Option('--blitz', dest='blitz', help_text=Lang.command.tetrio.record.options.blitz.help.cast()))
 
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:blitz)',

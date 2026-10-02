@@ -190,8 +190,11 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "TETR.IO 솔로 기록 조회",
         "args": { "who": { "notice": "조회할 @사용자 / me / TETR.IO 사용자명 / ID" } },
         "options": {
+          "blitz": { "help": "블리츠 기록 조회" },
+          "sprint": { "help": "스프린트 기록 조회" },
           "type": {
             "help": "기록 유형",
             "args": { "record_type": { "notice": "기록 유형(top, recent 또는 progression)" } }

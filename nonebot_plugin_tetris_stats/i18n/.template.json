@@ -415,6 +415,7 @@
             {
               "subtype": "record",
               "types": [
+                "description",
                 {
                   "subtype": "args",
                   "types": [
@@ -429,6 +430,18 @@
                 {
                   "subtype": "options",
                   "types": [
+                    {
+                      "subtype": "blitz",
+                      "types": [
+                        "help"
+                      ]
+                    },
+                    {
+                      "subtype": "sprint",
+                      "types": [
+                        "help"
+                      ]
+                    },
                     {
                       "subtype": "type",
                       "types": [

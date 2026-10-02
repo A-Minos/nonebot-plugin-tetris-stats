@@ -189,8 +189,8 @@ def test_production_help_metadata_comes_from_lang() -> None:
     literals: list[str] = []
 
     def visit(node: Option | Subcommand, path: str) -> None:
-        # Alconna fills a missing help_text with dest; that is the command's own name, not prose.
-        if not isinstance(node.help_text, LangItem) and node.help_text != node.dest:
+        # Alconna fills a missing help_text with dest, so a missing description also fails here.
+        if not isinstance(node.help_text, LangItem):
             literals.append(f'{path}: help_text={node.help_text!r}')
         literals.extend(
             f'{path} <{arg.name}>: notice={arg.notice!r}'

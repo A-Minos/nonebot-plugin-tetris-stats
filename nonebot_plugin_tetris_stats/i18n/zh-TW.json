@@ -184,8 +184,11 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "查詢 TETR.IO 單人遊戲紀錄",
         "args": { "who": { "notice": "@要查詢的使用者 / 我 / TETR.IO 使用者名稱 / ID" } },
         "options": {
+          "blitz": { "help": "查詢閃電戰紀錄" },
+          "sprint": { "help": "查詢 40行紀錄" },
           "type": {
             "help": "紀錄類型",
             "args": { "record_type": { "notice": "紀錄類型（top、recent 或 progression）" } }

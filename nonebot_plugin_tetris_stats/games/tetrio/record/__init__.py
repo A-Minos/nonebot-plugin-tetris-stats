@@ -15,6 +15,7 @@ command = Subcommand(
             notice=Lang.command.tetrio.record.args.who.notice.cast(),
         ),
     ),
+    help_text=Lang.command.tetrio.record.description.cast(),
 )
 
 from . import blitz, sprint  # noqa: E402
