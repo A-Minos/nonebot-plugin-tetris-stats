@@ -1,3 +1,7 @@
+from contextlib import nullcontext
+from importlib import import_module
+from unittest.mock import AsyncMock, Mock
+
 import pytest
 
 
@@ -64,22 +68,60 @@ def test_request_error_is_rendered_lazily_without_losing_detail() -> None:
     assert error.render('en-US') == "Request error\nConnectError('socket reset')"  # noqa: S101
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize('game', ['tetrio', 'top', 'tos'])
 @pytest.mark.parametrize(
     ('locale', 'expected'),
     [
-        ('zh-CN', ('是', '否')),
-        ('en-US', ('Yes', 'No')),
+        ('zh-CN', ('确定要解绑吗\uff1f', '是', '否')),
+        ('en-US', ('Are you sure you want to unlink this account?', 'Yes', 'No')),
     ],
 )
-def test_unbind_choices_share_display_and_cancellation(locale: str, expected: tuple[str, str]) -> None:
-    from nonebot_plugin_tetris_stats.utils.lang import get_unbind_choices  # noqa: PLC0415
+@pytest.mark.parametrize('answer', ['yes', 'no', None])
+async def test_unbind_confirmation_uses_current_locale(
+    monkeypatch: pytest.MonkeyPatch,
+    game: str,
+    locale: str,
+    expected: tuple[str, str, str],
+    answer: str | None,
+) -> None:
+    from nonebot.adapters.onebot.v11 import Message  # noqa: PLC0415
+    from nonebot_plugin_user.models import User  # noqa: PLC0415
+    from tarina.lang import lang  # type: ignore[import-untyped]  # noqa: PLC0415
 
-    choices = get_unbind_choices(locale)
+    from nonebot_plugin_tetris_stats.db.models import Bind  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.games import alc  # noqa: PLC0415
 
-    assert tuple(choices) == expected  # noqa: S101
-    assert choices.is_cancelled(None)  # noqa: S101
-    assert choices.is_cancelled(expected[1])  # noqa: S101
-    assert not choices.is_cancelled(expected[0])  # noqa: S101
+    module = import_module(f'nonebot_plugin_tetris_stats.games.{game}.unbind')
+    user = User()
+    user.id = 1
+    bind = Bind(user_id=user.id, game_platform=module.GAME_TYPE, game_account='testuser', verify=True)
+    response = None if answer is None else Message(expected[1 if answer == 'yes' else 2])
+    suggest = AsyncMock(return_value=response)
+    player = Mock(side_effect=RuntimeError('account lookup'))
+
+    monkeypatch.setattr(module, 'trigger', lambda **_: nullcontext())
+    monkeypatch.setattr(module, 'get_session', nullcontext)
+    monkeypatch.setattr(module, 'get_session_persist_id', AsyncMock(return_value=1))
+    monkeypatch.setattr(module, 'query_bind_info', AsyncMock(return_value=bind))
+    monkeypatch.setattr(module, 'suggest', suggest)
+    monkeypatch.setattr(module, 'Player', player)
+
+    handler = next(handler.call for handler in alc.handlers if handler.call.__module__ == module.__name__)
+    original_locale = lang.current
+    try:
+        lang.select(locale)
+        if answer == 'yes':
+            with pytest.raises(RuntimeError, match='account lookup'):
+                await handler(nb_user=user, event_session=Mock(), interface=Mock())
+            player.assert_called_once()
+        else:
+            await handler(nb_user=user, event_session=Mock(), interface=Mock())
+            player.assert_not_called()
+    finally:
+        lang.select(original_locale)
+
+    suggest.assert_awaited_once_with(expected[0], list(expected[1:]))
 
 
 @pytest.mark.asyncio
