@@ -112,6 +112,8 @@
   "command": {
     "root": {
       "description": "俄罗斯方块相关游戏数据查询",
+      "usage": "先用 io绑定 / top绑定 / 茶服绑定 绑定自己的账号，之后查询时用「我」代替账号即可。查询别人时 @ 对方或直接输入用户名。",
+      "examples": "io绑定 Teronya\nio查 我\nio查 我 --compare 7d\nio记录40l 我\niorank x+\n茶服查 我",
       "plugin_description": "用于查询俄罗斯方块相关游戏玩家数据的插件",
       "plugin_usage": "发送 tstats --help 查看用法"
     },

@@ -104,6 +104,8 @@
   "command": {
     "root": {
       "description": "테트리스 관련 게임의 플레이어 데이터 조회",
+      "usage": "먼저 iobind / topbind / tosbind로 내 계정을 연동하세요. 이후 조회할 때는 계정 대신 me를 쓰면 됩니다. 다른 사람을 조회하려면 @로 멘션하거나 사용자명을 입력하세요.",
+      "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me",
       "plugin_description": "테트리스 관련 게임의 플레이어 데이터를 조회하는 플러그인",
       "plugin_usage": "사용법을 보려면 tstats --help를 보내세요"
     },

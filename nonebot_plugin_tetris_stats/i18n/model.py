@@ -143,6 +143,8 @@ class Mask:
 
 class CommandRoot:
     description: LangItem = LangItem('command', 'root.description')
+    usage: LangItem = LangItem('command', 'root.usage')
+    examples: LangItem = LangItem('command', 'root.examples')
     plugin_description: LangItem = LangItem('command', 'root.plugin_description')
     plugin_usage: LangItem = LangItem('command', 'root.plugin_usage')
 
