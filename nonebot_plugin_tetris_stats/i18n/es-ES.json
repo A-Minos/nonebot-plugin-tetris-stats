@@ -104,6 +104,8 @@
   "command": {
     "root": {
       "description": "Consultar datos de jugadores de juegos relacionados con Tetris",
+      "usage": "Primero vincula tu cuenta con iobind / topbind / tosbind; después puedes usar me en lugar de la cuenta al consultar. Para consultar a otra persona, menciónala con @ o escribe su nombre de usuario.",
+      "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me",
       "plugin_description": "Un complemento para consultar datos de jugadores de juegos relacionados con Tetris",
       "plugin_usage": "Envía tstats --help para ver cómo usarlo"
     },

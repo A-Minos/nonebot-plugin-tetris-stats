@@ -525,6 +525,16 @@
               "description": "value of lang item type 'description'",
               "type": "string"
             },
+            "usage": {
+              "title": "usage",
+              "description": "value of lang item type 'usage'",
+              "type": "string"
+            },
+            "examples": {
+              "title": "examples",
+              "description": "value of lang item type 'examples'",
+              "type": "string"
+            },
             "plugin_description": {
               "title": "plugin_description",
               "description": "value of lang item type 'plugin_description'",

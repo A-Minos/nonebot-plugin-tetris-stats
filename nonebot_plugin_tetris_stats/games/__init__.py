@@ -18,10 +18,13 @@ command: Alconna = Alconna(
     namespace=ns,
     meta=CommandMeta(
         description=Lang.command.root.description.cast(),
+        usage=Lang.command.root.usage.cast(),
         fuzzy_match=True,
     ),
     formatter_type=StructuredHelpFormatter,
 )
+# Alconna.__init__ 会对 meta.example 调用 str.replace 替换 `$` 前缀, LangItem 只能在构造后赋值。
+command.meta.example = Lang.command.root.examples.cast()
 
 alc = on_alconna(
     command=command,

@@ -112,6 +112,8 @@
   "command": {
     "root": {
       "description": "Query player data for Tetris-related games",
+      "usage": "Bind your own account first with iobind / topbind / tosbind; after that, use me instead of an account when querying. To look up someone else, @mention them or enter their username.",
+      "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me",
       "plugin_description": "A plugin for looking up player data from Tetris-related games",
       "plugin_usage": "Send tstats --help for usage"
     },

@@ -104,6 +104,8 @@
   "command": {
     "root": {
       "description": "テトリス系ゲームのプレイヤーデータを検索します",
+      "usage": "まず iobind / topbind / tosbind で自分のアカウントを連携してください。以降は検索時にアカウントの代わりに me を使えます。他の人を検索するときは @ でメンションするか、ユーザー名を入力してください。",
+      "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me",
       "plugin_description": "テトリス系ゲームのプレイヤーデータを検索するプラグイン",
       "plugin_usage": "使い方を表示するには tstats --help を送信してください"
     },

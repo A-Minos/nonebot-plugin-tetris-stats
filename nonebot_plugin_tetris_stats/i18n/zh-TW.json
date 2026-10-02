@@ -95,6 +95,8 @@
   "command": {
     "root": {
       "description": "查詢俄羅斯方塊相關遊戲的玩家資料",
+      "usage": "先用 iobind / topbind / tosbind 綁定自己的帳號，之後查詢時用「我」代替帳號即可。查詢他人時 @ 對方或直接輸入使用者名稱。",
+      "examples": "iobind Teronya\nioquery 我\nioquery 我 --compare 7d\niorecord40l 我\niorank x+\ntosquery 我",
       "plugin_description": "用於查詢俄羅斯方塊相關遊戲玩家資料的外掛",
       "plugin_usage": "傳送 tstats --help 查看用法"
     },
