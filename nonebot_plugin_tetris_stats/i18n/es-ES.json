@@ -207,8 +207,11 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "Consultar récords individuales de TETR.IO",
         "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
         "options": {
+          "blitz": { "help": "Consultar el récord de Blitz" },
+          "sprint": { "help": "Consultar el récord de Sprint" },
           "type": {
             "help": "Tipo de récord",
             "args": { "record_type": { "notice": "Tipo de récord (top, recent o progression)" } }

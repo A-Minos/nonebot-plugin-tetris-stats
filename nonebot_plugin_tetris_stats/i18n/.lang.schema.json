@@ -1026,6 +1026,11 @@
               "type": "object",
               "additionalProperties": false,
               "properties": {
+                "description": {
+                  "title": "description",
+                  "description": "value of lang item type 'description'",
+                  "type": "string"
+                },
                 "args": {
                   "title": "Args",
                   "description": "Scope 'args' of lang item",
@@ -1053,6 +1058,32 @@
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
+                    "blitz": {
+                      "title": "Blitz",
+                      "description": "Scope 'blitz' of lang item",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "help": {
+                          "title": "help",
+                          "description": "value of lang item type 'help'",
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sprint": {
+                      "title": "Sprint",
+                      "description": "Scope 'sprint' of lang item",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "help": {
+                          "title": "help",
+                          "description": "value of lang item type 'help'",
+                          "type": "string"
+                        }
+                      }
+                    },
                     "type": {
                       "title": "Type",
                       "description": "Scope 'type' of lang item",

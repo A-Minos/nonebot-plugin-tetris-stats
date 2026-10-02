@@ -338,6 +338,14 @@ class CommandTetrioRecordArgs:
     who = CommandTetrioRecordArgsWho
 
 
+class CommandTetrioRecordOptionsBlitz:
+    help: LangItem = LangItem('command', 'tetrio.record.options.blitz.help')
+
+
+class CommandTetrioRecordOptionsSprint:
+    help: LangItem = LangItem('command', 'tetrio.record.options.sprint.help')
+
+
 class CommandTetrioRecordOptionsTypeArgsRecordType:
     notice: LangItem = LangItem('command', 'tetrio.record.options.type.args.record_type.notice')
 
@@ -365,6 +373,8 @@ class CommandTetrioRecordOptionsIndex:
 
 
 class CommandTetrioRecordOptions:
+    blitz = CommandTetrioRecordOptionsBlitz
+    sprint = CommandTetrioRecordOptionsSprint
     type = CommandTetrioRecordOptionsType
     index = CommandTetrioRecordOptionsIndex
 
@@ -375,6 +385,7 @@ class CommandTetrioRecordShortcuts:
 
 
 class CommandTetrioRecord:
+    description: LangItem = LangItem('command', 'tetrio.record.description')
     args = CommandTetrioRecordArgs
     options = CommandTetrioRecordOptions
     shortcuts = CommandTetrioRecordShortcuts

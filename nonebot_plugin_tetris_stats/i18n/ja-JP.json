@@ -201,8 +201,11 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "TETR.IOのソロ記録を表示",
         "args": { "who": { "notice": "@対象ユーザー / me / TETR.IO ユーザー名 / ID" } },
         "options": {
+          "blitz": { "help": "ブリッツの記録を表示" },
+          "sprint": { "help": "スプリントの記録を表示" },
           "type": {
             "help": "記録種別",
             "args": { "record_type": { "notice": "記録種別（top、recent、progressionのいずれか）" } }

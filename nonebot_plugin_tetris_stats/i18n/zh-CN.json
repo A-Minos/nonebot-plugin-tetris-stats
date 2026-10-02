@@ -228,12 +228,15 @@
         "shortcut": "iorank"
       },
       "record": {
+        "description": "查询 TETR.IO 单人游戏记录",
         "args": {
           "who": {
             "notice": "@要查询的用户 / 我 / TETR.IO 用户名 / ID"
           }
         },
         "options": {
+          "blitz": { "help": "查询 Blitz 记录" },
+          "sprint": { "help": "查询 40行记录" },
           "type": {
             "help": "记录类型",
             "args": {
