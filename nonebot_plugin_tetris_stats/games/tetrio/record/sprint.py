@@ -34,7 +34,7 @@ command.add(Option('--40l', dest='sprint'))
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:40l)',
     command='tstats TETR.IO record --40l',
-    humanized='io记录40l',
+    humanized=Lang.command.tetrio.record.shortcuts.sprint.cast(),
 )
 
 

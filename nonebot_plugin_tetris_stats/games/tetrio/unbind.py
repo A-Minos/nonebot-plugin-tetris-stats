@@ -24,12 +24,12 @@ from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
 
-command.add(Subcommand('unbind', help_text='解除绑定 TETR.IO 账号'))
+command.add(Subcommand('unbind', help_text=Lang.command.tetrio.unbind.description.cast()))
 
 alc.shortcut(
     '(?i:io)(?i:解除绑定|解绑|unbind)',
     command='tstats TETR.IO unbind',
-    humanized='io解绑',
+    humanized=Lang.command.tetrio.unbind.shortcut.cast(),
 )
 
 

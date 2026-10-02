@@ -34,7 +34,7 @@ command.add(Option('--blitz', dest='blitz'))
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:blitz)',
     command='tstats TETR.IO record --blitz',
-    humanized='io记录blitz',
+    humanized=Lang.command.tetrio.record.shortcuts.blitz.cast(),
 )
 
 

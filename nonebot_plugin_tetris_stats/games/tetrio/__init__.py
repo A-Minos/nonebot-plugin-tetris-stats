@@ -20,7 +20,7 @@ command = Subcommand(
     'TETR.IO',
     alias=['TETRIO', 'tetr.io', 'tetrio', 'io'],
     dest='TETRIO',
-    help_text='TETR.IO 游戏相关指令',
+    help_text=Lang.command.tetrio.description.cast(),
 )
 
 

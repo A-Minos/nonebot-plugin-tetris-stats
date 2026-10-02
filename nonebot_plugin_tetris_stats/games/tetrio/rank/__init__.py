@@ -13,6 +13,7 @@ from nonebot_plugin_orm import get_session
 from sqlalchemy import select
 
 from ....config.config import config
+from ....i18n import Lang
 from ....utils.exception import RequestError
 from ....utils.retry import retry
 from ....utils.timezone import ensure_utc_datetime
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
 driver = get_driver()
 
 
-command = Subcommand('rank', help_text='查询 TETR.IO 段位信息')
+command = Subcommand('rank', help_text=Lang.command.tetrio.rank.description.cast())
 
 
 def wrapper(slot: int | str, content: str | None) -> str | None:
@@ -54,7 +55,7 @@ def wrapper(slot: int | str, content: str | None) -> str | None:
 alc.shortcut(
     r'(?i:io)(?i:段位|段|rank)\s*(?P<rank>[a-zA-Z][a-zA-Z+-]?|--help|-h)?',
     command='tstats TETR.IO rank {rank}',
-    humanized='iorank',
+    humanized=Lang.command.tetrio.rank.shortcut.cast(),
     fuzzy=False,
     wrapper=wrapper,
 )

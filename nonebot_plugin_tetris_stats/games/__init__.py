@@ -17,7 +17,7 @@ command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
     namespace=ns,
     meta=CommandMeta(
-        description='俄罗斯方块相关游戏数据查询',
+        description=Lang.command.root.description.cast(),
         fuzzy_match=True,
     ),
     formatter_type=StructuredHelpFormatter,
