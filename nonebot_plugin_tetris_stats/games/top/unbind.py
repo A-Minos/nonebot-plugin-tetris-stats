@@ -38,8 +38,8 @@ async def _(
     ):
         if (bind := await query_bind_info(session=session, user=nb_user, game_platform=GAME_TYPE)) is None:
             await UniMessage(Lang.bind.no_account(game='TOP')).finish()
-        resp = await suggest(Lang.bind.confirm_unbind(), ['是', '否'])
-        if resp is None or resp.extract_plain_text() == '否':
+        resp = await suggest(Lang.bind.confirm_unbind(), [Lang.bind.confirm_yes(), Lang.bind.confirm_no()])
+        if resp is None or resp.extract_plain_text() == Lang.bind.confirm_no():
             return
         player = Player(user_name=bind.game_account, trust=True)
         user = await player.user

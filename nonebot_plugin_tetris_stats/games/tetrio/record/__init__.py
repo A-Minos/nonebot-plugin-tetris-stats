@@ -1,6 +1,7 @@
 from arclet.alconna import Arg
 from nonebot_plugin_alconna import Args, At, Subcommand
 
+from ....i18n import Lang
 from ....utils.typedefs import Me
 from .. import command as base_command
 from .. import get_player
@@ -11,9 +12,10 @@ command = Subcommand(
         Arg(
             'who',
             At | Me | get_player,
-            notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
+            notice=Lang.command.tetrio.record.args.who.notice.cast(),
         ),
     ),
+    help_text=Lang.command.tetrio.record.description.cast(),
 )
 
 from . import blitz, sprint  # noqa: E402

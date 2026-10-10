@@ -9,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ....db import trigger
+from ....i18n import Lang
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render_image
@@ -26,9 +27,14 @@ from . import command
 command.add(
     Subcommand(
         '--all',
-        Option('--template', Arg('template', Template, notice='模板版本'), alias=['-T'], help_text='要使用的查询模板'),
+        Option(
+            '--template',
+            Arg('template', Template, notice=Lang.command.tetrio.rank.all.options.template.args.template.notice.cast()),
+            alias=['-T'],
+            help_text=Lang.command.tetrio.rank.all.options.template.help.cast(),
+        ),
         dest='all',
-        help_text='查询所有段位概览',
+        help_text=Lang.command.tetrio.rank.all.description.cast(),
     )
 )
 
