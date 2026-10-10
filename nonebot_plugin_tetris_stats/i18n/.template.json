@@ -178,9 +178,7 @@
           "types": [
             "description",
             "usage",
-            "examples",
-            "plugin_description",
-            "plugin_usage"
+            "examples"
           ]
         },
         {
