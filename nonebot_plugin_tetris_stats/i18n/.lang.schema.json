@@ -534,16 +534,6 @@
               "title": "examples",
               "description": "value of lang item type 'examples'",
               "type": "string"
-            },
-            "plugin_description": {
-              "title": "plugin_description",
-              "description": "value of lang item type 'plugin_description'",
-              "type": "string"
-            },
-            "plugin_usage": {
-              "title": "plugin_usage",
-              "description": "value of lang item type 'plugin_usage'",
-              "type": "string"
             }
           }
         },
