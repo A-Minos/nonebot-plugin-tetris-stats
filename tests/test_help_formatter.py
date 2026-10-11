@@ -1,7 +1,7 @@
 """Tests for StructuredHelpFormatter and HelpData schema."""
 
-from __future__ import annotations
-
+import json
+from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 
 import pytest
@@ -9,7 +9,7 @@ from arclet.alconna import Alconna, Args, CommandMeta, Option, Subcommand, comma
 from tarina.lang import lang  # type: ignore[import-untyped]
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def select_locale() -> Iterator[Callable[[str], object]]:
 
 @pytest.fixture
 def alc() -> Iterator[Alconna]:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import StructuredHelpFormatter  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils.help import StructuredHelpFormatter  # noqa: PLC0415
 
     a = Alconna(
         ['tstats'],
@@ -55,67 +55,94 @@ def _capture(alc: Alconna, cmd: str) -> str:
     return out
 
 
-@pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
-def test_help_schema_accepts_supported_locales(locale: str) -> None:
+@pytest.mark.parametrize(
+    ('description', 'visible'),
+    [
+        ('[hidden] Unlisted shortcut', False),
+        ('Unlisted shortcut [hidden]', False),
+        ('An Easter egg!', True),
+    ],
+)
+def test_shortcut_visibility_uses_description_marker(alc: Alconna, description: str, *, visible: bool) -> None:
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
-    data = HelpData.model_validate(
-        {
-            'lang': locale,
-            'command': {
-                'name': 'tstats',
-                'dest': 'tstats',
-                'aliases': [],
-                'help_text': None,
-                'args': [],
-                'options': [],
-                'subcommands': [],
-            },
-            'breadcrumb': ['tstats'],
-        }
+    alc.shortcut(
+        'visibility-probe',
+        command='tstats io query',
+        arguments=['testuser'],
+        fuzzy=False,
+        humanized=description,
     )
+    try:
+        data = HelpData.model_validate_json(_capture(alc, 'tstats io query --help'))
+        assert [shortcut.label for shortcut in data.command.shortcuts] == ([description] if visible else [])  # noqa: S101
+        assert alc.parse('visibility-probe').matched  # noqa: S101
+    finally:
+        command_manager.delete_shortcut(alc, 'visibility-probe')
 
-    assert data.lang == locale  # noqa: S101
 
-
-def test_root_node_metadata(alc: Alconna) -> None:
+@pytest.mark.parametrize('arguments', [[], ['testuser']])
+def test_shortcut_excludes_static_positionals_and_option_values(alc: Alconna, arguments: list[str]) -> None:
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
-    out = _capture(alc, 'tstats --help')
-    data = HelpData.model_validate_json(out)
-    assert data.command.name == 'tstats'  # noqa: S101
-    assert data.command.help_text == 'Tetris stats root command'  # noqa: S101
-    sub_names = {s.name for s in data.command.subcommands}
-    assert 'TETR.IO' in sub_names  # noqa: S101
+    game = next(node for node in alc.options if isinstance(node, Subcommand) and node.name == 'TETR.IO')
+    query = next(node for node in game.options if isinstance(node, Subcommand) and node.name == 'query')
+    with command_manager.update(alc):
+        query.add(Option('--format', Args['format', str], alias=['-f'], help_text='Output format'))
+        query.add(Option('--verbose', help_text='Show details'))
+    account = '' if arguments else ' testuser'
+    alc.shortcut(
+        'fixed-query',
+        command=f'tstats io query{account} -f compact',
+        arguments=arguments,
+        humanized='Pre-filled query',
+    )
+    try:
+        data = HelpData.model_validate_json(_capture(alc, 'tstats io query --help'))
+        shortcut = data.command.shortcuts[0]
+        assert shortcut.label == 'Pre-filled query'  # noqa: S101
+        assert shortcut.args == []  # noqa: S101
+        assert [option.name for option in shortcut.options] == ['--verbose']  # noqa: S101
+        assert shortcut.notes == ['Output format']  # noqa: S101
+        assert [arg.name for arg in data.command.args] == ['account']  # noqa: S101
+        result = alc.parse('fixed-query --verbose')
+        assert result.matched  # noqa: S101
+        assert result.all_matched_args['account'] == 'testuser'  # noqa: S101
+        assert result.all_matched_args['format'] == 'compact'  # noqa: S101
+    finally:
+        command_manager.delete_shortcut(alc, 'fixed-query')
+
+
+@pytest.mark.parametrize(
+    ('prefixes', 'name', 'trigger', 'aliases'),
+    [
+        ([], 'cmd', 'cmd', []),
+        (['/', '!'], 'cmd', '/cmd', ['!cmd', '/cmd']),
+        (['tetris-stats', 'tstats'], None, 'tstats', ['tstats']),
+    ],
+)
+def test_literal_command_heads(prefixes: list[str], name: str | None, trigger: str, aliases: list[str]) -> None:
+    from nonebot_plugin_tetris_stats.utils.help import StructuredHelpFormatter  # noqa: PLC0415
+
+    command = Alconna(prefixes, *([] if name is None else [name]), formatter_type=StructuredHelpFormatter)
+    try:
+        data = json.loads(_capture(command, f'{trigger} --help'))
+        assert data['command']['name'] == (name or prefixes[0])  # noqa: S101
+        assert set(data['command']['aliases']) == set(aliases)  # noqa: S101
+    finally:
+        command_manager.delete(command)
 
 
 def test_subcommand_metadata_includes_aliases(alc: Alconna) -> None:
-    """Subcommand node must expose canonical name + full aliases.
-
-    Note: Alconna upstream does not match alias strings as the subcommand
-    trigger token (probe confirmed 'tstats io --help' does NOT enter the
-    subcommand). We therefore trigger via the canonical name, but the schema
-    must still expose all aliases.
-    """
+    """Subcommand node must expose canonical name + full aliases."""
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     out = _capture(alc, 'tstats TETR.IO --help')
     data = HelpData.model_validate_json(out)
     assert data.command.name == 'TETR.IO'  # noqa: S101
     assert set(data.command.aliases) == {'io', 'TETRIO'}  # noqa: S101
-    assert data.command.help_text == 'TETR.IO related'  # noqa: S101
+    assert data.command.description == 'TETR.IO related'  # noqa: S101
     assert data.breadcrumb == ['tstats', 'TETR.IO']  # noqa: S101
-
-
-def test_deep_subcommand(alc: Alconna) -> None:
-    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
-
-    out = _capture(alc, 'tstats TETR.IO query --help')
-    data = HelpData.model_validate_json(out)
-    assert data.breadcrumb == ['tstats', 'TETR.IO', 'query']  # noqa: S101
-    assert data.command.name == 'query'  # noqa: S101
-    assert data.command.help_text == 'query account'  # noqa: S101
-    assert [a.name for a in data.command.args] == ['account']  # noqa: S101
 
 
 def test_production_help_follows_current_locale(select_locale: Callable[[str], object]) -> None:
@@ -123,29 +150,25 @@ def test_production_help_follows_current_locale(select_locale: Callable[[str], o
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     select_locale('zh-CN')
-    zh_root = HelpData.model_validate_json(command.formatter.format_node())
     zh = HelpData.model_validate_json(command.formatter.format_node(['TETR.IO', 'query']))
 
     select_locale('en-US')
-    en_root = HelpData.model_validate_json(command.formatter.format_node())
     en = HelpData.model_validate_json(command.formatter.format_node(['TETR.IO', 'query']))
 
-    assert (zh_root.lang, en_root.lang) == ('zh-CN', 'en-US')  # noqa: S101
-    assert zh_root.command.help_text == '俄罗斯方块相关游戏数据查询'  # noqa: S101
-    assert en_root.command.help_text == 'Query player data for Tetris-related games'  # noqa: S101
+    assert (zh.lang, en.lang) == ('zh-CN', 'en-US')  # noqa: S101
     assert zh.breadcrumb == en.breadcrumb == ['tetris-stats', 'TETR.IO', 'query']  # noqa: S101
-    assert zh.command.help_text == '查询 TETR.IO 游戏信息'  # noqa: S101
-    assert en.command.help_text == 'Look up TETR.IO player data'  # noqa: S101
-    assert zh.command.args[0].notice == '@要查询的用户 / 我 / TETR.IO 用户名 / ID'  # noqa: S101
-    assert en.command.args[0].notice == '@mention, me, TETR.IO username, or ID'  # noqa: S101
+    assert zh.command.description == '查询 TETR.IO 游戏信息'  # noqa: S101
+    assert en.command.description == 'Look up TETR.IO player data'  # noqa: S101
+    assert zh.command.args[0].description == '@要查询的用户 / 我 / TETR.IO 用户名 / ID'  # noqa: S101
+    assert en.command.args[0].description == '@mention, me, TETR.IO username, or ID'  # noqa: S101
     zh_compare = next(option for option in zh.command.options if option.name == '--compare')
     en_compare = next(option for option in en.command.options if option.name == '--compare')
-    assert zh_compare.help_text == '与多久之前的数据对比'  # noqa: S101
-    assert en_compare.help_text == 'Set how far back to compare'  # noqa: S101
-    assert zh_compare.args[0].notice == '对比时间间隔\uff08如 7d, 2w, 24h\uff09'  # noqa: S101
-    assert en_compare.args[0].notice == 'How far back to compare (e.g., 7d, 2w, 24h)'  # noqa: S101
-    assert any(shortcut.key == 'io查' for shortcut in zh.shortcuts)  # noqa: S101
-    assert any(shortcut.key == 'ioquery' for shortcut in en.shortcuts)  # noqa: S101
+    assert zh_compare.description == '与多久之前的数据对比'  # noqa: S101
+    assert en_compare.description == 'Set how far back to compare'  # noqa: S101
+    assert zh_compare.args[0].description == '对比时间间隔\uff08如 7d, 2w, 24h\uff09'  # noqa: S101
+    assert en_compare.args[0].description == 'How far back to compare (e.g., 7d, 2w, 24h)'  # noqa: S101
+    assert any(shortcut.label == 'io查' for shortcut in zh.command.shortcuts)  # noqa: S101
+    assert any(shortcut.label == 'ioquery' for shortcut in en.command.shortcuts)  # noqa: S101
 
 
 @pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
@@ -158,25 +181,27 @@ def test_production_help_uses_each_supported_locale(locale: str, select_locale: 
     data = HelpData.model_validate_json(_capture(command, 'tstats --help'))
 
     assert data.lang == locale  # noqa: S101
-    assert data.command.help_text == Lang.command.root.description(locale)  # noqa: S101
-    tetrio = next(node for node in data.command.subcommands if node.name == 'TETR.IO')
-    mask = next(node for node in tetrio.subcommands if node.name == 'mask')
-    assert mask.help_text == Lang.command.tetrio.mask.description(locale)  # noqa: S101
+    assert data.command.description == Lang.command.root.description(locale)  # noqa: S101
+    assert data.usage == Lang.command.root.usage(locale)  # noqa: S101
+    assert data.examples == Lang.command.root.examples(locale).splitlines()  # noqa: S101
+    for example in data.examples:
+        assert command.parse(example).matched, example  # noqa: S101
+
+    mask_data = HelpData.model_validate_json(_capture(command, 'tstats TETR.IO mask --help'))
     for action in ('add', 'remove'):
-        node = next(child for child in mask.subcommands if child.name == action)
+        node = next(child for child in mask_data.command.subcommands if child.name == action)
         resource = getattr(Lang.command.tetrio.mask, action)
-        assert node.help_text == resource.description(locale)  # noqa: S101
-        assert {arg.name: arg.notice for arg in node.args} == {  # noqa: S101
+        assert node.description == resource.description(locale)  # noqa: S101
+        assert {arg.name: arg.description for arg in node.args} == {  # noqa: S101
             'account': resource.args.account.notice(locale),
             'fields': resource.args.fields.notice(locale),
         }
-    listing = next(node for node in mask.subcommands if node.name == 'list')
-    assert listing.help_text == Lang.command.tetrio.mask.list.description(locale)  # noqa: S101
+    listing = next(node for node in mask_data.command.subcommands if node.name == 'list')
+    assert listing.description == Lang.command.tetrio.mask.list.description(locale)  # noqa: S101
 
-    mask_data = HelpData.model_validate_json(_capture(command, 'tstats TETR.IO mask --help'))
     assert mask_data.lang == locale  # noqa: S101
     assert mask_data.breadcrumb == ['tetris-stats', 'TETR.IO', 'mask']  # noqa: S101
-    assert mask_data.command.help_text == Lang.command.tetrio.mask.description(locale)  # noqa: S101
+    assert mask_data.command.description == Lang.command.tetrio.mask.description(locale)  # noqa: S101
 
 
 def test_production_help_metadata_comes_from_lang() -> None:
@@ -206,7 +231,7 @@ def test_production_help_metadata_comes_from_lang() -> None:
     literals.extend(
         f'shortcut: {key!r}'
         for key in command_manager.get_shortcut(command)
-        if not isinstance(key, LangItem) and 'easter egg' not in key.casefold()
+        if not isinstance(key, LangItem) and '[hidden]' not in key
     )
 
     assert not literals, literals  # noqa: S101
@@ -239,10 +264,12 @@ def test_every_english_shortcut_is_displayed_and_matches(select_locale: Callable
     )
     select_locale('en-US')
     help_data = HelpData.model_validate_json(command.formatter.format_node())
-    displayed = {shortcut.key for shortcut in help_data.shortcuts}
 
     for humanized, trigger, target in cases:
-        assert humanized in displayed, humanized  # noqa: S101
+        owner = help_data.command
+        for part in target.split('.'):
+            owner = next(node for node in owner.subcommands if part == node.name or part in node.aliases)
+        assert humanized in {shortcut.label for shortcut in owner.shortcuts}, humanized  # noqa: S101
         result = command.parse(trigger)
         assert result.matched, trigger  # noqa: S101
         assert result.find(target), (trigger, target)  # noqa: S101
@@ -254,15 +281,40 @@ def test_production_help_contract_details(select_locale: Callable[[str], object]
 
     select_locale('en-US')
     root = HelpData.model_validate_json(command.formatter.format_node())
+    assert root.command.name == 'tetris-stats'  # noqa: S101
+    assert set(root.command.aliases) == {'tstats'}  # noqa: S101
     tetrio = next(node for node in root.command.subcommands if node.name == 'TETR.IO')
-    # Alconna stores aliases in a frozenset; the help output must not depend on its iteration order.
-    assert tetrio.aliases == ['io', 'TETRIO', 'tetrio', 'tetr.io']  # noqa: S101
 
-    shortcuts = {shortcut.key: shortcut for shortcut in root.shortcuts}
-    assert shortcuts['iorecordblitz'].target == ['tetris-stats', 'TETR.IO', 'record']  # noqa: S101
-    assert shortcuts['iorecordblitz'].bound_options == ['--blitz']  # noqa: S101
-    assert shortcuts['iorecord40l'].bound_options == ['--40l']  # noqa: S101
-    assert shortcuts['ioquery'].bound_options == []  # noqa: S101
+    assert root.command.shortcuts == tetrio.shortcuts == []  # noqa: S101
+    record = next(node for node in tetrio.subcommands if node.name == 'record')
+    shortcuts = {shortcut.label: shortcut for shortcut in record.shortcuts}
+    assert set(shortcuts) == {'iorecordblitz', 'iorecord40l'}  # noqa: S101
+    assert [arg.name for arg in shortcuts['iorecordblitz'].args] == ['who']  # noqa: S101
+    assert {option.name for option in shortcuts['iorecordblitz'].options} == {  # noqa: S101
+        '--40l',
+        '--type',
+        '--index',
+    }
+    assert {option.name for option in shortcuts['iorecord40l'].options} == {  # noqa: S101
+        '--blitz',
+        '--type',
+        '--index',
+    }
+    blitz = next(option for option in record.options if option.name == '--blitz')
+    assert shortcuts['iorecordblitz'].notes == [blitz.description]  # noqa: S101
+    rank = next(node for node in tetrio.subcommands if node.name == 'rank')
+    assert [shortcut.label for shortcut in rank.shortcuts] == ['iorank']  # noqa: S101
+    assert rank.shortcuts[0].notes == [rank.description]  # noqa: S101
+    assert all(node.shortcuts == [] for node in rank.subcommands)  # noqa: S101
+    mask = next(node for node in tetrio.subcommands if node.name == 'mask')
+    assert mask.shortcuts == []  # noqa: S101
+    assert {node.name: [shortcut.label for shortcut in node.shortcuts] for node in mask.subcommands} == {  # noqa: S101
+        'add': ['io屏蔽'],
+        'remove': ['io解屏蔽'],
+        'list': ['io屏蔽列表'],
+    }
+    assert command.parse('iorecordblitz me').find('TETRIO.record.blitz')  # noqa: S101
+    assert command.parse('iorecord40l me').find('TETRIO.record.sprint')  # noqa: S101
 
     mask_add = HelpData.model_validate_json(command.formatter.format_node(['TETR.IO', 'mask', 'add']))
     fields = {arg.name: arg for arg in mask_add.command.args}
@@ -270,25 +322,8 @@ def test_production_help_contract_details(select_locale: Callable[[str], object]
     assert (fields['fields'].optional, fields['fields'].variadic) == (True, True)  # noqa: S101
 
 
-@pytest.mark.parametrize('locale', ['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR'])
-def test_root_help_usage_and_examples_are_localized_and_runnable(
-    locale: str, select_locale: Callable[[str], object]
-) -> None:
-    from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
-    from nonebot_plugin_tetris_stats.i18n import Lang  # noqa: PLC0415
-    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
-
-    select_locale(locale)
-    data = HelpData.model_validate_json(command.formatter.format_node())
-
-    assert data.usage == Lang.command.root.usage(locale)  # noqa: S101
-    assert data.examples == Lang.command.root.examples(locale).splitlines()  # noqa: S101
-    for example in data.examples:
-        assert command.parse(example).matched, example  # noqa: S101
-
-
 def test_args_metadata() -> None:
-    from nonebot_plugin_tetris_stats.utils.help_formatter import StructuredHelpFormatter  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils.help import StructuredHelpFormatter  # noqa: PLC0415
     from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
     a = Alconna(
@@ -306,10 +341,11 @@ def test_args_metadata() -> None:
         args_by_name = {arg.name: arg for arg in data.command.args}
         x = args_by_name['x']
         assert x.optional is True  # noqa: S101
-        assert x.notice == 'X notice'  # noqa: S101
+        assert x.description == 'X notice'  # noqa: S101
         assert x.default == '42'  # noqa: S101
         y = args_by_name['y']
-        assert y.hidden is True  # noqa: S101
+        assert y.description == 'str'  # noqa: S101
+        assert y.default is None  # noqa: S101
     finally:
         command_manager.delete(a)
 
@@ -326,25 +362,88 @@ def test_builtins_filtered(alc: Alconna) -> None:
     assert '--comp' not in opt_names  # noqa: S101
 
 
-def test_resolve_unknown_path_returns_none() -> None:
-    """Mismatched command tree / breadcrumb is a real bug; must fail-fast."""
-    from nonebot_plugin_tetris_stats.utils.help_formatter import (  # noqa: PLC0415
-        StructuredHelpFormatter,
-        _resolve_current_subcommand,
-    )
+def test_alias_tokens_route_to_canonical_subcommand() -> None:
+    """Aliases at any depth select the same help page as canonical names."""
+    from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
-    a = Alconna(['x'], Subcommand('a'), formatter_type=StructuredHelpFormatter)
-    try:
-        assert _resolve_current_subcommand(a, ['nonexist']) is None  # noqa: S101
-    finally:
-        command_manager.delete(a)
+    data = HelpData.model_validate_json(_capture(command, 'tstats io mask add --help'))
+    assert data.breadcrumb == ['tetris-stats', 'TETR.IO', 'mask', 'add']  # noqa: S101
+    assert data.command.name == 'add'  # noqa: S101
 
 
-def test_alias_index_built_from_subcommands(alc: Alconna) -> None:
-    """The Extension's alias index must map every alias / dest -> canonical name."""
-    from nonebot_plugin_tetris_stats.utils.help_extension import _build_alias_index  # noqa: PLC0415
+def test_option_help_shows_owning_subcommand(select_locale: Callable[[str], object]) -> None:
+    """`--help` after an option renders the subcommand that owns the option."""
+    from nonebot_plugin_tetris_stats.games import command  # noqa: PLC0415
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
 
-    index = _build_alias_index(alc)
-    assert index['tetr.io'] == 'TETR.IO'  # canonical (casefolded)  # noqa: S101
-    assert index['io'] == 'TETR.IO'  # alias  # noqa: S101
-    assert index['tetrio'] == 'TETR.IO'  # alias + dest (casefolded)  # noqa: S101
+    select_locale('en-US')
+    data = HelpData.model_validate_json(_capture(command, 'tstats TETR.IO record --blitz --help'))
+    assert data.breadcrumb == ['tetris-stats', 'TETR.IO', 'record']  # noqa: S101
+    assert {shortcut.label for shortcut in data.command.shortcuts} == {'iorecordblitz', 'iorecord40l'}  # noqa: S101
+
+
+async def test_help_output_becomes_image(alc: Alconna, monkeypatch: pytest.MonkeyPatch) -> None:
+    from nonebot_plugin_alconna.uniseg import Image  # noqa: PLC0415
+
+    from nonebot_plugin_tetris_stats.utils import help as help_module  # noqa: PLC0415
+
+    async def render(data: 'HelpData') -> bytes:
+        assert data.breadcrumb == ['tstats', 'TETR.IO', 'query']  # noqa: S101
+        assert data.command.description == 'query account'  # noqa: S101
+        return b'help-image'
+
+    monkeypatch.setattr(help_module, 'render_image', render)
+    content = _capture(alc, 'tstats io query --help')
+    message = await help_module.HelpImageExtension().output_converter('help', content)
+
+    assert len(message) == 1  # noqa: S101
+    assert isinstance(message[0], Image)  # noqa: S101
+    assert message[0].raw == b'help-image'  # noqa: S101
+
+
+async def test_non_help_output_keeps_text_fallback() -> None:
+    from nonebot_plugin_tetris_stats.utils.help import HelpImageExtension  # noqa: PLC0415
+
+    message = await HelpImageExtension().output_converter('error', 'invalid command')
+
+    assert not message  # noqa: S101
+
+
+async def test_help_render_failure_preserves_original_error(alc: Alconna, monkeypatch: pytest.MonkeyPatch) -> None:
+    from nonebot_plugin_tetris_stats.utils import help as help_module  # noqa: PLC0415
+
+    error = OSError('renderer unavailable')
+
+    async def render(data: 'HelpData') -> bytes:
+        assert data.command.name == 'query'  # noqa: S101
+        raise error
+
+    monkeypatch.setattr(help_module, 'render_image', render)
+    with pytest.raises(OSError) as exc_info:
+        await help_module.HelpImageExtension().output_converter('help', _capture(alc, 'tstats io query --help'))
+
+    assert exc_info.value is error  # noqa: S101
+
+
+def test_help_json_contains_complete_current_command(alc: Alconna) -> None:
+    from nonebot_plugin_tetris_stats.utils.render.schemas.help import HelpData  # noqa: PLC0415
+
+    data = json.loads(_capture(alc, 'tstats --help'))
+    command_fields = {'name', 'aliases', 'description', 'args', 'options', 'subcommands', 'shortcuts'}
+
+    assert set(data) == {'lang', 'breadcrumb', 'command', 'usage', 'examples'}  # noqa: S101
+    assert set(data['command']) == command_fields  # noqa: S101
+    game = data['command']['subcommands'][0]
+    assert set(game) == command_fields  # noqa: S101
+    assert game['options'] == [  # noqa: S101
+        {'name': '--flag', 'aliases': [], 'args': [], 'description': 'a flag'}
+    ]
+    query = game['subcommands'][0]
+    assert set(query) == command_fields  # noqa: S101
+    assert query['args'] == [  # noqa: S101
+        {'name': 'account', 'description': 'str', 'optional': False, 'variadic': False, 'default': None}
+    ]
+    schema = HelpData.model_json_schema()
+    for model in [schema, *schema['$defs'].values()]:
+        assert set(model['required']) == set(model['properties'])  # noqa: S101

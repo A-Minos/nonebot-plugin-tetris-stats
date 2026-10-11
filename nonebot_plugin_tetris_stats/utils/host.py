@@ -13,7 +13,6 @@ from nonebot.log import logger
 from yarl import URL
 
 from ..config.config import CACHE_PATH, config
-from ..games.tetrio.api.cache import request
 from .image import img_to_png
 from .templates import TEMPLATES_DIR
 
@@ -79,6 +78,8 @@ async def _(
     revision: int,
     background_tasks: BackgroundTasks,
 ) -> Response:
+    from ..games.tetrio.api.cache import request  # noqa: PLC0415
+
     if not (path := CACHE_PATH / 'tetrio' / resource_type / f'{user_id}_{revision}.png').exists():
         image = img_to_png(
             await request.request(
