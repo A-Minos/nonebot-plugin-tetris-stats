@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Annotated
 
+from arclet.alconna import Arg
 from nonebot_plugin_alconna import Args, Option, Subcommand
 from nonebot_plugin_alconna.uniseg import UniMessage
 from nonebot_plugin_orm import get_session
@@ -7,6 +8,7 @@ from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 
 from ...db import trigger
+from ...i18n import Lang
 from ...utils.lang import get_lang
 from ...utils.metrics import get_metrics
 from ...utils.render import render_image
@@ -27,18 +29,22 @@ if TYPE_CHECKING:
 command.add(
     Subcommand(
         'list',
-        Option('--max-tr', Args['max_tr', float], help_text='TR的上限'),
-        Option('--min-tr', Args['min_tr', float], help_text='TR的下限'),
+        Option('--max-tr', Args['max_tr', float], help_text=Lang.command.tetrio.list.options.max_tr.help.cast()),
+        Option('--min-tr', Args['min_tr', float], help_text=Lang.command.tetrio.list.options.min_tr.help.cast()),
         Option(
             '--limit',
             Args[
                 'limit', Annotated[int, lambda x: 1 <= x <= 100]  # noqa: PLR2004
             ],
-            help_text='查询数量',
+            help_text=Lang.command.tetrio.list.options.limit.help.cast(),
         ),
-        Option('--country', Args['country', str], help_text='国家代码'),
-        Option('--sort', Args['sort', ListSort], help_text='排名指标'),
-        help_text='查询 TETR.IO 段位排行榜',
+        Option('--country', Args['country', str], help_text=Lang.command.tetrio.list.options.country.help.cast()),
+        Option(
+            '--sort',
+            Arg('sort', ListSort, notice=Lang.command.tetrio.list.options.sort.args.sort.notice.cast()),
+            help_text=Lang.command.tetrio.list.options.sort.help.cast(),
+        ),
+        help_text=Lang.command.tetrio.list.description.cast(),
     )
 )
 
