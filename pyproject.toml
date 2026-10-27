@@ -75,7 +75,7 @@ typecheck = [
 ]
 test = [
     "nonebot-adapter-satori>=0.12.6",
-    "nonebot-plugin-orm[default]>=0.7.6",
+    "nonebot-plugin-orm[aiosqlite]>=0.7.6",
     "nonebot2[aiohttp,fastapi]>=2.3.3",
     "nonebug>=0.4.1",
     "pytest-asyncio>=0.24.0",
