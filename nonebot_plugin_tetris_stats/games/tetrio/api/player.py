@@ -6,6 +6,7 @@ from async_lru import alru_cache
 from nonebot.compat import type_validate_json
 
 from ....db import anti_duplicate_add
+from ....i18n import Lang
 from ....utils.exception import RequestError
 from ....utils.timezone import ensure_utc_datetime
 from ..constant import BASE_URL, USER_ID, USER_NAME
@@ -118,8 +119,7 @@ class Player:
             raw_user_info = await Cache.get(BASE_URL / 'users' / self._request_user_parameter)
             user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(user_info, FailedModel):
-                msg = f'用户信息请求错误:\n{user_info.error}'
-                raise RequestError(msg)
+                raise RequestError(Lang.error.RequestError.TETR_IO.user_info, detail=user_info.error)
             self._user_info = user_info
             await anti_duplicate_add(
                 TETRIOHistoricalData(
@@ -152,8 +152,7 @@ class Player:
                 raw_summaries,
             )
             if isinstance(summaries, FailedModel):
-                msg = f'用户Summaries数据请求错误:\n{summaries.error}'
-                raise RequestError(msg)
+                raise RequestError(Lang.error.RequestError.TETR_IO.summaries, detail=summaries.error)
             self._summaries[summaries_type] = summaries
             await anti_duplicate_add(
                 TETRIOHistoricalData(
@@ -172,8 +171,7 @@ class Player:
                 await Cache.get(BASE_URL / 'labs/leagueflow' / self._request_user_parameter),
             )
             if isinstance(leagueflow, FailedModel):
-                msg = f'League 历史记录请求错误:\n{leagueflow.error}'
-                raise RequestError(msg)
+                raise RequestError(Lang.error.RequestError.TETR_IO.league_history, detail=leagueflow.error)
             self._leagueflow = leagueflow
         return self._leagueflow
 
@@ -238,8 +236,7 @@ class Player:
             raw_records = await Cache.get(url)
             records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(records, FailedModel):
-                msg = f'用户Records数据请求错误:\n{records.error}'
-                raise RequestError(msg)
+                raise RequestError(Lang.error.RequestError.TETR_IO.records, detail=records.error)
             self._records[record_key] = records
             await anti_duplicate_add(
                 TETRIOHistoricalData(

@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from ....db import trigger
+from ....i18n import Lang
 from ....utils.lang import get_lang
 from ....utils.metrics import get_metrics
 from ....utils.render import render_image
@@ -30,10 +31,10 @@ driver = get_driver()
 command.add(
     Subcommand(
         '--detail',
-        Arg('rank', ValidRank, notice='段位名'),
+        Arg('rank', ValidRank, notice=Lang.command.tetrio.rank.detail.args.rank.notice.cast()),
         alias=['-D'],
         dest='detail',
-        help_text='查询指定段位的详细信息',
+        help_text=Lang.command.tetrio.rank.detail.description.cast(),
     )
 )
 

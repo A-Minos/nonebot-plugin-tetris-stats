@@ -15,7 +15,7 @@ in ``help_extension.py``.
 from inspect import Signature
 from typing import TYPE_CHECKING
 
-from arclet.alconna import Alconna, Option, Subcommand
+from arclet.alconna import Alconna, MultiVar, Option, Subcommand
 from arclet.alconna.args import Arg
 from arclet.alconna.base import Completion, Help, Shortcut
 from arclet.alconna.formatter import TextFormatter, Trace
@@ -25,7 +25,7 @@ from nonebot.compat import PYDANTIC_V2
 from typing_extensions import Self, override
 
 if TYPE_CHECKING:
-    from .render.schemas.help import HelpArg, HelpNode, HelpOption
+    from .render.schemas.help import HelpArg, HelpNode, HelpOption, HelpShortcut
 
 _BUILTINS = (Help, Completion, Shortcut)
 _EMPTY = Signature.empty
@@ -45,27 +45,28 @@ def _split_name(name: str) -> tuple[str, list[str]]:
 
 
 def _merge_aliases(canonical: str, *alias_sources: list[str] | tuple[str, ...]) -> list[str]:
-    """Merge alias lists, drop duplicates, drop the canonical name itself."""
-    seen: set[str] = {canonical}
-    result: list[str] = []
-    for src in alias_sources:
-        for a in src:
-            if a in seen:
-                continue
-            seen.add(a)
-            result.append(a)
-    return result
+    """Merge alias lists, drop duplicates and the canonical name itself.
+
+    Alconna keeps aliases in a frozenset, so their iteration order changes between
+    processes; sorting keeps the help output stable.
+    """
+    aliases = {a for src in alias_sources for a in src} - {canonical}
+    return sorted(aliases, key=lambda a: (len(a), a.casefold(), a))
 
 
+# 命令定义里的 help_text / notice / humanized 可以是 LangItem, str() 按当前 locale 取文案。
 def _arg_to_help(arg: Arg) -> 'HelpArg':
     from .render.schemas.help import HelpArg  # noqa: PLC0415
 
     default = arg.field.default
+    value = arg.value
     return HelpArg(
         name=arg.name,
-        notice=arg.notice,
-        type_repr=getattr(arg.value, '__name__', None) or repr(arg.value),
-        optional=arg.optional,
+        notice=None if arg.notice is None else str(arg.notice),
+        type_repr=getattr(value, '__name__', None) or repr(value),
+        # MultiVar(..., '*') accepts zero values, so it can be omitted.
+        optional=arg.optional or (isinstance(value, MultiVar) and value.flag == '*'),
+        variadic=isinstance(value, MultiVar),
         hidden=arg.hidden,
         default=None if default is _EMPTY else repr(default),
     )
@@ -76,10 +77,10 @@ def _opt_to_help(opt: Option) -> 'HelpOption':
 
     return HelpOption(
         name=opt.name,
-        aliases=[a for a in opt.aliases if a != opt.name],
+        aliases=_merge_aliases(opt.name, list(opt.aliases)),
         dest=opt.dest,
         args=[_arg_to_help(a) for a in opt.args.argument],
-        help_text=opt.help_text,
+        help_text=str(opt.help_text),
     )
 
 
@@ -100,7 +101,7 @@ def _sub_to_help(sub: Subcommand) -> 'HelpNode':
         name=canonical,
         dest=sub.dest,
         aliases=_merge_aliases(canonical, name_aliases, list(sub.aliases)),
-        help_text=sub.help_text,
+        help_text=str(sub.help_text),
         args=[_arg_to_help(a) for a in sub.args.argument],
         options=options,
         subcommands=subcommands,
@@ -137,61 +138,33 @@ def _is_path_segment(token: str) -> bool:
     return not token.startswith(('-', '{'))
 
 
-def _render_arg_token(name: str, *, optional: bool) -> str:
-    return f'[{name}]' if optional else f'<{name}>'
+def _collect_shortcuts(root: Alconna) -> list['HelpShortcut']:
+    """Return every displayable shortcut resolved to its canonical target, filtering easter eggs.
 
-
-def _render_target_signature(root: Alconna, target: list[str]) -> str:
-    """Render the args/options accepted by ``target`` as a usage-style suffix.
-
-    e.g. for shortcut ``io查`` whose target is ``tstats TETR.IO query``, this
-    returns ``[--template <template>] [--compare <compare>]``. Hidden args and
-    builtin options (--help / --shortcut / --comp) are skipped.
+    ``target`` is the full canonical breadcrumb starting with the root header;
+    ``bound_options`` are the options the shortcut's command text already passes.
     """
-    sub_path = target[1:]
-    if not sub_path:
-        args_iter = list(root.args.argument)
-        children = list(root.options)
-    else:
-        chain = _resolve_current_subcommand(root, sub_path)
-        if chain is None:
-            return ''
-        sub = chain[-1]
-        args_iter = list(sub.args.argument)
-        children = list(sub.options)
+    from .render.schemas.help import HelpShortcut  # noqa: PLC0415
 
-    tokens: list[str] = []
-    tokens.extend(_render_arg_token(a.name, optional=a.optional) for a in args_iter)
-    for child in children:
-        if isinstance(child, _BUILTINS) or not isinstance(child, Option):
-            continue
-        inner = [child.name, *(_render_arg_token(a.name, optional=a.optional) for a in child.args.argument)]
-        tokens.append(f'[{" ".join(inner)}]')
-    return ' '.join(tokens)
-
-
-def _collect_shortcuts(root: Alconna) -> list[tuple[str, list[str]]]:
-    """Return list of (humanized_key, target_path) pairs, filtering easter eggs.
-
-    target_path is the full canonical breadcrumb starting with the root header.
-    The humanized key is suffixed with the target command's argument signature
-    (rendered in CLI ``<required>`` / ``[optional]`` syntax) so users can see
-    what they may / must supply, instead of the opaque ``...args`` placeholder.
-    """
-    results: list[tuple[str, list[str]]] = []
+    results: list[HelpShortcut] = []
     root_canonical, _ = _split_name(root.header_display)
-    for key, short in command_manager.get_shortcut(root).items():
+    for humanized, short in command_manager.get_shortcut(root).items():
+        key = str(humanized)
         if _is_easter_egg(key):
             continue
         if not isinstance(short, InnerShortcutArgs):
             # Custom shortcut wrappers: cannot statically resolve target.
-            results.append((key, [root_canonical]))
+            results.append(HelpShortcut(key=key, target=[root_canonical], bound_options=[]))
             continue
         cmd_text = _extract_command_text(short.command)
-        target = [tok for tok in cmd_text.split() if _is_path_segment(tok)] if cmd_text else [root_canonical]
-        suffix = _render_target_signature(root, target)
-        rendered = f'{key} {suffix}' if suffix else key
-        results.append((rendered, target))
+        tokens = cmd_text.split() if cmd_text else []
+        path_tokens = [tok for tok in tokens if _is_path_segment(tok)]
+        chain = _resolve_current_subcommand(root, path_tokens[1:]) if path_tokens else None
+        target = (
+            [root_canonical, *(_split_name(sub.name)[0] for sub in chain)] if chain is not None else [root_canonical]
+        )
+        bound_options = [tok for tok in tokens if tok.startswith('-')]
+        results.append(HelpShortcut(key=key, target=target, bound_options=bound_options))
     return results
 
 
@@ -243,7 +216,7 @@ class StructuredHelpFormatter(TextFormatter):
 
     @override
     def format(self, trace: Trace) -> str:
-        from .render.schemas.help import HelpData, HelpNode, HelpOption, HelpShortcut  # noqa: PLC0415
+        from .render.schemas.help import HelpData, HelpNode, HelpOption  # noqa: PLC0415
 
         head = trace.head
         # head['name'] looks like 'tstats TETR.IO|io|TETRIO query' where each
@@ -291,33 +264,29 @@ class StructuredHelpFormatter(TextFormatter):
             root_canonical, _ = _split_name(self.root.header_display)
             breadcrumb = [root_canonical, *(_split_name(s.name)[0] for s in chain)]
 
-        # Lazy import avoids circular dependency with games/* (render/__init__.py
-        # -> host.py -> games.tetrio.api.cache -> back into games/__init__.py).
+        # Lazy imports avoid circular dependencies with games/*
+        # (render/__init__.py -> host.py -> games.tetrio.api.cache).
         from .lang import get_lang  # noqa: PLC0415
 
         node = HelpNode(
             name=cur_name,
             dest=cur_dest,
             aliases=cur_aliases,
-            help_text=head.get('description'),
+            help_text=str(head['description']),
             args=[_arg_to_help(a) for a in trace.args],
             options=options,
             subcommands=subcommands,
         )
         # usage / examples / shortcuts only exist on the root Alconna's CommandMeta;
         # Subcommand has no `meta` attribute. Show them only on the root help page.
-        all_shortcuts = _collect_shortcuts(self.root)
+        shortcuts = [s for s in _collect_shortcuts(self.root) if s.target[1 : len(breadcrumb)] == breadcrumb[1:]]
         if not sub_path:
-            usage = self.root.meta.usage
-            example_raw = self.root.meta.example
-            examples = [line for line in (example_raw or '').splitlines() if line.strip()]
-            shortcuts = [HelpShortcut(key=k, target=t) for k, t in all_shortcuts]
+            meta = self.root.meta
+            usage = None if meta.usage is None else str(meta.usage)
+            examples = [line for line in str(meta.example or '').splitlines() if line.strip()]
         else:
             usage = None
             examples = []
-            shortcuts = [
-                HelpShortcut(key=k, target=t) for k, t in all_shortcuts if t[1 : len(breadcrumb)] == breadcrumb[1:]
-            ]
         data = HelpData(
             lang=get_lang(),
             command=node,

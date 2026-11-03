@@ -73,4 +73,4 @@ Me: TypeAlias = Literal[
     'oneself',
 ]
 
-Lang: TypeAlias = Literal['zh-CN', 'en-US']
+Lang: TypeAlias = Literal['zh-CN', 'zh-TW', 'en-US', 'es-ES', 'ja-JP', 'ko-KR']

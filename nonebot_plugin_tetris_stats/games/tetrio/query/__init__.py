@@ -38,29 +38,29 @@ command.add(
             Arg(
                 'who',
                 At | Me | get_player,
-                notice='@想要查询的人 / 自己 / TETR.IO 用户名 / ID',
+                notice=Lang.command.tetrio.query.args.who.notice.cast(),
             ),
         ),
         Option(
             '--template',
-            Arg('template', Template, notice='模板版本'),
+            Arg('template', Template, notice=Lang.command.tetrio.query.options.template.args.template.notice.cast()),
             alias=['-T'],
-            help_text='要使用的查询模板',
+            help_text=Lang.command.tetrio.query.options.template.help.cast(),
         ),
         Option(
             '--compare',
-            Arg('compare', parse_duration, notice='对比时间距离 (如 7d, 2w, 24h)'),
+            Arg('compare', parse_duration, notice=Lang.command.tetrio.query.options.compare.args.compare.notice.cast()),
             alias=['-C'],
-            help_text='指定对比时间距离',
+            help_text=Lang.command.tetrio.query.options.compare.help.cast(),
         ),
-        help_text='查询 TETR.IO 游戏信息',
+        help_text=Lang.command.tetrio.query.description.cast(),
     ),
 )
 
 alc.shortcut(
     '(?i:io)(?i:查询|查|query|stats)',
     command='tstats TETR.IO query',
-    humanized='io查',
+    humanized=Lang.command.tetrio.query.shortcut.cast(),
 )
 alc.shortcut(
     'fkosk',

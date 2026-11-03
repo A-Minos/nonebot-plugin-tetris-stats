@@ -7,6 +7,7 @@ from yarl import URL
 
 from ....config.config import config
 from ....db import anti_duplicate_add
+from ....i18n import Lang
 from ....utils.exception import RequestError
 from ....utils.request import Request
 from ..constant import BASE_URL, USER_NAME
@@ -70,8 +71,7 @@ class Player:
             )
             user_info: UserInfo = type_validate_json(UserInfo, raw_user_info)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if not isinstance(user_info, UserInfoSuccess):
-                msg = f'用户信息请求错误:\n{user_info.error}'
-                raise RequestError(msg)
+                raise RequestError(Lang.error.RequestError.TOS.user_info, detail=user_info.error)
             self._user_info = user_info
             await anti_duplicate_add(
                 TOSHistoricalData(

@@ -29,12 +29,12 @@ from ..constant import GAME_TYPE
 from ..mask import display_name, get_mask
 from . import command
 
-command.add(Option('--40l', dest='sprint'))
+command.add(Option('--40l', dest='sprint', help_text=Lang.command.tetrio.record.options.sprint.help.cast()))
 
 alc.shortcut(
     '(?i:io)(?i:记录|record)(?i:40l)',
     command='tstats TETR.IO record --40l',
-    humanized='io记录40l',
+    humanized=Lang.command.tetrio.record.shortcuts.sprint.cast(),
 )
 
 

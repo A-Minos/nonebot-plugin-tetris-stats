@@ -10,6 +10,7 @@ class HelpArg(BaseModel):
     notice: str | None
     type_repr: str | None
     optional: bool
+    variadic: bool
     hidden: bool
     default: str | None
 
@@ -41,13 +42,15 @@ else:
 class HelpShortcut(BaseModel):
     """A shortcut binding, resolved to its canonical target path.
 
-    ``key`` is the human-readable trigger (e.g. ``"io查 ...args"``);
+    ``key`` is the localized trigger only (e.g. ``"io查"``);
     ``target`` is the canonical breadcrumb of the command it expands to,
-    e.g. ``["tstats", "TETR.IO", "query"]``.
+    e.g. ``["tetris-stats", "TETR.IO", "query"]``;
+    ``bound_options`` are the options the shortcut already passes (e.g. ``["--blitz"]``).
     """
 
     key: str
     target: list[str]
+    bound_options: list[str]
 
 
 class HelpData(Base):

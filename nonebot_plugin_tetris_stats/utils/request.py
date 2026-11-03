@@ -11,6 +11,7 @@ from playwright.async_api import Response
 from yarl import URL
 
 from ..config.config import CACHE_PATH, config
+from ..i18n import Lang
 from .browser import BrowserManager
 from .exception import RequestError
 
@@ -92,8 +93,7 @@ class AntiCloudflare:
                     await page.wait_for_timeout(1000)
                 else:
                     if not isinstance(response, Response):
-                        msg = 'api请求失败'
-                        raise RequestError(msg)
+                        raise RequestError(Lang.error.RequestError.request.api)
                     self.headers = await response.request.all_headers()
                     try:
                         self.cookies = {
@@ -104,8 +104,7 @@ class AntiCloudflare:
                     except KeyError:
                         self.cookies = None
                     return await response.body()
-        msg = '绕过五秒盾失败'
-        raise RequestError(msg)
+        raise RequestError(Lang.error.RequestError.request.cloudflare)
 
 
 class Request:
@@ -140,15 +139,16 @@ class Request:
         try:
             response = await self.client.get(str(url), cookies=cookies, headers=headers)
             if response.status_code != HTTPStatus.OK:
-                msg = (
-                    f'请求错误 code: {response.status_code} {HTTPStatus(response.status_code).phrase}\n{response.text}'
+                raise RequestError(
+                    Lang.error.RequestError.request.response,
+                    status_code=response.status_code,
+                    reason=HTTPStatus(response.status_code).phrase,
+                    body=response.text,
                 )
-                raise RequestError(msg, status_code=response.status_code)
             if is_json:
                 decoder.decode(response.content)
         except HTTPError as e:
-            msg = f'请求错误 \n{e!r}'
-            raise RequestError(msg) from e
+            raise RequestError(Lang.error.RequestError.request.transport, detail=repr(e)) from e
         except DecodeError:  # 由于捕获的是 DecodeError 所以一定是 is_json = True
             if enable_anti_cloudflare and url.host is not None:
                 return await self.anti_cloudflares.setdefault(url.host, AntiCloudflare(url.host))(str(url), self.proxy)
@@ -183,5 +183,4 @@ class Request:
                 else:
                     raise
                 continue
-        msg = f'所有地址皆不可用\n{error_list!r}'
-        raise RequestError(msg)
+        raise RequestError(Lang.error.RequestError.request.failover, errors=error_list)
