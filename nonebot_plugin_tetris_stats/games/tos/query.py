@@ -1,6 +1,6 @@
 from asyncio import gather
 from collections.abc import Iterable
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from typing import Literal, NamedTuple
 from zoneinfo import ZoneInfo
@@ -39,8 +39,6 @@ from .api.schemas.user_profile import Data as UserProfileData
 from .api.schemas.user_profile import UserProfile
 from .constant import GAME_TYPE
 from .models import TOSUserConfig
-
-UTC = timezone.utc
 
 
 def add_special_handlers(

@@ -1,7 +1,7 @@
 from collections.abc import AsyncIterator, Sequence
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 from uuid import UUID
@@ -16,9 +16,6 @@ if TYPE_CHECKING:
     from nonebot_plugin_tetris_stats.games.tetrio.models import TETRIOLeagueStats
     from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import LeagueListQuery
     from nonebot_plugin_tetris_stats.games.tetrio.typedefs import ListSort
-
-
-UTC = timezone.utc
 
 
 @dataclass(frozen=True)

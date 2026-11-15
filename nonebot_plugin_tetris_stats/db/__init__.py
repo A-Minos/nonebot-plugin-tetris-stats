@@ -1,7 +1,7 @@
 from asyncio import Lock
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum, auto
 from typing import TYPE_CHECKING, Literal, TypeVar, overload
 
@@ -14,8 +14,6 @@ from sqlalchemy import select
 from ..utils.duration import DEFAULT_COMPARE_DELTA
 from ..utils.typedefs import AllCommandType, BaseCommandType, GameType, TETRIOCommandType
 from .models import Bind, TriggerHistoricalDataV2
-
-UTC = timezone.utc
 
 if TYPE_CHECKING:
     from ..games.tetrio.api.models import TETRIOHistoricalData

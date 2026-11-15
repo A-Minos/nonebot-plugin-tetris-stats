@@ -13,7 +13,7 @@ in ``help_extension.py``.
 """
 
 from inspect import Signature
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from arclet.alconna import Alconna, Option, Subcommand
 from arclet.alconna.args import Arg
@@ -22,7 +22,7 @@ from arclet.alconna.formatter import TextFormatter, Trace
 from arclet.alconna.manager import command_manager
 from arclet.alconna.typing import InnerShortcutArgs
 from nonebot.compat import PYDANTIC_V2
-from typing_extensions import Self, override
+from typing_extensions import override
 
 if TYPE_CHECKING:
     from .render.schemas.help import HelpArg, HelpNode, HelpOption

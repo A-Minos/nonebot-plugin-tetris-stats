@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from nonebot.adapters import Event
 from nonebot.matcher import Matcher
@@ -29,8 +29,6 @@ from .api.models import TOPHistoricalData
 from .api.schemas.user_profile import Data, UserProfile
 from .constant import GAME_TYPE
 from .models import TOPUserConfig
-
-UTC = timezone.utc
 
 
 async def get_compare_profile(session: AsyncSession, user_name: str, target_time: datetime) -> UserProfile | None:

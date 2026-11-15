@@ -1,12 +1,10 @@
 from collections.abc import Generator
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 from sqlalchemy import Integer, create_engine, text
 from sqlalchemy.exc import StatementError
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
-
-UTC = timezone.utc
 
 
 @pytest.fixture

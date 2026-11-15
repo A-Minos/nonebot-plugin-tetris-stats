@@ -9,7 +9,7 @@ Then:
 
 ```bash
 # Set up the basic Python environment
-uv python install 3.10
+uv python install 3.11
 
 # Clone the repository
 git clone https://github.com/A-Minos/nonebot-plugin-tetris-stats.git

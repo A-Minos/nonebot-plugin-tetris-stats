@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from types import MappingProxyType
 from typing import Literal, NamedTuple, cast, overload
 
@@ -32,12 +32,12 @@ from .schemas.user_info import UserInfo, UserInfoSuccess
 from .typedefs import Records, Summaries
 
 
-class RecordModeType(str, Enum):
+class RecordModeType(StrEnum):
     Sprint = '40l'
     Blitz = 'blitz'
 
 
-class RecordType(str, Enum):
+class RecordType(StrEnum):
     Top = 'top'
     Recent = 'recent'
     Progression = 'progression'

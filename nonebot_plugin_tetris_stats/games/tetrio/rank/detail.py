@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 from arclet.alconna import Arg
@@ -22,8 +22,6 @@ from ..constant import GAME_TYPE
 from ..mask import display_name, get_masks
 from ..models import TETRIOLeagueStats
 from . import command
-
-UTC = timezone.utc
 
 driver = get_driver()
 

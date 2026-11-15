@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from typing import Any
 from uuid import UUID
 from zoneinfo import ZoneInfo
@@ -11,8 +11,6 @@ import pytest
 from nonebot.exception import FinishedException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
-UTC = timezone.utc
 
 
 @pytest.fixture
