@@ -1,6 +1,4 @@
-from datetime import datetime, timezone
-
-UTC = timezone.utc
+from datetime import UTC, datetime
 
 
 def ensure_utc_datetime(value: datetime) -> datetime:

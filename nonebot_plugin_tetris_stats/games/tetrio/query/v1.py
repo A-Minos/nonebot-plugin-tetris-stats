@@ -1,5 +1,5 @@
 from asyncio import gather
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from hashlib import md5
 from typing import Literal, NamedTuple
 
@@ -23,8 +23,6 @@ from ..api.schemas.summaries.league import LeagueSuccessModel, NeverRatedData, R
 from ..constant import TR_MAX, TR_MIN
 from ..models import TETRIOLeagueHistorical, TETRIOLeagueUserMap, TETRIOUserUniqueIdentifier
 from .tools import flow_to_history, get_league_data
-
-UTC = timezone.utc
 
 
 class Trends(NamedTuple):

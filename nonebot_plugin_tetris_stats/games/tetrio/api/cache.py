@@ -1,5 +1,5 @@
 from asyncio import Lock
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import ClassVar
 from weakref import WeakValueDictionary
 
@@ -12,9 +12,6 @@ from ....config.config import config
 from ....utils.limit import limit
 from ....utils.request import Request
 from .schemas.base import FailedModel, SuccessModel
-
-UTC = timezone.utc
-
 
 request = Request(config.tetris.proxy.tetrio or config.tetris.proxy.main)
 request.request = limit(timedelta(seconds=1))(request.request)  # type: ignore[method-assign]  # pyright: ignore[reportAttributeAccessIssue]

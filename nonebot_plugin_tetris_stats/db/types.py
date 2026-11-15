@@ -1,10 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import DateTime, Dialect, TypeDecorator
 from typing_extensions import override
-
-UTC = timezone.utc
 
 
 class UTCDateTime(TypeDecorator[datetime]):

@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import timedelta
 
 from arclet.alconna import Arg
 from nonebot import get_driver
@@ -26,8 +26,6 @@ from ..models import TETRIOUserConfig
 from ..typedefs import Template
 from .v1 import make_query_image_v1
 from .v2 import make_query_image_v2
-
-UTC = timezone.utc
 
 driver = get_driver()
 

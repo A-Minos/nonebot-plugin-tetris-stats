@@ -77,7 +77,7 @@ def upgrade(name: str = '') -> None:  # noqa: C901
             for i in models:
                 try:
                     return type_validate_json(i, value)
-                except ValidationError:  # noqa: PERF203
+                except ValidationError:
                     ...
             raise ValueError
 

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Callable, Iterator, Sequence
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from math import floor
 from statistics import mean
 from typing import TYPE_CHECKING, TypeVar
@@ -34,8 +34,6 @@ from ..models import (
 if TYPE_CHECKING:
     from ..api.schemas.leaderboards.by import BySuccessModel
     from ..api.typedefs import Rank
-
-UTC = timezone.utc
 
 driver = get_driver()
 

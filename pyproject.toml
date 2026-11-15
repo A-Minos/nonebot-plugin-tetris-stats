@@ -6,7 +6,7 @@ version = "1.14.1"
 description = "一款基于 NoneBot2 的用于查询 Tetris 相关游戏数据的插件"
 readme = "README.md"
 authors = [{ name = "shoucandanghehe", email = "wallfjjd@gmail.com" }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "aiocache>=0.12.3",
     "aiofiles>=24.1.0",
@@ -37,7 +37,6 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -89,7 +88,7 @@ default-groups = ["dev", "typecheck"]
 
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -160,7 +159,7 @@ builtins-ignorelist = ["id"]
 quote-style = "single"
 
 [tool.basedpyright]
-pythonVersion = "3.10"
+pythonVersion = "3.11"
 pythonPlatform = "All"
 defineConstant = { PYDANTIC_V2 = true }
 typeCheckingMode = "standard"

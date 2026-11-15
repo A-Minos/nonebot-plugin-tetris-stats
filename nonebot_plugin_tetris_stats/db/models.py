@@ -54,7 +54,7 @@ class PydanticType(TypeDecorator):
             for i in self.models:
                 try:
                     return type_validate_python(i, value)
-                except ValidationError:  # noqa: PERF203
+                except ValidationError:
                     ...
         raise ValueError
 

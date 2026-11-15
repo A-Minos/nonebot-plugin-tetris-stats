@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from random import Random
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 
 from PIL.Image import Image
-from typing_extensions import Self
 
 
 class Piece(Enum):

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import cast, overload
 
 from httpx import TimeoutException
@@ -14,8 +14,6 @@ from .models import TOSHistoricalData
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
 from .schemas.user_profile import UserProfile
-
-UTC = timezone.utc
 
 request = Request(config.tetris.proxy.tos or config.tetris.proxy.main)
 

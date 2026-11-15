@@ -32,12 +32,12 @@ from .schemas.user_info import UserInfo, UserInfoSuccess
 from .typedefs import Records, Summaries
 
 
-class RecordModeType(str, Enum):
+class RecordModeType(str, Enum):  # noqa: UP042 - preserve Enum string formatting
     Sprint = '40l'
     Blitz = 'blitz'
 
 
-class RecordType(str, Enum):
+class RecordType(str, Enum):  # noqa: UP042 - preserve Enum string formatting
     Top = 'top'
     Recent = 'recent'
     Progression = 'progression'

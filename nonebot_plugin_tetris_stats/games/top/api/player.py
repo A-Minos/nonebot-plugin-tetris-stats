@@ -1,5 +1,5 @@
 from contextlib import suppress
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from io import StringIO
 
 from lxml import etree
@@ -12,8 +12,6 @@ from ..constant import BASE_URL, USER_NAME
 from .models import TOPHistoricalData
 from .schemas.user import User
 from .schemas.user_profile import Data, UserProfile
-
-UTC = timezone.utc
 
 request = Request(config.tetris.proxy.top or config.tetris.proxy.main)
 
