@@ -15,7 +15,7 @@ import sqlalchemy as sa
 from alembic import op
 from nonebot.log import logger
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TaskProgressColumn, TextColumn, TimeRemainingColumn
-from sqlalchemy import desc, select
+from sqlalchemy import select
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 
@@ -51,7 +51,7 @@ def migrate_old_data() -> None:  # noqa: C901
             return
         task_id = progress.add_task('[cyan]Migrating:', total=session.query(OldHistoricalData).count())
         pointer = 0
-        while pointer < session.query(OldHistoricalData).order_by(desc(OldHistoricalData.id)).limit(1).one().id:
+        while pointer < session.query(OldHistoricalData).order_by(OldHistoricalData.id.desc()).limit(1).one().id:
             result = session.scalars(
                 select(OldHistoricalData)
                 .where(OldHistoricalData.id > pointer)
