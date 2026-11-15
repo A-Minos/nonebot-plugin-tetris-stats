@@ -236,18 +236,18 @@
           "blitz": { "help": "View Blitz record" },
           "sprint": { "help": "View Sprint record" },
           "type": {
-            "help": "Record type",
+            "help": "Choose top (best), recent, or progression (personal-best history); defaults to top",
             "args": {
               "record_type": {
-                "notice": "Record type (top, recent, or progression)"
+                "notice": "Record type: top / recent / progression (default: top)"
               }
             }
           },
           "index": {
-            "help": "Record index",
+            "help": "Choose a record by its 1-based index; defaults to 1",
             "args": {
               "index": {
-                "notice": "Record index"
+                "notice": "Record index starting at 1 (default: 1)"
               }
             }
           }

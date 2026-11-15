@@ -211,10 +211,10 @@
           "blitz": { "help": "Consultar el récord de Blitz" },
           "sprint": { "help": "Consultar el récord de Sprint" },
           "type": {
-            "help": "Tipo de récord",
-            "args": { "record_type": { "notice": "Tipo de récord (top, recent o progression)" } }
+            "help": "Elegir top (mejores), recent (recientes) o progression (historial de mejores marcas personales); por defecto, top",
+            "args": { "record_type": { "notice": "Tipo de récord: top / recent / progression (por defecto: top)" } }
           },
-          "index": { "help": "Índice del récord", "args": { "index": { "notice": "Índice del récord" } } }
+          "index": { "help": "Elegir un récord por su índice, empezando en 1; por defecto, 1", "args": { "index": { "notice": "Índice del récord desde 1 (por defecto: 1)" } } }
         },
         "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
       },

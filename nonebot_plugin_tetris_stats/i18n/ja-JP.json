@@ -205,10 +205,10 @@
           "blitz": { "help": "ブリッツの記録を表示" },
           "sprint": { "help": "スプリントの記録を表示" },
           "type": {
-            "help": "記録種別",
-            "args": { "record_type": { "notice": "記録種別（top、recent、progressionのいずれか）" } }
+            "help": "記録種別を選択：top（ベスト）、recent（最近）、progression（自己ベストの履歴）。既定値は top",
+            "args": { "record_type": { "notice": "記録種別：top / recent / progression（既定値：top）" } }
           },
-          "index": { "help": "記録番号", "args": { "index": { "notice": "記録番号" } } }
+          "index": { "help": "1 から始まる記録番号で選択。既定値は 1", "args": { "index": { "notice": "1 から始まる記録番号（既定値：1）" } } }
         },
         "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
       },

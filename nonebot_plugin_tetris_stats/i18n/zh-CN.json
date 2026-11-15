@@ -236,18 +236,18 @@
           "blitz": { "help": "查询 Blitz 记录" },
           "sprint": { "help": "查询 40行记录" },
           "type": {
-            "help": "记录类型",
+            "help": "选择记录类型：top（最佳）、recent（最近）、progression（个人最佳历程）；默认 top",
             "args": {
               "record_type": {
-                "notice": "记录类型（top、recent、progression）"
+                "notice": "记录类型：top / recent / progression（默认 top）"
               }
             }
           },
           "index": {
-            "help": "记录序号",
+            "help": "选择记录序号，从 1 开始；默认 1",
             "args": {
               "index": {
-                "notice": "记录序号"
+                "notice": "从 1 开始的记录序号（默认 1）"
               }
             }
           }

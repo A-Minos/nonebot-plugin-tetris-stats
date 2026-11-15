@@ -188,10 +188,10 @@
           "blitz": { "help": "查詢閃電戰紀錄" },
           "sprint": { "help": "查詢 40行紀錄" },
           "type": {
-            "help": "紀錄類型",
-            "args": { "record_type": { "notice": "紀錄類型（top、recent 或 progression）" } }
+            "help": "選擇紀錄類型：top（最佳）、recent（最近）、progression（個人最佳歷程）；預設 top",
+            "args": { "record_type": { "notice": "紀錄類型：top / recent / progression（預設 top）" } }
           },
-          "index": { "help": "紀錄序號", "args": { "index": { "notice": "紀錄序號" } } }
+          "index": { "help": "選擇紀錄序號，從 1 開始；預設 1", "args": { "index": { "notice": "從 1 開始的紀錄序號（預設 1）" } } }
         },
         "shortcuts": { "blitz": "iorecordblitz", "sprint": "iorecord40l" }
       },
