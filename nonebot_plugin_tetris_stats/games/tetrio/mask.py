@@ -33,27 +33,36 @@ command.add(
         Subcommand(
             'add',
             Args(
-                Arg('account', get_player, notice='TETR.IO 用户名 / ID'),
-                Arg('fields', MultiVar(str, '*'), notice='屏蔽字段, 默认全部'),
+                Arg('account', get_player, notice=Lang.command.tetrio.mask.add.args.account.notice.cast()),
+                Arg('fields', MultiVar(str, '*'), notice=Lang.command.tetrio.mask.add.args.fields.notice.cast()),
             ),
-            help_text='屏蔽玩家的展示信息',
+            help_text=Lang.command.tetrio.mask.add.description.cast(),
         ),
         Subcommand(
             'remove',
             Args(
-                Arg('account', get_player, notice='TETR.IO 用户名 / ID'),
-                Arg('fields', MultiVar(str, '*'), notice='解除字段, 默认全部'),
+                Arg('account', get_player, notice=Lang.command.tetrio.mask.remove.args.account.notice.cast()),
+                Arg('fields', MultiVar(str, '*'), notice=Lang.command.tetrio.mask.remove.args.fields.notice.cast()),
             ),
-            help_text='解除玩家的展示信息屏蔽',
+            help_text=Lang.command.tetrio.mask.remove.description.cast(),
         ),
-        Subcommand('list', help_text='列出被屏蔽的玩家'),
-        help_text='管理 TETR.IO 玩家展示信息屏蔽',
+        Subcommand('list', help_text=Lang.command.tetrio.mask.list.description.cast()),
+        help_text=Lang.command.tetrio.mask.description.cast(),
     )
 )
 
-alc.shortcut('(?i:io)屏蔽列表', command='tstats TETR.IO mask list', fuzzy=False, humanized='io屏蔽列表')
-alc.shortcut('(?i:io)屏蔽(?!列表)', command='tstats TETR.IO mask add', humanized='io屏蔽')
-alc.shortcut('(?i:io)解屏蔽', command='tstats TETR.IO mask remove', humanized='io解屏蔽')
+alc.shortcut(
+    '(?i:io)屏蔽列表',
+    command='tstats TETR.IO mask list',
+    fuzzy=False,
+    humanized=Lang.command.tetrio.mask.list.shortcut.cast(),
+)
+alc.shortcut(
+    '(?i:io)屏蔽(?!列表)', command='tstats TETR.IO mask add', humanized=Lang.command.tetrio.mask.add.shortcut.cast()
+)
+alc.shortcut(
+    '(?i:io)解屏蔽', command='tstats TETR.IO mask remove', humanized=Lang.command.tetrio.mask.remove.shortcut.cast()
+)
 
 
 async def get_masks(uids: Collection[str] | None = None) -> dict[str, frozenset[DisplayField]]:

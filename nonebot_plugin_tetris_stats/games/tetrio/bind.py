@@ -32,18 +32,18 @@ command.add(
             Arg(
                 'account',
                 get_player,
-                notice='TETR.IO 用户名 / ID',
+                notice=Lang.command.tetrio.bind.args.account.notice.cast(),
                 flags=[ArgFlag.HIDDEN],
             )
         ),
-        help_text='绑定 TETR.IO 账号',
+        help_text=Lang.command.tetrio.bind.description.cast(),
     )
 )
 
 alc.shortcut(
     '(?i:io)(?i:绑定|绑|bind)',
     command='tstats TETR.IO bind',
-    humanized='io绑定',
+    humanized=Lang.command.tetrio.bind.shortcut.cast(),
 )
 
 try:
