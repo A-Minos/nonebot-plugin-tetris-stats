@@ -1,5 +1,3 @@
-from typing import Any
-
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, Field
 
@@ -11,7 +9,7 @@ class Parameter(BaseModel):
     before: Prisecter | None = None
     limit: int = Field(default=25, ge=1, le=100)
 
-    def to_params(self) -> dict[str, Any]:
+    def to_params(self) -> dict[str, str | int]:
         if PYDANTIC_V2:
             return self.model_dump(exclude_defaults=True)
         return self.dict(exclude_defaults=True)

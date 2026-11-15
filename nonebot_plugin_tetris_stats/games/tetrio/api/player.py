@@ -13,6 +13,7 @@ from ..constant import BASE_URL, USER_ID, USER_NAME
 from .cache import Cache
 from .models import TETRIOHistoricalData
 from .schemas.base import FailedModel
+from .schemas.base.solo import Record
 from .schemas.labs.leagueflow import LeagueFlow, LeagueFlowSuccess
 from .schemas.records import Parameter
 from .schemas.records.solo import Solo as SoloRecord
@@ -47,6 +48,7 @@ class RecordType(StrEnum):
 class RecordKey(NamedTuple):
     mode_type: RecordModeType
     record_type: RecordType
+    query: str
 
     def to_records(self) -> Records:
         return cast('Records', f'{self.mode_type.value}_{self.record_type.value}')
@@ -205,6 +207,14 @@ class Player:
         return None
 
     @property
+    async def country(self) -> str | None:
+        if self._user_info is not None:
+            return self._user_info.data.country
+        if (user := (await self._get_local_summaries_user())) is not None:
+            return user.country
+        return (await self.get_info()).data.country
+
+    @property
     @alru_cache
     async def avatar_revision(self) -> int | None:
         if self._user_info is not None:
@@ -229,10 +239,10 @@ class Player:
         *,
         parameter: Parameter | None = None,
     ) -> RecordsSoloSuccessModel:
-        if (record_key := RecordKey(mode_type, records_type)) not in self._records:
-            url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
-            if parameter is not None:
-                url = url % parameter.to_params()
+        url = BASE_URL / 'users' / self._request_user_parameter / 'records' / mode_type / records_type
+        if parameter is not None:
+            url = url % parameter.to_params()
+        if (record_key := RecordKey(mode_type, records_type, url.query_string)) not in self._records:
             raw_records = await Cache.get(url)
             records: RecordsSoloSuccessModel | FailedModel = type_validate_json(SoloRecord, raw_records)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
             if isinstance(records, FailedModel):
@@ -248,3 +258,29 @@ class Player:
                 ),
             )
         return self._records[record_key]
+
+    async def get_record(
+        self,
+        mode_type: RecordModeType,
+        records_type: RecordType | None = None,
+        *,
+        index: int | None = None,
+    ) -> Record | None:
+        # 不传选择参数时沿用 summary PB。
+        if records_type is None and index is None:
+            return (await self.get_summaries(mode_type.value)).data.record
+
+        records_type = records_type or RecordType.Top
+        remaining = 1 if index is None else index
+        if remaining < 1:
+            return None
+
+        parameter = Parameter(limit=min(max(25, remaining), 100))
+        while True:
+            entries = (await self.get_records(mode_type, records_type, parameter=parameter)).data.entries
+            if remaining <= len(entries):
+                return entries[remaining - 1]
+            if len(entries) < parameter.limit:
+                return None
+            remaining -= len(entries)
+            parameter = Parameter(after=entries[-1].p.to_prisecter(), limit=min(remaining, 100))

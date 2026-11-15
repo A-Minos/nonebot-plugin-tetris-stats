@@ -13,6 +13,7 @@ from tarina.lang import lang  # type: ignore[import-untyped]
 
 if TYPE_CHECKING:
     from nonebot_plugin_tetris_stats.games.tetrio.api import Player
+    from nonebot_plugin_tetris_stats.games.tetrio.api.player import RecordType
 
 USER_IDS = count(1000)
 MESSAGE_IDS = count(1000)
@@ -74,11 +75,11 @@ def record_images(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 
     calls: list[str] = []
 
-    async def render_blitz(_player: 'Player') -> bytes:
+    async def render_blitz(_player: 'Player', _record_type: 'RecordType | None', _index: int | None) -> bytes:
         calls.append('blitz')
         return b'blitz-image'
 
-    async def render_sprint(_player: 'Player') -> bytes:
+    async def render_sprint(_player: 'Player', _record_type: 'RecordType | None', _index: int | None) -> bytes:
         calls.append('sprint')
         return b'sprint-image'
 

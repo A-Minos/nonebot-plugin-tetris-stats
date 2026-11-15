@@ -2,13 +2,19 @@ from abc import ABC
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PositiveInt
 
+from .......games.tetrio.api.player import RecordType
 from ....base import Base, People, TETRIOPlayer
 
 
+class RecordQuery(BaseModel):
+    type: RecordType
+    index: PositiveInt
+
+
 class User(People, TETRIOPlayer):
-    pass
+    country: str | None
 
 
 class Max(BaseModel):
@@ -63,12 +69,13 @@ class Statistic(BaseModel):
 
 
 class Record(Base, ABC):
-    type: Literal['best', 'personal_best', 'recent', 'disputed']
-
+    query: RecordQuery
     user: User
 
     replay_id: str
-    rank: int | None
-    personal_rank: int | None
+    global_rank: PositiveInt | None
+    country_rank: PositiveInt | None
+    personal_best: Literal['current', 'former'] | None
+    disputed: bool
 
     play_at: datetime
