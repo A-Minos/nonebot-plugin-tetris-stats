@@ -65,7 +65,7 @@ alc.shortcut(
     command='tstats TETR.IO query',
     arguments=['我'],
     fuzzy=False,
-    humanized='An Easter egg!',
+    humanized='[hidden] An Easter egg!',
 )
 
 add_block_handlers(assign('TETRIO.query'))

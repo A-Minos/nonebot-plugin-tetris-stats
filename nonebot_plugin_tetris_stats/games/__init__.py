@@ -10,8 +10,7 @@ from .. import ns
 from ..i18n import Lang
 from ..permission import command_permission
 from ..utils.exception import NeedCatchError
-from ..utils.help_extension import HelpImageExtension
-from ..utils.help_formatter import StructuredHelpFormatter
+from ..utils.help import HelpImageExtension, StructuredHelpFormatter
 
 command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
