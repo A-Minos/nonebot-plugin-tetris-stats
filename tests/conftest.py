@@ -11,6 +11,8 @@ os.environ['ENVIRONMENT'] = 'test'
 def pytest_configure(config: pytest.Config) -> None:
     config.stash[NONEBOT_INIT_KWARGS] = {
         'log_level': 'DEBUG',
+        'tetris': {'graceful_shutdown': True},
+        'wait': {'block_other': False},
         'sqlalchemy_database_url': 'sqlite+aiosqlite:///:memory:',
     }
     config.stash[NONEBOT_START_LIFESPAN] = False
