@@ -17,6 +17,7 @@ from ....db import query_bind_info, resolve_compare_delta, trigger
 from ....i18n import Lang
 from ....utils.duration import parse_duration
 from ....utils.exception import FallbackError
+from ....utils.shutdown import graceful_query
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc, assign
 from .. import command
@@ -84,6 +85,7 @@ async def make_query_result(player: Player, template: Template, compare_delta: t
 
 
 @assign('TETRIO.query')
+@graceful_query
 async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
@@ -126,6 +128,7 @@ async def _(  # noqa: PLR0913, PLR0917
 
 
 @assign('TETRIO.query')
+@graceful_query
 async def _(
     user: NBUser,
     event_session: Uninfo,
