@@ -88,7 +88,7 @@ def record_images(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return calls
 
 
-async def send_command(app: App, platform_id: int, command: str, expected: str | Message) -> None:
+async def send_command(app: App, platform_id: int, command: str, expected: str | Message | None) -> None:
     from nonebot_plugin_tetris_stats.games import alc  # noqa: PLC0415
 
     message = Message(command)
@@ -110,7 +110,8 @@ async def send_command(app: App, platform_id: int, command: str, expected: str |
     async with app.test_matcher(alc) as ctx:
         bot = ctx.create_bot(base=Bot, adapter=get_adapter(Adapter), self_id='1')
         ctx.receive_event(bot, event)
-        ctx.should_call_send(event, expected, result={'message_id': event.message_id})
+        if expected is not None:
+            ctx.should_call_send(event, expected, result={'message_id': event.message_id})
 
 
 @pytest.mark.parametrize(

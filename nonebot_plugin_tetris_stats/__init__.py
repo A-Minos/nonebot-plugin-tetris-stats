@@ -9,6 +9,7 @@ require_plugins = {
     'nonebot_plugin_permission',
     'nonebot_plugin_uninfo',
     'nonebot_plugin_user',
+    'nonebot_plugin_wait_a_minute',
     'nonebot_plugin_waiter',
 }
 

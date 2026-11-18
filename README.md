@@ -88,18 +88,11 @@ pip install nonebot-plugin-tetris-stats
 
 本项目使用 [AGPL-3.0](https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE) 许可证开源
 
-## 可选：等待查询完成再关机
+## 关机时等待查分完成
 
-安装 `pip install 'nonebot-plugin-tetris-stats[graceful]'`，然后在 `.env` 中设置：
+无需额外安装或配置。收到关机信号后，已经开始的 TETR.IO 玩家查询会完成取数、渲染、发送及统计记录，再进入断连和浏览器清理流程。其他命令和交互确认不在等待范围内。
 
-```dotenv
-TETRIS__GRACEFUL_SHUTDOWN=true
-WAIT__BLOCK_OTHER=false
-```
-
-默认关闭。目前仅保护 TETR.IO 用户查询：收到关机信号后，已经开始的查询会完成取数、渲染、发送及统计记录，再进入正常的断连和浏览器清理流程；不再接受新的受保护查询。其他命令和交互确认不在本次保护范围内。
-
-`WAIT__BLOCK_OTHER=false` 用于避免等待期间阻止 Bot 中其他插件的消息处理。若保留等待插件默认的 `true`，它会全局筛除未标记的处理器，可能影响其他插件或交互回复。本插件不会修改这个全局配置。
+关机开始后不再启动新的 TETR.IO 玩家查询。wait-a-minute 默认也会拦截其他未标记的命令处理器；本插件不覆盖其 `WAIT__BLOCK_OTHER` 配置。
 
 ## 🤓☝ 给个 star 吧
 

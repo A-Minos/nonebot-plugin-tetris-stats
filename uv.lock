@@ -3244,6 +3244,7 @@ dependencies = [
     { name = "nonebot-plugin-permission" },
     { name = "nonebot-plugin-uninfo" },
     { name = "nonebot-plugin-user" },
+    { name = "nonebot-plugin-wait-a-minute" },
     { name = "nonebot-plugin-waiter" },
     { name = "nonebot-session-to-uninfo" },
     { name = "nonebot2", extra = ["fastapi"] },
@@ -3253,11 +3254,6 @@ dependencies = [
     { name = "rich" },
     { name = "strenum" },
     { name = "yarl" },
-]
-
-[package.optional-dependencies]
-graceful = [
-    { name = "nonebot-plugin-wait-a-minute" },
 ]
 
 [package.dev-dependencies]
@@ -3286,7 +3282,6 @@ release = [
 test = [
     { name = "nonebot-adapter-satori" },
     { name = "nonebot-plugin-orm", extra = ["aiosqlite"] },
-    { name = "nonebot-plugin-wait-a-minute" },
     { name = "nonebot2", extra = ["aiohttp", "fastapi"] },
     { name = "nonebug" },
     { name = "pytest-asyncio" },
@@ -3318,7 +3313,7 @@ requires-dist = [
     { name = "nonebot-plugin-permission", specifier = ">=0.3.1,<0.4" },
     { name = "nonebot-plugin-uninfo", specifier = ">=0.7.4" },
     { name = "nonebot-plugin-user", specifier = ">=0.6.0" },
-    { name = "nonebot-plugin-wait-a-minute", marker = "extra == 'graceful'", specifier = ">=0.6.0,<0.7" },
+    { name = "nonebot-plugin-wait-a-minute", specifier = ">=0.6.1,<0.7" },
     { name = "nonebot-plugin-waiter", specifier = ">=0.8.0" },
     { name = "nonebot-session-to-uninfo", specifier = ">=0.0.2" },
     { name = "nonebot2", extras = ["fastapi"], specifier = ">=2.5.0" },
@@ -3329,7 +3324,6 @@ requires-dist = [
     { name = "strenum", specifier = ">=0.4.15" },
     { name = "yarl", specifier = ">=1.16.0" },
 ]
-provides-extras = ["graceful"]
 
 [package.metadata.requires-dev]
 debug = [
@@ -3355,7 +3349,6 @@ release = [{ name = "bump-my-version", specifier = ">=0.28.0" }]
 test = [
     { name = "nonebot-adapter-satori", specifier = ">=0.12.6" },
     { name = "nonebot-plugin-orm", extras = ["aiosqlite"], specifier = ">=0.7.6" },
-    { name = "nonebot-plugin-wait-a-minute", specifier = ">=0.6.0,<0.7" },
     { name = "nonebot2", extras = ["aiohttp", "fastapi"], specifier = ">=2.3.3" },
     { name = "nonebug", specifier = ">=0.4.1" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },
@@ -3399,14 +3392,14 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-wait-a-minute"
-version = "0.6.0"
+version = "0.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nonebot2" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/39/16/e64c454498cc843dd1a938badebd779b79d106a7ab761f0988a681352fef/nonebot_plugin_wait_a_minute-0.6.0.tar.gz", hash = "sha256:6405f3400c0cfa2440b44709be5ac9a6db2bda49c9ca34079c4ad43551be3661", size = 5635, upload-time = "2026-11-17T02:15:28.975Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/a3/39da4d623ff3152c659594f80c8e79b2518eb73d60ab01e1f2a377fa0fa2/nonebot_plugin_wait_a_minute-0.6.1.tar.gz", hash = "sha256:c5fc314fcec597a937d204db670509dd2247c998e86455c8ce201acf9492ad92", size = 5673, upload-time = "2026-11-18T12:38:54.39Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/c1/bbd8b776f8b0bf70401046c8bc5a555292e1f58ba9302d342d44a1a2592a/nonebot_plugin_wait_a_minute-0.6.0-py3-none-any.whl", hash = "sha256:707ccab9ba17d782ed43145166f8923076213aee32f1ee8ad7da25caa39710fb", size = 5014, upload-time = "2026-11-17T02:15:28.124Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/49/0d75907ea0b4328f0aa5e17add1183c101fc235f97ead8e1ebca32bf180c/nonebot_plugin_wait_a_minute-0.6.1-py3-none-any.whl", hash = "sha256:d11ed09191bb13fcb7e9997d6943affd94d545bb77a7eb5a2d54149d8afbc201", size = 5050, upload-time = "2026-11-18T12:38:53.331Z" },
 ]
 
 [[package]]
