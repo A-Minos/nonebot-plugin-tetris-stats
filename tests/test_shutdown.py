@@ -10,6 +10,8 @@ from .test_permission import (  # noqa: F401
     chinese_locale,
     permission_database,
     permission_user,
+    query_images,
+    record_images,
     send_command,
 )
 
@@ -66,6 +68,7 @@ async def test_query_finishes_before_shutdown(
     Hook.status = Status.RUNNING
     shutdown = asyncio.create_task(Hook.check_task(15))
     try:
+        await asyncio.sleep(0)  # Let the shutdown task start waiting before the query completes.
         forward.assert_not_called()
         release.set()
         await asyncio.wait_for(command, 5)
@@ -77,3 +80,19 @@ async def test_query_finishes_before_shutdown(
     finally:
         release.set()
         await asyncio.gather(command, shutdown, return_exceptions=True)
+
+
+async def test_shutdown_blocks_new_queries_and_other_commands(
+    app: App,
+    permission_user: tuple[int, 'User'],  # noqa: F811
+    query_images: list[str],  # noqa: F811
+    record_images: list[str],  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nonebot_plugin_wait_a_minute import Hook, Status  # noqa: PLC0415
+
+    monkeypatch.setattr(Hook, 'status', Status.RUNNING)
+    await send_command(app, permission_user[0], 'io查 scdhh --template v2', None)
+    await send_command(app, permission_user[0], 'io记录blitz scdhh', None)
+    assert query_images == []  # noqa: S101
+    assert record_images == []  # noqa: S101

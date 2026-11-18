@@ -23,7 +23,6 @@ class Dev(BaseModel):
 
 
 class ScopedConfig(BaseModel):
-    graceful_shutdown: bool = False
     request_timeout: float = 30.0
     screenshot_quality: float = 2
     proxy: Proxy = Field(default_factory=Proxy)
