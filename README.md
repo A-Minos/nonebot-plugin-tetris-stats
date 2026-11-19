@@ -88,10 +88,6 @@ pip install nonebot-plugin-tetris-stats
 
 本项目使用 [AGPL-3.0](https://github.com/shoucandanghehe/nonebot-plugin-tetris-stats/blob/main/LICENSE) 许可证开源
 
-## 优雅关机
-
-关机时会等已开始执行的命令完成；尚未收到确认的解绑会取消。
-
 ## 🤓☝ 给个 star 吧
 
 <a href="https://star-history.com/#A-Minos/nonebot-plugin-tetris-stats&Date">
