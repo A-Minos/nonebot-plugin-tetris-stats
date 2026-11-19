@@ -11,6 +11,7 @@ from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
+from nonebot_plugin_wait_a_minute import graceful
 from rich.progress import Progress
 
 from ..config.config import CACHE_PATH, DATA_PATH, config
@@ -116,6 +117,7 @@ async def check_tag(tag: str) -> bool:
 
 
 @alc.handle()
+@graceful(block=True)
 async def _(revision: str | None = None):
     if revision is not None and not await check_tag(revision):
         await alc.finish(Lang.template_ui.invalid_tag(revision=revision))
