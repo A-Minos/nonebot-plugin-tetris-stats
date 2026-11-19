@@ -11,7 +11,6 @@ from nonebot_plugin_uninfo import Uninfo
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User as NBUser
 from nonebot_plugin_user import get_user
-from nonebot_plugin_wait_a_minute import graceful
 from sqlalchemy import select
 
 from ....db import query_bind_info, resolve_compare_delta, trigger
@@ -85,7 +84,6 @@ async def make_query_result(player: Player, template: Template, compare_delta: t
 
 
 @assign('TETRIO.query')
-@graceful(block=True)
 async def _(  # noqa: PLR0913, PLR0917
     user: NBUser,
     event: Event,
@@ -128,7 +126,6 @@ async def _(  # noqa: PLR0913, PLR0917
 
 
 @assign('TETRIO.query')
-@graceful(block=True)
 async def _(
     user: NBUser,
     event_session: Uninfo,
