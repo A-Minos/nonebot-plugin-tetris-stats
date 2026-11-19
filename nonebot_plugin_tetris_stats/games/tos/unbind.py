@@ -6,7 +6,6 @@ from nonebot_plugin_uninfo import QryItrface, Uninfo
 from nonebot_plugin_uninfo import User as UninfoUser
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
-from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
 
 from ...config.config import global_config
 from ...db import query_bind_info, remove_bind, trigger
@@ -16,6 +15,7 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import People
 from ...utils.render.schemas.bind import Bind
+from ...utils.shutdown import suggest
 from . import assign
 from .api import Player
 from .constant import GAME_TYPE
