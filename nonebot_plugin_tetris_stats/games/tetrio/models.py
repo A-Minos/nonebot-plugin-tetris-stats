@@ -12,6 +12,13 @@ from .api.typedefs import ValidRank
 from .typedefs import DisplayField, Template
 
 
+class TETRIOPlayerAlias(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_player_alias'
+
+    alias: Mapped[str] = mapped_column(String(16), primary_key=True)
+    uid_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_uid.id'), index=True)
+
+
 class TETRIODisplayMask(MappedAsDataclass, Model):
     __tablename__ = 'nb_t_io_mask'
 

@@ -24,12 +24,13 @@ command = Subcommand(
 )
 
 
-from . import bind, config, list, mask, query, rank, record, unbind, verify  # noqa: A004, E402
+from . import alias, bind, config, list, mask, query, rank, record, unbind, verify  # noqa: A004, E402
 
 main_command.add(command)
 
 __all__ = [
     'alc',
+    'alias',
     'assign',
     'bind',
     'config',

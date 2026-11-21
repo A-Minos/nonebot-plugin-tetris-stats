@@ -159,8 +159,8 @@ def test_production_help_follows_current_locale(select_locale: Callable[[str], o
     assert zh.breadcrumb == en.breadcrumb == ['tetris-stats', 'TETR.IO', 'query']  # noqa: S101
     assert zh.command.description == '查询 TETR.IO 游戏信息'  # noqa: S101
     assert en.command.description == 'Look up TETR.IO player data'  # noqa: S101
-    assert zh.command.args[0].description == '@要查询的用户 / 我 / TETR.IO 用户名 / ID'  # noqa: S101
-    assert en.command.args[0].description == '@mention, me, TETR.IO username, or ID'  # noqa: S101
+    assert zh.command.args[0].description == '@要查询的用户 / 我 / 共用别名\uff08优先\uff09 / TETR.IO 用户名 / ID'  # noqa: S101
+    assert en.command.args[0].description == '@mention, me, shared alias (takes priority), TETR.IO username, or ID'  # noqa: S101
     zh_compare = next(option for option in zh.command.options if option.name == '--compare')
     en_compare = next(option for option in en.command.options if option.name == '--compare')
     assert zh_compare.description == '与多久之前的数据对比'  # noqa: S101
@@ -203,6 +203,20 @@ def test_production_help_uses_each_supported_locale(locale: str, select_locale: 
     assert mask_data.breadcrumb == ['tetris-stats', 'TETR.IO', 'mask']  # noqa: S101
     assert mask_data.command.description == Lang.command.tetrio.mask.description(locale)  # noqa: S101
 
+    alias_data = HelpData.model_validate_json(_capture(command, 'tstats TETR.IO alias --help'))
+    alias_lang = Lang.command.tetrio.alias
+    assert alias_data.lang == locale  # noqa: S101
+    assert alias_data.breadcrumb == ['tetris-stats', 'TETR.IO', 'alias']  # noqa: S101
+    assert alias_data.command.description == alias_lang.description(locale)  # noqa: S101
+    assert [shortcut.label for shortcut in alias_data.command.shortcuts] == ['ioalias']  # noqa: S101
+    assert {child.name: child.description for child in alias_data.command.subcommands} == {  # noqa: S101
+        'add': alias_lang.add.description(locale),
+        'remove': alias_lang.remove.description(locale),
+    }
+    if locale != 'en-US':
+        assert alias_data.command.description != alias_lang.description('en-US')  # noqa: S101
+        assert Lang.alias.not_found(locale, alias='dtg') != Lang.alias.not_found('en-US', alias='dtg')  # noqa: S101
+
 
 def test_production_help_metadata_comes_from_lang() -> None:
     """Help text on the production command tree must reference Lang, not inline literals."""
@@ -243,6 +257,7 @@ def test_every_english_shortcut_is_displayed_and_matches(select_locale: Callable
 
     cases = (
         ('iobind', 'iobind testuser', 'TETRIO.bind'),
+        ('ioalias', 'ioalias add dtg testuser', 'TETRIO.alias'),
         ('ioconfig', 'ioconfig', 'TETRIO.config'),
         ('io屏蔽', 'io屏蔽 testuser name', 'TETRIO.mask.add'),
         ('io解屏蔽', 'io解屏蔽 testuser name', 'TETRIO.mask.remove'),

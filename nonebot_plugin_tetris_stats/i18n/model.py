@@ -4,6 +4,14 @@
 from tarina.lang.model import LangItem, LangModel
 
 
+class Alias:
+    invalid: LangItem = LangItem('alias', 'invalid')
+    not_found: LangItem = LangItem('alias', 'not_found')
+    conflict: LangItem = LangItem('alias', 'conflict')
+    saved: LangItem = LangItem('alias', 'saved')
+    removed: LangItem = LangItem('alias', 'removed')
+
+
 class InteractionWrong:
     query_bot: LangItem = LangItem('interaction', 'wrong.query_bot')
 
@@ -145,6 +153,21 @@ class CommandRoot:
     description: LangItem = LangItem('command', 'root.description')
     usage: LangItem = LangItem('command', 'root.usage')
     examples: LangItem = LangItem('command', 'root.examples')
+
+
+class CommandTetrioAliasAdd:
+    description: LangItem = LangItem('command', 'tetrio.alias.add.description')
+
+
+class CommandTetrioAliasRemove:
+    description: LangItem = LangItem('command', 'tetrio.alias.remove.description')
+
+
+class CommandTetrioAlias:
+    description: LangItem = LangItem('command', 'tetrio.alias.description')
+    shortcut: LangItem = LangItem('command', 'tetrio.alias.shortcut')
+    add = CommandTetrioAliasAdd
+    remove = CommandTetrioAliasRemove
 
 
 class CommandTetrioBindArgsAccount:
@@ -451,6 +474,7 @@ class CommandTetrioMask:
 
 class CommandTetrio:
     description: LangItem = LangItem('command', 'tetrio.description')
+    alias = CommandTetrioAlias
     bind = CommandTetrioBind
     config = CommandTetrioConfig
     list = CommandTetrioList
@@ -634,6 +658,7 @@ class Command:
 
 
 class Lang(LangModel):
+    alias = Alias
     interaction = Interaction
     error = Error
     template = Template

@@ -1,5 +1,12 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "invalid": "別名須為 3–16 個英文字母、數字、連字號或底線。",
+    "not_found": "沒有名為 {alias} 的共用別名。",
+    "conflict": "{alias} 已綁定其他玩家。若要更換目標，請先刪除這個別名。",
+    "saved": "已儲存 {alias}。使用 iostats {alias} 查詢該玩家。",
+    "removed": "已刪除 {alias}。"
+  },
   "interaction": {
     "permission_denied": "你沒有執行此命令的權限",
     "wrong": { "query_bot": "無法查詢機器人的資訊" },
@@ -99,6 +106,16 @@
       "examples": "iobind Teronya\nioquery 我\nioquery 我 --compare 7d\niorecord40l 我\niorank x+\ntosquery 我"
     },
     "tetrio": {
+      "alias": {
+        "description": "管理共用的 TETR.IO 玩家別名",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "使用 TETR.IO 使用者名稱或 UID 儲存玩家別名"
+        },
+        "remove": {
+          "description": "刪除玩家別名"
+        }
+      },
       "mask": {
         "description": "管理 TETR.IO 玩家展示資訊屏蔽",
         "add": {
@@ -162,7 +179,7 @@
       },
       "query": {
         "description": "查詢 TETR.IO 遊戲資訊",
-        "args": { "who": { "notice": "@要查詢的使用者 / 我 / TETR.IO 使用者名稱 / ID" } },
+        "args": { "who": { "notice": "@要查詢的使用者 / 我 / 共用別名（優先） / TETR.IO 使用者名稱 / ID" } },
         "options": {
           "template": { "help": "選擇查詢範本", "args": { "template": { "notice": "範本版本" } } },
           "compare": {
