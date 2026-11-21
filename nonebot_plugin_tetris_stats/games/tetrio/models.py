@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import ForeignKey, Integer, Interval, String, UniqueConstraint
+from sqlalchemy import ForeignKey, Integer, Interval, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from ...db.models import PydanticType
@@ -10,6 +10,13 @@ from ...db.types import UTCDateTime
 from .api.schemas.leaderboards.by import BySuccessModel, Entry
 from .api.typedefs import ValidRank
 from .typedefs import DisplayField, Template
+
+
+class TETRIOPlayerAlias(MappedAsDataclass, Model):
+    __tablename__ = 'nb_t_io_player_alias'
+
+    alias: Mapped[str] = mapped_column(Text, primary_key=True)
+    uid: Mapped[str] = mapped_column(String(24), index=True)
 
 
 class TETRIODisplayMask(MappedAsDataclass, Model):

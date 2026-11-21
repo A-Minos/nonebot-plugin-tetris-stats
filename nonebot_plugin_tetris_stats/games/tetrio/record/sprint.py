@@ -25,6 +25,7 @@ from ....utils.render.schemas.v2.tetrio.record.base import Finesse, Max, Mini, R
 from ....utils.render.schemas.v2.tetrio.record.sprint import Record
 from ....utils.typedefs import Me
 from .. import alc, assign
+from ..alias import PlayerDep
 from ..api.player import Player, RecordModeType, RecordType
 from ..constant import GAME_TYPE
 from ..mask import display_name, get_mask
@@ -73,8 +74,8 @@ async def _(  # noqa: PLR0913, PLR0917
 
 @assign('TETRIO.record.sprint')
 async def _(
-    who: Player,
     event_session: Uninfo,
+    player: PlayerDep,
     record_type: RecordType | None = None,
     index: int | None = None,
 ):
@@ -86,7 +87,7 @@ async def _(
         + ([f'--type {record_type.value}'] if record_type is not None else [])
         + ([f'--index {index}'] if index is not None else []),
     ):
-        await UniMessage.image(raw=await make_sprint_image(who, record_type, index)).finish()
+        await UniMessage.image(raw=await make_sprint_image(player, record_type, index)).finish()
 
 
 async def make_sprint_image(

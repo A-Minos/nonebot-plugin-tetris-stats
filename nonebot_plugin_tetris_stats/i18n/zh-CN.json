@@ -1,5 +1,13 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "not_found": "没有名为 {alias} 的共用别名。",
+    "conflict": "{alias} 已绑定其他玩家。要更换目标，请先删除这个别名。",
+    "reserved_character": "别名不能包含 ~。",
+    "saved": "已保存 {alias}。",
+    "removed": "已删除 {alias}。",
+    "empty": "该玩家没有共用别名。"
+  },
   "interaction": {
     "permission_denied": "你没有执行此命令的权限",
     "wrong": {
@@ -117,6 +125,19 @@
     },
     "tetrio": {
       "description": "TETR.IO 游戏命令",
+      "alias": {
+        "description": "管理共用的 TETR.IO 玩家别名",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "用 TETR.IO 用户名或 UID 保存玩家别名"
+        },
+        "remove": {
+          "description": "删除玩家别名"
+        },
+        "list": {
+          "description": "按别名、TETR.IO 用户名或 UID 列出玩家的共用别名；加 ~ 前缀可跳过别名"
+        }
+      },
       "bind": {
         "description": "绑定 TETR.IO 账号",
         "args": {
@@ -177,7 +198,7 @@
         "description": "查询 TETR.IO 游戏信息",
         "args": {
           "who": {
-            "notice": "@要查询的用户 / 我 / TETR.IO 用户名 / ID"
+            "notice": "@要查询的用户 / 我 / 共用别名（优先） / TETR.IO 用户名 / ID；加 ~ 前缀可跳过别名"
           }
         },
         "options": {
@@ -229,7 +250,7 @@
         "description": "查询 TETR.IO 单人游戏记录",
         "args": {
           "who": {
-            "notice": "@要查询的用户 / 我 / TETR.IO 用户名 / ID"
+            "notice": "@要查询的用户 / 我 / 共用别名（优先） / TETR.IO 用户名 / ID；加 ~ 前缀可跳过别名"
           }
         },
         "options": {

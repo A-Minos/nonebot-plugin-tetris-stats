@@ -19,7 +19,8 @@ from ....utils.duration import parse_duration
 from ....utils.exception import FallbackError
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc, assign
-from .. import command, get_player
+from .. import command
+from ..alias import PlayerDep
 from ..api import Player
 from ..constant import GAME_TYPE
 from ..models import TETRIOUserConfig
@@ -35,7 +36,7 @@ command.add(
         Args(
             Arg(
                 'who',
-                At | Me | get_player,
+                At | Me | str,
                 notice=Lang.command.tetrio.query.args.who.notice.cast(),
             ),
         ),
@@ -127,8 +128,8 @@ async def _(  # noqa: PLR0913, PLR0917
 @assign('TETRIO.query')
 async def _(
     user: NBUser,
-    who: Player,
     event_session: Uninfo,
+    player: PlayerDep,
     template: Template | None = None,
     compare: timedelta | None = None,
 ):
@@ -149,4 +150,4 @@ async def _(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
             compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
-        await (await make_query_result(who, template or 'v1', compare_delta)).finish()
+        await (await make_query_result(player, template or 'v1', compare_delta)).finish()
