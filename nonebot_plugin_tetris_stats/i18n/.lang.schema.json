@@ -3,6 +3,39 @@
   "description": "Schema for lang file",
   "type": "object",
   "properties": {
+    "alias": {
+      "title": "Alias",
+      "description": "Scope 'alias' of lang item",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "invalid": {
+          "title": "invalid",
+          "description": "value of lang item type 'invalid'",
+          "type": "string"
+        },
+        "not_found": {
+          "title": "not_found",
+          "description": "value of lang item type 'not_found'",
+          "type": "string"
+        },
+        "conflict": {
+          "title": "conflict",
+          "description": "value of lang item type 'conflict'",
+          "type": "string"
+        },
+        "saved": {
+          "title": "saved",
+          "description": "value of lang item type 'saved'",
+          "type": "string"
+        },
+        "removed": {
+          "title": "removed",
+          "description": "value of lang item type 'removed'",
+          "type": "string"
+        }
+      }
+    },
     "interaction": {
       "title": "Interaction",
       "description": "Scope 'interaction' of lang item",
@@ -547,6 +580,50 @@
               "title": "description",
               "description": "value of lang item type 'description'",
               "type": "string"
+            },
+            "alias": {
+              "title": "Alias",
+              "description": "Scope 'alias' of lang item",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "title": "description",
+                  "description": "value of lang item type 'description'",
+                  "type": "string"
+                },
+                "shortcut": {
+                  "title": "shortcut",
+                  "description": "value of lang item type 'shortcut'",
+                  "type": "string"
+                },
+                "add": {
+                  "title": "Add",
+                  "description": "Scope 'add' of lang item",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "title": "description",
+                      "description": "value of lang item type 'description'",
+                      "type": "string"
+                    }
+                  }
+                },
+                "remove": {
+                  "title": "Remove",
+                  "description": "Scope 'remove' of lang item",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "title": "description",
+                      "description": "value of lang item type 'description'",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
             },
             "bind": {
               "title": "Bind",

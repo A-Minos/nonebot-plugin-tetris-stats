@@ -1,5 +1,12 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "invalid": "Usa de 3 a 16 letras ASCII, dígitos, guiones o guiones bajos para el alias.",
+    "not_found": "No hay ningún alias compartido llamado {alias}.",
+    "conflict": "{alias} ya apunta a otro jugador. Elimina primero el alias para cambiar el destino.",
+    "saved": "Se guardó {alias}. Usa iostats {alias} para consultar al jugador.",
+    "removed": "Se eliminó {alias}."
+  },
   "interaction": {
     "permission_denied": "No tienes permiso para ejecutar este comando",
     "wrong": { "query_bot": "No se puede consultar la información del bot" },
@@ -108,6 +115,16 @@
       "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me"
     },
     "tetrio": {
+      "alias": {
+        "description": "Gestionar los alias compartidos de jugadores de TETR.IO",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "Guardar un alias mediante el nombre de usuario o UID de TETR.IO"
+        },
+        "remove": {
+          "description": "Eliminar un alias de jugador"
+        }
+      },
       "mask": {
         "description": "Gestionar la ocultación de información visible de jugadores de TETR.IO",
         "add": {
@@ -174,7 +191,7 @@
       },
       "query": {
         "description": "Consultar información de TETR.IO",
-        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
+        "args": { "who": { "notice": "@persona que consultar / me / alias compartido (tiene prioridad) / nombre de usuario o ID de TETR.IO" } },
         "options": {
           "template": {
             "help": "Seleccionar la plantilla de consulta",

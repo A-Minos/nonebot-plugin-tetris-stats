@@ -1,9 +1,9 @@
 from collections import defaultdict
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime, timedelta
 from math import floor
 from statistics import mean
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from nonebot import get_driver
@@ -29,8 +29,8 @@ from ..models import (
     TETRIOLeagueStats,
     TETRIOLeagueStatsField,
     TETRIOLeagueUserMap,
-    TETRIOUserUniqueIdentifier,
 )
+from ..uid import ensure_uid_ids
 
 if TYPE_CHECKING:
     from ..api.schemas.leaderboards.by import BySuccessModel
@@ -87,14 +87,6 @@ def find_special_player(
     sort: Callable[[Sequence[Entry], Callable[[Entry], float]], Entry],
 ) -> Entry:
     return sort(users, field)
-
-
-T = TypeVar('T')
-
-
-def _chunked(values: list[T], size: int) -> Iterator[list[T]]:
-    for i in range(0, len(values), size):
-        yield values[i : i + size]
 
 
 @scheduler.scheduled_job('cron', hour='0,6,12,18', minute=0)
@@ -154,24 +146,8 @@ async def get_tetra_league_data() -> None:
     player_ids = {i.id for result in results for i in result.data.entries}
     async with get_session() as session:
         session.add(stats)
-        existing_ids: list[TETRIOUserUniqueIdentifier] = []
-        for chunk in _chunked(list(player_ids), 500):
-            existing_ids.extend(
-                (
-                    await session.scalars(
-                        select(TETRIOUserUniqueIdentifier).filter(
-                            TETRIOUserUniqueIdentifier.user_unique_identifier.in_(chunk)
-                        )
-                    )
-                ).all()
-            )
-        new_ids = [
-            TETRIOUserUniqueIdentifier(user_unique_identifier=i)
-            for i in player_ids - {i.user_unique_identifier for i in existing_ids}
-        ]
-        session.add_all(new_ids)
         await session.flush()
-        uid_mapping = {i.user_unique_identifier: i.id for i in list(existing_ids) + new_ids}
+        uid_mapping = await ensure_uid_ids(session, player_ids)
         maps: list[TETRIOLeagueUserMap] = []
         for i in stats.raw:
             for index, entry in enumerate(i.data.data.entries):

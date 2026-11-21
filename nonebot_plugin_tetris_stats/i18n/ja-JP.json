@@ -1,5 +1,12 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "invalid": "エイリアスは半角英数字、ハイフン、アンダースコアの 3～16 文字にしてください。",
+    "not_found": "{alias} という共有エイリアスは登録されていません。",
+    "conflict": "{alias} は別のプレイヤーに登録済みです。変更するには先に削除してください。",
+    "saved": "{alias} を登録しました。iostats {alias} でプレイヤーを検索できます。",
+    "removed": "{alias} を削除しました。"
+  },
   "interaction": {
     "permission_denied": "このコマンドを実行する権限がありません",
     "wrong": { "query_bot": "ボットの情報は検索できません" },
@@ -108,6 +115,16 @@
       "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me"
     },
     "tetrio": {
+      "alias": {
+        "description": "TETR.IO プレイヤーの共有エイリアスを管理する",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "TETR.IO のユーザー名または UID でエイリアスを登録する"
+        },
+        "remove": {
+          "description": "プレイヤーエイリアスを削除する"
+        }
+      },
       "mask": {
         "description": "TETR.IO プレイヤーの表示情報の非表示設定を管理",
         "add": {
@@ -174,7 +191,7 @@
       },
       "query": {
         "description": "TETR.IOのプレイヤー情報を検索",
-        "args": { "who": { "notice": "@対象ユーザー / me / TETR.IO ユーザー名 / ID" } },
+        "args": { "who": { "notice": "@対象ユーザー / me / 共有エイリアス（優先） / TETR.IO ユーザー名 / ID" } },
         "options": {
           "template": {
             "help": "検索テンプレートを選択",

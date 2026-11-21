@@ -1,5 +1,12 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "invalid": "Use 3–16 ASCII letters, digits, hyphens, or underscores for the alias.",
+    "not_found": "No shared alias named {alias}.",
+    "conflict": "{alias} already points to another player. Remove it first to change the target.",
+    "saved": "Saved {alias}. Use iostats {alias} to look up the player.",
+    "removed": "Removed {alias}."
+  },
   "interaction": {
     "permission_denied": "You do not have permission to execute this command.",
     "wrong": {
@@ -117,6 +124,16 @@
     },
     "tetrio": {
       "description": "TETR.IO game commands",
+      "alias": {
+        "description": "Manage shared TETR.IO player aliases",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "Save a player alias using a TETR.IO username or UID"
+        },
+        "remove": {
+          "description": "Remove a player alias"
+        }
+      },
       "bind": {
         "description": "Link a TETR.IO account",
         "args": {
@@ -177,7 +194,7 @@
         "description": "Look up TETR.IO player data",
         "args": {
           "who": {
-            "notice": "@mention, me, TETR.IO username, or ID"
+            "notice": "@mention, me, shared alias (takes priority), TETR.IO username, or ID"
           }
         },
         "options": {
