@@ -1,5 +1,4 @@
-from collections.abc import Callable, Coroutine
-from typing import Any
+from collections.abc import Callable
 
 from nonebot.adapters import Bot
 from nonebot.matcher import Matcher
@@ -13,8 +12,7 @@ from ..i18n import Lang
 from ..permission import command_permission
 from ..utils.exception import NeedCatchError
 from ..utils.help import HelpImageExtension, StructuredHelpFormatter
-
-AsyncHandler = Callable[..., Coroutine[Any, Any, Any]]
+from ..utils.shutdown import AsyncHandler, accepting_commands, register_command_output
 
 command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
@@ -31,11 +29,15 @@ command.meta.example = Lang.command.root.examples.cast()
 
 alc = on_alconna(
     command=command,
+    rule=accepting_commands,
     skip_for_unmatch=False,
-    auto_send_output=True,
+    auto_send_output=False,
     use_origin=True,
     extensions=[HelpImageExtension()],
 )
+
+
+register_command_output(alc)
 
 
 def assign(path: str, *, default_available: bool = True) -> Callable[[AsyncHandler], T_Handler]:
