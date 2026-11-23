@@ -103,6 +103,7 @@ async def test_shutdown_cancels_only_pending_unbind_confirmations(
     answered: bool,
 ) -> None:
     from nonebot_plugin_wait_a_minute import Hook, Status
+
     from nonebot_plugin_tetris_stats.games import alc
     from nonebot_plugin_tetris_stats.games.top import unbind
 
