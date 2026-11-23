@@ -8,7 +8,6 @@ from nonebot_plugin_uninfo import QryItrface, Uninfo
 from nonebot_plugin_uninfo import User as UninfoUser
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
-from ...utils.shutdown import suggest
 from yarl import URL
 
 from ...config.config import global_config
@@ -20,6 +19,7 @@ from ...utils.lang import get_lang
 from ...utils.render import render_image
 from ...utils.render.schemas.base import Avatar, People, TETRIOPeople
 from ...utils.render.schemas.bind import Bind
+from ...utils.shutdown import suggest
 from . import alc, assign, command
 from .api import Player
 from .constant import GAME_TYPE
