@@ -8,7 +8,7 @@ from nonebot_plugin_uninfo import QryItrface, Uninfo
 from nonebot_plugin_uninfo import User as UninfoUser
 from nonebot_plugin_uninfo.orm import get_session_persist_id
 from nonebot_plugin_user import User
-from nonebot_plugin_waiter import suggest  # type: ignore[import-untyped]
+from ...utils.shutdown import suggest
 from yarl import URL
 
 from ...config.config import global_config
