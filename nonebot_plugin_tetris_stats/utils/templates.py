@@ -10,19 +10,27 @@ from httpx import AsyncClient
 from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.permission import SUPERUSER
-from nonebot_plugin_alconna import Alconna, Args, Option, on_alconna
+from nonebot_plugin_alconna import Alconna, Args, CommandResult, Option, on_alconna
 from nonebot_plugin_wait_a_minute import graceful
 from rich.progress import Progress
 
 from ..config.config import CACHE_PATH, DATA_PATH, config
 from ..i18n import Lang
+from .shutdown import accepting_commands, register_command_output
 
 driver = get_driver()
 
 TEMPLATES_DIR = config.tetris.dev.template_path or DATA_PATH / 'templates'
 
 
-alc = on_alconna(Alconna('更新模板', Option('--revision', Args['revision', str], alias={'-R'})), permission=SUPERUSER)
+alc = on_alconna(
+    Alconna('更新模板', Option('--revision', Args['revision', str], alias={'-R'})),
+    rule=accepting_commands,
+    permission=SUPERUSER,
+    skip_for_unmatch=False,
+    auto_send_output=False,
+)
+register_command_output(alc)
 
 
 async def download_templates(tag: str) -> Path:
@@ -118,7 +126,9 @@ async def check_tag(tag: str) -> bool:
 
 @alc.handle()
 @graceful(block=True)
-async def _(revision: str | None = None):
+async def _(result: CommandResult, revision: str | None = None):
+    if not result.matched:
+        return
     if revision is not None and not await check_tag(revision):
         await alc.finish(Lang.template_ui.invalid_tag(revision=revision))
     logger.info('开始更新模板')
