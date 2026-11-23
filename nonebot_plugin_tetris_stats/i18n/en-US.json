@@ -1,5 +1,13 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "not_found": "No shared alias named {alias}.",
+    "conflict": "{alias} already points to another player. Remove it first to change the target.",
+    "reserved_character": "Aliases cannot contain ~.",
+    "saved": "Saved {alias}.",
+    "removed": "Removed {alias}.",
+    "empty": "This player has no shared aliases."
+  },
   "interaction": {
     "permission_denied": "You do not have permission to execute this command.",
     "wrong": {
@@ -117,6 +125,19 @@
     },
     "tetrio": {
       "description": "TETR.IO game commands",
+      "alias": {
+        "description": "Manage shared TETR.IO player aliases",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "Save a player alias using a TETR.IO username or UID"
+        },
+        "remove": {
+          "description": "Remove a player alias"
+        },
+        "list": {
+          "description": "List a player's shared aliases by alias, TETR.IO username, or UID; prefix with ~ to skip alias matching"
+        }
+      },
       "bind": {
         "description": "Link a TETR.IO account",
         "args": {
@@ -177,7 +198,7 @@
         "description": "Look up TETR.IO player data",
         "args": {
           "who": {
-            "notice": "@mention, me, TETR.IO username, or ID"
+            "notice": "@mention, me, shared alias (takes priority), TETR.IO username, or ID; prefix with ~ to skip aliases"
           }
         },
         "options": {
@@ -229,7 +250,7 @@
         "description": "View TETR.IO solo records",
         "args": {
           "who": {
-            "notice": "@mention, me, TETR.IO username, or ID"
+            "notice": "@mention, me, shared alias (takes priority), TETR.IO username, or ID; prefix with ~ to skip aliases"
           }
         },
         "options": {

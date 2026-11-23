@@ -1,5 +1,13 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "not_found": "{alias} 공용 별칭이 없습니다.",
+    "conflict": "{alias} 별칭은 다른 플레이어에 연결되어 있습니다. 변경하려면 먼저 삭제하세요.",
+    "reserved_character": "별칭에는 ~를 포함할 수 없습니다.",
+    "saved": "{alias}을(를) 저장했습니다.",
+    "removed": "{alias}을(를) 삭제했습니다.",
+    "empty": "이 플레이어의 공용 별칭이 없습니다."
+  },
   "interaction": {
     "permission_denied": "이 명령을 실행할 권한이 없습니다",
     "wrong": { "query_bot": "봇 정보를 조회할 수 없습니다" },
@@ -108,6 +116,19 @@
       "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me"
     },
     "tetrio": {
+      "alias": {
+        "description": "공용 TETR.IO 플레이어 별칭 관리",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "TETR.IO 사용자 이름 또는 UID로 플레이어 별칭 저장"
+        },
+        "remove": {
+          "description": "플레이어 별칭 삭제"
+        },
+        "list": {
+          "description": "별칭, TETR.IO 사용자 이름 또는 UID로 플레이어의 공용 별칭 목록 조회. 앞에 ~를 붙이면 별칭 검색을 건너뜁니다"
+        }
+      },
       "mask": {
         "description": "TETR.IO 플레이어 표시 정보의 숨김 설정 관리",
         "add": {
@@ -171,7 +192,7 @@
       },
       "query": {
         "description": "TETR.IO 플레이어 정보 조회",
-        "args": { "who": { "notice": "조회할 @사용자 / me / TETR.IO 사용자명 / ID" } },
+        "args": { "who": { "notice": "조회할 @사용자 / me / 공용 별칭(우선) / TETR.IO 사용자명 / ID. 앞에 ~를 붙이면 별칭 검색을 건너뜁니다" } },
         "options": {
           "template": { "help": "조회 템플릿 선택", "args": { "template": { "notice": "템플릿 버전" } } },
           "compare": { "help": "비교 시간 간격 지정", "args": { "compare": { "notice": "비교 시간 간격(예: 7d, 2w, 24h)" } } }
@@ -189,7 +210,7 @@
       },
       "record": {
         "description": "TETR.IO 솔로 기록 조회",
-        "args": { "who": { "notice": "조회할 @사용자 / me / TETR.IO 사용자명 / ID" } },
+        "args": { "who": { "notice": "조회할 @사용자 / me / 공용 별칭(우선) / TETR.IO 사용자명 / ID. 앞에 ~를 붙이면 별칭 검색을 건너뜁니다" } },
         "options": {
           "blitz": { "help": "블리츠 기록 조회" },
           "sprint": { "help": "스프린트 기록 조회" },

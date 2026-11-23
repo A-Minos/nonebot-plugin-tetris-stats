@@ -2,6 +2,17 @@
   "$schema": ".template.schema.json",
   "scopes": [
     {
+      "scope": "alias",
+      "types": [
+        "not_found",
+        "conflict",
+        "reserved_character",
+        "saved",
+        "removed",
+        "empty"
+      ]
+    },
+    {
       "scope": "interaction",
       "types": [
         "permission_denied",
@@ -185,6 +196,31 @@
           "subtype": "tetrio",
           "types": [
             "description",
+            {
+              "subtype": "alias",
+              "types": [
+                "description",
+                "shortcut",
+                {
+                  "subtype": "add",
+                  "types": [
+                    "description"
+                  ]
+                },
+                {
+                  "subtype": "remove",
+                  "types": [
+                    "description"
+                  ]
+                },
+                {
+                  "subtype": "list",
+                  "types": [
+                    "description"
+                  ]
+                }
+              ]
+            },
             {
               "subtype": "bind",
               "types": [

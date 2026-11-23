@@ -1,5 +1,13 @@
 {
   "$schema": ".lang.schema.json",
+  "alias": {
+    "not_found": "No hay ningún alias compartido llamado {alias}.",
+    "conflict": "{alias} ya apunta a otro jugador. Elimina primero el alias para cambiar el destino.",
+    "reserved_character": "Los alias no pueden contener el signo ~.",
+    "saved": "Se guardó {alias}.",
+    "removed": "Se eliminó {alias}.",
+    "empty": "Este jugador no tiene alias compartidos."
+  },
   "interaction": {
     "permission_denied": "No tienes permiso para ejecutar este comando",
     "wrong": { "query_bot": "No se puede consultar la información del bot" },
@@ -108,6 +116,19 @@
       "examples": "iobind Teronya\nioquery me\nioquery me --compare 7d\niorecord40l me\niorank x+\ntosquery me"
     },
     "tetrio": {
+      "alias": {
+        "description": "Gestionar los alias compartidos de jugadores de TETR.IO",
+        "shortcut": "ioalias",
+        "add": {
+          "description": "Guardar un alias mediante el nombre de usuario o UID de TETR.IO"
+        },
+        "remove": {
+          "description": "Eliminar un alias de jugador"
+        },
+        "list": {
+          "description": "Listar los alias compartidos de un jugador por alias, nombre de usuario o UID de TETR.IO; antepón ~ para omitir la búsqueda por alias"
+        }
+      },
       "mask": {
         "description": "Gestionar la ocultación de información visible de jugadores de TETR.IO",
         "add": {
@@ -174,7 +195,7 @@
       },
       "query": {
         "description": "Consultar información de TETR.IO",
-        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
+        "args": { "who": { "notice": "@persona que consultar / me / alias compartido (tiene prioridad) / nombre de usuario o ID de TETR.IO; antepón ~ para omitir los alias" } },
         "options": {
           "template": {
             "help": "Seleccionar la plantilla de consulta",
@@ -206,7 +227,7 @@
       },
       "record": {
         "description": "Consultar récords individuales de TETR.IO",
-        "args": { "who": { "notice": "@persona que consultar / me / nombre de usuario/ID de TETR.IO" } },
+        "args": { "who": { "notice": "@persona que consultar / me / alias compartido (tiene prioridad) / nombre de usuario o ID de TETR.IO; antepón ~ para omitir los alias" } },
         "options": {
           "blitz": { "help": "Consultar el récord de Blitz" },
           "sprint": { "help": "Consultar el récord de Sprint" },

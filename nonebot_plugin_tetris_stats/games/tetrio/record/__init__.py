@@ -4,7 +4,6 @@ from nonebot_plugin_alconna import Args, At, Option, Subcommand
 from ....i18n import Lang
 from ....utils.typedefs import Me
 from .. import command as base_command
-from .. import get_player
 from ..api.player import RecordType
 
 command = Subcommand(
@@ -12,7 +11,7 @@ command = Subcommand(
     Args(
         Arg(
             'who',
-            At | Me | get_player,
+            At | Me | str,
             notice=Lang.command.tetrio.record.args.who.notice.cast(),
         ),
     ),

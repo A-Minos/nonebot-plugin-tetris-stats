@@ -11,6 +11,7 @@ BaseCommandType: TypeAlias = Literal[
 TETRIOCommandType: TypeAlias = (
     BaseCommandType
     | Literal[
+        'alias',
         'list',
         'rank',
         'record',
