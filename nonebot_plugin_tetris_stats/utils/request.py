@@ -44,7 +44,7 @@ class AntiCloudflare:
             self._headers = cache.headers
             self._cookies = cache.cookies
         except (OSError, DecodeError):
-            self.cache_path.unlink()
+            self.cache_path.unlink(missing_ok=True)
             self.write_cache()
 
     def write_cache(self) -> None:
