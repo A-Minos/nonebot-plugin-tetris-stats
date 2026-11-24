@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from nonebot_plugin_orm import Model
-from sqlalchemy import ForeignKey, Integer, Interval, String, Text, UniqueConstraint
+from sqlalchemy import ForeignKey, Index, Integer, Interval, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, MappedAsDataclass, mapped_column, relationship
 
 from ...db.models import PydanticType
@@ -45,12 +45,16 @@ class TETRIOLeagueStats(MappedAsDataclass, Model):
 
 class TETRIOLeagueHistorical(MappedAsDataclass, Model):
     __tablename__ = 'nb_t_io_tl_hist'
+    __table_args__ = (
+        # 最近快照查询逐行回表 35GB 的 hist 取 update_time, 这个覆盖索引让它走 index-only
+        Index('ix_nb_t_io_tl_hist_id_update_time', 'id', 'update_time'),
+    )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     request_id: Mapped[UUID] = mapped_column(index=True)
     data: Mapped[BySuccessModel] = mapped_column(PydanticType([], {BySuccessModel}))
     update_time: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)
-    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False, index=True)
     stats: Mapped['TETRIOLeagueStats'] = relationship(back_populates='raw')
 
 
@@ -73,7 +77,7 @@ class TETRIOLeagueStatsField(MappedAsDataclass, Model):
     high_pps: Mapped[Entry] = mapped_column(entry_type)
     high_apm: Mapped[Entry] = mapped_column(entry_type)
     high_vs: Mapped[Entry] = mapped_column(entry_type)
-    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False, index=True)
     stats: Mapped['TETRIOLeagueStats'] = relationship(back_populates='fields')
 
 
