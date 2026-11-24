@@ -14,6 +14,7 @@ from yarl import URL
 
 from ..config.config import CACHE_PATH, config
 from .image import img_to_png
+from .request import Request
 from .templates import TEMPLATES_DIR
 
 if TYPE_CHECKING:
@@ -30,6 +31,9 @@ driver = get_driver()
 global_config = driver.config
 
 BASE_URL = URL('https://tetr.io/user-content/')
+
+# 头像和横幅是静态资源, 不占用 ch.tetr.io 的 1 req/s 限速
+resource_request = Request(config.tetris.proxy.tetrio or config.tetris.proxy.main)
 
 NOT_FOUND = HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
 
@@ -78,11 +82,9 @@ async def _(
     revision: int,
     background_tasks: BackgroundTasks,
 ) -> Response:
-    from ..games.tetrio.api.cache import request  # noqa: PLC0415
-
     if not (path := CACHE_PATH / 'tetrio' / resource_type / f'{user_id}_{revision}.png').exists():
         image = img_to_png(
-            await request.request(
+            await resource_request.request(
                 BASE_URL / resource_type / f'{user_id}.jpg' % {'rv': revision},
                 is_json=False,
             )

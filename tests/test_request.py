@@ -58,3 +58,12 @@ async def test_extra_headers_do_not_leak_into_the_cloudflare_cache(
     assert {k: v for k, v in sent_headers.items() if k != 'User-Agent'} == {'X-Cache': '1', 'X-Extra': '2'}  # noqa: S101
     assert 'User-Agent' in sent_headers  # noqa: S101
     assert anti_cloudflare.headers == {'X-Cache': '1'}  # noqa: S101
+
+
+def test_avatar_requests_do_not_share_the_api_rate_limit() -> None:
+    from nonebot_plugin_tetris_stats.games.tetrio.api.cache import request as api_request
+    from nonebot_plugin_tetris_stats.utils.host import resource_request
+
+    assert getattr(api_request.request, '__wrapped__', None) is not None  # noqa: S101  # API 请求被 limit 包了一层
+    assert resource_request is not api_request  # noqa: S101
+    assert not hasattr(resource_request.request, '__wrapped__')  # noqa: S101
