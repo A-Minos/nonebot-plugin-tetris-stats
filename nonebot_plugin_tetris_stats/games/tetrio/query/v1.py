@@ -222,9 +222,11 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
     (
         (user, user_info, league, sprint, blitz, leagueflow),
         (avatar_revision,),
+        trends,
     ) = await gather(
         gather(player.user, player.get_info(), player.league, player.sprint, player.blitz, player.get_leagueflow()),
         gather(player.avatar_revision),
+        get_trends(player, compare_delta),
     )
     league_data = get_league_data(league, RatedData)
     histories = flow_to_history(leagueflow, handle_history_data)
@@ -269,7 +271,7 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
                 ),
                 lpm=(metrics := get_metrics(pps=league_data.pps, apm=league_data.apm, vs=league_data.vs)).lpm,
                 pps=metrics.pps,
-                lpm_trending=(trends := (await get_trends(player, compare_delta))).pps,
+                lpm_trending=trends.pps,
                 apm=metrics.apm,
                 apl=metrics.apl,
                 apm_trending=trends.apm,
