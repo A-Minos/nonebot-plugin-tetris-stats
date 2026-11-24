@@ -105,6 +105,7 @@ async def test_shutdown_cancels_only_pending_unbind_confirmations(
     from nonebot_plugin_wait_a_minute import Hook, Status
 
     from nonebot_plugin_tetris_stats.games import alc
+    from nonebot_plugin_tetris_stats.utils import shutdown
     from nonebot_plugin_tetris_stats.games.top import unbind
 
     entered, release = asyncio.Event(), asyncio.Event()
@@ -120,7 +121,7 @@ async def test_shutdown_cancels_only_pending_unbind_confirmations(
         await release.wait()
         return b'unbind-image'
 
-    monkeypatch.setattr(unbind, 'suggest', confirmation)
+    monkeypatch.setattr(shutdown, 'waiter_suggest', confirmation)
     monkeypatch.setattr(unbind, 'trigger', lambda **_: nullcontext())
     monkeypatch.setattr(unbind, 'get_session', nullcontext)
     monkeypatch.setattr(unbind, 'get_session_persist_id', AsyncMock(return_value=1))
