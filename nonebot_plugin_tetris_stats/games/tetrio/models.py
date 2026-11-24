@@ -51,7 +51,7 @@ class TETRIOLeagueHistorical(MappedAsDataclass, Model):
     )
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    request_id: Mapped[UUID] = mapped_column(index=True)
+    request_id: Mapped[UUID]
     data: Mapped[BySuccessModel] = mapped_column(PydanticType([], {BySuccessModel}))
     update_time: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)
     stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), init=False, index=True)
@@ -65,7 +65,7 @@ class TETRIOLeagueStatsField(MappedAsDataclass, Model):
     __tablename__ = 'nb_t_io_tl_stats_field'
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    rank: Mapped[ValidRank] = mapped_column(String(2), index=True)
+    rank: Mapped[ValidRank] = mapped_column(String(2))
     tr_line: Mapped[float]
     player_count: Mapped[int]
     low_pps: Mapped[Entry] = mapped_column(entry_type)
@@ -93,7 +93,7 @@ class TETRIOLeagueUserMap(MappedAsDataclass, Model):
     __table_args__ = (UniqueConstraint('uid_id', 'hist_id', name='uq_nb_t_io_tl_map_uid_hist'),)
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
-    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'), index=True)
-    uid_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_uid.id'), index=True)
+    stats_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_stats.id'))
+    uid_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_uid.id'))
     hist_id: Mapped[int] = mapped_column(ForeignKey('nb_t_io_tl_hist.id'))
     entry_index: Mapped[int] = mapped_column(Integer)
