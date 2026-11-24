@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated
 
 from arclet.alconna import Arg
 from nonebot_plugin_alconna import Args, Option, Subcommand
@@ -18,13 +18,10 @@ from . import command
 from .api.leaderboards import by
 from .api.schemas.base import P
 from .api.schemas.leaderboards import Parameter
-from .api.schemas.leaderboards.by import Entry, InvalidEntry
+from .api.schemas.leaderboards.by import Entry
 from .constant import GAME_TYPE
-from .rank.snapshot import LeagueListQuery, query_league_list
+from .rank.snapshot import LeagueListEntry, LeagueListQuery, query_league_list
 from .typedefs import ListSort
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 command.add(
     Subcommand(
@@ -74,7 +71,7 @@ async def _(  # noqa: PLR0913, PLR0917
             if value is not None
         ],
     ):
-        entries: Sequence[Entry | InvalidEntry]
+        players: list[LeagueListEntry]
         if sort_value == 'league':
             parameter = Parameter(
                 # ?: 似乎是只需要 pri 至少 league 榜的返回值只有 pri
@@ -83,10 +80,14 @@ async def _(  # noqa: PLR0913, PLR0917
                 limit=limit or 25,
                 country=country,
             )
-            entries = (await by('league', parameter)).data.entries
+            players = [
+                LeagueListEntry.from_entry(entry)
+                for entry in (await by('league', parameter)).data.entries
+                if isinstance(entry, Entry)
+            ]
         else:
             async with get_session() as session:
-                entries = await query_league_list(
+                players = await query_league_list(
                     session,
                     LeagueListQuery(
                         sort=sort_value,
@@ -110,16 +111,16 @@ async def _(  # noqa: PLR0913, PLR0917
                                 xp=entry.xp,
                             ),
                             tetra_league=TetraLeague(
-                                rank=entry.league.rank,
-                                tr=round(entry.league.tr, 2),
-                                glicko=round(entry.league.glicko, 2),
-                                rd=round(entry.league.rd, 2),
-                                decaying=entry.league.decaying,
+                                rank=entry.rank,
+                                tr=round(entry.tr, 2),
+                                glicko=round(entry.glicko, 2),
+                                rd=round(entry.rd, 2),
+                                decaying=entry.decaying,
                                 pps=(
                                     metrics := get_metrics(
-                                        pps=entry.league.pps,
-                                        apm=entry.league.apm,
-                                        vs=entry.league.vs,
+                                        pps=entry.pps,
+                                        apm=entry.apm,
+                                        vs=entry.vs,
                                     )
                                 ).pps,
                                 apm=metrics.apm,
@@ -128,8 +129,7 @@ async def _(  # noqa: PLR0913, PLR0917
                                 adpl=metrics.adpl,
                             ),
                         )
-                        for entry in entries
-                        if isinstance(entry, Entry)
+                        for entry in players
                     ],
                     lang=get_lang(),
                 ),

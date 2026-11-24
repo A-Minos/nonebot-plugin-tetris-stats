@@ -368,3 +368,63 @@ async def test_league_list_reports_missing_snapshot(
     async with league_sessionmaker() as session:
         with pytest.raises(LeagueSnapshotNotFoundError):
             await query_league_list(session, LeagueListQuery())
+
+
+@pytest.mark.asyncio
+async def test_league_list_reuses_the_parsed_snapshot(
+    league_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    from sqlalchemy import event  # noqa: PLC0415
+
+    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import (  # noqa: PLC0415
+        LeagueListQuery,
+        query_league_list,
+    )
+
+    async with league_sessionmaker() as session:
+        session.add(
+            make_snapshot([make_entry('cached', tr=20000)], when=datetime(2026, 8, 30, tzinfo=UTC), request_id=7)
+        )
+        await session.commit()
+
+    statements: list[str] = []
+
+    def record(*args: object) -> None:
+        statements.append(str(args[2]))
+
+    async with league_sessionmaker() as session:
+        engine = session.bind
+        assert engine is not None  # noqa: S101
+        sync_engine = engine.sync_engine
+        event.listen(sync_engine, 'before_cursor_execute', record)
+        try:
+            await query_league_list(session, LeagueListQuery())
+            first_round = len(statements)
+            await query_league_list(session, LeagueListQuery())
+        finally:
+            event.remove(sync_engine, 'before_cursor_execute', record)
+
+    assert first_round > 1  # noqa: S101
+    assert len(statements) == first_round + 1  # noqa: S101  # 命中缓存后只查最新快照 id
+
+
+@pytest.mark.asyncio
+async def test_league_list_drops_cache_after_a_new_snapshot(
+    league_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    from nonebot_plugin_tetris_stats.games.tetrio.rank.snapshot import (  # noqa: PLC0415
+        LeagueListQuery,
+        query_league_list,
+    )
+
+    async with league_sessionmaker() as session:
+        session.add(make_snapshot([make_entry('old', tr=20000)], when=datetime(2026, 8, 29, tzinfo=UTC), request_id=8))
+        await session.commit()
+    async with league_sessionmaker() as session:
+        assert [entry.id for entry in await query_league_list(session, LeagueListQuery())] == ['old']  # noqa: S101
+
+    async with league_sessionmaker() as session:
+        session.add(make_snapshot([make_entry('new', tr=19000)], when=datetime(2026, 8, 30, tzinfo=UTC), request_id=9))
+        await session.commit()
+    async with league_sessionmaker() as session:
+        assert [entry.id for entry in await query_league_list(session, LeagueListQuery())] == ['new']  # noqa: S101
