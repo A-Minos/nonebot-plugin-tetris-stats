@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import NamedTuple
 from weakref import WeakKeyDictionary
 
@@ -124,3 +125,43 @@ async def query_league_list(session: AsyncSession, query: LeagueListQuery) -> li
         ranked_entries.append((metric, entry))
     ranked_entries.sort(key=lambda ranked_entry: ranked_entry[0], reverse=True)
     return [entry for _, entry in ranked_entries[: query.limit]]
+
+
+async def get_latest_and_compare_snapshots(
+    session: AsyncSession,
+) -> tuple[TETRIOLeagueStats, TETRIOLeagueStats]:
+    """读最新快照和最接近 24 小时前的快照, 两边的 fields 都已加载"""
+    latest = (
+        await session.scalars(
+            select(TETRIOLeagueStats)
+            .order_by(TETRIOLeagueStats.id.desc())
+            .limit(1)
+            .options(selectinload(TETRIOLeagueStats.fields))
+        )
+    ).one()
+    target_time = latest.update_time - timedelta(hours=24)
+    before = (
+        await session.scalar(
+            select(TETRIOLeagueStats)
+            .where(TETRIOLeagueStats.update_time <= target_time)
+            .order_by(TETRIOLeagueStats.update_time.desc())
+            .limit(1)
+            .options(selectinload(TETRIOLeagueStats.fields))
+        )
+    ) or latest
+    after = (
+        await session.scalar(
+            select(TETRIOLeagueStats)
+            .where(TETRIOLeagueStats.update_time >= target_time)
+            .order_by(TETRIOLeagueStats.update_time.asc())
+            .limit(1)
+            .options(selectinload(TETRIOLeagueStats.fields))
+        )
+    ) or latest
+    compare = (
+        before
+        if abs((target_time - before.update_time).total_seconds())
+        < abs((target_time - after.update_time).total_seconds())
+        else after
+    )
+    return latest, compare
