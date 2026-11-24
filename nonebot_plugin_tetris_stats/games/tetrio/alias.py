@@ -56,7 +56,7 @@ alc.shortcut(
 )
 
 
-@assign('TETRIO.alias.add', default_available=False)
+@assign('TETRIO.alias.add')
 async def _(alias: str, account: Player, event_session: Uninfo):
     if '~' in alias:
         raise NeedCatchError(Lang.alias.reserved_character)
@@ -98,7 +98,7 @@ async def _(alias: str, event_session: Uninfo):
         await UniMessage(Lang.alias.removed(alias=alias)).finish()
 
 
-@assign('TETRIO.alias.list', default_available=False)
+@assign('TETRIO.alias.list')
 async def _(player: PlayerDep, event_session: Uninfo):
     async with trigger(
         session_persist_id=await get_session_persist_id(event_session),
