@@ -22,7 +22,6 @@ def flow_to_history(
             score=i.post_match_tr,
         )
         for i in leagueflow.data.points
-        if start_time + timedelta(milliseconds=i.timestamp_offset)
     ]
     return ret if handle is None else handle(ret)
 

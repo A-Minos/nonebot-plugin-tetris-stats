@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from datetime import datetime, timedelta
 from math import ceil, floor, inf
 from typing import NamedTuple
@@ -8,38 +9,22 @@ from .render.schemas.base import HistoryData
 from .typedefs import Number
 
 
-class ValueBound(NamedTuple):
-    value_max: int
+class Axis(NamedTuple):
     value_min: int
-
-
-class Split(NamedTuple):
+    value_max: int
     split_value: int
-    offset: int
 
 
-def get_value_bounds(values: list[int | float]) -> ValueBound:
+def get_axis(values: list[int | float], max_value: Number = inf, min_value: Number = -inf) -> Axis:
+    """把数据范围补成 y 轴的 4 等分, 每段间隔是 10 的整数倍, 前端因此固定渲染 5 个刻度"""
     value_max = 10 * ceil(max(values) / 10)
     value_min = 10 * floor(min(values) / 10)
-    return ValueBound(value_max, value_min)
-
-
-def get_split(value_bound: ValueBound, max_value: Number = inf, min_value: Number = -inf) -> Split:
-    offset = 0
-    overflow = 0
-
-    while True:
-        if (new_max_value := value_bound.value_max + offset + overflow) > max_value:
-            overflow -= 1
-            continue
-        if (new_min_value := value_bound.value_min - offset + overflow) < min_value:
-            overflow += 1
-            continue
-        if ((new_max_value - new_min_value) / 40).is_integer():
-            split_value = int((value_bound.value_max + offset - (value_bound.value_min - offset)) / 4)
-            break
-        offset += 1
-    return Split(split_value, offset + overflow)
+    span = value_max - value_min
+    padding = 40 if not span else -span % 40
+    # 上下各补一半, 一侧贴着 min_value/max_value 时把剩余的补到另一侧
+    down = min(padding // 2, value_min - min_value)
+    down = int(max(down, padding - (max_value - value_max)))
+    return Axis(value_min - down, value_max + padding - down, (span + padding) // 4)
 
 
 def get_specified_point(
@@ -68,55 +53,38 @@ def get_specified_point(
     )
 
 
-def handle_history_data(data: list[HistoryData]) -> list[HistoryData]:  # noqa: C901, PLR0912
-    # 按照 记录时间 对数据进行排序
+def handle_history_data(data: list[HistoryData]) -> list[HistoryData]:
+    """裁出以今天零点结束的 10 天窗口, 两端补上正好落在边界上的点
+
+    返回值首尾分别是左边界(9 天前的零点)和右边界(今天零点)上的数据, 中间是窗口内的原始数据
+    """
+    if not data:
+        raise WhatTheFuckError
     data.sort(key=lambda x: x.record_at)
 
-    # 定义时间边界, 右边界为当前时间的当天零点, 左边界为右边界前推9天
-    # 返回值的[0]和[-1]分别应满足left_border和right_border
+    # 右边界放在今天零点后 1ms, 把今天的数据排除在窗口外, 只用来推算零点处的值
     zero = datetime.now(ZoneInfo('Asia/Shanghai')).replace(hour=0, minute=0, second=0, microsecond=0)
     left_border = zero - timedelta(days=9)
     right_border = zero.replace(microsecond=1000)
 
-    lefts: list[HistoryData] = []
-    in_border: list[HistoryData] = []
-    rights: list[HistoryData] = []
+    lo = bisect_left(data, left_border, key=lambda i: i.record_at)
+    hi = bisect_left(data, right_border, key=lambda i: i.record_at)
+    if lo == hi:  # 窗口内没有数据, 用窗口外最近的一个点拉平
+        score = data[hi].score if hi < len(data) else data[lo - 1].score
+        return [
+            HistoryData(score=score, record_at=left_border),
+            HistoryData(score=score, record_at=right_border),
+        ]
 
-    # 根据 记录时间 将数据分类到对应的列表中
-    for i in data:
-        if i.record_at < left_border:
-            lefts.append(i)
-        elif i.record_at < right_border:
-            in_border.append(i)
-        else:
-            rights.append(i)
-
-    ret: list[HistoryData] = []
-
-    # 处理左边界的点
-    if lefts and in_border:  # 如果边界左侧和边界内都有值则推算
-        ret.append(get_specified_point(lefts[-1], in_border[0], left_border))
-    elif lefts and not in_border:  # 如果边界左侧有值但是边界内没有值则直接取左侧的最后一个值
-        ret.append(HistoryData(score=lefts[-1].score, record_at=left_border))
-    elif not lefts and in_border:  # 如果边界左侧没有值但是边界内有值则直接取边界内的第一个值
-        ret.append(HistoryData(score=in_border[0].score, record_at=left_border))
-    elif not lefts and not in_border and rights:  # 如果边界左侧和边界内都没有值但是边界右侧有值则直接取边界右侧的第一个值 # fmt: skip
-        ret.append(HistoryData(score=rights[0].score, record_at=left_border))
-    else:  # 暂时没想到其他情况
-        raise WhatTheFuckError
-
-    # 添加边界内数据
-    ret.extend(in_border)
-
-    # 处理右边界的点
-    if in_border and rights:  # 如果边界内和边界右侧都有值则推算
-        ret.append(get_specified_point(in_border[-1], rights[0], right_border))
-    elif not in_border and rights:  # 如果边界内没有值但是边界右侧有值则直接取右侧的第一个值
-        ret.append(HistoryData(score=rights[0].score, record_at=right_border))
-    elif in_border and not rights:  # 如果边界内有值但是边界右侧没有值则直接取边界内的最后一个值
-        ret.append(HistoryData(score=in_border[-1].score, record_at=right_border))
-    elif not in_border and not rights and lefts:  # 如果边界内和边界右侧都没有值但是边界左侧有值则直接取边界左侧的最后一个值 # fmt: skip
-        ret.append(HistoryData(score=lefts[-1].score, record_at=right_border))
-    else:  # 暂时没想到其他情况
-        raise WhatTheFuckError
+    ret = [
+        get_specified_point(data[lo - 1], data[lo], left_border)
+        if lo
+        else HistoryData(score=data[lo].score, record_at=left_border)
+    ]
+    ret.extend(data[lo:hi])
+    ret.append(
+        get_specified_point(data[hi - 1], data[hi], right_border)
+        if hi < len(data)
+        else HistoryData(score=data[hi - 1].score, record_at=right_border)
+    )
     return ret

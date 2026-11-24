@@ -18,7 +18,7 @@ from sqlalchemy import select
 
 from ...db import query_bind_info, resolve_compare_delta, trigger
 from ...i18n import Lang
-from ...utils.chart import get_split, get_value_bounds, handle_history_data
+from ...utils.chart import get_axis, handle_history_data
 from ...utils.exception import FallbackError, RequestError
 from ...utils.image import get_avatar
 from ...utils.lang import get_lang
@@ -387,7 +387,7 @@ async def make_query_image(
         else 'N/A'
     )
     data = handle_history_data(await get_historical_data(user_info.data.teaid))
-    values = get_value_bounds([i.score for i in data])
+    axis = get_axis([i.score for i in data], min_value=0)
     return await render_image(
         Info(
             user=People(
@@ -399,10 +399,10 @@ async def make_query_image(
             multiplayer=Multiplayer(
                 history=History(
                     data=data,
-                    max_value=values.value_max,
-                    min_value=values.value_min,
-                    split_interval=(split := get_split(value_bound=values, min_value=0)).split_value,
-                    offset=split.offset,
+                    max_value=axis.value_max,
+                    min_value=axis.value_min,
+                    split_interval=axis.split_value,
+                    offset=0,
                 ),
                 rating=round(float(user_info.data.rating_now), 2),
                 rd=round(float(user_info.data.rd_now), 2),

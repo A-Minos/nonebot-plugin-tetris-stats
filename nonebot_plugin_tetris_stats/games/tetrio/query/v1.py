@@ -7,7 +7,7 @@ from nonebot_plugin_orm import AsyncSession, get_session
 from sqlalchemy import func, select
 from yarl import URL
 
-from ....utils.chart import get_split, get_value_bounds, handle_history_data
+from ....utils.chart import get_axis, handle_history_data
 from ....utils.host import get_self_netloc
 from ....utils.lang import get_lang
 from ....utils.metrics import TetrisMetricsProWithPPSVS, get_metrics
@@ -228,8 +228,7 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
     )
     league_data = get_league_data(league, RatedData)
     histories = flow_to_history(leagueflow, handle_history_data)
-    values = get_value_bounds([i.score for i in histories])
-    split_value, offset = get_split(values, TR_MAX, TR_MIN)
+    axis = get_axis([i.score for i in histories], TR_MAX, TR_MIN)
     if sprint.data.record is not None:
         duration = timedelta(milliseconds=sprint.data.record.results.stats.finaltime).total_seconds()
         sprint_value = f'{duration:.3f}s' if duration < 60 else f'{duration // 60:.0f}m {duration % 60:.3f}s'  # noqa: PLR2004
@@ -263,10 +262,10 @@ async def make_query_image_v1(player: Player, compare_delta: timedelta) -> bytes
                 global_rank=league_data.standing,
                 history=History(
                     data=histories,
-                    split_interval=split_value,
-                    min_value=values.value_min,
-                    max_value=values.value_max,
-                    offset=offset,
+                    split_interval=axis.split_value,
+                    min_value=axis.value_min,
+                    max_value=axis.value_max,
+                    offset=0,
                 ),
                 lpm=(metrics := get_metrics(pps=league_data.pps, apm=league_data.apm, vs=league_data.vs)).lpm,
                 pps=metrics.pps,
