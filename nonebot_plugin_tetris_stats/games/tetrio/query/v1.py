@@ -195,17 +195,16 @@ async def get_trends(player: Player, compare_delta: timedelta) -> Trends:
 
     async with get_session() as session:
         target_time = ensure_utc_datetime(league.cache.cached_at - compare_delta)
-        historical, league_historical = await gather(
-            get_nearest_historical(
-                session,
-                user.unique_identifier,
-                target_time,
-            ),
-            get_nearest_league_historical(
-                session,
-                user.unique_identifier,
-                target_time,
-            ),
+        # 同一个 AsyncSession 不能并发执行, 两条查询串行跑
+        historical = await get_nearest_historical(
+            session,
+            user.unique_identifier,
+            target_time,
+        )
+        league_historical = await get_nearest_league_historical(
+            session,
+            user.unique_identifier,
+            target_time,
         )
     selected = min((historical, league_historical), key=lambda x: x.delta if x is not None else timedelta.max)
     if selected is None:
