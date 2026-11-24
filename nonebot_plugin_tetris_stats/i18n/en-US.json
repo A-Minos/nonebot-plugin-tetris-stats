@@ -6,7 +6,8 @@
     "reserved_character": "Aliases cannot contain ~.",
     "saved": "Saved {alias}.",
     "removed": "Removed {alias}.",
-    "empty": "This player has no shared aliases."
+    "empty": "This player has no shared aliases.",
+    "resolving": "Looking up alias \"{alias}\"\nTo query the TETR.IO player with that name, prefix it with ~: ~{alias}"
   },
   "interaction": {
     "permission_denied": "You do not have permission to execute this command.",

@@ -26,6 +26,7 @@ async def resolve_player(who: str) -> Player:
             entry = await session.get(TETRIOPlayerAlias, who)
         if entry is not None:
             uid = entry.uid
+            await UniMessage.i18n(Lang.alias.resolving, alias=who).send()
     try:
         return get_player(uid or who.removeprefix('~'))
     except MessageFormatError as error:

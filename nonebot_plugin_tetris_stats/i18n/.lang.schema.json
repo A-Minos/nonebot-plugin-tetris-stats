@@ -38,6 +38,11 @@
           "title": "empty",
           "description": "value of lang item type 'empty'",
           "type": "string"
+        },
+        "resolving": {
+          "title": "resolving",
+          "description": "value of lang item type 'resolving'",
+          "type": "string"
         }
       }
     },

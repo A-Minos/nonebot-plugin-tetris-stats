@@ -6,7 +6,8 @@
     "reserved_character": "別名不能包含 ~。",
     "saved": "已儲存 {alias}。",
     "removed": "已刪除 {alias}。",
-    "empty": "該玩家沒有共用別名。"
+    "empty": "該玩家沒有共用別名。",
+    "resolving": "目前正在查詢別名 \"{alias}\"\n要查詢同名的 TETR.IO 玩家，請加 ~ 前綴：~{alias}"
   },
   "interaction": {
     "permission_denied": "你沒有執行此命令的權限",

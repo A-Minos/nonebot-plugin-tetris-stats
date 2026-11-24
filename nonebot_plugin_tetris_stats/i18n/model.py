@@ -11,6 +11,7 @@ class Alias:
     saved: LangItem = LangItem('alias', 'saved')
     removed: LangItem = LangItem('alias', 'removed')
     empty: LangItem = LangItem('alias', 'empty')
+    resolving: LangItem = LangItem('alias', 'resolving')
 
 
 class InteractionWrong:

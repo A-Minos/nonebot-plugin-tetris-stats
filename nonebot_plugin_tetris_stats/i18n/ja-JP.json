@@ -6,7 +6,8 @@
     "reserved_character": "エイリアスには ~ を含められません。",
     "saved": "{alias} を登録しました。",
     "removed": "{alias} を削除しました。",
-    "empty": "このプレイヤーには共有エイリアスがありません。"
+    "empty": "このプレイヤーには共有エイリアスがありません。",
+    "resolving": "エイリアス \"{alias}\" を確認しています\n同名の TETR.IO プレイヤーを確認するには ~ を付けてください: ~{alias}"
   },
   "interaction": {
     "permission_denied": "このコマンドを実行する権限がありません",

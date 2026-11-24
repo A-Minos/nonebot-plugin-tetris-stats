@@ -6,7 +6,8 @@
     "reserved_character": "별칭에는 ~를 포함할 수 없습니다.",
     "saved": "{alias}을(를) 저장했습니다.",
     "removed": "{alias}을(를) 삭제했습니다.",
-    "empty": "이 플레이어의 공용 별칭이 없습니다."
+    "empty": "이 플레이어의 공용 별칭이 없습니다.",
+    "resolving": "\"{alias}\" 별칭을 확인하는 중입니다\n같은 이름의 TETR.IO 플레이어를 확인하려면 ~를 붙이세요: ~{alias}"
   },
   "interaction": {
     "permission_denied": "이 명령을 실행할 권한이 없습니다",

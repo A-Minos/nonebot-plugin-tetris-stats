@@ -6,7 +6,8 @@
     "reserved_character": "Los alias no pueden contener el signo ~.",
     "saved": "Se guardó {alias}.",
     "removed": "Se eliminó {alias}.",
-    "empty": "Este jugador no tiene alias compartidos."
+    "empty": "Este jugador no tiene alias compartidos.",
+    "resolving": "Consultando el alias \"{alias}\"\nPara consultar al jugador de TETR.IO con ese nombre, usa el prefijo ~: ~{alias}"
   },
   "interaction": {
     "permission_denied": "No tienes permiso para ejecutar este comando",
