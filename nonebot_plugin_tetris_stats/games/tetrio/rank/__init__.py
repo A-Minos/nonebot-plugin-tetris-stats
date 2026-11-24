@@ -1,5 +1,5 @@
 from collections import defaultdict
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from math import floor
 from statistics import mean
@@ -73,22 +73,6 @@ def _vs(user: Entry) -> float:
     return user.league.vs
 
 
-def _min(users: Sequence[Entry], field: Callable[[Entry], float]) -> Entry:
-    return min(users, key=field)
-
-
-def _max(users: Sequence[Entry], field: Callable[[Entry], float]) -> Entry:
-    return max(users, key=field)
-
-
-def find_special_player(
-    users: Sequence[Entry],
-    field: Callable[[Entry], float],
-    sort: Callable[[Sequence[Entry], Callable[[Entry], float]], Entry],
-) -> Entry:
-    return sort(users, field)
-
-
 T = TypeVar('T')
 
 
@@ -128,15 +112,15 @@ async def get_tetra_league_data() -> None:
                 rank=rank,
                 tr_line=tr_line,
                 player_count=len(rank_players),
-                low_pps=find_special_player(rank_players, _pps, _min),
-                low_apm=find_special_player(rank_players, _apm, _min),
-                low_vs=find_special_player(rank_players, _vs, _min),
+                low_pps=min(rank_players, key=_pps),
+                low_apm=min(rank_players, key=_apm),
+                low_vs=min(rank_players, key=_vs),
                 avg_pps=mean(_pps(i) for i in rank_players),
                 avg_apm=mean(_apm(i) for i in rank_players),
                 avg_vs=mean(_vs(i) for i in rank_players),
-                high_pps=find_special_player(rank_players, _pps, _max),
-                high_apm=find_special_player(rank_players, _apm, _max),
-                high_vs=find_special_player(rank_players, _vs, _max),
+                high_pps=max(rank_players, key=_pps),
+                high_apm=max(rank_players, key=_apm),
+                high_vs=max(rank_players, key=_vs),
                 stats=stats,
             )
         )
