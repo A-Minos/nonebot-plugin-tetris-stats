@@ -125,14 +125,10 @@ class Request:
         enable_anti_cloudflare: bool = False,
     ) -> bytes:
         """请求api"""
-        if (anti_cloudflare := self.anti_cloudflares.get(url.host or '')) is not None:
-            cookies = anti_cloudflare.cookies
-            headers = anti_cloudflare.headers
-        else:
-            cookies = None
-            headers = None
-        if headers is None:
-            headers = {}
+        anti_cloudflare = self.anti_cloudflares.get(url.host or '')
+        cookies = anti_cloudflare.cookies if anti_cloudflare is not None else None
+        # 复制一份再改, 避免 extra_headers 累积到缓存的 Cloudflare headers 上
+        headers = dict(anti_cloudflare.headers or {}) if anti_cloudflare is not None else {}
         if extra_headers:
             headers.update(extra_headers)
         headers.setdefault('User-Agent', self.ua.random)
