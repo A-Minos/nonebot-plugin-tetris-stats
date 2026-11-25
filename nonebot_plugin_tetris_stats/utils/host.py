@@ -39,11 +39,18 @@ NOT_FOUND = HTMLResponse('404 Not Found', status_code=status.HTTP_404_NOT_FOUND)
 
 
 class HostPage:
+    """把渲染用的 HTML 挂在进程里, 交给浏览器按 hash 取
+
+    同一份数据可能被并发渲染多次, 用引用计数保证最后一个退出时才删
+    """
+
     pages: ClassVar[dict[str, str]] = {}
+    _refs: ClassVar[dict[str, int]] = {}
 
     def __init__(self, page: str) -> None:
         self.page_hash = sha256(page.encode()).hexdigest()
         self.pages[self.page_hash] = page
+        self._refs[self.page_hash] = self._refs.get(self.page_hash, 0) + 1
 
     async def __aenter__(self) -> str:
         return self.page_hash
@@ -51,6 +58,10 @@ class HostPage:
     if not config.tetris.dev.enabled:
 
         async def __aexit__(self, exc_type, exc, tb) -> None:  # noqa: ANN001
+            remaining = self._refs.pop(self.page_hash, 1) - 1
+            if remaining > 0:
+                self._refs[self.page_hash] = remaining
+                return
             self.pages.pop(self.page_hash, None)
     else:
 

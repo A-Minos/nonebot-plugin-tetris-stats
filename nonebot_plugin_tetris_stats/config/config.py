@@ -25,6 +25,7 @@ class Dev(BaseModel):
 class ScopedConfig(BaseModel):
     request_timeout: float = 30.0
     screenshot_quality: float = 2
+    screenshot_pool_size: int = 2
     proxy: Proxy = Field(default_factory=Proxy)
     dev: Dev = Field(default_factory=Dev)
 
