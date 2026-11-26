@@ -29,6 +29,7 @@
         "cloudflare": "Cloudflare 보호를 우회하지 못했습니다",
         "response": "요청 오류 코드: {status_code} {reason}\n{body}",
         "transport": "요청 오류\n{detail}",
+        "unavailable": "데이터 소스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
         "failover": "사용 가능한 연결 주소가 없습니다\n{errors}"
       },
       "TETR.IO": {

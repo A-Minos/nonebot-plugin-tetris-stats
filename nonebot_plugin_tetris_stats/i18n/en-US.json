@@ -31,6 +31,7 @@
         "cloudflare": "Couldn't bypass Cloudflare protection",
         "response": "Request failed with status {status_code} {reason}\n{body}",
         "transport": "Request error\n{detail}",
+        "unavailable": "Could not reach the data source. Please try again later.",
         "failover": "All endpoints are unavailable\n{errors}"
       },
       "TETR.IO": {
