@@ -31,6 +31,7 @@
         "cloudflare": "无法绕过 Cloudflare 防护",
         "response": "请求失败，状态码：{status_code} {reason}\n{body}",
         "transport": "请求错误\n{detail}",
+        "unavailable": "暂时连不上数据源，请稍后重试。",
         "failover": "所有地址均不可用\n{errors}"
       },
       "TETR.IO": {

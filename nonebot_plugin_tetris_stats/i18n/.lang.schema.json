@@ -151,6 +151,11 @@
                   "description": "value of lang item type 'transport'",
                   "type": "string"
                 },
+                "unavailable": {
+                  "title": "unavailable",
+                  "description": "value of lang item type 'unavailable'",
+                  "type": "string"
+                },
                 "failover": {
                   "title": "failover",
                   "description": "value of lang item type 'failover'",

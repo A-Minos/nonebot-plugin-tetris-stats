@@ -40,6 +40,7 @@ class ErrorRequesterrorRequest:
     cloudflare: LangItem = LangItem('error', 'RequestError.request.cloudflare')
     response: LangItem = LangItem('error', 'RequestError.request.response')
     transport: LangItem = LangItem('error', 'RequestError.request.transport')
+    unavailable: LangItem = LangItem('error', 'RequestError.request.unavailable')
     failover: LangItem = LangItem('error', 'RequestError.request.failover')
 
 

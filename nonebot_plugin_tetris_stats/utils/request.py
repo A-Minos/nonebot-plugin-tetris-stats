@@ -3,7 +3,7 @@ from http import HTTPStatus
 from typing import Any
 
 from fake_useragent import UserAgent
-from httpx import AsyncClient, HTTPError
+from httpx import AsyncClient, ConnectError, HTTPError, TimeoutException
 from msgspec import DecodeError, Struct, json
 from nonebot import get_driver
 from nonebot.log import logger
@@ -143,6 +143,9 @@ class Request:
                 )
             if is_json:
                 decoder.decode(response.content)
+        except (ConnectError, TimeoutException) as e:
+            logger.opt(exception=True).debug('数据源连接失败或超时')
+            raise RequestError(Lang.error.RequestError.request.unavailable) from e
         except HTTPError as e:
             raise RequestError(Lang.error.RequestError.request.transport, detail=repr(e)) from e
         except DecodeError:  # 由于捕获的是 DecodeError 所以一定是 is_json = True

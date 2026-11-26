@@ -29,6 +29,7 @@
         "cloudflare": "Cloudflareの保護を回避できませんでした",
         "response": "リクエストエラーコード: {status_code} {reason}\n{body}",
         "transport": "通信エラー\n{detail}",
+        "unavailable": "データソースに接続できませんでした。しばらくしてから再試行してください。",
         "failover": "すべての接続先が利用できません\n{errors}"
       },
       "TETR.IO": {

@@ -29,6 +29,7 @@
         "cloudflare": "No se ha podido sortear la protección de Cloudflare",
         "response": "Código de error de la solicitud: {status_code} {reason}\n{body}",
         "transport": "Error de solicitud\n{detail}",
+        "unavailable": "No se pudo conectar con la fuente de datos. Inténtalo más tarde.",
         "failover": "No hay ninguna dirección disponible\n{errors}"
       },
       "TETR.IO": {

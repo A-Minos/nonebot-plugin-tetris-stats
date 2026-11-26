@@ -67,3 +67,58 @@ def test_avatar_requests_do_not_share_the_api_rate_limit() -> None:
     assert getattr(api_request.request, '__wrapped__', None) is not None  # noqa: S101  # API 请求被 limit 包了一层
     assert resource_request is not api_request  # noqa: S101
     assert not hasattr(resource_request.request, '__wrapped__')  # noqa: S101
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('error_type', ['ConnectError', 'ConnectTimeout', 'ReadTimeout', 'RemoteProtocolError'])
+async def test_httpx_transport_errors_are_reported_by_kind(error_type: str) -> None:
+    import httpx
+    from yarl import URL
+
+    from nonebot_plugin_tetris_stats.utils import request as request_module
+    from nonebot_plugin_tetris_stats.utils.exception import RequestError
+
+    original = getattr(httpx, error_type)('')
+
+    def fail(_request: httpx.Request) -> httpx.Response:
+        raise original
+
+    request = request_module.Request(proxy=None)
+    await request.client.aclose()
+    async with httpx.AsyncClient(transport=httpx.MockTransport(fail)) as client:
+        request.client = client
+        with pytest.raises(RequestError) as error:
+            await request.request(URL('https://example.com'))
+
+    assert error.value.__cause__ is original  # noqa: S101
+    if error_type == 'RemoteProtocolError':
+        assert error.value.render('en-US') == "Request error\nRemoteProtocolError('')"  # noqa: S101
+    else:
+        assert error.value.render('zh-CN') == '暂时连不上数据源，请稍后重试。'  # noqa: RUF001, S101
+        assert error.value.render('en-US') == 'Could not reach the data source. Please try again later.'  # noqa: S101
+
+
+@pytest.mark.asyncio
+async def test_http_status_still_selects_failover_endpoint() -> None:
+    import httpx
+    from yarl import URL
+
+    from nonebot_plugin_tetris_stats.utils import request as request_module
+
+    calls: list[str] = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        calls.append(request.url.host)
+        if request.url.host == 'primary.example.com':
+            return httpx.Response(503, text='Unavailable')
+        return httpx.Response(200, content=b'{}')
+
+    request = request_module.Request(proxy=None)
+    await request.client.aclose()
+    urls = [URL('https://primary.example.com'), URL('https://fallback.example.com')]
+    async with httpx.AsyncClient(transport=httpx.MockTransport(respond)) as client:
+        request.client = client
+        result = await request.failover_request(urls, failover_code=(503,), failover_exc=())
+
+    assert result == b'{}'  # noqa: S101
+    assert calls == ['primary.example.com', 'fallback.example.com']  # noqa: S101
