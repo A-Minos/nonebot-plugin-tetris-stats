@@ -5,12 +5,14 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_postprocessor
 from nonebot.typing import T_Handler
 from nonebot_plugin_alconna import AlcMatches, Alconna, At, CommandMeta, on_alconna
+from nonebot_plugin_wait_a_minute import graceful
 
 from .. import ns
 from ..i18n import Lang
 from ..permission import command_permission
 from ..utils.exception import NeedCatchError
 from ..utils.help import HelpImageExtension, StructuredHelpFormatter
+from ..utils.shutdown import AsyncHandler, accepting_commands, register_command_output
 
 command: Alconna = Alconna(
     ['tetris-stats', 'tstats'],
@@ -27,19 +29,30 @@ command.meta.example = Lang.command.root.examples.cast()
 
 alc = on_alconna(
     command=command,
+    rule=accepting_commands,
     skip_for_unmatch=False,
-    auto_send_output=True,
+    auto_send_output=False,
     use_origin=True,
     extensions=[HelpImageExtension()],
 )
 
 
-def assign(path: str, *, default_available: bool = True) -> Callable[[T_Handler], T_Handler]:
+register_command_output(alc)
+
+
+def assign(path: str, *, default_available: bool = True) -> Callable[[AsyncHandler], T_Handler]:
     game, command_name = path.split('.', maxsplit=1)
-    return alc.assign(path, parameterless=command_permission(game, command_name, default_available=default_available))
+    register = alc.assign(
+        path, parameterless=command_permission(game, command_name, default_available=default_available)
+    )
+
+    def decorator(handler: AsyncHandler) -> T_Handler:
+        return register(graceful(block=True)(handler))
+
+    return decorator
 
 
-def add_block_handlers(handler: Callable[[T_Handler], T_Handler]) -> None:
+def add_block_handlers(handler: Callable[[AsyncHandler], T_Handler]) -> None:
     @handler
     async def _(bot: Bot, matcher: Matcher, target: At):
         if isinstance(target, At) and target.target == bot.self_id:
@@ -50,6 +63,7 @@ from . import tetrio, top, tos  # noqa: F401, E402
 
 
 @alc.handle()
+@graceful(block=True)
 async def _(matcher: Matcher, matches: AlcMatches):
     if (matches.head_matched and matches.options != {}) or matches.main_args == {}:
         await matcher.finish(

@@ -25,6 +25,7 @@ dependencies = [
     "nonebot-plugin-permission>=0.3.1,<0.4",
     "nonebot-plugin-uninfo>=0.7.4",
     "nonebot-plugin-user>=0.6.0",
+    "nonebot-plugin-wait-a-minute>=0.6.1,<0.7",
     "nonebot-plugin-waiter>=0.8.0",
     "nonebot-session-to-uninfo>=0.0.2",
     "nonebot2[fastapi]>=2.5.0",
@@ -42,7 +43,6 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 keywords = ["nonebot2"]
-
 
 [project.urls]
 Homepage = "https://github.com/A-Minos/nonebot-plugin-tetris-stats"
