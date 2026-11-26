@@ -19,21 +19,28 @@ from .constant import GAME_TYPE
 from .models import TETRIOPlayerAlias
 
 
-async def resolve_player(who: str) -> Player:
+async def resolve_player_target(who: str) -> tuple[Player, str | None]:
     uid = None
     if not who.startswith('~'):
         async with get_session() as session:
             entry = await session.get(TETRIOPlayerAlias, who)
         if entry is not None:
             uid = entry.uid
-            await UniMessage.i18n(Lang.alias.resolving, alias=who).send()
     try:
-        return get_player(uid or who.removeprefix('~'))
+        return get_player(uid or who.removeprefix('~')), who if uid is not None else None
     except MessageFormatError as error:
         await UniMessage(error.render()).finish()
 
 
+async def resolve_player(who: str) -> Player:
+    player, alias = await resolve_player_target(who)
+    if alias is not None:
+        await UniMessage.i18n(Lang.alias.resolving, alias=alias).send()
+    return player
+
+
 PlayerDep: TypeAlias = Annotated[Player, Depends(resolve_player)]
+PlayerTargetDep: TypeAlias = Annotated[tuple[Player, str | None], Depends(resolve_player_target)]
 
 
 command.add(
