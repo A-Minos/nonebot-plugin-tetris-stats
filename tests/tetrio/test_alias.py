@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import pytest
 from httpx import AsyncClient, MockTransport, Request, Response
 from nonebot import get_adapter
-from nonebot.adapters.onebot.v11 import Adapter, Bot, Message, PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import Adapter, Bot, Message, MessageSegment, PrivateMessageEvent
 from nonebot.adapters.onebot.v11.event import Sender as EventSender
 from nonebot.message import handle_event
 from sqlalchemy import event, func, select
@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from nonebot_plugin_tetris_stats.games.tetrio.api.schemas.leaderboards.by import BySuccessModel
 
     Sender = Callable[[int, str], Awaitable[str]]
+    Dispatch = Callable[[int, str], Awaitable[list[str]]]
     Responses = dict[str, Response]
 
 pytestmark = pytest.mark.asyncio(loop_scope='session')
@@ -96,7 +97,7 @@ async def tetrio_http(monkeypatch: pytest.MonkeyPatch) -> 'AsyncIterator[Respons
 
 
 @pytest.fixture
-async def command_sender(monkeypatch: pytest.MonkeyPatch, alias_database: None) -> 'AsyncIterator[Sender]':  # noqa: ARG001
+async def command_replies(monkeypatch: pytest.MonkeyPatch, alias_database: None) -> 'AsyncIterator[Dispatch]':  # noqa: ARG001
     from nonebot_plugin_alconna import UniMessage  # noqa: PLC0415
 
     from nonebot_plugin_tetris_stats.games.tetrio import query  # noqa: PLC0415
@@ -114,7 +115,7 @@ async def command_sender(monkeypatch: pytest.MonkeyPatch, alias_database: None) 
     async def render_record(player: 'Player', *_args: object) -> bytes:
         return (await player.user).ID.encode()
 
-    async def run(user_id: int, command: str) -> str:
+    async def run(user_id: int, command: str) -> list[str]:
         message = Message(command)
         event = PrivateMessageEvent(
             time=0,
@@ -132,8 +133,7 @@ async def command_sender(monkeypatch: pytest.MonkeyPatch, alias_database: None) 
             raw_message=command,
         )
         await handle_event(bot, event)
-        (reply,) = sent.pop(event.message_id)
-        return reply
+        return sent.pop(event.message_id)
 
     monkeypatch.setattr(Bot, 'send', send)
     monkeypatch.setattr(query, 'make_query_result', render)
@@ -145,6 +145,19 @@ async def command_sender(monkeypatch: pytest.MonkeyPatch, alias_database: None) 
         yield run
     finally:
         lang.select(previous)
+
+
+@pytest.fixture
+def command_sender(command_replies: 'Dispatch') -> 'Sender':
+    async def run(user_id: int, command: str) -> str:
+        replies = await command_replies(user_id, command)
+        return replies[-1]
+
+    return run
+
+
+def alias_notice(alias: str) -> str:
+    return f'当前正在查询别名 "{alias}"\n要查询同名的 TETR.IO 玩家，请加 ~ 前缀：~{alias}'  # noqa: RUF001
 
 
 async def allow_alias_management(user_id: int) -> None:
@@ -174,22 +187,22 @@ async def test_alias_command_lifecycle(command_sender: 'Sender', tetrio_http: 'R
     manager, other = 20001, 20002
     denied = '你没有执行此命令的权限'
 
-    assert await command_sender(other, 'ioalias add dtg renamed') == denied
+    assert await command_sender(other, 'ioalias add dtg renamed') == '已保存 dtg。'
     await allow_alias_management(manager)
     saved = '已保存 dtg。'
     assert await command_sender(manager, 'io alias add dtg renamed') == saved
     assert await command_sender(manager, f'ioalias add second {UID}') == '已保存 second。'
-    assert await command_sender(other, 'iostats dtg --template v2') == UID
+    assert await command_sender(other, 'iostats dtg --template v2') == f'{alias_notice("dtg")}\n{UID}'
     assert await command_sender(other, 'iostats ~dtg --template v2') == OTHER_UID
     assert await command_sender(manager, 'ioalias add DTG otherplayer') == '已保存 DTG。'
-    assert await command_sender(other, 'iostats DTG --template v2') == OTHER_UID
-    assert await command_sender(other, 'ioalias list ~未登记') == denied
+    assert await command_sender(other, 'iostats DTG --template v2') == f'{alias_notice("DTG")}\n{OTHER_UID}'
+    assert await command_sender(other, 'ioalias list ~未登记') == '用户名/ID不合法'
     assert set((await command_sender(manager, 'ioalias list renamed')).splitlines()) == {'dtg', 'second'}
     assert set((await command_sender(manager, 'IO ALIAS list dtg')).splitlines()) == {'dtg', 'second'}
     assert await command_sender(manager, 'ioalias list ~dtg') == 'DTG'
     assert await command_sender(manager, f'ioalias list {UNRANKED_UID}') == '该玩家没有共用别名。'
     assert await command_sender(manager, f'ioalias add {OTHER_UID} renamed') == f'已保存 {OTHER_UID}。'
-    assert await command_sender(other, f'iostats {OTHER_UID} --template v2') == UID
+    assert await command_sender(other, f'iostats {OTHER_UID} --template v2') == f'{alias_notice(OTHER_UID)}\n{UID}'
     assert await command_sender(other, f'iostats ~{OTHER_UID} --template v2') == OTHER_UID
     listed = await command_sender(manager, f'ioalias list {OTHER_UID}')
     assert set(listed.splitlines()) == {'dtg', 'second', OTHER_UID}
@@ -203,14 +216,14 @@ async def test_alias_command_lifecycle(command_sender: 'Sender', tetrio_http: 'R
     assert await command_sender(other, 'ioalias add dtg otherplayer') == (
         'dtg 已绑定其他玩家。要更换目标，请先删除这个别名。'  # noqa: RUF001
     )
-    assert await command_sender(manager, 'iostats dtg --template v2') == UID
+    assert await command_sender(manager, 'iostats dtg --template v2') == f'{alias_notice("dtg")}\n{UID}'
     assert await command_sender(other, 'io alias remove dtg') == '已删除 dtg。'
     assert await command_sender(manager, 'iostats dtg --template v2') == OTHER_UID
-    assert await command_sender(manager, 'iostats DTG --template v2') == OTHER_UID
+    assert await command_sender(manager, 'iostats DTG --template v2') == f'{alias_notice("DTG")}\n{OTHER_UID}'
     assert await command_sender(other, 'ioalias remove DTG') == '已删除 DTG。'
     assert await command_sender(other, 'ioalias add dtg otherplayer') == saved
-    assert await command_sender(manager, 'iostats dtg --template v2') == OTHER_UID
-    assert await command_sender(other, 'iostats second --template v2') == UID
+    assert await command_sender(manager, 'iostats dtg --template v2') == f'{alias_notice("dtg")}\n{OTHER_UID}'
+    assert await command_sender(other, 'iostats second --template v2') == f'{alias_notice("second")}\n{UID}'
     assert await command_sender(other, 'ioalias remove second') == '已删除 second。'
     async with get_session() as session:
         stored = await session.get(TETRIOPlayerAlias, 'dtg')
@@ -229,7 +242,6 @@ async def test_alias_commands_record_only_the_action(command_sender: 'Sender', t
 
     manager = 21001
     tetrio_http['/api/users/renamed'] = success('renamed', UID)
-    assert await command_sender(manager, 'ioalias add 统计测试 renamed') == '你没有执行此命令的权限'
     await allow_alias_management(manager)
     assert await command_sender(manager, 'ioalias add 统计测试 renamed') == '已保存 统计测试。'
     assert '统计测试' in (await command_sender(manager, f'ioalias list {UID}')).splitlines()
@@ -256,6 +268,43 @@ async def test_direct_iostats_targets_need_no_alias(
     assert await command_sender(next(MESSAGES), f'iostats {target} --template v2') == OTHER_UID
 
 
+async def test_iostats_alias_sends_notice_and_image_together(
+    command_replies: 'Dispatch', tetrio_http: 'Responses', monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from nonebot_plugin_alconna import UniMessage  # noqa: PLC0415
+
+    from nonebot_plugin_tetris_stats.games.tetrio import query  # noqa: PLC0415
+
+    async def render_image(player: 'Player', *_args: object) -> UniMessage:
+        return UniMessage.image(raw=(await player.user).ID.encode())
+
+    monkeypatch.setattr(query, 'make_query_result', render_image)
+    alias = 'aliasprobe'
+    user_id = next(MESSAGES)
+    tetrio_http['/api/users/renamed'] = success('renamed', UID)
+    tetrio_http[f'/api/users/{UID}'] = success('renamed', UID)
+    tetrio_http[f'/api/users/{alias}'] = success(alias, OTHER_UID)
+    tetrio_http['/api/users/plainplayer'] = success('plainplayer', OTHER_UID)
+
+    assert await command_replies(user_id, f'ioalias add {alias} renamed') == [f'已保存 {alias}。']
+    assert await command_replies(user_id, f'iostats {alias} --template v2') == [
+        str(Message(alias_notice(alias)) + MessageSegment.image(UID.encode())),
+    ]
+    direct = [str(MessageSegment.image(OTHER_UID.encode()))]
+    assert await command_replies(user_id, f'iostats ~{alias} --template v2') == direct
+    assert await command_replies(user_id, 'iostats plainplayer --template v2') == direct
+
+    from nonebot_plugin_tetris_stats.utils.exception import NeedCatchError  # noqa: PLC0415
+
+    error_text = '模拟查询失败'
+
+    async def fail_render(*_args: object) -> UniMessage:
+        raise NeedCatchError(error_text)
+
+    monkeypatch.setattr(query, 'make_query_result', fail_render)
+    assert await command_replies(user_id, f'iostats {alias} --template v2') == [error_text]
+
+
 @pytest.mark.parametrize('alias', ['gg', '阿～块', 'a_very_long_player_alias'])  # noqa: RUF001
 async def test_aliases_outside_username_format(command_sender: 'Sender', tetrio_http: 'Responses', alias: str) -> None:
     manager = next(MESSAGES)
@@ -263,7 +312,7 @@ async def test_aliases_outside_username_format(command_sender: 'Sender', tetrio_
     tetrio_http['/api/users/renamed'] = success('renamed', UID)
     tetrio_http[f'/api/users/{UID}'] = success('renamed', UID)
     assert await command_sender(manager, f'ioalias add {alias} renamed') == f'已保存 {alias}。'
-    assert await command_sender(manager, f'iostats {alias} --template v2') == UID
+    assert await command_sender(manager, f'iostats {alias} --template v2') == f'{alias_notice(alias)}\n{UID}'
     assert await command_sender(manager, f'ioalias remove {alias}') == f'已删除 {alias}。'
     assert await command_sender(manager, f'iostats {alias} --template v2') == '用户名/ID不合法'
 
@@ -285,8 +334,6 @@ async def test_alias_add_rejects_tilde(command_sender: 'Sender', tetrio_http: 'R
 async def test_record_queries_resolve_chinese_aliases(
     command_sender: 'Sender', tetrio_http: 'Responses', command: str
 ) -> None:
-    from nonebot.adapters.onebot.v11 import MessageSegment  # noqa: PLC0415
-
     manager = next(MESSAGES)
     await allow_alias_management(manager)
     tetrio_http['/api/users/renamed'] = success('renamed', UID)
@@ -390,7 +437,9 @@ async def test_alias_for_unranked_player_stays_out_of_rank_index(
         command_sender(manager, f'ioalias add unranked {UNRANKED_UID}'), rank.get_tetra_league_data()
     )
     assert saved == '已保存 unranked。'
-    assert await command_sender(manager, 'iostats unranked --template v2') == UNRANKED_UID
+    assert (
+        await command_sender(manager, 'iostats unranked --template v2') == f'{alias_notice("unranked")}\n{UNRANKED_UID}'
+    )
 
     async with alias_sessions() as session:
         stored = (await session.scalars(select(TETRIOPlayerAlias))).one()

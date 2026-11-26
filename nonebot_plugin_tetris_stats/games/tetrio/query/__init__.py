@@ -20,7 +20,7 @@ from ....utils.exception import FallbackError
 from ....utils.typedefs import Me
 from ... import add_block_handlers, alc, assign
 from .. import command
-from ..alias import PlayerDep
+from ..alias import PlayerTargetDep
 from ..api import Player
 from ..constant import GAME_TYPE
 from ..models import TETRIOUserConfig
@@ -129,7 +129,7 @@ async def _(  # noqa: PLR0913, PLR0917
 async def _(
     user: NBUser,
     event_session: Uninfo,
-    player: PlayerDep,
+    target: PlayerTargetDep,
     template: Template | None = None,
     compare: timedelta | None = None,
 ):
@@ -150,4 +150,11 @@ async def _(
                     select(TETRIOUserConfig.query_template).where(TETRIOUserConfig.id == user.id)
                 )
             compare_delta = await resolve_compare_delta(TETRIOUserConfig, session, user.id, compare)
-        await (await make_query_result(player, template or 'v1', compare_delta)).finish()
+        player, alias = target
+        result = await make_query_result(player, template or 'v1', compare_delta)
+        if alias is not None:
+            notice = UniMessage.i18n(Lang.alias.resolving, alias=alias)
+            if not result.has(Image):
+                notice += '\n'
+            result = notice + result
+        await result.finish()
