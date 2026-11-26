@@ -48,6 +48,11 @@ class RequestError(NeedCatchError):
         super().__init__(message, **format_kwargs)
         self.status_code = status_code
 
+    @property
+    def response_body(self) -> str | None:
+        body = self._format_kwargs.get('body')
+        return body if isinstance(body, str) else None
+
 
 class MessageFormatError(NeedCatchError):
     """用户发送的消息格式不正确"""
