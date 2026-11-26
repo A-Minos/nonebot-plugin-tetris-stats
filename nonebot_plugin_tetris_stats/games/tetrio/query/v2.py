@@ -78,6 +78,7 @@ async def make_query_image_v2(player: Player) -> bytes:
             user=User(
                 id=user.ID,
                 name=user.name.upper(),
+                old_names=[entry.username for entry in user_info.data.oldusernames],
                 country=user_info.data.country,
                 role=user_info.data.role,
                 botmaster=user_info.data.botmaster,

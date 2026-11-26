@@ -32,6 +32,7 @@ class Achievement(BaseModel):
 
 class User(TETRIOPlayer):
     name: str
+    old_names: list[str]
     country: str | None
 
     role: Literal['anon', 'user', 'bot', 'halfmod', 'mod', 'admin', 'sysop', 'hidden', 'banned']

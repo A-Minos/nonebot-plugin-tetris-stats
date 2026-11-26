@@ -13,6 +13,7 @@ from tarina.lang.model import LangItem
 from ...i18n import Lang
 from ...utils.render import pre_render
 from ...utils.render.schemas.base import Avatar, Base, TETRIOPlayer
+from ...utils.render.schemas.v2.tetrio.user.info import User as TETRIOInfoUser
 from . import alc, assign, command, get_player
 from .api import Player
 from .models import TETRIODisplayMask
@@ -115,6 +116,8 @@ def apply_mask(player: TETRIOPlayer, fields: Collection[DisplayField]) -> None:
     for field in fields:
         if field in present:
             setattr(player, field, replacements[field])
+    if 'name' in fields and isinstance(player, TETRIOInfoUser):
+        player.old_names = []
 
 
 @pre_render
