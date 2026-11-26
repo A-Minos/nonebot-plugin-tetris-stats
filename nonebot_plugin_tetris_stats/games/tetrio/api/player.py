@@ -1,9 +1,13 @@
 from enum import StrEnum
+from http import HTTPStatus
+from re import IGNORECASE
+from re import compile as re_compile
 from types import MappingProxyType
 from typing import Literal, NamedTuple, cast, overload
 
 from async_lru import alru_cache
 from nonebot.compat import type_validate_json
+from pydantic import ValidationError
 
 from ....db import anti_duplicate_add
 from ....i18n import Lang
@@ -32,6 +36,18 @@ from .schemas.summaries.league import LeagueSuccessModel
 from .schemas.user import User
 from .schemas.user_info import UserInfo, UserInfoSuccess
 from .typedefs import Records, Summaries
+
+_LABS_INELIGIBLE = re_compile(r'\b(?:not eligible|ineligible)\b', IGNORECASE)
+
+
+def _is_labs_ineligibility(error: RequestError) -> bool:
+    if error.status_code != HTTPStatus.FORBIDDEN or (body := error.response_body) is None:
+        return False
+    try:
+        failure = type_validate_json(FailedModel, body)
+    except ValidationError:
+        return False
+    return _LABS_INELIGIBLE.search(failure.error.msg) is not None
 
 
 class RecordModeType(StrEnum):
@@ -91,6 +107,7 @@ class Player:
         self._summaries: dict[Summaries, SummariesModel] = {}
         self._records: dict[RecordKey, RecordsSoloSuccessModel] = {}
         self._leagueflow: LeagueFlowSuccess | None = None
+        self._leagueflow_unavailable = False
 
     @property
     def _request_user_parameter(self) -> str:
@@ -166,11 +183,19 @@ class Player:
             )
         return self._summaries[summaries_type]
 
-    async def get_leagueflow(self) -> LeagueFlowSuccess:
-        if self._leagueflow is None:
+    async def get_leagueflow(self) -> LeagueFlowSuccess | None:
+        if self._leagueflow is None and not self._leagueflow_unavailable:
+            try:
+                raw_leagueflow = await Cache.get(BASE_URL / 'labs/leagueflow' / self._request_user_parameter)
+            except RequestError as error:
+                if not _is_labs_ineligibility(error):
+                    raise
+                # Keep the lack of history for the v1 -> v2 fallback of this query.
+                self._leagueflow_unavailable = True
+                return None
             leagueflow: LeagueFlow = type_validate_json(
                 LeagueFlow,  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
-                await Cache.get(BASE_URL / 'labs/leagueflow' / self._request_user_parameter),
+                raw_leagueflow,
             )
             if isinstance(leagueflow, FailedModel):
                 raise RequestError(Lang.error.RequestError.TETR_IO.league_history, detail=leagueflow.error)

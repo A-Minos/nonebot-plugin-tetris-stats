@@ -10,10 +10,10 @@ from ..api.schemas.summaries.league import InvalidData, LeagueSuccessModel, Neve
 
 
 def flow_to_history(
-    leagueflow: LeagueFlowSuccess,
+    leagueflow: LeagueFlowSuccess | None,
     handle: Callable[[list[HistoryData]], list[HistoryData]] | None = None,
 ) -> list[HistoryData]:
-    if isinstance(leagueflow.data, Empty):
+    if leagueflow is None or isinstance(leagueflow.data, Empty):
         raise FallbackError
     start_time = leagueflow.data.start_time.astimezone(ZoneInfo('Asia/Shanghai'))
     ret = [
